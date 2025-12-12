@@ -2,16 +2,12 @@ const edit = true;
 
 import { exceptioner as ERROR, utiller as Util } from "utiller";
 import BaseCheckoutByECPay from "./BaseCheckoutByECPay";
-import ECPay from "ecpay_aio_nodejs";
 import Api from "../../api";
 import Config from "../../config";
-import _ from "lodash";
-import libpath from "path";
 
 class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
     constructor(props) {
         super(props);
-        this.handlerOfECPay = new ECPay(Config.ecpay);
         Util.setLocaleOfDate("zh-tw");
     }
 
@@ -19,11 +15,11 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         this.appendLog(`CheckoutByByECPay帶進來的資訊:`, data);
         /** 訂單編號 */
         const idOfPreciseOrder = data.idOfPreciseOrder;
-        await this.validateIdOfDocumentQualify(idOfPreciseOrder, "CheckoutByECPay");
+        await this.validateIdOfDocumentQualify(idOfPreciseOrder);
         let itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder, "CheckoutByECPay");
-        await this.validateIsUserOfOrder(itemOfPreciseOrder, session, "CheckoutByECPay");
-        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder, "CheckoutByECPay");
+        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder);
+        await this.validateIsUserOfOrder(itemOfPreciseOrder, session);
+        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder);
 
         /** ECPay的訂單編號不能重複：用id建立過訂單無法再次返回相同頁面，必須在產出一筆的preciseOrder，id必須是全新的 */
         if (Util.isOrEquals(itemOfPreciseOrder.procedureOfPayment, Config.LangOfEPayType.ECPay, Config.LangOfEPayType.LinePay)) {
@@ -33,18 +29,18 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
             itemOfPreciseOrder = result.value;
         }
         /** -------------------------------------------------------------------------------- **/
-
+        const ecapy = await this.ecpayO(idOfPreciseOrder.idOfAuthor);
         const dataOfECPayOrder = this.getPayloadOfECPayAIORequest(itemOfPreciseOrder);
         this.appendLog(`準備去拿ECPay的result`, dataOfECPayOrder);
-        let result = this.handlerOfECPay.payment_client.aio_check_out_all(dataOfECPayOrder);
+        let result = ecapy.payment_client.aio_check_out_all(dataOfECPayOrder);
 
         result = Util.getStringOfHandledHtml(result, (document) => {
             const element = document.getElementById("CheckMacValue");
-            element.setAttribute("value", Util.getECPayCheckMacValue(dataOfECPayOrder, Config.ecpay.MercProfile.HashKey, Config.ecpay.MercProfile.HashIV));
+            element.setAttribute("value", Util.getECPayCheckMacValue(dataOfECPayOrder, ecapy.HashKeyXGetter(), ecapy.HashIVXGetter()));
         });
 
         await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
-            await this.validateOrderIsUnPaidWaiting(order, "CheckoutByECPay");
+            await this.validateOrderIsUnPaidWaiting(order);
             return {
                 typeOfTransaction: Config.TransactionMethod.ECPay,
                 procedureOfPayment: Config.LangOfEPayType.ECPay,

@@ -2,7 +2,6 @@ const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import libpath from "path";
 import BasePaymentInfoByECPay from "./BasePaymentInfoByECPay";
 import Config from "../../config";
 import Api from "../../api";
@@ -66,11 +65,12 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
         Util.validatePayloadObjectValid(contentOfPaymentInfo, ["CheckMacValue", "MerchantTradeNo", "MerchantID", "PaymentType"], "PaymentInfoByECPay");
 
         /** 檢查 CheckMacValue */
-        this.isECPayCheckMacValueValid(contentOfPaymentInfo, Config.ecpay.MercProfile.HashKey, Config.ecpay.MercProfile.HashIV, "PaymentInfoByECPay");
-        await this.validateIdOfDocumentQualify(contentOfPaymentInfo.MerchantTradeNo, "PaymentInfoByECPay");
+        await this.validateIdOfDocumentQualify(contentOfPaymentInfo.MerchantTradeNo);
         const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(contentOfPaymentInfo.MerchantTradeNo);
-        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, contentOfPaymentInfo.MerchantTradeNo, "PaymentInfoByECPay");
-        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder, "PaymentInfoByECPay");
+        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, contentOfPaymentInfo.MerchantTradeNo);
+        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder);
+        const ecpay = await this.ecpayO(itemOfPreciseOrder.idOfAuthor);
+        this.isECPayCheckMacValueValid(contentOfPaymentInfo, ecpay.HashKeyXGetter(), ecpay.HashIVXGetter());
 
         /** 利用 PaymentType(CVS-CVS,ATM-BOT) 去更新訂單狀態 */
         const typeOfPayment = contentOfPaymentInfo.PaymentType;
@@ -80,7 +80,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
         if (_.startsWith(typeOfPayment, "CVS")) {
             /** 當user選擇超商付款時 */
             await Api.updatePreciseOrderItemAtomically(async (itemOfOrder) => {
-                await this.validateOrderIsUnPaidWaiting(itemOfOrder, "PaymentInfoByECPay");
+                await this.validateOrderIsUnPaidWaiting(itemOfOrder);
                 return Api.normalizePreciseOrder(
                     {
                         typeOfTransaction: Config.TransactionMethod.ECPay,
@@ -96,7 +96,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
         } else if (_.startsWith(typeOfPayment, "ATM")) {
             /** 當user選擇ATM付款時 */
             await Api.updatePreciseOrderItemAtomically(async (itemOfOrder) => {
-                await this.validateOrderIsUnPaidWaiting(itemOfOrder, "PaymentInfoByECPay");
+                await this.validateOrderIsUnPaidWaiting(itemOfOrder);
                 return Api.normalizePreciseOrder(
                     {
                         typeOfTransaction: Config.TransactionMethod.ECPay,

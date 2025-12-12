@@ -873,9 +873,6 @@ class CodegenNode {
     disabled = false;
     /** TextField 的 disabled input */
 
-    /** 設計了defaultValue 然後想要快速地取消掉 */
-    disableDefaultValue = false;
-
     helperText = '';
 
     /** TextField用的屬性，在框框開始結束增加提示文字或icon
@@ -2830,13 +2827,9 @@ class CodegenNode {
     /** 用來放setter getter*/
     isObjectOfEmpty() { return _.isEqual(this.type, 'objectOfEmpty'); }
 
-    needParentParam() {
-        return !!this.needParam && this.needParam
-    }
+    needParentParam = () => !!this.needParam && this.needParam
 
-    useDefaultValue() { return !this.disableDefaultValue; }
-
-    getDefaultValue() { return this.useDefaultValue() ? this.defaultValue : undefined; }
+    getDefaultValue = () => this.defaultValue;
 
     getDefaultValueByType(isAdmin) {
 
@@ -2931,9 +2924,12 @@ class CodegenNode {
         const defaultValue = this.getDefaultValue();
 
         if (!Util.isUndefinedNullEmpty(defaultValue)) {
+
             const stringOfDefault = _.startsWith(defaultValue, '###') ? Util.getStringOfDropHeadSign(defaultValue, `#`) : JSON.stringify(this.getDefaultValue());
-            if (isAdmin)
+            if (isAdmin) {
+                console.error(`WEB不能走到這哦！[i18n] defaultValue: ${stringOfDefault}`);
                 return stringOfDefault;
+            }
 
             if (this.isArrayOfField()) {
                 const latest = _.cloneDeep(this.getDefaultValue());
@@ -2951,6 +2947,7 @@ class CodegenNode {
                 const i18nOfDefaultValue = Util.camel(this.getPreciseAttributeGenealogyName());
                 return `i18n.location().${i18nOfDefaultValue}`;
             }
+
             return stringOfDefault;
         }
 
@@ -7418,8 +7415,8 @@ class ProjectFileHandler extends PathBase {
             case 'admin':
             case 'functions':
                 baseConfigGenerator.appendField(`email`, JSON.stringify(sourceObj.email));
-                baseConfigGenerator.appendField(`ecpay`, JSON.stringify(this.isProduction() ? sourceObj.ecpay.prod : sourceObj.ecpay.dev));
-                baseConfigGenerator.appendField(`linepay`, JSON.stringify(this.isProduction() ? sourceObj.linepay.prod : sourceObj.linepay.dev));
+                baseConfigGenerator.appendField(`ECPAY_SANDBOX`, JSON.stringify(this.isProduction() ? sourceObj.ecpay.prod : sourceObj.ecpay.dev));
+                baseConfigGenerator.appendField(`LINEPAY_SANDBOX`, JSON.stringify(this.isProduction() ? sourceObj.linepay.prod : sourceObj.linepay.dev));
                 baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));
                 baseConfigGenerator.appendField(`server`, JSON.stringify(sourceObj.server));
                 break;
@@ -9409,7 +9406,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         generator.appendClass(baseClass, {name: `BaseFunction`, from: '../../base/BaseFunction'})
         generator.appendAsyncFunction(functionNameOfHandleBy,
             [...params], [], [`payload:${JSON.stringify(func.payload ?? 'needless payload')}`]);
-
+        generator.appendFunction({ name: 'getName', arrow: true, simple: true }, [], [], [], `'${func.getName()}'`)
         if (func.isCommonModule) {
             const moduleClassName = `${KEYWORD_OF_MODULARIZED}${fieldName}`;
             const moduleGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'func', func.getName(), `${moduleClassName}.js`), this.nodeOfAncestor);

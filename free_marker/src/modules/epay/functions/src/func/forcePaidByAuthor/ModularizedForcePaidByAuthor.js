@@ -16,17 +16,17 @@ class ModularizedForcePaidByAuthor extends BaseForcePaidByAuthor {
     async handleHttpOnCall(data, session) {
         const idOfPreciseOrder = data.idOfPreciseOrder;
 
-        await this.validateIdOfDocumentQualify(idOfPreciseOrder, "ForcePaidByAuthor");
+        await this.validateIdOfDocumentQualify(idOfPreciseOrder);
         const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        await this.validatePreciseOrderIsExist(detailOfPreciseOrder, idOfPreciseOrder, "ForcePaidByAuthor");
+        await this.validatePreciseOrderIsExist(detailOfPreciseOrder, idOfPreciseOrder);
 
         /** 確認身份為訂單的 idOfAuthor */
-        await this.validateIsAuthorOfOrder(detailOfPreciseOrder, session, "ForcePaidByAuthor");
-        await this.validateOrderIsUnPaidWaiting(detailOfPreciseOrder, "ForcePaidByAuthor");
+        await this.validateIsAuthorOfOrder(detailOfPreciseOrder, session);
+        await this.validateOrderIsUnPaidWaiting(detailOfPreciseOrder);
 
         /** update order的訂單的timeOfPayment, procedureOfPayment='authorForcePaid', update stateOfPayment=5(completed) */
         await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
-            await this.validateOrderIsUnPaidWaiting(order, "ForcePaidByAuthor");
+            await this.validateOrderIsUnPaidWaiting(order);
             return {
                 typeOfTransaction: Config.TransactionMethod.AuthorForcePaid,
                 procedureOfPayment: Config.LangOfEPayType.AuthorForcePaid,

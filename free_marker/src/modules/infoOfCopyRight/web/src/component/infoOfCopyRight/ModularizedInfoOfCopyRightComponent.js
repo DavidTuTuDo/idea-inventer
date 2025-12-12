@@ -3,7 +3,6 @@ const edit = true;
 import Config from "../../config";
 import BaseInfoOfCopyRightComponent from "./BaseInfoOfCopyRightComponent";
 import Router from "../../router";
-import { isMobile } from "react-device-detect";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 
 class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
@@ -30,10 +29,6 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
 
     onInfoOfCopyRightLineOIconButtonClicked(param) {
         this.invokeLineApp(this.getStore().getLine());
-    }
-
-    getInjectStyleOfInfoOfCopyRightPrivilegeDiv(rightArea) {
-        return Util.getVisibleOrNone(!isMobile);
     }
 
     getInjectStyleOfInfoOfCopyRightFbOIconButton(infoOfCopyRight) {

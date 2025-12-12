@@ -17,14 +17,14 @@ class ModularizedUpdatePreciseOrderRemarkContent extends BaseUpdatePreciseOrderR
     async handleHttpOnCall(data, session) {
         Util.validatePayloadObjectValid(data, ["idOfPreciseOrder", "remarkOfPreciseOrder"], "UpdatePreciseOrderRemarkContent");
 
-        await this.validateIdOfDocumentQualify(data.idOfPreciseOrder, "UpdateOrderRemarkOfAuthor");
+        await this.validateIdOfDocumentQualify(data.idOfPreciseOrder);
 
         const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(data.idOfPreciseOrder);
 
-        await this.validatePreciseOrderIsExist(detailOfPreciseOrder, data.idOfPreciseOrder, "UpdatePreciseOrderRemarkContent");
+        await this.validatePreciseOrderIsExist(detailOfPreciseOrder, data.idOfPreciseOrder);
 
         /** 必須是買家才能更改備註 */
-        await this.validateIsUserOfOrder(detailOfPreciseOrder, session, "UpdatePreciseOrderRemarkContent");
+        await this.validateIsUserOfOrder(detailOfPreciseOrder, session);
 
         /** update order remark info*/
         await Api.updatePreciseOrderItem({ remark: data.remarkOfPreciseOrder }, detailOfPreciseOrder.id);

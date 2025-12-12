@@ -1,11 +1,9 @@
 const edit = true;
 
 import _ from "lodash";
-import libpath from "path";
 import BaseCheckoutByLinePay from "./BaseCheckoutByLinePay";
 import Api from "../../api";
 import Config from "../../config";
-import { linepayer as LinePay } from "linepayer";
 
 const MAP_OF_CODE_MESSAGE_FROM_REQUEST_RESULT = {
     "0000": "成功",
@@ -42,7 +40,6 @@ const MAP_OF_CODE_MESSAGE_FROM_REQUEST_RESULT = {
 class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
     constructor(props) {
         super(props);
-        this.linePayerRef = new LinePay(Config.linepay);
     }
 
     /** 目前只支援一個package => _.size(packages) === 1*/
@@ -104,19 +101,20 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
         this.appendLog(`CheckoutByByECPay帶進來的資訊:`, data);
         /** 訂單編號 */
         const idOfPreciseOrder = data.idOfPreciseOrder;
-        await this.validateIdOfDocumentQualify(idOfPreciseOrder, "CheckoutByLinePay");
+        await this.validateIdOfDocumentQualify(idOfPreciseOrder);
         let itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder, "CheckoutByLinePay");
-        await this.validateIsUserOfOrder(itemOfPreciseOrder, session, "CheckoutByLinePay");
-        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder, "CheckoutByLinePay");
+        const linepay = await this.linepayO(idOfPreciseOrder.idOfAuthor);
+        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder);
+        await this.validateIsUserOfOrder(itemOfPreciseOrder, session);
+        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder);
         const info = await Api.fetchGlobalPerspective();
         const payloadOfLinePay = this.getPayloadOfLinePayRequest(itemOfPreciseOrder, info.nameOfBrand);
         console.log(`總訂單 ==> `, payloadOfLinePay);
         console.log(`細項目 ==> `, payloadOfLinePay.packages[0].products);
-        const resultOfLinePayRequest = await this.linePayerRef.request(payloadOfLinePay);
+        const resultOfLinePayRequest = await linepay.request(payloadOfLinePay);
         if (_.isEqual(resultOfLinePayRequest.returnCode, "0000")) {
             await Api.updatePreciseOrderItemAtomically(async (latestItem, transaction) => {
-                await this.validateOrderIsUnPaidWaiting(latestItem, true, "CheckoutByLinePay");
+                await this.validateOrderIsUnPaidWaiting(latestItem, true);
                 return {
                     typeOfTransaction: Config.TransactionMethod.LinePay,
                     procedureOfPayment: Config.LangOfEPayType.LinePay,

@@ -2,13 +2,12 @@ import TW from "./zh_TW";
 import CN from "./zh_CN";
 import EN from "./en_US";
 import { utiller as Util } from "utiller";
-import { makeObservable, action, observable } from "mobx";
-import { Application } from "../index";
+import { makeObservable, action, observable, autorun } from "mobx";
 import _ from "lodash";
 
 class I18n {
     @observable
-    language = "zh_TW";H
+    language = "zh_TW";
 
     constructor() {
         makeObservable(this);
@@ -16,12 +15,13 @@ class I18n {
 
     // ✅ 新增外部啟動方法
     startApplicationReactions() {
-        // autorun(() => {
-        //     // 保持判斷的安全性，防止 Application 是 undefined
-        //     if (Application && typeof Application.getStoreObject === 'function') {
-        //         _.each(Application.getStoreObject(), (store) => store.refreshLocally());
-        //     }
-        // });
+        autorun(() => {
+            // 保持判斷的安全性，防止 Application 是 undefined
+            const { Application } = require('../');
+            if (Application && typeof Application.getStoreObject === 'function') {
+                _.each(Application.getStoreObject(), (store) => store.refreshLocally());
+            }
+        });
     }
 
     @action

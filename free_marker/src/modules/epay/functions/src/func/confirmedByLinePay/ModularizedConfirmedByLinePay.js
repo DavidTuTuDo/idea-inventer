@@ -53,29 +53,26 @@ const MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT = {
 };
 
 class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
-        this.linePayerRef = new LinePay(Config.linepay);
     }
 
     async handleHttpOnCall(data, session) {
         Util.validatePayloadObjectValid(data, ["idOfPreciseOrder", "idOfTransaction"], "ConfirmedByLinePay");
         const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(data.idOfPreciseOrder);
-        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, data.idOfPreciseOrder, "ConfirmedByLinePay");
+        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, data.idOfPreciseOrder);
 
         const payloadOfConfirmLinePay = {
             amount: itemOfPreciseOrder.priceOfTotal,
             currency: itemOfPreciseOrder.typeOfCurrency
         };
 
-        const resultOfLinePayConfirm = await this.linePayerRef.confirm(payloadOfConfirmLinePay, data.idOfTransaction);
+        const linepay = await this.linepayO(itemOfPreciseOrder.idOfAuthor);
+        const resultOfLinePayConfirm = await linepay.confirm(payloadOfConfirmLinePay, data.idOfTransaction);
         const codeOfReturn = resultOfLinePayConfirm.returnCode;
         if (_.isEqual(codeOfReturn, "0000")) {
             await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
-                await this.validateOrderIsUnPaidWaiting(item, "ConfirmedByLinePay");
+                await this.validateOrderIsUnPaidWaiting(item);
                 return {
                     stateOfPayment: Config.StateOfPayment.Completed,
                     procedureOfPayment: `${Config.LangOfEPayType.LinePay}`,
@@ -103,7 +100,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
             return { message: `confirmed by ${Config.EPayType.LinePay}|succeed` };
         } else {
             await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
-                await this.validateOrderIsUnPaidWaiting(item, "ConfirmedByLinePay");
+                await this.validateOrderIsUnPaidWaiting(item);
                 return {
                     procedureOfPayment: `${Config.LangOfEPayType.LinePay}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
@@ -119,8 +116,6 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
     customizeBehaviorOfSucceedTrade() {
         this.appendErrorLog(9999, `47498412486 ${Config.EPayType.LinePay}succeed之後，每個專案應該實作各自的record，insert(例專案:月薪) 應該要增加 工作行事曆到甲方`);
     }
-
-    /** -------------------- async api -------------------- **/
 }
 
 export default ModularizedConfirmedByLinePay;

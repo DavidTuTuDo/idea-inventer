@@ -19,15 +19,15 @@ class ModularizedCancelPreciseOrder extends BaseCancelPreciseOrder {
         Util.appendInfo(`ModularizedCancelPreciseOrder帶進來的資訊:`, data);
         const idOfPreciseOrder = data.idOfPreciseOrder;
         /** 訂單編號 */
-        await this.validateIdOfDocumentQualify(idOfPreciseOrder, "CancelPreciseOrder");
+        await this.validateIdOfDocumentQualify(idOfPreciseOrder);
         const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder, "CancelPreciseOrder");
-        await this.validateIsAuthorOrUserOfOrder(itemOfPreciseOrder, session, "CancelPreciseOrder");
-        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder, "CancelPreciseOrder");
+        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder);
+        await this.validateIsAuthorOrUserOfOrder(itemOfPreciseOrder, session);
+        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder);
 
         /** 更新order的狀態為failure, messageOfPayment要寫'XXX取消了訂單 賣家取消了訂單', 把所有的數量atomic累加回去 */
         await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
-            await this.validateOrderIsUnPaidWaiting(order, "CancelPreciseOrder");
+            await this.validateOrderIsUnPaidWaiting(order);
             const info = await this.getLoginUserInfo(itemOfPreciseOrder, session);
             return Api.normalizePreciseOrder(
                 {

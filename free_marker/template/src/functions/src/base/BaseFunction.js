@@ -6,8 +6,19 @@ import * as functions from "firebase-functions";
 import Api from "../api";
 import Config from "../config";
 import ClientRemoteApi from "../base/CommonRemoteApi";
-import crypto from "crypto";
+import { linepayer as LinePay } from "linepayer";
+import ECPay from "ecpay_aio_nodejs";
 
+const LINEPAY_CREDENTIAL = ({ channelId, channelSecret }) => (channelId && channelSecret ? { channelId, channelSecret, uri: "https://api-pay.line.me" } : Config.LINEPAY_SANDBOX);
+const ECPAY_CREDENTIAL = ({ MerchantID, HashKey, HashIV }) =>
+    MerchantID && HashKey && HashIV
+        ? {
+              OperationMode: "Production",
+              MercProfile: { MerchantID, HashKey, HashIV },
+              IgnorePayment: ["BARCODE", "AndroidPay", "ApplePay", "TWQR", "BNPL"],
+              IsProjectContractor: false
+          }
+        : Config.ECPAY_SANDBOX;
 class BaseFunction extends ClientRemoteApi {
     constructor(props) {
         super(props);
@@ -25,6 +36,26 @@ class BaseFunction extends ClientRemoteApi {
 
     enableTestMode = () => {
         this.TEST_MODE = true;
+    };
+
+    linepayO = async (idOfAuthor) => {
+        //todo：取得eros裡面如果有[linepay machine id]的處理，沒有提供又開啟，就走sandbox讓user體驗
+        if (Util.isUndefinedNullEmpty(idOfAuthor)) this.appendErrorLog(9999, `98211512-${this.getName()} 沒有賣家資訊，無法完成交易`);
+        const secret = await Api.fetchCupidSecret(idOfAuthor);
+        const credential = LINEPAY_CREDENTIAL({ channelId: _.nth(secret.linepaySet, 0), channelSecret: _.nth(secret.linepaySet, 1) });
+        return new LinePay(credential);
+    };
+
+    ecpayO = async (idOfAuthor) => {
+        //todo：取得eros裡面如果有[linepay machine id]的處理，沒有提供又開啟，就走sandbox讓user體驗
+        if (Util.isUndefinedNullEmpty(idOfAuthor)) this.appendErrorLog(9999, `98211519-${this.getName()} 沒有賣家資訊，無法完成交易`);
+        const secret = await Api.fetchCupidSecret(idOfAuthor);
+        const credential = ECPAY_CREDENTIAL({ MerchantID: _.nth(secret?.ECPaySet, 0), HashKey: _.nth(secret?.ECPaySet, 1), HashIV: _.nth(secret?.ECPaySet, 2) });
+        const instance = new ECPay(credential);
+        instance.HashKeyXGetter = () => credential.MercProfile.HashKey;
+        instance.HashIVXGetter = () => credential.MercProfile.HashIV;
+        instance.MerchantIDXGetter = () => credential.MercProfile.MerchantID;
+        return instance;
     };
 
     appendLog = (...messages) => {
@@ -118,14 +149,10 @@ class BaseFunction extends ClientRemoteApi {
         return session.auth.token.email || null;
     }
 
-    isECPayCheckMacValueValid(data, key, iv, idOfError = "") {
+    isECPayCheckMacValueValid(data, key, iv) {
         const computedMacValue = Util.getECPayCheckMacValue(data, key, iv);
-
-        if (!_.isEqual(computedMacValue, data.CheckMacValue)) {
-            /** 判斷檢查碼 [CheckMacValue] */
-            Util.appendInfo(`${idOfError}, 訂單(${data.MerchantTradeNo}) CheckMacValue 檢查碼失敗`);
-            throw new ERROR(9999, `${idOfError}, 訂單(${data.MerchantTradeNo}) CheckMacValue 檢查碼失敗`);
-        }
+        /** 判斷檢查碼 [CheckMacValue] */
+        if (!_.isEqual(computedMacValue, data.CheckMacValue)) this.appendErrorLog(9999, `65451953-${this.getName()} 訂單(${data.MerchantTradeNo})CheckMacValue檢查碼失敗`)
     }
 
     /** 如果是CVS OR ATM 就不能再改變付款狀態了*/
@@ -142,49 +169,49 @@ class BaseFunction extends ClientRemoteApi {
     }
 
     /**  判斷即將做fetch搜尋的document id是合法 */
-    validateIdOfDocumentQualify = async (idOfOrder, idOfError) => {
-        if (Util.isUndefinedNullEmpty(idOfOrder)) this.appendErrorLog(9999, `48468445123-${idOfError} 未提供可查詢的編號`);
+    validateIdOfDocumentQualify = async (idOfOrder) => {
+        if (Util.isUndefinedNullEmpty(idOfOrder)) this.appendErrorLog(9999, `48468445123-${this.getName()} 未提供可查詢的編號`);
     };
 
     /** [epay]判斷order是存在 */
-    validatePreciseOrderIsExist = async (order, id, idOfError) => {
-        if (!order.exists) this.appendErrorLog(9999, `88712314561-${idOfError} 訂單內容不存在，訂單編號:${id}`);
+    validatePreciseOrderIsExist = async (order, id) => {
+        if (!order.exists) this.appendErrorLog(9999, `88712314561-${this.getName()} 訂單內容不存在，訂單編號:${id}`);
     };
 
     /** 確認訂單付款狀態為'已完成' */
-    validateOrderIsCompletedPayment = async (order, idOfError) => {
-        if (!Util.isOrEquals(order.stateOfPayment, Config.StateOfPayment.Completed)) this.appendErrorLog(9999, `4845461231-${idOfError} 訂單必須為「已付款」，請聯繫管理員`);
+    validateOrderIsCompletedPayment = async (order) => {
+        if (!Util.isOrEquals(order.stateOfPayment, Config.StateOfPayment.Completed)) this.appendErrorLog(9999, `4845461231-${this.getName()} 訂單必須為「已付款」，請聯繫管理員`);
     };
 
-    validateOrderIsNotSendingYet = async (order, idOfError) => {
-        if (!Util.isOrEquals(order.stateOfTransport, Config.StateOfTransport.Pending)) this.appendErrorLog(9999, `484546123121-${idOfError} 訂單必須為「待出貨」，請聯繫管理員`);
+    validateOrderIsNotSendingYet = async (order) => {
+        if (!Util.isOrEquals(order.stateOfTransport, Config.StateOfTransport.Pending)) this.appendErrorLog(9999, `484546123121-${this.getName()} 訂單必須為「待出貨」，請聯繫管理員`);
     };
 
     /** 確認訂單付款狀態為'未付款 等待中(ATM CVS)' */
-    validateOrderIsUnPaidWaiting = async (order, idOfError) => {
+    validateOrderIsUnPaidWaiting = async (order) => {
         if (!Util.isOrEquals(order.stateOfPayment, Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting))
-            this.appendErrorLog(9999, `484546121565-${idOfError} 訂單必須為「待付款」，請聯繫管理員`);
+            this.appendErrorLog(9999, `484546121565-${this.getName()} 訂單必須為「待付款」，請聯繫管理員`);
     };
 
     /** 確認貨運付款狀態為'未寄出'，備註：訂單內容僅有課程類會是needless */
-    validateOrderIsNotTransportYet = async (order, idOfError) => {
-        if (!Util.isOrEquals(order.stateOfTransport, Config.StateOfTransport.Pending)) this.appendErrorLog(9999, `4845464541-${idOfError} 訂單必須為「未寄出」，請聯繫管理員`);
+    validateOrderIsNotTransportYet = async (order) => {
+        if (!Util.isOrEquals(order.stateOfTransport, Config.StateOfTransport.Pending)) this.appendErrorLog(9999, `4845464541-${this.getName()} 訂單必須為「未寄出」，請聯繫管理員`);
     };
 
-    validateIsLoginUser = async (session, idOfError) => {
-        if (!this.isLoginUser(session)) this.appendErrorLog(9999, `4845461513-${idOfError} 必須是「登入」狀態`);
+    validateIsLoginUser = async (session) => {
+        if (!this.isLoginUser(session)) this.appendErrorLog(9999, `4845461513-${this.getName()} 必須是「登入」狀態`);
     };
 
-    validateIsUserOfOrder = async (order, session, idOfError) => {
-        if (!_.isEqual(this.getUid(session), order.idOfUser)) this.appendErrorLog(9999, `484546141654-${idOfError} 「必須是買家」`);
+    validateIsUserOfOrder = async (order, session) => {
+        if (!_.isEqual(this.getUid(session), order.idOfUser)) this.appendErrorLog(9999, `484546141654-${this.getName()} 「必須是買家」`);
     };
 
-    validateIsAuthorOfOrder = async (order, session, idOfError) => {
-        if (!_.isEqual(this.getUid(session), order.idOfAuthor)) this.appendErrorLog(9999, `48454615142-${idOfError} 「必須是賣家」`);
+    validateIsAuthorOfOrder = async (order, session) => {
+        if (!_.isEqual(this.getUid(session), order.idOfAuthor)) this.appendErrorLog(9999, `48454615142-${this.getName()} 「必須是賣家」`);
     };
 
-    validateIsAuthorOrUserOfOrder = async (order, session, idOfError) => {
-        if (!Util.isOrEquals(this.getUid(session), order.idOfUser, order.idOfAuthor)) this.appendErrorLog(9999, `4845461515-${idOfError} 必須是「訂單關係人」`);
+    validateIsAuthorOrUserOfOrder = async (order, session) => {
+        if (!Util.isOrEquals(this.getUid(session), order.idOfUser, order.idOfAuthor)) this.appendErrorLog(9999, `4845461515-${this.getName()} 必須是「訂單關係人」`);
     };
 
     /** { typeOfUser:'買家'|'賣家'|'管理員', allowUpdate: false }*/

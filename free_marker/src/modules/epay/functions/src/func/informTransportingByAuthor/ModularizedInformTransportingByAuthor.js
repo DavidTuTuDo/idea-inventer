@@ -17,15 +17,15 @@ class ModularizedInformTransportingByAuthor extends BaseInformTransportingByAuth
     async handleHttpOnCall(data, session) {
         const { serialOfTransport, idOfPreciseOrder } = data;
         if (_.size(serialOfTransport) < 2) this.appendErrorLog(9999, "物流編號填寫錯誤");
-        await this.validateIdOfDocumentQualify(idOfPreciseOrder, "informTransportingByAuthor");
+        await this.validateIdOfDocumentQualify(idOfPreciseOrder);
         const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        await this.validatePreciseOrderIsExist(detailOfPreciseOrder, idOfPreciseOrder, "informTransportingByAuthor");
+        await this.validatePreciseOrderIsExist(detailOfPreciseOrder, idOfPreciseOrder);
         /** 確認身份為訂單的 idOfAuthor */
-        await this.validateIsAuthorOfOrder(detailOfPreciseOrder, session, "informTransportingByAuthor");
-        await this.validateOrderIsCompletedPayment(detailOfPreciseOrder, "informTransportingByAuthor");
-        await this.validateOrderIsNotSendingYet(detailOfPreciseOrder, "informTransportingByAuthor");
+        await this.validateIsAuthorOfOrder(detailOfPreciseOrder, session);
+        await this.validateOrderIsCompletedPayment(detailOfPreciseOrder);
+        await this.validateOrderIsNotSendingYet(detailOfPreciseOrder);
         await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
-            await this.validateOrderIsCompletedPayment(order, "informTransportingByAuthor");
+            await this.validateOrderIsCompletedPayment(order);
             return {
                 serialOfTransport: serialOfTransport,
                 stateOfTransport: Config.StateOfTransport.Sending,

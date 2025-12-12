@@ -28,9 +28,6 @@ const CONTENT_OF_ECPAY_RETURN_URL = {
 };
 
 class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
         Util.setLocaleOfDate("zh-tw");
@@ -43,18 +40,16 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
 
     async handlePreciseOrderByECPay(contentOfSucceed) {
         Util.validatePayloadObjectValid(contentOfSucceed, ["CheckMacValue", "MerchantTradeNo", "MerchantID", "PaymentType"], "ConfirmedByECPay");
-
-        this.isECPayCheckMacValueValid(contentOfSucceed, Config.ecpay.MercProfile.HashKey, Config.ecpay.MercProfile.HashIV, "ConfirmedByECPay");
-
-        await this.validateIdOfDocumentQualify(contentOfSucceed.MerchantTradeNo, "ConfirmedByECPay");
-        const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(contentOfSucceed.MerchantTradeNo);
-
-        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, contentOfSucceed.MerchantTradeNo, "ConfirmedByECPay");
-        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder, "ConfirmedByECPay");
+        const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(contentOfSucceed?.MerchantTradeNo);
+        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, contentOfSucceed.MerchantTradeNo);
+        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder);
+        const ecpay = await this.ecpayO(itemOfPreciseOrder.idOfAuthor);
+        this.isECPayCheckMacValueValid(contentOfSucceed, ecpay.HashKeyXGetter(), ecpay.HashIVXGetter());
+        await this.validateIdOfDocumentQualify(contentOfSucceed.MerchantTradeNo);
 
         if (_.isEqual(_.toInteger(contentOfSucceed.RtnCode), 1)) {
             await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
-                await this.validateOrderIsUnPaidWaiting(item, "ConfirmedByECPay");
+                await this.validateOrderIsUnPaidWaiting(item);
                 return {
                     stateOfPayment: Config.StateOfPayment.Completed,
                     procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
@@ -85,7 +80,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
             return "1|OK";
         } else {
             await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
-                await this.validateOrderIsUnPaidWaiting(item, "ConfirmedByECPay");
+                await this.validateOrderIsUnPaidWaiting(item);
                 return {
                     stateOfPayment: Config.StateOfPayment.Failure, //"failure",
                     messageOfPayment: `${contentOfSucceed.RtnMsg}`
