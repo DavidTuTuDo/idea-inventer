@@ -44,8 +44,8 @@ class ModularizedForcePaidByAuthor extends BaseForcePaidByAuthor {
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
                 };
             },
-            itemOfPreciseOrder.id,
-            itemOfPreciseOrder.idOfAuthor
+            detailOfPreciseOrder.id,
+            detailOfPreciseOrder.idOfAuthor
         );
 
         await sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session);

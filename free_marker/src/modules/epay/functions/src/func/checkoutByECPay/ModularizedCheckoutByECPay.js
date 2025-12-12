@@ -18,7 +18,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         await this.validateIdOfDocumentQualify(idOfPreciseOrder);
         let itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
         await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder);
-        await this.validateIsUserOfOrder(itemOfPreciseOrder, session);
+        /** await this.validateIsUserOfOrder(itemOfPreciseOrder, session); 這句會擋住 anonymous user */
         await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder);
 
         /** ECPay的訂單編號不能重複：用id建立過訂單無法再次返回相同頁面，必須在產出一筆的preciseOrder，id必須是全新的 */

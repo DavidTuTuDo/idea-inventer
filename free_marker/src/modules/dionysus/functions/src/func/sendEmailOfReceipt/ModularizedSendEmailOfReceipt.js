@@ -49,7 +49,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         anonymous,
         displayImage,
         isBuyer,
-        eros
+        global
     }) {
         const valid = (string) => _.isString(string) && _.size(string) > 0;
         const toCurrency = (n) => Number(n).toLocaleString("zh-TW");
@@ -107,14 +107,14 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
 
         const footer = `
     <div style="margin-top:20px;font-size:12px;color:#555;border-top:1px solid #ccc;padding-top:10px;">
-      ${valid(eros?.company) ? `<div>${eros.company}</div>` : ""}
-      ${valid(eros?.unifiedB) ? `<div>統編：${eros.unifiedB}</div>` : ""}
-      ${valid(eros?.phoneO) ? `<div>電話：${eros.phoneO}</div>` : ""}
+      ${valid(global?.company) ? `<div>${global.company}</div>` : ""}
+      ${valid(global?.unifiedB) ? `<div>統編：${global.unifiedB}</div>` : ""}
+      ${valid(global?.phoneO) ? `<div>電話：${global.phoneO}</div>` : ""}
       <div style="margin-top:6px;">
-        ${valid(eros?.fbO) ? `<a href="${eros.fb}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/facebook-new.png" width="18"></a>` : ""}
-        ${valid(eros?.igO) ? `<a href="${eros.ig}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/instagram-new.png" width="18"></a>` : ""}
-        ${valid(eros?.ytO) ? `<a href="${eros.yt}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/youtube-play.png" width="18"></a>` : ""}
-        ${valid(eros?.lineO) ? `<a href="https://line.me/R/ti/g/${eros.lineO}"><img src="https://img.icons8.com/ios-filled/50/808080/line-me.png" width="18"></a>` : ""}
+        ${valid(global?.fbO) ? `<a href="${global.fb}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/facebook-new.png" width="18"></a>` : ""}
+        ${valid(global?.igO) ? `<a href="${global.ig}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/instagram-new.png" width="18"></a>` : ""}
+        ${valid(global?.ytO) ? `<a href="${global.yt}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/youtube-play.png" width="18"></a>` : ""}
+        ${valid(global?.lineO) ? `<a href="https://line.me/R/ti/g/${global.lineO}"><img src="https://img.icons8.com/ios-filled/50/808080/line-me.png" width="18"></a>` : ""}
       </div>
     </div>`;
 
@@ -165,12 +165,12 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
             if (!order.isTransported) this.appendErrorLog(9999, `652112132132 商品尚未完成物流程序`);
             _.remove(order.items, (item) => item.isTaskJob); //只有實體商品需要寄出，把課程拿掉
             const isBuyer = true;
-            this.sendEmailTo({ isTransportCompleted, nameOfBrand: global.nameOfBrand, isBuyer, order, eros: global });
-        } else [true, false].forEach((isBuyer) => this.sendEmailTo({ nameOfBrand: global.nameOfBrand, isBuyer, order, eros: global }));
+            this.sendEmailTo({ isTransportCompleted, nameOfBrand: global.nameOfBrand, isBuyer, order, global });
+        } else [true, false].forEach((isBuyer) => this.sendEmailTo({ nameOfBrand: global.nameOfBrand, isBuyer, order, global }));
         /** 買家/賣家各寄送一份通知 */
     }
 
-    sendEmailTo({ isTransportCompleted, nameOfBrand, isBuyer, order, eros }) {
+    sendEmailTo({ isTransportCompleted, nameOfBrand, isBuyer, order, global }) {
         const recipient = isBuyer ? order.email : Config.email;
         const subject = isTransportCompleted ? `[${nameOfBrand}]您的商品已寄出，請留意簡訊` : isBuyer ? `[${nameOfBrand}]您的款項已確認` : `[${nameOfBrand}]您有新的成交訂單`;
 
@@ -180,7 +180,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
             isBuyer,
             displayImage: isBuyer,
             isTransportSucceed: order.isTransported,
-            eros
+            global
         };
 
         const latest = Util.merO(order, xxx);

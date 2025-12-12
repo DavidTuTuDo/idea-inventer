@@ -105,7 +105,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
         let itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
         const linepay = await this.linepayO(itemOfPreciseOrder.idOfAuthor);
         await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder);
-        await this.validateIsUserOfOrder(itemOfPreciseOrder, session);
+        /** await this.validateIsUserOfOrder(itemOfPreciseOrder, session); 這句會擋住anonymous user購買 */
         await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder);
         const info = await Api.fetchGlobalPerspective();
         const payloadOfLinePay = this.getPayloadOfLinePayRequest(itemOfPreciseOrder, info.nameOfBrand);

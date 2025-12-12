@@ -23,8 +23,8 @@ class ModularizedUpdateOrderRemarkOfAuthor extends BaseUpdateOrderRemarkOfAuthor
 
         await this.validatePreciseOrderIsExist(detailOfPreciseOrder, data.idOfPreciseOrder);
 
-        /** 必須是買家才能更改備註 */
-        await this.validateIsUserOfOrder(detailOfPreciseOrder, session);
+        /** 必須是賣家才能更改備註 */
+        await this.validateIsAuthorOfOrder(detailOfPreciseOrder, session);
 
         /** update order remark info*/
         await Api.updatePreciseOrderItem({ remark: data.remarkOfPreciseOrder }, detailOfPreciseOrder.id);

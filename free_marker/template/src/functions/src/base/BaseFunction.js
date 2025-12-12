@@ -152,7 +152,7 @@ class BaseFunction extends ClientRemoteApi {
     isECPayCheckMacValueValid(data, key, iv) {
         const computedMacValue = Util.getECPayCheckMacValue(data, key, iv);
         /** 判斷檢查碼 [CheckMacValue] */
-        if (!_.isEqual(computedMacValue, data.CheckMacValue)) this.appendErrorLog(9999, `65451953-${this.getName()} 訂單(${data.MerchantTradeNo})CheckMacValue檢查碼失敗`)
+        if (!_.isEqual(computedMacValue, data.CheckMacValue)) this.appendErrorLog(9999, `65451953-${this.getName()} 訂單(${data.MerchantTradeNo})CheckMacValue檢查碼失敗`);
     }
 
     /** 如果是CVS OR ATM 就不能再改變付款狀態了*/
@@ -184,7 +184,8 @@ class BaseFunction extends ClientRemoteApi {
     };
 
     validateOrderIsNotSendingYet = async (order) => {
-        if (!Util.isOrEquals(order.stateOfTransport, Config.StateOfTransport.Pending)) this.appendErrorLog(9999, `484546123121-${this.getName()} 訂單必須為「待出貨」，請聯繫管理員`);
+        if (!Util.isOrEquals(order.stateOfTransport, Config.StateOfTransport.Pending))
+            this.appendErrorLog(9999, `484546123121-${this.getName()} 訂單必須為「待出貨」，請聯繫管理員`);
     };
 
     /** 確認訂單付款狀態為'未付款 等待中(ATM CVS)' */
