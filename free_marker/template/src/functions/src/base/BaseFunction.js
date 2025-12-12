@@ -138,7 +138,7 @@ class BaseFunction extends ClientRemoteApi {
     }
 
     getUid(session) {
-        return session.auth.uid;
+        return session?.auth?.uid;
     }
 
     getPictureUrl(session) {
