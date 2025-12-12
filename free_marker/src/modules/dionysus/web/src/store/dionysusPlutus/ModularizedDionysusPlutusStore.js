@@ -8,6 +8,7 @@ import { computed } from "mobx";
 import BaseDionysusPlutusStore from "./BaseDionysusPlutusStore";
 import Variant from "../dionysusBoozeVariant";
 import SelectorOfCvs from "../epaySelectorOfCvs";
+import Router from "../../router";
 
 class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
     constructor(props) {
@@ -40,13 +41,18 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
         this.setCitys(...Config.cities);
         this.validateDistrictByCity();
         const itemsOfChecked = this.getItemsOfChecked();
+        console.log(`itemsOfChecked => `, itemsOfChecked);
         const idOfAuthor = itemsOfChecked?.[0]?.idOfAuthor;
 
         if (idOfAuthor) {
             await this.App().getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
             eros = this.App().getDionysusCartieStore().getErosOfPublic();
             Util.appendInfo(`hermes拿到了 eros => `, eros);
-        } else return this.getComponent().showErrorSnackMessage(`發生異常，無法獲得賣家資訊`);
+        } else {
+            this.getComponent().showErrorSnackMessage(`發生異常，即將導引至購物車頁面！`);
+            await Util.syncDelay(2000);
+            Router.gotoCartiePage(this.getComponent());
+        }
 
         this.setBriefs(...itemsOfChecked.map((each) => this.normalizeBriefFromOrderItem(each)));
         this.setProcedureOfTransport(Config.LabelOfTransportMethod(this.getTypeOfTransport()));

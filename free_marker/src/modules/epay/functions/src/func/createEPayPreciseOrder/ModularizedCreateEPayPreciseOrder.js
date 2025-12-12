@@ -264,7 +264,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         if (this.isAnonymousUser(session) && !globalPerspective.enableOfBoughtWithoutLoginIn) return this.appendErrorLog("未登入，無法完成結帳程序");
         if (this.isAnonymousUser(session) && globalPerspective.enableOfBoughtWithoutLoginIn && priceOfTotalOfShould > globalPerspective.amountOfAllowAnonymousBuy)
-            return this.appendErrorLog(9999, `97845645341 未登入購物上限 ${eros.amountOfAllowAnonymousBuy} 元內（不含運費）`);
+            return this.appendErrorLog(9999, `97845645341 未登入購物上限 ${globalPerspective.amountOfAllowAnonymousBuy} 元內（不含運費）`);
         if (priceOfTotalOfShould > globalPerspective.amountOfMaximumBuy)
             return this.appendErrorLog(9999, `97845611232 未登入購物上限 ${globalPerspective.amountOfMaximumBuy} 元內（不含運費）`);
 

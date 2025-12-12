@@ -29,7 +29,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
             itemOfPreciseOrder = result.value;
         }
         /** -------------------------------------------------------------------------------- **/
-        const ecapy = await this.ecpayO(idOfPreciseOrder.idOfAuthor);
+        const ecapy = await this.ecpayO(itemOfPreciseOrder.idOfAuthor);
         const dataOfECPayOrder = this.getPayloadOfECPayAIORequest(itemOfPreciseOrder);
         this.appendLog(`準備去拿ECPay的result`, dataOfECPayOrder);
         let result = ecapy.payment_client.aio_check_out_all(dataOfECPayOrder);

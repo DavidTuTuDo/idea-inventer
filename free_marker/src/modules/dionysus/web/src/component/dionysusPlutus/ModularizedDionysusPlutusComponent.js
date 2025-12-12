@@ -62,7 +62,14 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     }
 
     onDionysusPlutusSubmitChipClicked(param) {
-        this.execute().then((result) => (result.succeed ? UserInfo.deleteCheckedCartieItemBehavior() : null));
+        this.execute()
+            .then((result) => {
+                if (result.succeed) UserInfo.deleteCheckedCartieItemBehavior();
+                result.behavior().then();
+            })
+            .catch((error) => {
+                console.error(error.message);
+            });
     }
 
     execute = async () => {
@@ -72,7 +79,8 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         const selectedOfTransport = this.getStore().getTypeOfTransport();
         const selectedOfTransaction = this.getStore().getTypeOfTransaction();
         const price = this.getStore().getFeeOfPayment();
-        if (selectedOfTransaction < 0 || selectedOfTransport < 0 || price <= 0) return this.showWarningSnackMessage(`流程發生錯誤，請回到購物車流程`);
+        if (selectedOfTransaction < 0 || selectedOfTransport < 0 || price <= 0)
+            return { succeed: false, behavior: async () => this.showWarningSnackMessage(`流程發生錯誤，請回到購物車流程`) };
 
         function isAddressShouldFormed() {
             if (
@@ -89,16 +97,18 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         }
 
         if (Util.or(isAddressShouldFormed(), _.isEmpty(this.getStore().getEmail()), _.isEmpty(this.getStore().getPhone()), _.isEmpty(this.getStore().getName())))
-            return this.showWarningSnackMessage(`資料尚未完整填寫，請再度確認欄位內容`);
-
+            return { succeed: false, behavior: async () => this.showWarningSnackMessage(`資料尚未完整填寫，請再度確認欄位內容`) };
         if (Util.isOrEquals(selectedOfTransport, Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711) && _.size(this.getStore().getCvs()) < 3)
-            return this.showWarningSnackMessage(`需填入收店代碼`);
+            return { succeed: false, behavior: async () => this.showWarningSnackMessage(`需填入收店代碼`) };
+
         const enableOfBoughtWithoutLoginIn = UserInfo.getGlobalPerspectiveAttr("enableOfBoughtWithoutLoginIn");
-        if (UserInfo.isLoginWithSucceed() && !enableOfBoughtWithoutLoginIn) return { succeed: false, reason: this.showErrorSnackMessage("請先登入，才能完成結帳程序") };
-        if (!UserInfo.isLoginWithSucceed() && enableOfBoughtWithoutLoginIn && self.getStore().getFeeOfPayment() > eros.amountOfAllowAnonymousBuy)
-            return { succeed: false, reason: this.showErrorSnackMessage(`未登入購物上限 ${eros.amountOfAllowAnonymousBuy} 元內`) };
+        const amountOfAllowAnonymousBuy = UserInfo.getGlobalPerspectiveAttr("amountOfAllowAnonymousBuy");
+        if (UserInfo.isLoginWithSucceed() && !enableOfBoughtWithoutLoginIn)
+            return { succeed: false, behavior: async () => this.showErrorSnackMessage("請先登入，才能完成結帳程序") };
+        if (!UserInfo.isLoginWithSucceed() && enableOfBoughtWithoutLoginIn && self.getStore().getFeeOfPayment() > amountOfAllowAnonymousBuy)
+            return { succeed: false, behavior: async () => this.showErrorSnackMessage(`未登入購物上限 ${amountOfAllowAnonymousBuy} 元內`) };
         if (UserInfo.isLoginWithSucceed() && self.getStore().getFeeOfPayment() > eros.amountOfMaximumBuy)
-            return { succeed: false, reason: this.showErrorSnackMessage(`購物金額上限 ${eros.amountOfMaximumBuy} 元內`) };
+            return { succeed: false, behavior: async () => this.showErrorSnackMessage(`購物金額上限 ${eros.amountOfMaximumBuy} 元內`) };
 
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
         this.showInfoSnackMessage(`進入付款流程`);
@@ -107,17 +117,38 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         switch (selectedOfTransaction) {
             case Config.TransactionMethod.LinePay:
                 const validateLP = eros.enableOfLinePay && eros.hasLinePay;
-                return validateLP
-                    ? await this.performCheckoutByLinePayBehavior(idOfPreciseOrder)
-                    : Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {});
+                return {
+                    succeed: true,
+                    behavior: validateLP
+                        ? async () => await this.performCheckoutByLinePayBehavior(idOfPreciseOrder)
+                        : async () => {
+                              UserInfo.isLoginWithSucceed() ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {}) : Router.gotoHomePage(this);
+                          }
+                };
             case Config.TransactionMethod.ECPay:
                 const validateEC = eros.enableOfECPay && eros.hasECPay;
-                return validateEC ? await this.performCheckoutByECPayBehavior(idOfPreciseOrder) : Router.gotoEpayFootprintPage(this, "user", "all");
+                return {
+                    succeed: true,
+                    behavior: validateEC
+                        ? async () => await this.performCheckoutByECPayBehavior(idOfPreciseOrder)
+                        : async () => {
+                              UserInfo.isLoginWithSucceed() ? Router.gotoEpayFootprintPage(this, "user", "all") : Router.gotoHomePage(this);
+                          }
+                };
             case Config.TransactionMethod.DirectPay:
                 // if (isMobile) this.gotoUrlWithNewTabDirectly(eros.hrefOfDirectPay);
-                return { succeed: true, reason: Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {}) };
+                return {
+                    succeed: true,
+                    behavior: async () => {
+                        UserInfo.isLoginWithSucceed() ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {}) : Router.gotoHomePage(this);
+                    }
+                };
             default:
-                return { succeed: true, reason: Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {}) };
+                return {
+                    succeed: true,
+                    behavior: async () =>
+                        UserInfo.isLoginWithSucceed() ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {}) : Router.gotoHomePage(this)
+                };
         }
     };
 

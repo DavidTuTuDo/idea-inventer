@@ -122,7 +122,7 @@ const VIEW_IMPORTS =
 class CodegenNode {
 
     /** firebase firestore 設定的伺服器位置 */
-    locationOfFirestore= "asia-east1";
+    locationOfFirestore= "us-central1";
 
     /** firebase functions 設定的伺服器位置 */
     locationOfFunctions= "us-central1";
@@ -7393,6 +7393,9 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`host`, JSON.stringify(this.isProduction() ? sourceObj.host.prod : sourceObj.host.dev));
         baseConfigGenerator.appendField(`watermark`, JSON.stringify(watermarkObj));
         baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
+        baseConfigGenerator.appendField(`locateOfFunctions`, JSON.stringify(sourceObj.locationOfFunctions));
+        baseConfigGenerator.appendField(`locateOfFirestore`, JSON.stringify(sourceObj.locationOfFirestore));
+        baseConfigGenerator.appendField(`locateOfStorage`, JSON.stringify(sourceObj.locationOfStorage));
 
         const enums = this.getAllEnums();
         for (const key in enums) {
@@ -7402,7 +7405,7 @@ class ProjectFileHandler extends PathBase {
             const field = _.upperFirst(key);
             baseConfigGenerator.appendField(`LangOf${field}`, JSON.stringify(lang));
             baseConfigGenerator.appendField(key, JSON.stringify(value));
-            baseConfigGenerator.appendFunction(
+             baseConfigGenerator.appendFunction(
                 { name: `LabelOf${field}`, arrow: true, simple: true }, ['value'], [], [],
                 `this.getLabelByValue(this.${key},this.LangOf${field},value)`);
         }
@@ -7422,6 +7425,7 @@ class ProjectFileHandler extends PathBase {
                 break;
             case 'web':
                 baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
+
                 if (sourceObj.hasCookiePassword())
                     baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
                 const trueOrFalse = sourceObj.navigation && sourceObj.navigation.isScrollingHide

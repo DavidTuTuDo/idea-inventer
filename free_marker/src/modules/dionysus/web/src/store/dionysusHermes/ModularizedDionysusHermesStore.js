@@ -6,6 +6,7 @@ import UserInfo from "../../base/BaseUserInfo";
 import { computed, toJS } from "mobx";
 import BaseDionysusHermesStore from "./BaseDionysusHermesStore";
 import Config from "../../config";
+import Router from "../../router";
 
 class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
     constructor(props) {
@@ -31,8 +32,11 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
         if (idOfAuthor) {
             this.eros = await this.App().getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
             Util.appendInfo(`hermes拿到了 eros => `, this.eros);
-        } else return this.getComponent().showErrorSnackMessage(`發生異常，無法獲得賣家資訊`);
-
+        } else {
+            this.getComponent().showErrorSnackMessage(`發生異常，即將導引至購物車頁面！`);
+            await Util.syncDelay(2000);
+            Router.gotoCartiePage(this.getComponent());
+        }
         for (const transaction of this.getTransactions()) {
             switch (transaction.getTypeOfTransaction()) {
                 case Config.TransactionMethod.LinePay: //LINE支付

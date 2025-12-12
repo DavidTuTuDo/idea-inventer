@@ -103,7 +103,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
         const idOfPreciseOrder = data.idOfPreciseOrder;
         await this.validateIdOfDocumentQualify(idOfPreciseOrder);
         let itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        const linepay = await this.linepayO(idOfPreciseOrder.idOfAuthor);
+        const linepay = await this.linepayO(itemOfPreciseOrder.idOfAuthor);
         await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder);
         await this.validateIsUserOfOrder(itemOfPreciseOrder, session);
         await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder);
