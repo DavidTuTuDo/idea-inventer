@@ -91,9 +91,13 @@ class spider_igllm extends Spider {
         await Util.syncDelay(500);
         const nameOfUser = Util.getTailStringSplitBy(href, '/');
         let bunchOfCache;
-        if(useCache) bunchOfCache = JSON.parse(Util.getFileContextInRaw(`./temp/${nameOfUser}/briefs.json`));
+
+        try {
+            if(useCache) bunchOfCache = JSON.parse(Util.getFileContextInRaw(`./temp/${nameOfUser}/briefs.json`));
+        } catch (error) {
+            console.log(`IG Spider 的 useCache出錯：`,error.message);
+        }
         const judgement = _.size(bunchOfCache) > 1 && useCache
-        if(judgement) console.log(`!!!`);
 
         const briefs = judgement ? bunchOfCache : await this.fetchBriefsOfAccount(href);
         if (!judgement) await Util.persistJsonFilePrettier(`./temp/${nameOfUser}/briefs.json`, briefs);
@@ -187,7 +191,7 @@ export { spider_igllm as spider_igllm }
 const ENABLE_OF_OPEN_BROWSER = false;
 const MAXIMUM_PAGES_OF_FETCHER = 5;
 const USE_BRIEF_CACHE = true; /** 整個Accounts下滑完的所有資料們 */
-const SPIDER_USER = `https://www.instagram.com/beccayh`;
+const SPIDER_USER = `https://www.instagram.com/zamy_ding`;
 if (configerer.DEBUG_MODE) {
     (async () => {
             const handler = new spider_igllm(puppeteer, { visible: ENABLE_OF_OPEN_BROWSER, host: 'https://www.instagram.com/' });
