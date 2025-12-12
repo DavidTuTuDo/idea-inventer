@@ -62,7 +62,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     }
 
     onDionysusPlutusSubmitChipClicked(param) {
-        this.execute().then(() => UserInfo.deleteCheckedCartieItemBehavior());
+        this.execute().then((result) => (result.succeed ? UserInfo.deleteCheckedCartieItemBehavior() : null));
     }
 
     execute = async () => {
@@ -93,15 +93,14 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
         if (Util.isOrEquals(selectedOfTransport, Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711) && _.size(this.getStore().getCvs()) < 3)
             return this.showWarningSnackMessage(`需填入收店代碼`);
-
-        if (UserInfo.isLoginWithSucceed() && !eros.enableOfBoughtWithoutLoginIn) return this.showErrorSnackMessage("請先登入，才能完成結帳程序");
-        if (!UserInfo.isLoginWithSucceed() && eros.enableOfBoughtWithoutLoginIn && self.getStore().getFeeOfPayment() > eros.amountOfAllowAnonymousBuy)
-            return this.showErrorSnackMessage(`未登入購物上限 ${eros.amountOfAllowAnonymousBuy} 元內`);
+        const enableOfBoughtWithoutLoginIn = UserInfo.getGlobalPerspectiveAttr("enableOfBoughtWithoutLoginIn");
+        if (UserInfo.isLoginWithSucceed() && !enableOfBoughtWithoutLoginIn) return { succeed: false, reason: this.showErrorSnackMessage("請先登入，才能完成結帳程序") };
+        if (!UserInfo.isLoginWithSucceed() && enableOfBoughtWithoutLoginIn && self.getStore().getFeeOfPayment() > eros.amountOfAllowAnonymousBuy)
+            return { succeed: false, reason: this.showErrorSnackMessage(`未登入購物上限 ${eros.amountOfAllowAnonymousBuy} 元內`) };
         if (UserInfo.isLoginWithSucceed() && self.getStore().getFeeOfPayment() > eros.amountOfMaximumBuy)
-            return this.showErrorSnackMessage(`購物金額上限 ${eros.amountOfMaximumBuy} 元內`);
+            return { succeed: false, reason: this.showErrorSnackMessage(`購物金額上限 ${eros.amountOfMaximumBuy} 元內`) };
 
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
-        Util.appendInfo(`idOfPreciseOrder ==> `, idOfPreciseOrder);
         this.showInfoSnackMessage(`進入付款流程`);
         const enableDialogOfDirectPay = eros.enableOfDirectPay && eros.hasDirectPay;
         const payload = { payNow: { href: eros.hrefOfDirectPay, price: self.getStore().getFeeOfPayment(), title: eros.nameOfDirectPay } };
@@ -116,9 +115,9 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                 return validateEC ? await this.performCheckoutByECPayBehavior(idOfPreciseOrder) : Router.gotoEpayFootprintPage(this, "user", "all");
             case Config.TransactionMethod.DirectPay:
                 // if (isMobile) this.gotoUrlWithNewTabDirectly(eros.hrefOfDirectPay);
-                return Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {});
+                return { succeed: true, reason: Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {}) };
             default:
-                return Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {});
+                return { succeed: true, reason: Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {}) };
         }
     };
 

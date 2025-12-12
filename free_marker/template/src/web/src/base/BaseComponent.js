@@ -832,19 +832,19 @@ class BaseComponent extends MuiComponent {
     }
 
     showWarningSnackMessage(message) {
-        this.setSnackViewVisibility(true, message, { type: `warning` });
+        return this.setSnackViewVisibility(true, message, { type: `warning` });
     }
 
     showInfoSnackMessage(message) {
-        this.setSnackViewVisibility(true, message, { type: `info` });
+        return this.setSnackViewVisibility(true, message, { type: `info` });
     }
 
     showErrorSnackMessage(message) {
-        this.setSnackViewVisibility(true, message, { type: `error` });
+        return this.setSnackViewVisibility(true, message, { type: `error` });
     }
 
     showSuccessSnackMessage(message) {
-        this.setSnackViewVisibility(true, message, { type: `success` });
+        return this.setSnackViewVisibility(true, message, { type: `success` });
     }
 
     /**
@@ -873,6 +873,7 @@ class BaseComponent extends MuiComponent {
             /** 因為snackMessage set之後會響應mobx的行為,syncDelay會把setVisible放在下一個stack */
             self.getStore().setSnackVisibility(visible);
         }
+        return true;
     }
 
     /** ↑↑↑===== SnackView 用到的field,遲早要搬運成獨立的 class =====↑↑↑ */
