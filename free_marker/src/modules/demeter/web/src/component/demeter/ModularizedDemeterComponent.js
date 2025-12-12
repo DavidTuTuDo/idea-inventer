@@ -47,7 +47,8 @@ class ModularizedDemeterComponent extends BaseDemeterComponent {
             this,
             BaseUserInfo.getUid(),
             { type: "where", params: ["startYYYYMMDDHHmmss", ">=", startOfPrecisely] },
-            { type: "where", params: ["startYYYYMMDDHHmmss", "<=", endOfPrecisely] }
+            { type: "where", params: ["startYYYYMMDDHHmmss", "<=", endOfPrecisely] },
+            { type: "orderBy", params: ["startYYYYMMDDHHmmss", "desc"] }
         );
 
         // 存入 Store 並標記顏色

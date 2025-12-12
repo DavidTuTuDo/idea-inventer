@@ -73,7 +73,8 @@ class ModularizedHadesComponent extends BaseHadesComponent {
             this,
             UserInfoRef.getUid(),
             { type: "where", params: ["timeOfPayment", ">=", ts(startOfPrecisely)] },
-            { type: "where", params: ["timeOfPayment", "<=", ts(endOfPrecisely)] }
+            { type: "where", params: ["timeOfPayment", "<=", ts(endOfPrecisely)] },
+            { type: "orderBy", params: ["timeOfPayment", "desc"] }
         );
 
         // 更新 MobX Store 狀態
