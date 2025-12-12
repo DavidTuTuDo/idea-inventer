@@ -323,7 +323,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             timeOfExpired: order.timeOfExpired,
             timeOfPayment: order.timeOfPayment,
             timeOfCancel: order.timeOfCancel,
-            timeOfShipped: order.timeOfCancel,
+            timeOfShipped: order.timeOfShipped,
             remarkOfAuthor: order.remarkOfAuthor,
             photoOfAuthors: order.photoOfAuthors,
             isShipped: order.isShipped,
@@ -341,7 +341,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             code: getStringOfCode(),
             reason: `${order.messageOfPayment}`,
             idOfUser: order.idOfUser,
-            idOfAuthor: order.idOfUser,
+            idOfAuthor: order.idOfAuthor,
             typeOfTransport: order.typeOfTransport,
             serialOfTransport: order.serialOfTransport
         };
@@ -367,7 +367,6 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         const Deliver = Config.StateOfTransport;
         const state = order.stateOfPayment;
         const transport = order.stateOfTransport;
-
         return this.isRoleOfAuthor(order) && state === Payment.Completed && transport === Deliver.Pending;
     };
 
