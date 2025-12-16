@@ -121,6 +121,12 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /** collection寫入firestore indexes的依據 */
+    idxes;
+
+    /** 沒有要成為indexes到欄位，就放到override */
+    ignoreI = false;
+
     /** firebase firestore 設定的伺服器位置 */
     locationOfFirestore= "us-central1";
 
@@ -1584,7 +1590,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['enums','plural', 'example', 'propsOfIcon', 'propsOfBadge', 'COLLECTIONS', 'helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['idxes','enums','plural', 'example', 'propsOfIcon', 'propsOfBadge', 'COLLECTIONS', 'helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle', 'useCartie',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n', 'setsOfComponentProp']
     }
@@ -2927,7 +2933,7 @@ class CodegenNode {
 
             const stringOfDefault = _.startsWith(defaultValue, '###') ? Util.getStringOfDropHeadSign(defaultValue, `#`) : JSON.stringify(this.getDefaultValue());
             if (isAdmin) {
-                console.error(`WEB不能走到這哦！[i18n] defaultValue: ${stringOfDefault}`);
+                // console.error(`WEB不能走到這哦！[i18n] defaultValue: ${stringOfDefault}`);
                 return stringOfDefault;
             }
 
@@ -7765,30 +7771,35 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
     async generateFireIndexRules(deploy = true) {
         const indexes = [];
+        const fieldOverrides = [];
         const task = async (node) => {
-            function getFieldObj(node) {
-                const fieldPath = node.getFieldName();
-                if (node.isArray()) {
-                    return {fieldPath, arrayConfig: node.getIndexRule()}
-                } else {
-                    return {fieldPath, order: node.getIndexRule()}
-                }
-            }
-
-            const indexNodes = node.getPreciseAttributeChildren().filter((each) => each.isIndex())
-            if (!_.isEmpty(indexNodes)) {
-                indexes.push({
-                    collectionGroup: node.getFieldName(),
+            if(!node.hasPath()) return;
+            const attrsAsIndexUsage = {}
+            if (_.size(node.idxes) > 0) {
+                const all = node.idxes.map(each => ({
+                    collectionGroup: Util.getFileNameExtensionFromPath(node.getPath()),
                     queryScope: "COLLECTION",
-                    fields: indexNodes.map((each) => getFieldObj(each))
-                })
+                    fields: each.map(field => {
+                        attrsAsIndexUsage[field.name] = true;
+                        const obj = {}
+                        obj.fieldPath = field.name;
+                        obj[`${field.type}`] = field.rule;
+                        return obj;
+                    })
+                }))
+                indexes.push(...all);
             }
+            const ignores = node.getPreciseAttributeChildren().filter((each) => each.ignoreI);
+            fieldOverrides.push(...ignores.map(ignore => ({
+                collectionGroup: Util.getFileNameExtensionFromPath(node.getPath()),
+                fieldPath: ignore.getFieldName(),
+                indexes: []
+                /** 不指定collection的做法 -> indexes: [_.isEqual(ignore.getType(), 'array') ? { arrayConfig: 'NONE' } : { order: 'NONE' }] */
+            })))
         }
         await this.recursiveDoingOfNodeEachStruct(((node) => node.hasPath() && node.isArray()), task)
-        await this.buildDeployDocument('firestore.indexes.json', JSON.stringify({indexes}), 'firestore:indexes', deploy)
+        await this.buildDeployDocument('firestore.indexes.json', JSON.stringify({indexes,fieldOverrides}), 'firestore:indexes', deploy,true)
     }
-
-
 
     getFirebaseRuleOfMatchRoute(node) {
         const path = node.getPath();
@@ -7864,10 +7875,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         await apiGenerator.persist();
         await this.generateStorageRules(this.deployRemoteRules);
         await this.generateFireStoreRules(this.deployRemoteRules);
-        /**
-         * index rule 有點麻煩, 還要照query順序 例如where(subject) where(year) orderBy(qid) 欄位的順序就必須 qeusetions ==> subject,year,qid
-         * await this.generateFireIndexRules();
-         */
+        /** 2021.12.14 indexes 有點麻煩, 還要照query順序 例如where(subject) where(year) orderBy(qid) 欄位的順序就必須 qeusetions ==> subject,year,qid */
+        await this.generateFireIndexRules(this.deployRemoteRules);
     }
 
     /** 有些專有名詞(SimpleGrid)，會重新setView(latest)，而latest對應該產生的行為會實作在 enrichNodesOfBehavior */

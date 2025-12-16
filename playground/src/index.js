@@ -26,7 +26,8 @@ class BBB extends AAA {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-
+        const sample = [[[{a:1},[{b:1}]]],[],{c:1}];
+        console.log(_.flattenDeep(sample));
         // enum StateOfPayment {
         //     pending = 2,
         //     failure = 4

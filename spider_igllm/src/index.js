@@ -131,6 +131,8 @@ class spider_igllm extends Spider {
             })
             storiesOfAccount.push(...result);
             console.log(`這一頁拿回：${_.size(result)} 個brief`)
+            console.log(`這一頁拿回：${_.size(result)} 個brief`)
+
             console.log(`現在storiesOfAccount：${_.size(storiesOfAccount)} 個`)
             return result;
         }
@@ -191,7 +193,7 @@ export { spider_igllm as spider_igllm }
 const ENABLE_OF_OPEN_BROWSER = false;
 const MAXIMUM_PAGES_OF_FETCHER = 5;
 const USE_BRIEF_CACHE = true; /** 整個Accounts下滑完的所有資料們 */
-const SPIDER_USER = `https://www.instagram.com/zamy_ding`;
+const SPIDER_USER = `https://www.instagram.com/lilbieber`;
 if (configerer.DEBUG_MODE) {
     (async () => {
             const handler = new spider_igllm(puppeteer, { visible: ENABLE_OF_OPEN_BROWSER, host: 'https://www.instagram.com/' });
