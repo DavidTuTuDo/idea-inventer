@@ -204,7 +204,9 @@ class AlertDialog extends MuiComponent {
         }
         return (
             <DialogContent>
-                <DialogContentText whiteSpace={"pre-line"}>{content}</DialogContentText>
+                <DialogContentText className={"BaseAlertDialogContent"} whiteSpace={"pre-line"}>
+                    {content}
+                </DialogContentText>
                 {this.renderTextField()}
             </DialogContent>
         );

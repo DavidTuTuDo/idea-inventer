@@ -6,6 +6,7 @@ import Router from "../../router";
 import BaseAccountComponent from "./BaseAccountComponent";
 import UserInfoRef from "../../base/BaseUserInfo";
 import i18n from "../../i18n";
+import Config from "../../config";
 import AccountUser from "../../store/accountUser";
 
 class ModularizedAccountComponent extends BaseAccountComponent {
@@ -118,6 +119,15 @@ class ModularizedAccountComponent extends BaseAccountComponent {
         console.log(`我是被需要才被呼叫到的QQQQ`);
         return { href: "https://tw.yahoo.com/?p=us", title: "測試Title", content: "測試content" };
     }
+
+    getWrapInjectStyleOfAccountAreaOfAppendAuthorDiv(account) {
+        return Util.getVisibleOrNone(this.isEcommerceEnabled())
+    }
+
+    isEcommerceEnabled() {
+        return !Util.isUndefinedNullEmpty(Config.EPayType) && !_.isEqual(Config.EPayType, {});
+    }
+
 }
 
 export default ModularizedAccountComponent;

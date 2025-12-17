@@ -285,6 +285,28 @@ class CommonStyle {
 
     /** => following for infoOfCopyRight  component  */
 
+    InfoOfCopyRightColUnifiedBLabelOfUnifiedBTypography = {};
+
+    InfoOfCopyRightColUnifiedBDivWrap = {};
+
+    InfoOfCopyRightColUnifiedBTypography = {};
+
+    InfoOfCopyRightColPhoneOLabelOfPhoneOTypography = {};
+
+    InfoOfCopyRightColPhoneODivWrap = {};
+
+    InfoOfCopyRightColPhoneOTypography = {};
+
+    InfoOfCopyRightColAddressOLabelOfAddressOTypography = {};
+
+    InfoOfCopyRightColAddressODivWrap = {};
+
+    InfoOfCopyRightColAddressOTypography = {};
+
+    InfoOfCopyRightColCompanyOTypography = {};
+
+    InfoOfCopyRightColDiv = {};
+
     InfoOfCopyRightGroupOfSocialMediaLineOImgOfLineOImg = {};
 
     InfoOfCopyRightGroupOfSocialMediaLineOIconButton = {};

@@ -24,7 +24,8 @@ class PortfolioStore extends BasePortfolioStore {
                 return await super.fetch(this.getComponent());
             case "search":
                 const keywords =
-                    this.App().getNavigatorStore()
+                    this.App()
+                        .getNavigatorStore()
                         .getKeywords()
                         .map((each) => each.data()) ?? [];
                 const fuse = new Fuse(keywords, { includeScore: true, keys: ["label", "value"] });

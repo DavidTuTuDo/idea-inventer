@@ -297,11 +297,23 @@
     /** 讓dialog不會產生滑動 最底層 */
     margin: auto;
     max-width: 100vw; /** 讓dialog不會產生滑動 */
+    box-sizing: border-box;
 }
 
 .BaseAlertDialogContent {
     max-height: 90vh;
     margin: auto;
+    min-width: 60vw;
+    box-sizing: border-box;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        min-width: 360px;
+    }
 }
 
 .BaseAlertDialogCustomView:extend(.CenterInParentColumn) {
@@ -309,6 +321,7 @@
     width: 100%;
     height: auto;
     margin: auto;
+    box-sizing: border-box;
 }
 
 .BaseAlertDialogDismissView:extend(.CenterInParentColumn) {
@@ -317,6 +330,7 @@
     width: 100%;
     height: 100%;
     bottom: 0;
+    box-sizing: border-box;
 }
 
 .BaseAlertDialogDismissChip {

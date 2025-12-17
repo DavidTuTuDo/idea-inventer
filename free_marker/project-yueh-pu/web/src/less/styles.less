@@ -3415,6 +3415,8 @@
     }
 }
 .InfoOfCopyRightUpperGroupRightAreaDiv:extend(.CenterInParentRow) {
+    flex-wrap: wrap;
+    min-height: 20px;
     @media @mobile {
         /** empty style */
     }
@@ -3546,7 +3548,8 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightGroupOfSocialMediaDiv {
+.InfoOfCopyRightGroupOfSocialMediaDiv:extend(.CenterInParentRow) {
+    gap: 3px;
     margin-right: 5px;
     @media @mobile {
         /** empty style */
@@ -3620,6 +3623,133 @@
     }
 }
 .InfoOfCopyRightGroupOfSocialMediaLineOImgOfLineOImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightColDiv:extend(.CenterInParentColumn) {
+    width: 100%;
+    align-items: flex-start;
+    padding-left: 8px;
+    margin-top: 5px;
+    margin-bottom: 12px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightColCompanyOTypography:extend(.BeautyTitle) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightColAddressOTypography:extend(.BeautyContent) {
+    font-size: 0.6rem;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 0.8rem;
+    }
+}
+.InfoOfCopyRightColAddressODivWrap:extend(.CenterInParentRow) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightColAddressOLabelOfAddressOTypography:extend(.InfoOfCopyRightColAddressOTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightColPhoneOTypography:extend(.InfoOfCopyRightColAddressOTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightColPhoneODivWrap:extend(.CenterInParentRow) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightColPhoneOLabelOfPhoneOTypography:extend(.InfoOfCopyRightColAddressOTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightColUnifiedBTypography:extend(.InfoOfCopyRightColAddressOTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightColUnifiedBDivWrap:extend(.CenterInParentRow) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightColUnifiedBLabelOfUnifiedBTypography:extend(.InfoOfCopyRightColAddressOTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -4079,10 +4209,10 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactLowerAreaDetailsTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
+.InfoOfCopyRightContactLowerAreaDetailsTypography {
     margin-top: 20px;
     @media @mobile {
-        /** empty style */
+        font-size: 0.8rem;
     }
     @media @tablet {
         /** empty style */
