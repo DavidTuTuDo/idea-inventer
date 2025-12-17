@@ -15,6 +15,7 @@ import MuiComponent from "./MUIComponent";
 import BaseComponent from "./BaseComponent";
 import Chip from "@mui/material/Chip";
 import { inject, observer } from "mobx-react";
+import { isDesktop } from "react-device-detect";
 
 class DialogStore {
     @observable
@@ -57,6 +58,8 @@ class AlertDialog extends MuiComponent {
         this.strict = props.strict;
         this.useCustomCancel = props.useCustomCancel ?? false;
         this.component = props.component;
+        this.useTextInput = props.textInput && props.textInput.enable;
+        this.textInput = props.textInput;
     }
 
     /** object 是可以帶到customView裡面的變數 */
@@ -88,6 +91,11 @@ class AlertDialog extends MuiComponent {
         await submitAsyncTask();
     };
 
+    /** 如果base component已經是dialog(account -> append reader)，而當前的view又使用遇到text input(鍵盤會跳出來)的view，iphone會resize，導致整個view被unmount */
+    mightCauseResizeUnmount = () => {
+        return this.component.isDialogComponent() && this.useTextInput && !isDesktop;
+    }
+
     getStore() {
         return this.dialog;
     }
@@ -101,10 +109,21 @@ class AlertDialog extends MuiComponent {
                 scroll={"paper"}
                 fullWidth={!!self.fullWidth}
                 fullScreen={self.hasCustomView() ? true : false}
-                maxWidth={false}
+                maxWidth={true}
                 onClick={(event, reason) => {
                     event.stopPropagation();
                 }}
+                sx={this.mightCauseResizeUnmount() ? {
+                    '& .MuiDialog-container': {
+                        display: 'block',      // 禁用 flex，防止動態置中計算
+                        textAlign: 'center',   // 讓內部的 Paper 水平置中
+                        height: '100%',
+                        overflowY: 'auto'
+                    }
+                }:{}}
+                disablePortal={this.mightCauseResizeUnmount()}
+                disableScrollLock={this.mightCauseResizeUnmount()}
+                disableEnforceFocus={this.mightCauseResizeUnmount()}
                 open={self.getStore().getVisibility()}
                 onClose={self.close}>
                 {this.renderTitle()}
@@ -116,18 +135,29 @@ class AlertDialog extends MuiComponent {
         );
     }
 
-    injectPaperProps() {
+    injectPaperProps = () => {
         if (this.hasCustomView()) {
             return {
                 PaperProps: {
                     style: {
-                        backgroundColor: "transparent",
-                        boxShadow: "none",
-                        margin: "auto",
-                        position: "relative"
+                        backgroundColor: "transparent", boxShadow: "none", margin: "auto", position: "relative"
                     }
                 }
             };
+        } else if (this.mightCauseResizeUnmount()) {
+            return {
+                PaperProps: {
+                    style: {
+                        display: 'inline-block', // 搭配 textAlign: center 達成水平置中
+                        boxShadow: "none",
+                        verticalAlign: 'middle', // 垂直基準線
+                        margin: '70px auto',    // 與頂部保持距離，水平自動
+                        position: 'relative',   // 脫離 fixed 置中邏輯
+                        transform: 'none',      // 禁用 MUI 的 transform 位移
+                        left: '0', right: '0'
+                    }
+                }
+            }
         }
     }
 
@@ -140,22 +170,20 @@ class AlertDialog extends MuiComponent {
         return null;
     }
 
-    renderTextField() {
-        const textInput = this.props.textInput;
-
-        if (textInput && textInput.enable) {
+    renderTextField = () => {
+        if (this.useTextInput) {
             return (
                 <TextField
-                    autoFocus
+                    autoFocus={true}
                     required
                     margin="dense"
-                    value={textInput.value}
-                    label={textInput.label}
-                    type={textInput.type}
+                    value={this.textInput.value}
+                    label={this.textInput.label}
+                    type={this.textInput.type}
                     fullWidth
                     variant="standard"
                     onChange={(event) => {
-                        textInput.onTextFieldChange(event);
+                        this.textInput.onTextFieldChange(event);
                     }}
                 />
             );
