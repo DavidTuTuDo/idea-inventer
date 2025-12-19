@@ -59,7 +59,10 @@ service cloud.firestore {
         }
 
          function isMyDocument() {
-            return resource.data.idOfUser == request.auth.uid;
+            let data = resource.data;
+            let isAnonymous = data.get('anonymous', false) == true;
+            let isOwner = request.auth != null && (data.idOfUser == request.auth.uid || data.idOfAuthor == request.auth.uid);
+            return isAnonymous || isOwner;
         }
 
         /** --- documents--- **/

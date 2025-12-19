@@ -5,8 +5,6 @@ import libpath from "path";
 class AppStyle {
     /** -------------------- fields -------------------- **/
 
-    /** following for homeless */
-
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -744,6 +742,18 @@ class AppStyle {
     /** => following for hades  component  */
 
     HadesDiv = {};
+
+    /** => following for anonymousXDeal  component  */
+
+    EpayAnonymousXDealFuncCopyLinkChip = {};
+
+    EpayAnonymousXDealFuncToMainChip = {};
+
+    EpayAnonymousXDealFuncDiv = {};
+
+    EpayAnonymousXDealDivWrap = {};
+
+    EpayAnonymousXDealDiv = {};
 
     /** => following for epayFootprint  component  */
 

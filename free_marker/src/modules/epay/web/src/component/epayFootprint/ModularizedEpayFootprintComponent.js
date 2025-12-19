@@ -16,11 +16,11 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     }
 
     isValidOfParamOfTypeOfTab(string) {
-        return Util.containsBy(["all", "completed", "pending", "failure", "status", "unpaid", "unshipped", "succeed", "cancelled"], string);
+        return Util.containsBy(["anonymousX", "all", "completed", "pending", "failure", "status", "unpaid", "unshipped", "succeed", "cancelled"], string);
     }
 
     isValidOfParamOfAuthor(author) {
-        return Util.containsBy(["author", "user"], author);
+        return Util.containsBy(["author", "user", "userX"], author);
     }
 
     onEpayFootprintTabTabClicked(param) {
@@ -28,13 +28,18 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         if (!_.isEqual(tab.getType(), this.paramOfTypeOfTab)) Router.gotoEpayFootprintPage(this, this.paramOfAuthor, tab.getType());
     }
 
+    /** 匿名購物者，使用同樣的UI，所以來這蹭 */
+    isAnonymousXUsage = () => {
+        return _.isEqual(this.paramOfTypeOfTab, "anonymousX");
+    };
+
     componentDidMount() {
         super.componentDidMount();
         this.getStore().setCurrentTabByType(this.paramOfTypeOfTab).then();
     }
 
     getInjectStyleOfEpayFootprintOrderOptionOfPendingIconButton(order) {
-        return Util.getVisibleOrNone(this.getStore().isStateOfPending(order), true);
+        return Util.getVisibleOrNone(!this.isAnonymousXUsage() && this.getStore().isStateOfPending(order), true);
     }
 
     getInjectStyleOfEpayFootprintOrderOptionOfTransportIconButton(order) {
@@ -122,8 +127,12 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     /** 買家更新備註 */
     onEpayFootprintOrderOptionOfPendingIconButtonUpdateRemarkClicked(param) {
+        const self = this;
         const order = param.object;
-        return async () => await this.remoteUpdateOrderRemarkBehavior(order.raw.id, order().getRemark());
+        return async () => {
+            if (self.isAnonymousXUsage()) this.showInfoSnackMessage(`未登入購物無法修改備註內容！`);
+            await this.remoteUpdateOrderRemarkBehavior(order.raw.id, order().getRemark());
+        };
     }
 
     remoteUpdateOrderRemarkBehavior = async (idOfPreciseOrder, remarkOfPreciseOrder) => {
@@ -256,6 +265,10 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
             caution: `(完成支付後，截圖給小編)`,
             color: `#06a748`
         };
+    }
+
+    getListInjectStyleOfEpayFootprintTabTab(epayFootprint) {
+        return Util.getVisibleOrNone(!this.isAnonymousXUsage(), false);
     }
 }
 

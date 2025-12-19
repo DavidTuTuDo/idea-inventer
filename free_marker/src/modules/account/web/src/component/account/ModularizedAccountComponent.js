@@ -121,13 +121,12 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     }
 
     getWrapInjectStyleOfAccountAreaOfAppendAuthorDiv(account) {
-        return Util.getVisibleOrNone(this.isEcommerceEnabled())
+        return Util.getVisibleOrNone(this.isEcommerceEnabled());
     }
 
     isEcommerceEnabled() {
         return !Util.isUndefinedNullEmpty(Config.EPayType) && !_.isEqual(Config.EPayType, {});
     }
-
 }
 
 export default ModularizedAccountComponent;

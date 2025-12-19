@@ -10976,7 +10976,7 @@
 .EpayFootprintOrderDivList:extend(.CenterInParentColumn) {
     gap: 10px;
     width: 100%;
-    min-height: 65vh;
+    min-height: 50vh;
     justify-content: flex-start;
     @media @mobile {
         /** empty style */
@@ -12006,6 +12006,71 @@
         /** empty style */
     }
 }
+/** following for anonymousXDeal  component used  */
+
+.EpayAnonymousXDealDiv:extend(.CenterInParentColumn) {
+    margin-top: 50px;
+    width: 100%;
+    margin-bottom: 20px;
+    gap: 30px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayAnonymousXDealDivWrap {
+    margin: auto;
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        min-height: 600px;
+        max-width: 880px;
+    }
+}
+.EpayAnonymousXDealFuncDiv:extend(.CenterInParentRow) {
+    gap: 20px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayAnonymousXDealFuncToMainChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayAnonymousXDealFuncCopyLinkChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
 /** following for hades  component used  */
 
 .HadesDiv {
@@ -12085,6 +12150,8 @@
     }
 }
 .InfoOfCopyRightUpperGroupRightAreaDiv:extend(.CenterInParentRow) {
+    flex-wrap: wrap;
+    min-height: 20px;
     @media @mobile {
         /** empty style */
     }
@@ -12216,7 +12283,8 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightGroupOfSocialMediaDiv {
+.InfoOfCopyRightGroupOfSocialMediaDiv:extend(.CenterInParentRow) {
+    gap: 3px;
     margin-right: 5px;
     @media @mobile {
         /** empty style */
@@ -12304,6 +12372,8 @@
     width: 100%;
     align-items: flex-start;
     padding-left: 8px;
+    margin-top: 5px;
+    margin-bottom: 12px;
     @media @mobile {
         /** empty style */
     }

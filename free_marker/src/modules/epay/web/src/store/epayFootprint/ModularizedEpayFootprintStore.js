@@ -48,7 +48,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
     /** 買家視角 */
     isRoleOfUser = (order) => {
-        return _.isEqual(UserInfoRef.getUid(), order.idOfUser) && _.isEqual(this.getRoleOfPerspective(), "user");
+        return _.isEqual(order.anonymous, true) || (_.isEqual(UserInfoRef.getUid(), order.idOfUser) && _.isEqual(this.getRoleOfPerspective(), "user"));
     };
 
     async onInitialFetchCompleted(collection) {
@@ -102,6 +102,9 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             case "succeed":
             case "cancelled":
                 return await this.fetchAndPushOrders(view, this.conditionsOfSellerDefault(state));
+            case "anonymousX":
+                console.log(`被anonymousXDeal當作ref，忽略這次fetch()`);
+                break;
             default:
                 throw new Error(`fetch() state => ${state}`);
         }
@@ -114,11 +117,15 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         } else {
             ordersOfRemote.push(...(await this.api.fetchPreciseOrders(this.getComponent(), ...conditions)));
         }
-        this.pushOrders(...ordersOfRemote.map((order) => this.normalizeOrder(order)));
+        this.pushOrders(...ordersOfRemote);
         if (_.size(ordersOfRemote) === 0) {
             this.setHasNextPageBehavior(false);
         }
     };
+
+    ruleOfPreviouslySort(orders) {
+        return orders.map((order) => this.normalizeOrder(order));
+    }
 
     conditionsOfSellerDefault(type) {
         const conditionOfDefault = { type: "where", params: ["idOfAuthor", "==", UserInfoRef.getUid()] };
@@ -316,6 +323,8 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
         return {
             raw: order,
+            remarkDisabled: order.anonymous,
+            anonymous: order.anonymous,
             processOfPayment: getStringOfPaymentProcess(),
             stateOfPayment: order.stateOfPayment,
             stateOfTransport: order.stateOfTransport,

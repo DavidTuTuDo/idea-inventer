@@ -185,7 +185,7 @@ class BaseComponent extends MuiComponent {
      * 把component放在alertView裏面使用
      * 放在alert view 裏面使用 */
     isDialogComponent() {
-        return this.props.dialog !== undefined;
+        return this.propsOfMobX.dialog !== undefined;
     }
 
     /**

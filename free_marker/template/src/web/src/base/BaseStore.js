@@ -300,9 +300,9 @@ class BaseStore extends ClientRemoteApi {
 
     @action
     setErrorMsg(message) {
+        Util.appendError(`${this.getComponent().getComponentName()} setErrorMsg被呼叫 => ${message}，這會導致fetch()失效`);
         this.state = `error`;
         this.errorMsg = message;
-        // Error 狀態也要清除計時器 (已在 setState 中處理，但這裡因為直接改 this.state，建議也呼叫一下)
         this._clearLoadingTimer();
     }
 
