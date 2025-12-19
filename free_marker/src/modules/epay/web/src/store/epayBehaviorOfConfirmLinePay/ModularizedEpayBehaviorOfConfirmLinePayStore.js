@@ -16,21 +16,22 @@ class ModularizedEpayBehaviorOfConfirmLinePayStore extends BaseEpayBehaviorOfCon
 
     async onInitialFetchCompleted(collection) {
         const objectOfLinePayInfo = queryString.parse(this.getComponent().props.location.search); //console.log(params) { transactionId:2021062500677569710, orderId:Order2019101500001 };
+        const idOfPreciseOrder = _.cloneDeep(objectOfLinePayInfo.orderId);
         try {
             await Functions.httpOnCallConfirmedByLinePay(this.getComponent(), {
-                idOfPreciseOrder: objectOfLinePayInfo.orderId,
+                idOfPreciseOrder,
                 idOfTransaction: objectOfLinePayInfo.transactionId
             });
         } catch (error) {
             this.getComponent().showErrorSnackMessage(error.message);
         } finally {
-            this.routeToPage(objectOfLinePayInfo.orderId);
+            this.routeToPage(idOfPreciseOrder);
         }
     }
 
     routeToPage = (id) => {
         if (UserInfo.isLoginWithSucceed()) Router.gotoEpayFootprintPage(this.getComponent(), "user", "all");
-        else Router.gotoAnonymousXDealPage(this, id);
+        else Router.gotoAnonymousXDealPage(this.getComponent(), id);
     };
 
     /** -------------------- async api -------------------- **/

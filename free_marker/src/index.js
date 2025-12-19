@@ -154,7 +154,6 @@ class CodegenNode {
     /** 一般情況下，img點擊後都會的有的preview dialog，不想要的話就把imgPreview = false*/
     imgPreview = true;
 
-
     /** products/{productId}       ← 父 document
         └── {productId}/variants/{variantId}   ← 讓api產出batch submit product和variants */
     hasFatherHood = false;

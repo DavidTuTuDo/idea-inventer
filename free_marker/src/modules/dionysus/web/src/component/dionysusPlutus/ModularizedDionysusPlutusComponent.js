@@ -124,7 +124,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                         : async () => {
                               UserInfo.isLoginWithSucceed()
                                   ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {})
-                                  : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder);
+                                  : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder, enableDialogOfDirectPay ? payload : {});
                           }
                 };
             case Config.TransactionMethod.ECPay:
@@ -134,7 +134,9 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                     behavior: validateEC
                         ? async () => await this.performCheckoutByECPayBehavior(idOfPreciseOrder)
                         : async () => {
-                              UserInfo.isLoginWithSucceed() ? Router.gotoEpayFootprintPage(this, "user", "all") : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder);
+                              UserInfo.isLoginWithSucceed()
+                                  ? Router.gotoEpayFootprintPage(this, "user", "all")
+                                  : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder, enableDialogOfDirectPay ? payload : {});
                           }
                 };
             case Config.TransactionMethod.DirectPay:
@@ -144,7 +146,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                     behavior: async () => {
                         UserInfo.isLoginWithSucceed()
                             ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {})
-                            : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder);
+                            : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder, enableDialogOfDirectPay ? payload : {});
                     }
                 };
             default:
@@ -153,7 +155,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                     behavior: async () =>
                         UserInfo.isLoginWithSucceed()
                             ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {})
-                            : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder)
+                            : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder, enableDialogOfDirectPay ? payload : {})
                 };
         }
     };

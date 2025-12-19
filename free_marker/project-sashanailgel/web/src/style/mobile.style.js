@@ -745,6 +745,10 @@ class MobileStyle {
 
     /** => following for anonymousXDeal  component  */
 
+    EpayAnonymousXDealPayNowReactFragmentWrap = {};
+
+    EpayAnonymousXDealPayNowDiv = {};
+
     EpayAnonymousXDealFuncCopyLinkChip = {};
 
     EpayAnonymousXDealFuncToMainChip = {};

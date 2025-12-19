@@ -22,6 +22,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
             .then()
             .finally(() => {
                 self.dismiss();
+                Router.gotoHomePage(self);
             });
     }
 

@@ -745,6 +745,10 @@ class CommonStyle {
 
     /** => following for anonymousXDeal  component  */
 
+    EpayAnonymousXDealPayNowReactFragmentWrap = {};
+
+    EpayAnonymousXDealPayNowDiv = {};
+
     EpayAnonymousXDealFuncCopyLinkChip = {};
 
     EpayAnonymousXDealFuncToMainChip = {};
