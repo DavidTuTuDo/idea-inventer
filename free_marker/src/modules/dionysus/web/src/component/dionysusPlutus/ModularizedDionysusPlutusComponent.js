@@ -122,7 +122,9 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                     behavior: validateLP
                         ? async () => await this.performCheckoutByLinePayBehavior(idOfPreciseOrder)
                         : async () => {
-                              UserInfo.isLoginWithSucceed() ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {}) : Router.gotoHomePage(this);
+                              UserInfo.isLoginWithSucceed()
+                                  ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {})
+                                  : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder);
                           }
                 };
             case Config.TransactionMethod.ECPay:
@@ -132,7 +134,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                     behavior: validateEC
                         ? async () => await this.performCheckoutByECPayBehavior(idOfPreciseOrder)
                         : async () => {
-                              UserInfo.isLoginWithSucceed() ? Router.gotoEpayFootprintPage(this, "user", "all") : Router.gotoHomePage(this);
+                              UserInfo.isLoginWithSucceed() ? Router.gotoEpayFootprintPage(this, "user", "all") : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder);
                           }
                 };
             case Config.TransactionMethod.DirectPay:
@@ -140,14 +142,18 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                 return {
                     succeed: true,
                     behavior: async () => {
-                        UserInfo.isLoginWithSucceed() ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {}) : Router.gotoHomePage(this);
+                        UserInfo.isLoginWithSucceed()
+                            ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {})
+                            : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder);
                     }
                 };
             default:
                 return {
                     succeed: true,
                     behavior: async () =>
-                        UserInfo.isLoginWithSucceed() ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {}) : Router.gotoHomePage(this)
+                        UserInfo.isLoginWithSucceed()
+                            ? Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {})
+                            : Router.gotoAnonymousXDealPage(this, idOfPreciseOrder)
                 };
         }
     };

@@ -85,7 +85,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
             ],
             redirectUrls: {
                 confirmUrl: new URL("respondtowardlinepay", Config.host).href,
-                cancelUrl: new URL("epayFootprint/user/all", Config.host).href
+                cancelUrl: itemOfPreciseOrder.anonymous ? new URL(`anonymousXDeal/${itemOfPreciseOrder.id}`, Config.host).href : new URL("epayFootprint/user/all", Config.host).href
             },
             options: {
                 extra: {

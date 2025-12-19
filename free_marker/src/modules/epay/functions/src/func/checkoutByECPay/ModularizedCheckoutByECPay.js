@@ -64,8 +64,8 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
      設定此參數，發生簡訊 OTP 驗證失敗時，頁面上會顯示[返回商店]的按鈕。
      若未設定此參數，則綠界付款完成頁或取號完成頁面，不會顯示[返回商店]的按鈕。
      若導回網址未使用 https 時，部份瀏覽器可能會出現警告訊息。  */
-    getURLOfClientBackURL() {
-        return new URL(`epayFootprint/user/completed`, Config.host).href;
+    getURLOfClientBackURL(order) {
+        return order.anonymous ? new URL(`anonymousXDeal/${order.id}`, Config.host).href : new URL(`epayFootprint/user/completed`, Config.host).href;
     }
 
     /**
@@ -85,9 +85,9 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
             TradeDesc: `綠界第三方支付(${order.titleOfOrder})`,
             ItemName: this.normalizeDescOfItemName(order.textOfContract),
             ReturnURL: Config.urlOfConfirmedByECPay,
-            ClientBackURL: this.getURLOfClientBackURL(),
+            ClientBackURL: this.getURLOfClientBackURL(order),
             ExpireDate: 1 /** ATM付款參數:單位是天(day) */,
-            PaymentInfoURL: Config.urlOfPaymentInfoByECPay /** 用來讓率介乎叫CVS|ATM關於付款資訊的內容 */,
+            PaymentInfoURL: Config.urlOfPaymentInfoByECPay /** 用來讓ECPAY乎叫CVS|ATM關於付款資訊的內容 */,
             EncryptType: 1,
             PaymentType: "aio",
             ChoosePayment: "ALL",

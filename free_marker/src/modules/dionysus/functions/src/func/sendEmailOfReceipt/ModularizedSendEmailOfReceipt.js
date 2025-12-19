@@ -118,12 +118,11 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
       </div>
     </div>`;
 
-        const confirmButton = !anonymous
-            ? `<div style="text-align:right;margin-bottom:10px;">
-           <a href="https://google.com/search?q=${id}"
+        const direct = () => (anonymous ? new URL(`anonymousXDeal/${id}`, Config.host).href : new URL(`epayFootprint/user/all`, Config.host).href);
+        const confirmButton = `<div style="text-align:right;margin-bottom:10px;">
+           <a href="${direct()}"
               style="background:#1976d2;color:white;padding:6px 14px;border-radius:16px;font-size:13px;text-decoration:none;">前往確認</a>
-         </div>`
-            : "";
+         </div>`;
 
         return `
     <div style="font-family:'Segoe UI',Arial,sans-serif;background:#f9f9f9;padding:16px;border-radius:8px;border:1px solid #eee;max-width:600px;margin:auto;">

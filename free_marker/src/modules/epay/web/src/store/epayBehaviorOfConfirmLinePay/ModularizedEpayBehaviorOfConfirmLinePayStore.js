@@ -24,13 +24,13 @@ class ModularizedEpayBehaviorOfConfirmLinePayStore extends BaseEpayBehaviorOfCon
         } catch (error) {
             this.getComponent().showErrorSnackMessage(error.message);
         } finally {
-            this.routeToPage();
+            this.routeToPage(objectOfLinePayInfo.orderId);
         }
     }
 
-    routeToPage = () => {
+    routeToPage = (id) => {
         if (UserInfo.isLoginWithSucceed()) Router.gotoEpayFootprintPage(this.getComponent(), "user", "all");
-        else Router.gotoHomePage(this.getComponent());
+        else Router.gotoAnonymousXDealPage(this, id);
     };
 
     /** -------------------- async api -------------------- **/
