@@ -7,7 +7,7 @@ import puppeteer from 'puppeteer';
 /** author:明悅
  *  create time:Sat Nov 22 2025 05:28:50 GMT+0800 (Taiwan Standard Time)
  */
-const ENABLE_OF_OPEN_BROWSER = false;
+const ENABLE_OF_OPEN_BROWSER = true;
 const THREAD_OF_FETCHER = 7;
 
 class spider_wanwen extends Spider {
@@ -116,7 +116,7 @@ class spider_wanwen extends Spider {
             const photoOfDemo = booze.photoOfDemo;//
 
             /** 抓取品名簡述們的邏輯區 */
-            const brief = (await extractBlockTexts(await page.$('article.editor'))).join('');
+            const brief = (await this.extractBlockTexts(await page.$('article.editor'))).join('');
             /** 抓取品項的分頁詳細介紹[...{title='特色｜品質｜證書',desc:'',photos:[]}] */
             const tabsOfDesc = await elementOfBody.$$(`.tab-box .tab.list-h li > a`);
             const introduces = [];
@@ -127,7 +127,7 @@ class spider_wanwen extends Spider {
                 const title = await this.fetchAttributeOfEl(tab, '', 'innerText');
                 const context = await elementOfBody.$$('.tab-container .list-h > *');
                 // console.log(`context lines size(${_.size(context)})`);
-                const description = (await extractBlockTexts(_.nth(context, index))).join('');
+                const description = (await this.extractBlockTexts(_.nth(context, index))).join('');
                 const gallery = index > 1 ? await _.nth(context, index).$$(`img`) : await elementOfBody.$$(`.product_table > img`);
                 const photos = await Util.execute4Tasks(gallery, async (frame) => await this.fetchAttributeOfEl(frame, '', 'src'));
                 introduces.push({ title, description, photos });

@@ -15,7 +15,7 @@
     "databazer": "^1.0.17",
     "lodash": "^4.17.20",
     "puppeteer": "^24.30.0",
-    "utiller": "^1.0.451",
+    "utiller": "^1.0.466",
     "@babel/runtime": "^7.28.4"
   },
   "devDependencies": {

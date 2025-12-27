@@ -37,8 +37,8 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-let CURRENT_PROJECT = './project-sashanailgel';
-// let CURRENT_PROJECT = './project-kx-bio';
+// let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-kx-bio';
 // let CURRENT_PROJECT = './project-wan-hui';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
