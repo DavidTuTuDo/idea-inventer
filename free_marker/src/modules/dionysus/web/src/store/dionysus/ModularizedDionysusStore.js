@@ -26,7 +26,6 @@ class ModularizedDionysusStore extends BaseDionysusStore {
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         await Util.syncDelay(1);
-        this.getComponent().invalidatePageTitle(`[${UserInfo.getNameOfBrand()}]精選商品列表`);
         if (collection && _.size(collection.selectBounds) > 0) this.setSelectBounds(...[{ label: "一覽表", value: 0, type: "all" }, ...collection.selectBounds]);
 
         if (_.size(this.keyword4CompoundSearch) > 1)

@@ -47,6 +47,12 @@ class BaseComponent extends MuiComponent {
         this.propsOfMobX = props;
     }
 
+    setPageFullTitle = (title) => {
+        const userInfo = require("./BaseUserInfo").default;
+        const brand = userInfo.getNameOfBrand()
+        document.title = `[${brand}]${title}`;
+    }
+
     isDisposableComponent() {
         return false;
     }

@@ -68,7 +68,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
 
         if (booze.isTaskJob && booze.useMainTrunk) await handleConflictIssue();
 
-        this.getComponent().invalidatePageTitle(`[${UserInfo.getNameOfBrand()}]${booze?.name ?? "特選商品"}`);
+        this.getComponent().invalidatePageTitle(booze?.name ?? "特選商品");
         if (this.isSingleItemOfBooze()) await self.setSelectedOption(this.getVariants()[0].getOptions()[0]);
         return await super.onInitialFetchCompleted(collection);
     }

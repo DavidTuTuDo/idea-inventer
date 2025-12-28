@@ -146,7 +146,7 @@ class SheetStore extends BaseSheetStore {
             this.setErrorMsg(`使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`);
             this.setTipOfLoading(``);
         }
-        this.getComponent().invalidatePageTitle(`[悅譜]${pu?.name}`);
+        this.getComponent().invalidatePageTitle(pu?.name);
     }
 
     invalidate = (announce = false) => {
