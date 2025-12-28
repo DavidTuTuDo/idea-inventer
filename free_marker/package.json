@@ -15,7 +15,7 @@
         "fs-extra": "^11.3.0",
         "lodash": "^4.17.20",
         "mustache": "^4.1.0",
-        "utiller": "^1.0.467"
+        "utiller": "^1.0.470"
     },
     "devDependencies": {
         "@babel/cli": "^7.28.3",
@@ -31,7 +31,7 @@
         "@babel/register": "^7.25.9",
         "@babel/traverse": "^7.27.0",
         "baseline-browser-mapping": "^2.8.30",
-        "configerer": "^1.0.24",
+        "configerer": "^1.0.25",
         "freemarker.js": "^1.4.0",
         "glob": "^11.0.1",
         "prettier": "^3.5.3",

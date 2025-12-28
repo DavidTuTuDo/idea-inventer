@@ -805,6 +805,7 @@ class NodeUtiller extends Utiller {
 
         for (const path of paths) {
             if (this.isPathExist(path)) {
+                console.log('🦴正在修改以下 path的版本 => ',path)
                 let succeedOfPersistFile = false;
                 const json = this.getJsonObjByFilePath(path);
                 if (json && json.dependencies && json.dependencies[dependency]) {
@@ -813,7 +814,7 @@ class NodeUtiller extends Utiller {
                         await this.writeJsonThanPrettier(path, json);
                         succeedOfPersistFile = true;
                     } catch (error) {
-                        succeedOfPersistFile = true;
+                        succeedOfPersistFile = false;
                     }
                 }
                 if (!succeedOfPersistFile) {
@@ -821,8 +822,12 @@ class NodeUtiller extends Utiller {
                         (line) => `       "${dependency}":"^${newVersion}"${_.endsWith(_.trim(line), ',') ? ',' : ''}`,
                         (each) => _.startsWith(_.trim(each), `"${dependency}"`));
                 }
+                console.log('💯成功修改以下 path的版本 => ',path)
             }
+
         }
+        console.log(`離開updateVersionOfTemplate()的迴圈`)
+
         await this.copyFromFolderToDestFolder(
             '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/',
             '/Users/davidtu/cross-achieve/high/idea-inventer/newp/template/',
@@ -896,12 +901,53 @@ class NodeUtiller extends Utiller {
         return fs.readdirSync(path).length === 0;
     }
 
-    /** 把檔案弄得好看一點
-     * width 是指一行能塞下多少的字元
-     * preitter真的很花時間，所以做個enable
-     * */
-    async prettier(path, width = 200) {
-        await this.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(path)} --print-width ${width}`)
+    /**
+     * @param {string} path 檔案路徑
+     * @param {number} width 寬度限制 (default: 250)
+     * @param {string[]} extensions 要剝離處理的模板副檔名陣列 (default: ['.mustache'])
+     */
+    async prettier(path, width = 250, extensions = ['.mustache']) {
+        const fullPath = libpath.resolve(path);
+        const rootPath = libpath.resolve('.');
+
+        // 1. 尋找檔案是否符合傳入的任一副檔名
+        const matchedExt = extensions.find(ext => path.endsWith(ext));
+
+        let targetPath = fullPath;
+        let isTemplate = !!matchedExt;
+
+        try {
+            if (isTemplate) {
+                // 2. 移除結尾副檔名 (例如: aaa.json.mustache -> aaa.json)
+                // 使用 escape 處理點符號，並確保只匹配結尾 ($)
+                const escapedExt = matchedExt.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(`${escapedExt}$`);
+                targetPath = fullPath.replace(regex, '');
+
+                // 3. 暫時重新命名
+                await fs.rename(fullPath, targetPath);
+            }
+
+            // 4. 執行 Prettier
+            // --ignore-unknown: 遇到不支援的副檔名會跳過而不噴錯
+            await this.executeCommandLine(
+                `cd "${rootPath}" && npx prettier --write "${targetPath}" --print-width ${width} --ignore-unknown`
+            );
+
+        } catch (error) {
+            console.error(`Prettier 執行錯誤 [${path}]:`, error.message);
+        } finally {
+            // 5. 還原檔名：無論 Prettier 成功與否，都要確保改回原本的副檔名
+            if (isTemplate && targetPath !== fullPath) {
+                try {
+                    // 先確認 targetPath 檔案真的存在（避免 rename 報錯）
+                    await fs.access(targetPath);
+                    await fs.rename(targetPath, fullPath);
+                } catch (e) {
+                    // 如果 targetPath 不存在，可能是 rename 失敗或檔案遺失，不執行還原
+                }
+            }
+        }
     }
 
     /**
@@ -1224,9 +1270,9 @@ if (configerer.DEBUG_MODE) {
             // const path = uii.persistByPath('./one.js');
             // new NodeUtiller().renameFile(path, 'two');
             // await new NodeUtiller().cleanAllFiles('../testing_self/sample');
-            // await new NodeUtiller().generatePackage('../utiller', false);
+            // await new NodeUtiller().generatePackage('../utiller', true);
             // await new NodeUtiller().generatePackage('../databazer');
-            // await new NodeUtiller().generatePackage('../linepayer');
+            // await new NodeUtiller().generatePackage('../linepayer',true);
             // await new NodeUtiller().generatePackage('../configerer');
             // await new NodeUtiller().generatePackage('../configerer');
             // await new NodeUtiller().generatePackage('../databazer');

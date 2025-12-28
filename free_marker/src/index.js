@@ -122,6 +122,9 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /** 第一次部署functions(gen2)之後會產生一個隨機碼，這會用來組成url */
+    randomHashOfFunc = 'abcdefghijk'
+
     /** collection寫入firestore indexes的依據 */
     idxes;
 
@@ -1092,9 +1095,41 @@ class CodegenNode {
 
     getCustomTextOfI18n() { return this.getNodeOfStruct().textsOfI18n ?? {}; }
 
-    getHostOfCloudFunction() {
+    getHostOfCloudFunction(cloud) {
+        /** 內部對照表 */
+        function getRegionShortenByLocation(location) {
+            const regionMap = {
+                'asia-east1': 'de',
+                'asia-northeast1': 'an',
+                'asia-northeast2': 'dt',
+                'asia-southeast1': 'as',
+                'us-central1': 'uc',
+                'us-east1': 'ue',
+                'us-west1': 'uw',
+                'europe-west1': 'ew'
+            };
+            return regionMap[location] || 'de'; // 預設給台灣，因為您的 setGlobalOptions 是 asia-east1
+        }
+
         const node = this.getNodeOfSource();
-        return `https://${node.locationOfFunctions}-${node.getIdOfProject()}.cloudfunctions.net`;
+        const hash = node.randomHashOfFunc;
+
+        // 檢查點 1: 如果 Hash 還沒設定，應該拋出提示
+        if (!hash) {
+            console.warn(`[Warning] Cloud Function ${cloud.name} 的 Random Hash 尚未設定，請先部署一次並更新 config。`);
+            return `https://pending-deploy-${cloud.name}`;
+        }
+
+        const regionShort = getRegionShortenByLocation(node.locationOfFunctions);
+
+        // 檢查點 2: 函數名稱處理
+        // Google Cloud 會將 CamelCase 轉為 lowercase。
+        // 例如：getCurrentAddress -> getcurrentaddress
+        const funcName = _.toLower(cloud.name);
+
+        return `https://${funcName}-${hash}-${regionShort}.a.run.app`;
+
+        /** gen1 return `https://${node.locationOfFunctions}-${node.getIdOfProject()}.cloudfunctions.net`; */
         /** dev:  http://localhost:5001/${node.getName()}/${node.localeOfServer}; */
     }
 
@@ -3084,29 +3119,32 @@ class CodegenNode {
     getCloudFunctions() { return this.cloudFunctions ?? []; }
 
     getCloudFunctionInfo() {
-        const location = this.getNodeOfSource().locationOfFunctions
         const functionName = this.getName();
         const fieldName = _.upperFirst(functionName);
         let params = [];
-        let typeOfFunction = 'https.onCall';
+        let argumentz = [];
+        let typeOfFunction = 'onCall(';
         let functionNameOfHandleBy = Util.camel('handle', this.getType());
         switch (this.getType()) {
             case 'schedule':
-                typeOfFunction = `pubsub.schedule('${this.schedule}').onRun`;
+                typeOfFunction = `onSchedule('${this.schedule}',`;
                 params.push('context');
+                argumentz.push('context');
                 break;
             case 'httpOnRequest':
-                typeOfFunction = 'https.onRequest';
+                typeOfFunction = 'onRequest(';
                 params.push('request', 'response');
+                argumentz.push('request', 'response');
                 break;
             case 'httpOnCall':
-                params.push('data', 'session');
-                typeOfFunction = 'https.onCall';
+                params.push('request');
+                argumentz.push('data', 'session');
+                typeOfFunction = 'onCall(';
                 break;
             default:
                 throw new ERROR(9999, '6181, unknown cloud function type ')
         }
-        return { functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params, location }
+        return { functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params, argumentz }
     }
 
     static find(node, predicate) {
@@ -3381,36 +3419,37 @@ class ClassGenerator {
             return _.isEqual(func.isRegularResponse, true);
         }
 
-        function getStmtsByType() {
+        function getStmtsByType(argumentz) {
             const _stmts = [`let result = {};`,
                 `let succeed = true;`,
                 `try {`];
             if (Util.isOrEquals(func.getType(), 'httpOnCall', 'httpOnRequest'))
-                _stmts.push(`functions.logger.info('functions(${fieldName}) data from client => ',${func.getType() === 'httpOnRequest' ? 'request' : 'data'});`);
+                _stmts.push(`logger.info('functions(${fieldName}) data from client => ', request); `);
 
             if (_.isEqual(func.getType(), 'httpOnCall')) {
+                _stmts.push(`const {data, auth:session} = request; `);
                 _stmts.push(`if(_.isEmpty(data.fingerprint)) throw new Error('E0001-${fieldName} 你是壞狗，不可以玩伺服器');`);
                 _stmts.push(`${fieldName}.setFingerprint(data.fingerprint); `);
             }
 
-            _stmts.push(`result = await ${fieldName}.${functionNameOfHandleBy}(${params.join(',')});`);
+            _stmts.push(`result = await ${fieldName}.${functionNameOfHandleBy}(${argumentz.join(',')});`);
             _stmts.push(...[`} catch (error) {`,
                 `succeed = false;`,
                 `result = error.message;`,
-                `functions.logger.error(result);`,
+                `logger.error(result);`,
                 `}`,
                 `${getStringOfFunctionFinally()}`
             ]);
             return _stmts;
         }
 
-        const { functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params, location } = func.getCloudFunctionInfo()
+        const { functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params,argumentz } = func.getCloudFunctionInfo()
         let stmts = [];
         stmts.push(`\n/** payload:${JSON.stringify(func.payload ?? 'needless payload')} */\n`)
-        stmts.push(`exports.${functionName} = functions.region('${location}').${typeOfFunction}(async (${params.join(',')}) => {`)
-        stmts.push(...getStmtsByType(params));
+        stmts.push(`exports.${functionName} = ${typeOfFunction}async (${params.join(',')}) => {`)
+        stmts.push(...getStmtsByType(argumentz));
         stmts.push(`})`);
-        this.appendInClassTail(this.context, ...['Util.disableLogMessagePersistent();'], ...stmts, ...extra)
+        this.appendInClassTail(this.context, ...stmts, ...extra)
     }
 
     appendAsyncFunction(functionName, params = [], macros = [], comments = [], ...contents) {
@@ -7402,7 +7441,6 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`locateOfFunctions`, JSON.stringify(sourceObj.locationOfFunctions));
         baseConfigGenerator.appendField(`locateOfFirestore`, JSON.stringify(sourceObj.locationOfFirestore));
         baseConfigGenerator.appendField(`locateOfStorage`, JSON.stringify(sourceObj.locationOfStorage));
-        baseConfigGenerator.appendField(`locationOfFunctions`, JSON.stringify(sourceObj.locationOfFunctions));
         baseConfigGenerator.appendField(`nameOfBrand`, JSON.stringify(sourceObj.title), [], []);
         const enums = this.getAllEnums();
         for (const key in enums) {
@@ -7444,7 +7482,7 @@ class ProjectFileHandler extends PathBase {
         for (const cloud of this.getAllCloudFunctions()) {
             if (Util.isOrEquals(cloud.type, 'httpOnCall', 'httpOnRequest')) {
                 baseConfigGenerator.appendField(`urlOf${_.upperFirst(cloud.name)}`,
-                    `'${new URL(cloud.name, sourceObj.getHostOfCloudFunction()).href}' /** ${cloud.type} */`)
+                    `'${new URL(sourceObj.getHostOfCloudFunction(cloud)).href}' /** ${cloud.type} */`)
             }
         }
 
@@ -9394,8 +9432,13 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
         await apiGenerator.persist();
         const appGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'app.js'), this.nodeOfAncestor);
-        appGenerator.appendImport('* as functions', 'firebase-functions')
-        appGenerator.appendImport('firebase', './base/FirebaseHelper');
+        appGenerator.appendImport('* as logger', 'firebase-functions/logger');
+        appGenerator.appendImport('{setGlobalOptions}', 'firebase-functions/v2');
+        appGenerator.appendImport('{onCall, onRequest}', "firebase-functions/v2/https")
+        appGenerator.appendImport('{onSchedule}', "firebase-functions/v2/scheduler")
+        appGenerator.appendInClassHead(...[`setGlobalOptions({ region: "${this.nodeOfAncestor.locationOfFunctions}" })\n`, 'Util.disableLogMessagePersistent()'])
+
+        // appGenerator.appendImport('firebase', './base/FirebaseHelper');
         // appGenerator.appendImport('admin', 'firebase-admin')
         for (const func of this.getAllCloudFunctions()) {
             await this.buildFunctionImplement(func);
@@ -9413,20 +9456,21 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             fieldName,
             functionNameOfHandleBy,
             typeOfFunction,
-            params
+            params,
+            argumentz
         } = func.getCloudFunctionInfo()
         const baseClass = `Base${fieldName}`;
         const generator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'func', func.getName(), `${baseClass}.js`), this.nodeOfAncestor);
         generator.appendClass(baseClass, {name: `BaseFunction`, from: '../../base/BaseFunction'})
         generator.appendAsyncFunction(functionNameOfHandleBy,
-            [...params], [], [`payload:${JSON.stringify(func.payload ?? 'needless payload')}`]);
+            [...argumentz], [], [typeOfFunction.startsWith('onCall') ? `session === firebase auth` : '', `payload:${JSON.stringify(func.payload ?? 'needless payload')}`]);
         generator.appendFunction({ name: 'getName', arrow: true, simple: true }, [], [], [], `'${func.getName()}'`)
         if (func.isCommonModule) {
             const moduleClassName = `${KEYWORD_OF_MODULARIZED}${fieldName}`;
             const moduleGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'func', func.getName(), `${moduleClassName}.js`), this.nodeOfAncestor);
             moduleGenerator.appendClass(moduleClassName, {name: baseClass, from: `./${baseClass}`});
             moduleGenerator.needSignature(false);
-            moduleGenerator.appendAsyncFunction(functionNameOfHandleBy, [...params], [], []);
+            moduleGenerator.appendAsyncFunction(functionNameOfHandleBy, [...argumentz], [], []);
             moduleGenerator.needIndexFile(`${fieldName}`, [], true);
             await moduleGenerator.persist();
         } else {

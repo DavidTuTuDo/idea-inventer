@@ -10,10 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "configerer": "^1.0.24",
-    "utiller": "^1.0.467",
-    "linepayer": "^1.0.16",
-    "databazer": "^1.0.18",
+    "configerer": "^1.0.25",
+    "utiller": "^1.0.470",
+    "linepayer": "^1.0.28",
+    "databazer": "^1.0.21",
     "lodash": "^4.17.20",
     "@babel/runtime": "^7.28.4"
   },

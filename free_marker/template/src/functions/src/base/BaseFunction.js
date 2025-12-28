@@ -2,7 +2,8 @@ const edit = true;
 
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import _ from "lodash";
-import * as functions from "firebase-functions";
+// 1. 修改導入方式，使用 v2 專用的 logger
+import * as logger from "firebase-functions/logger";
 import Api from "../api";
 import Config from "../config";
 import ClientRemoteApi from "../base/CommonRemoteApi";
@@ -19,6 +20,7 @@ const ECPAY_CREDENTIAL = ({ MerchantID, HashKey, HashIV }) =>
               IsProjectContractor: false
           }
         : Config.ECPAY_SANDBOX;
+
 class BaseFunction extends ClientRemoteApi {
     constructor(props) {
         super(props);
@@ -60,7 +62,7 @@ class BaseFunction extends ClientRemoteApi {
 
     appendLog = (...messages) => {
         if (this.TEST_MODE) this.appendLog(...messages);
-        else functions.logger.log(...messages);
+        else logger.info(...messages);
     };
 
     /**
@@ -115,17 +117,21 @@ class BaseFunction extends ClientRemoteApi {
         }
     }
 
+    // 3. 修改日誌等級輸出
     appendInfoLog(message) {
-        functions.logger.info(message);
+        logger.info(message);
     }
 
     appendErrorLog(code, message) {
-        functions.logger.error(message);
+        logger.error(message);
         throw new ERROR(code, message);
     }
 
+    // 4. 修改 Session 判斷邏輯
+    // 在 Gen 2 中，onCall 的 session 傳入的是 request.auth
     isLoginUser(session) {
-        return session.auth && session.auth.uid;
+        // Gen 2 的 Callable 函數中，session (request.auth) 如果未登入會是 undefined 或 null
+        return session && session.uid;
     }
 
     isAnonymousUser(session) {
@@ -138,15 +144,16 @@ class BaseFunction extends ClientRemoteApi {
     }
 
     getUid(session) {
-        return session?.auth?.uid;
+        return session?.uid;
     }
 
     getPictureUrl(session) {
-        return session.auth.token.name || null;
+        // Gen 2 的 token 結構通常在 request.auth.token 裡
+        return session?.token?.name || null;
     }
 
     getEmailAddress(session) {
-        return session.auth.token.email || null;
+        return session?.token?.email || null;
     }
 
     isECPayCheckMacValueValid(data, key, iv) {
