@@ -7402,7 +7402,8 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`locateOfFunctions`, JSON.stringify(sourceObj.locationOfFunctions));
         baseConfigGenerator.appendField(`locateOfFirestore`, JSON.stringify(sourceObj.locationOfFirestore));
         baseConfigGenerator.appendField(`locateOfStorage`, JSON.stringify(sourceObj.locationOfStorage));
-
+        baseConfigGenerator.appendField(`locationOfFunctions`, JSON.stringify(sourceObj.locationOfFunctions));
+        baseConfigGenerator.appendField(`nameOfBrand`, JSON.stringify(sourceObj.title), [], []);
         const enums = this.getAllEnums();
         for (const key in enums) {
             const objOfMain = enums[key];

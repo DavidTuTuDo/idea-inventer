@@ -13,7 +13,7 @@ import CommonPoolHelper from "./CommonPoolHelper";
 
 class UserInfo {
     @observable
-    nameOfBrand = "";
+    nameOfBrand = Configer.nameOfBrand;
 
     @observable
     isLoginSucceed = undefined;

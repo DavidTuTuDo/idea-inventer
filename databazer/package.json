@@ -1,6 +1,6 @@
 {
   "name": "databazer",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,9 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "configerer": "^1.0.11",
-    "utiller": "^1.0.185",
+    "utiller": "^1.0.466",
     "lodash": "^4.17.20",
     "sqlite": "^5.1.1",
+    "@babel/runtime": "^7.28.4",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {

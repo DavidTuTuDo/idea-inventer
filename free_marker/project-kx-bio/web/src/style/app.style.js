@@ -477,6 +477,22 @@ class AppStyle {
 
     HadesDiv = {};
 
+    /** => following for anonymousXDeal  component  */
+
+    EpayAnonymousXDealPayNowReactFragmentWrap = {};
+
+    EpayAnonymousXDealPayNowDiv = {};
+
+    EpayAnonymousXDealFuncCopyLinkChip = {};
+
+    EpayAnonymousXDealFuncToMainChip = {};
+
+    EpayAnonymousXDealFuncDiv = {};
+
+    EpayAnonymousXDealDivWrap = {};
+
+    EpayAnonymousXDealDiv = {};
+
     /** => following for epayFootprint  component  */
 
     EpayFootprintPayNowReactFragmentWrap = {};

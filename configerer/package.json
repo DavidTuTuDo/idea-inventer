@@ -1,12 +1,15 @@
 {
   "name": "configerer",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "updateUtiller": "npm update utiller --save",
     "updateConfigerer": "npm update configerer --save"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.28.4"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",

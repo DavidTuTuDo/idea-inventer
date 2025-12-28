@@ -13,7 +13,8 @@
   "dependencies": {
     "configerer": "^1.0.11",
     "lodash": "^4.17.20",
-    "utiller": "^1.0.368"
+    "@babel/runtime": "^7.28.4",
+    "utiller": "^1.0.466"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
