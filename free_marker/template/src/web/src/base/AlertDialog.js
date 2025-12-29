@@ -59,7 +59,6 @@ class AlertDialog extends MuiComponent {
         this.useCustomCancel = props.useCustomCancel ?? false;
         this.component = props.component;
         this.useTextInput = props.textInput && props.textInput.enable;
-        this.textInput = props.textInput;
     }
 
     /** object 是可以帶到customView裡面的變數 */
@@ -179,24 +178,25 @@ class AlertDialog extends MuiComponent {
     }
 
     renderTextField = () => {
+        const textInput = this.props.textInput;
         if (this.useTextInput) {
             return (
                 <TextField
-                    autoFocus={true}
+                    autoFocus
                     required
                     margin="dense"
-                    value={this.textInput.value}
-                    label={this.textInput.label}
-                    type={this.textInput.type}
+                    value={textInput.value}
+                    label={textInput.label}
+                    type={textInput.type}
                     fullWidth
                     variant="standard"
                     onChange={(event) => {
-                        this.textInput.onTextFieldChange(event);
+                        textInput.onTextFieldChange(event);
                     }}
                 />
             );
         } else return null;
-    };
+    }
 
     renderContent = () => {
         const self = this;
