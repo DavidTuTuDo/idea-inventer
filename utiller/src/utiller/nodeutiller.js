@@ -1246,50 +1246,7 @@ if (configerer.DEBUG_MODE) {
             // utiller.persistByPath('./a/b/c.js')
             // await utiller.persistJsonFilePrettier('./temp/one.json',{a:'v',b:'x'});
             // await utiller.updateFileOfSpecificLine('/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json.mustache',
-            //     (item) => `"utiller":"^1.0.3"${_.endsWith(_.trim(item),',') ? ',': ''}`,(line) => _.startsWith( _.trim(line),`"firebase"`)
-            //     )
-            // console.log(utiller.isFileEditS
-            // ucceed('/Users/davidtu/cross-achieve/high/idea-inventer/gen/dading/web/src/component/establish/index.js'));
-            // console.log(await utiller.getObjectFromPromptQ({name:'order',require:true,description:'what u what'}));
-            // console.log(utiller.getVersionOfJsFile(`./source.js`));
-            // for(const index of _.range(1,100)){
-            //
-            // }
-            // const result = utiller.getStringOfHandledHtml('<form id="_form_aiochk" action="https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5" method="post"><input type="hidden" name="MerchantTradeNo" id="MerchantTradeNo" value="sO6E2IilSGYpCChDqrI2" /><input type="hidden" name="MerchantTradeDate" id="MerchantTradeDate" value="2022/07/02 05:16:32" />' +
-            //     '<input type="hidden" name="TotalAmount" id="TotalAmount" value="350" /><input type="hidden" name="TradeDesc" id="TradeDesc" value="綠界第三方支付(明悅科技-線上支付)" /><input type="hidden" name="ItemName" id="ItemName" value="iphone13 pro x 2 = 200 元#iphone11 x 3 = 150 元#總價 350 元##※備註: 無備註內容" /><input type="hidden" name="ReturnURL" id="ReturnURL" value="https://us-central1-davidtu-dev.cloudfunctions.net/confirmedByByECPay" /><input type="hidden" name="ClientBackURL" id="ClientBackURL" value="https://www.google.com/" /><input type="hidden" name="ExpireDate" id="ExpireDate" value="1" /><input type="hidden" name="PaymentInfoURL" id="PaymentInfoURL" value="https://us-central1-davidtu-dev.cloudfunctions.net/paymentInfoByECPay" /><input type="hidden" name="ChoosePayment" id="ChoosePayment" value="ALL" /><input type="hidden" name="PlatformID" id="PlatformID" value="" /><input type="hidden" name="MerchantID" id="MerchantID" value="2000132" /><input type="hidden" name="InvoiceMark" id="InvoiceMark" value="N" /><input type="hidden" name="IgnorePayment" id="IgnorePayment" value="BARCODE#AndroidPay#ApplePay" /><input type="hidden" name="DeviceSource" id="DeviceSource" value="" /><input type="hidden" name="EncryptType" id="EncryptType" value="1" /><input type="hidden" name="PaymentType" id="PaymentType" value="aio" />' +
-            //     '<input type="hidden" name="CheckMacValue" id="CheckMacValue" value="D55E9E48C6AB83C063E0E13AD1B8C2EE8FA6547A7D7FCB33860B532E97D808BC" /><script type="text/javascript">document.getElementById("_form_aiochk").submit();</script></form>'
-            //     , (document) => {
-            //         const element = document.getElementById('CheckMacValue');
-            //         element.setAttribute('value', '123456');
-            //     })
-            // console.log(result);
-            // console.log(utiller.getStringOfVersionIncrement('1.0.3'))
-            // utiller.appendFile(`./test/2.js`, '2saads\n\nwqeadsdas', true, true);
-            // utiller.rewriteFile2File('./test/2.js','./test/1.js');
-            // console.log(uii.isValidFilePath('aa/cc/vv.ss'));
-            // const path = uii.persistByPath('./one.js');
-            // new NodeUtiller().renameFile(path, 'two');
-            // await new NodeUtiller().cleanAllFiles('../testing_self/sample');
-            // await new NodeUtiller().generatePackage('../utiller', true);
-            // await new NodeUtiller().generatePackage('../databazer');
-            // await new NodeUtiller().generatePackage('../linepayer',true);
-            // await new NodeUtiller().generatePackage('../configerer');
-            // await new NodeUtiller().generatePackage('../configerer');
-            // await new NodeUtiller().generatePackage('../databazer');
-            // await new NodeUtiller().enrichEachPackageJson('../');
-            // await new NodeUtiller().upgradePackageJsonVersion('./package.json');
-            // await new NodeUtiller().generatePackage('../linepay');
-            // await new NodeUtiller().installEveryProject('../');
-            // cthis.appendInfo((new NodeUtiller().getPathInfo('./').absolute);
-            // this.appendInfo((new NodeUtiller().getFileLastModifiedTime(`./error_logs.txt`));
-            // await new NodeUtiller().generateTempFolderWithCleanSrc('.');
-            // await new NodeUtiller().generatePackage('./');
-            // new NodeUtiller().appendInfo('ddsds',{ff:'2',cc:'tggresd'},[2,4,5,6,7,8,9])
-            // console.log(process.env.keyword);
-            // console.log(new NodeUtiller().getNodeEnvVariable('keyword'));
-            // console.log(new NodeUtiller()
-            //     .getFileNameExtensionFromPath('https://stackoverflow.com/questions/3916191/download-data-url-file/draw918.mp3'));
-            // //
+
 
 
         }

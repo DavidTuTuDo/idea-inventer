@@ -6,7 +6,7 @@ import mustache from "mustache";
 import { configerer } from "configerer";
 import Lean from "./lean";
 import beauty from "./beauty";
-
+import inquirer from 'inquirer';
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -31,16 +31,6 @@ const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
-// let CURRENT_PROJECT = undefined;
-// let CURRENT_PROJECT = './project-yueh-voice';
-// let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
-// let CURRENT_PROJECT = './project-davidtu-dev';
-// let CURRENT_PROJECT = './project-dading';
-// let CURRENT_PROJECT = './project-sashanailgel';
-// let CURRENT_PROJECT = './project-kx-bio';
-// let CURRENT_PROJECT = './project-wan-hui';
-
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
@@ -10222,46 +10212,81 @@ class ScheduleManager {
 if (configerer.DEBUG_MODE) {
     (async () => {
         /** 紀錄最近一次回答的內容，不然每次都要打字再Enter好懶 */
-        const FILENAME_OF_LATEST_REPLY = `temp/ReplyOfLastTime.json`;
-        const ATTRIBUTE_NAME_OF_INDEXES = `indexes`;
+        const currents = [
+            {
+                name:'悅耳',
+                path:'./project-yueh-voice'
+            },{
+                name:'悅考',
+                path:'./project-kh-high'
+            },{
+                name:'悅譜',
+                path:'./project-yueh-pu'
+            },{
+                name:'悅遊',
+                path:'./project-dading'
+            },{
+                name:'康新生技',
+                path:'./project-kx-bio'
+            },{
+                name:'丸卉',
+                path:'./project-wan-hui'
+            },{
+                name:'莎夏',
+                path:'./project-sashanailgel'
+            }
+        ]
 
-        async function getProjectsByPromptInput() {
-            function getStringOfLatestReply() {
-                const raw = Util.getFileContextInRaw(FILENAME_OF_LATEST_REPLY);
-                let answerOfLastTime = _.isEmpty(raw) ? undefined : JSON.parse(raw)
-                return answerOfLastTime ? answerOfLastTime[ATTRIBUTE_NAME_OF_INDEXES] : undefined;
+        const interactionByTerminalQ = async (projects) => {
+            // 1. 檢查重複性 (使用 Set 進行高效比對)
+            const names = projects.map(p => p.name);
+            const paths = projects.map(p => p.path);
+
+            const hasDuplicateName = new Set(names).size !== names.length;
+            const hasDuplicatePath = new Set(paths).size !== paths.length;
+
+            if (hasDuplicateName || hasDuplicatePath) {
+                const errorMsg = hasDuplicateName ? '專案名稱 (name)' : '專案路徑 (path)';
+                console.error(`\x1b[31m錯誤: 偵測到重複的 ${errorMsg}，請檢查資料來源。\x1b[0m`);
+                process.exit(1); // 終止後續行為
             }
 
-            const pathOfTarget = `/Users/davidtu/cross-achieve/high/idea-inventer/free_marker`;
-            const folders = Util.findFilePathBy(pathOfTarget, (file) => (_.isEqual(file.fileNameExtension, 'source.js')
-                && _.startsWith(file.folderName, 'project-')), `node_modules`).map(file => file.folderName);
+            // 2. 建立選單選項 (將物件轉為 inquirer 格式)
+            const choices = projects.map(p => ({
+                name: `${p.name} (${p.path})`, // 顯示給使用者看的文字
+                value: p                       // 選中後回傳的原始物件內容
+            }));
 
+            // 3. 執行 inquirer 勾選選單
+            try {
+                const answers = await inquirer.prompt([
+                    {
+                        type: 'checkbox',
+                        name: 'selectedProjects',
+                        message: '請選擇要執行的專案 (空白鍵勾選，"a" 鍵全選，Enter 確認):',
+                        choices: choices,
+                        // ES11 Optional Chaining 範例 (確保 choices 存在)
+                        validate: (answer) => {
+                            if (answer?.length < 1) {
+                                return '請至少選擇一個專案！';
+                            }
+                            return true;
+                        }
+                    }
+                ]);
+                // 4. 回傳勾選的陣列
+                return answers.selectedProjects;
 
-            if (_.isEmpty(folders))
-                return Util.appendInfo(`548441 valid project not existed in ${pathOfTarget}`);
-
-
-            const replyOfLatest = getStringOfLatestReply();
-            const result = await Util.getObjectFromPromptQ({
-                name: ATTRIBUTE_NAME_OF_INDEXES,
-                type: 'string',
-                require: false,
-                default: replyOfLatest ? `${replyOfLatest}` : undefined,
-                description: `select build project:\n\n${folders.map((name, index) => `${index}:${name}`)
-                    .join('\n')}\n\nplease type the index${replyOfLatest ? `(default:${replyOfLatest})` : ''}`
-            });
-
-            if (_.isEmpty(result.indexes))
-                return Util.appendInfo(`489498444 get error of input => ${result}`);
-
-            await Util.persistJsonFilePrettier(FILENAME_OF_LATEST_REPLY, result, true);
-            const indexes = result.indexes.split('').map((each) => _.toNumber(each));
-            return Util.getSliceArrayOfSpecificIndexes(folders, ...indexes);
+            } catch (error) {
+                console.error('執行選單時發生錯誤:', error?.message ?? '未知錯誤');
+                return [];
+            }
         }
 
-        const projects = CURRENT_PROJECT ? [CURRENT_PROJECT] : await getProjectsByPromptInput();
+        const projects = await interactionByTerminalQ(currents);
+        console.log(projects);
         const behavior = Util.getNodeEnvVariable('type');
-        const worker = new ScheduleManager(behavior, ...projects);
+        const worker = new ScheduleManager(behavior, ...projects.map(p => p.path));
         const msg = await worker.resume();
         Util.appendInfo(msg);
 

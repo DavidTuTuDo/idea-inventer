@@ -13,6 +13,7 @@
     "dependencies": {
         "@babel/runtime": "^7.28.4",
         "fs-extra": "^11.3.0",
+        "inquirer": "^13.1.0",
         "lodash": "^4.17.20",
         "mustache": "^4.1.0",
         "utiller": "^1.0.470"
@@ -32,9 +33,6 @@
         "@babel/traverse": "^7.27.0",
         "baseline-browser-mapping": "^2.8.30",
         "configerer": "^1.0.25",
-        "freemarker.js": "^1.4.0",
-        "glob": "^11.0.1",
-        "prettier": "^3.5.3",
-        "prettier-plugin-css-order": "^2.1.2"
+        "glob": "^11.0.1"
     }
 }
