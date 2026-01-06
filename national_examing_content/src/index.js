@@ -4,6 +4,8 @@ import _ from 'lodash';
 import libpath from 'path';
 import Moment from 'moment';
 import {databaser} from 'databaser';
+import pdf from 'pdf-parse';
+import fs from "fs";
 
 /** author:明悅
  *  create time:Thu Mar 04 2021 14:57:16 GMT+0800 (Taipei Standard Time)
@@ -19,7 +21,7 @@ class examing {
     }
 
     async getText() {
-        this.#content = await Util.getPDFText(this.#filepath);
+        this.#content = await this.getPDFText(this.#filepath);
         return this.#content.text;
     }
 
@@ -186,7 +188,14 @@ class examing {
             }
         }
         return qObjArray;
+    }
 
+    /** {numpages, numrender, info, text, version} */
+    async getPDFText(path) {
+        let dataBuffer = fs.readFileSync(path);
+        return pdf(dataBuffer).then((data) => {
+            return data;
+        });
     }
 }
 

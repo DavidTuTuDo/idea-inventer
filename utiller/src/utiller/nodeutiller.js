@@ -6,10 +6,9 @@ import ChildProcess from "child_process";
 import {configerer} from "configerer";
 import Utiller from "./index";
 import ERROR from '../exceptioner/index';
-import pdf from 'pdf-parse';
 import del from 'del';
 import fse from 'fs-extra';
-import prompt from 'prompt';
+import inquirer from 'inquirer';
 
 class NodeUtiller extends Utiller {
 
@@ -26,14 +25,6 @@ class NodeUtiller extends Utiller {
             parts.pop();
         }
         return null;
-    }
-
-    /** {numpages, numrender, info, text, version} */
-    async getPDFText(path) {
-        let dataBuffer = fs.readFileSync(path);
-        return pdf(dataBuffer).then((data) => {
-            return data;
-        });
     }
 
     printf() {
@@ -1064,31 +1055,106 @@ class NodeUtiller extends Utiller {
         return attrs;
     }
 
-    async getAnswerFromPromptQ(configs = [{
+    /**
+     * 將原本的 prompt config 格式轉換為 inquirer 格式
+     * @param {Array} configs
+     * @returns {Array} Inquirer 格式的問卷配置
+     */
+     transformConfigs = (configs) => {
+        return configs.map(cfg => ({
+            type: 'input', // 預設為輸入框
+            name: cfg.name,
+            message: cfg.description || cfg.name, // 將 description 對應到 message
+            validate: (input) => {
+                // 對應原本的 require: true
+                if (cfg.require && !input.trim()) {
+                    return `${cfg.name} is required!`;
+                }
+                return true;
+            }
+        }));
+    };
+
+    /**
+     * 改進後的 getAnswerFromPromptQ
+     * @param {Array} configs - 預設帶入單一配置的陣列
+     */
+    getAnswerFromPromptQ = async (configs = [{
         name: 'name',
         require: true,
         description: 'type the name',
-    }]) {
-        prompt.start();
-        return await prompt.get(configs);
+    }]) => {
+        const questions = this.transformConfigs(configs);
+        return inquirer.prompt(questions);
     }
 
     /**
-     * [{
-     *         name: 'name',
-     *         require: true,
-     *         description: 'type the name',
-     *     },{
-     *         name: 'age',
-     *         require: true,
-     *         description: 'type the age',
-     *     }]
-     *
-     * result:{ name: 'david', age: '18' }
-     * */
-    async getObjectFromPromptQ(...configs) {
-        prompt.start()
-        return await prompt.get(configs);
+     * 陣列選擇工具函式
+     * @param {Array<{name: string, path: string}>} projects - 專案列表陣列
+     * @description
+     * 1. 檢查傳入的陣列裡 是否有重複的 name 或 path。
+     * 2. 提供互動式勾選選單（支援空白鍵選擇、A鍵全選）。
+     * 3. 回傳使用者勾選的專案物件陣列。
+     * @limitations
+     * - 僅支援 Node.js 環境（需安裝 inquirer）。
+     * - projects 必須為非空陣列，且每個項目必須包含 name 與 path 屬性。
+     * @samples
+     * projects = [
+     *             {
+     *                 name:'悅耳',
+     *                 path:'./project-yueh-voice'
+     *             },{
+     *                 name:'悅考',
+     *                 path:'./project-kh-high'
+     *             },{
+     *                 name:'悅譜',
+     *                 path:'./project-yueh-pu'
+     *             },
+     *         ]
+     */
+    interactionByTerminalQ = async (projects) => {
+        // 1. 檢查重複性 (使用 Set 進行高效比對)
+        const names = projects.map(p => p.name);
+        const paths = projects.map(p => p.path);
+
+        const hasDuplicateName = new Set(names).size !== names.length;
+        const hasDuplicatePath = new Set(paths).size !== paths.length;
+
+        if (hasDuplicateName || hasDuplicatePath) {
+            const errorMsg = hasDuplicateName ? '專案「陣列裡」名稱 (name)' : '專案「陣列裡」路徑 (path)';
+            console.error(`\x1b[31m錯誤: 偵測到重複的 ${errorMsg}，請檢查資料來源。\x1b[0m`);
+            process.exit(1); // 終止後續行為
+        }
+
+        // 2. 建立選單選項 (將物件轉為 inquirer 格式)
+        const choices = projects.map(p => ({
+            name: `${p.name} (${p.path})`, // 顯示給使用者看的文字
+            value: p                       // 選中後回傳的原始物件內容
+        }));
+
+        try {
+            const answers = await inquirer.prompt([
+                {
+                    type: 'checkbox',
+                    name: 'selectedProjects',
+                    message: '請選擇要執行的子項 (空白鍵勾選，"a" 鍵全選，Enter 確認):',
+                    choices: choices,
+                    // ES11 Optional Chaining 範例 (確保 choices 存在)
+                    validate: (answer) => {
+                        if (answer?.length < 1) {
+                            return '請至少選擇一個子項！';
+                        }
+                        return true;
+                    }
+                }
+            ]);
+            // 4. 回傳勾選的陣列
+            return answers.selectedProjects;
+
+        } catch (error) {
+            console.error('執行選單時發生錯誤:', error?.message ?? '未知錯誤');
+            return [];
+        }
     }
 
     /** 產出一個/temp,然後把/src 複製過去, 再把裡面每一個file的 if(DEBUG)給去除掉,再加上prettier */
@@ -1240,15 +1306,9 @@ class NodeUtiller extends Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-          // const match = 'const bear = true'.match(/const\s+([a-zA-Z_]\w*)\s*=\s*(true|false)\s*;?/);
-          // console.log('is match ==> ', match);
-          // const utiller = new NodeUtiller();
-            // utiller.persistByPath('./a/b/c.js')
-            // await utiller.persistJsonFilePrettier('./temp/one.json',{a:'v',b:'x'});
-            // await utiller.updateFileOfSpecificLine('/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json.mustache',
-
-
-
+            // const utiller = new NodeUtiller();
+            // const answer = await utiller.getAnswerFromPromptQ()
+            // console.log(`it really workkks => `,answer)
         }
     )();
 }

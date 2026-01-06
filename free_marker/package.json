@@ -13,10 +13,9 @@
     "dependencies": {
         "@babel/runtime": "^7.28.4",
         "fs-extra": "^11.3.0",
-        "inquirer": "^13.1.0",
         "lodash": "^4.17.20",
         "mustache": "^4.1.0",
-        "utiller": "^1.0.470"
+        "utiller": "^1.0.471"
     },
     "devDependencies": {
         "@babel/cli": "^7.28.3",

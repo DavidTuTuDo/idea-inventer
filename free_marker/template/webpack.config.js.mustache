@@ -71,7 +71,7 @@ const config = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: [
-          stringReplaceLoader, // <<<<<<<<<<< JS/JSX 替換
+          stringReplaceLoader,
           {
             loader: "babel-loader",
             options: {
@@ -100,14 +100,14 @@ const config = {
                   },
                 },
               },
-              stringReplaceLoader, // <<<<<<<<<<< CSS Module 替換
+              stringReplaceLoader
             ],
           },
           {
             use: [
               isProd ? MiniCssExtractPlugin.loader : "style-loader",
               "css-loader",
-              stringReplaceLoader, // <<<<<<<<<<< 一般 CSS 替換
+              stringReplaceLoader,
             ],
           },
         ],
@@ -119,6 +119,13 @@ const config = {
     ],
   },
   resolve: {
+    alias: {
+      'inquirer': false,
+      'winston': false,
+      '@inquirer/core': false,
+      '@inquirer/checkbox': false,
+      '@inquirer/prompts': false
+    },
     extensions: [".js", ".jsx", ".css"],
     fallback: {
       fs: false,
@@ -137,6 +144,8 @@ const config = {
       os: false,
       readline: false,
       crypto: false,
+      tty: false,
+      async_hooks: false
     },
   },
   target: ["web"],
@@ -158,7 +167,10 @@ const config = {
           self_debug: !isProd,
         },
       },
-    })
+    }),
+    new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
+       resource.request = resource.request.replace(/^node:/, "");
+    }),
   ]
 };
 

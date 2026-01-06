@@ -16,9 +16,9 @@
     "download-file": "^0.1.5",
     "downloadjs": "^1.4.7",
     "lodash": "^4.17.20",
-    "puppeteer": "^5.4.1",
-    "scraper": "file:../scraper",
-    "utiller": "^1.0.162"
+    "puppeteer": "^24.30.0",
+    "utiller": "^1.0.162",
+    "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",

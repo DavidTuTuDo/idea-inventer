@@ -6,7 +6,6 @@ import mustache from "mustache";
 import { configerer } from "configerer";
 import Lean from "./lean";
 import beauty from "./beauty";
-import inquirer from 'inquirer';
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -10237,53 +10236,7 @@ if (configerer.DEBUG_MODE) {
             }
         ]
 
-        const interactionByTerminalQ = async (projects) => {
-            // 1. 檢查重複性 (使用 Set 進行高效比對)
-            const names = projects.map(p => p.name);
-            const paths = projects.map(p => p.path);
-
-            const hasDuplicateName = new Set(names).size !== names.length;
-            const hasDuplicatePath = new Set(paths).size !== paths.length;
-
-            if (hasDuplicateName || hasDuplicatePath) {
-                const errorMsg = hasDuplicateName ? '專案名稱 (name)' : '專案路徑 (path)';
-                console.error(`\x1b[31m錯誤: 偵測到重複的 ${errorMsg}，請檢查資料來源。\x1b[0m`);
-                process.exit(1); // 終止後續行為
-            }
-
-            // 2. 建立選單選項 (將物件轉為 inquirer 格式)
-            const choices = projects.map(p => ({
-                name: `${p.name} (${p.path})`, // 顯示給使用者看的文字
-                value: p                       // 選中後回傳的原始物件內容
-            }));
-
-            // 3. 執行 inquirer 勾選選單
-            try {
-                const answers = await inquirer.prompt([
-                    {
-                        type: 'checkbox',
-                        name: 'selectedProjects',
-                        message: '請選擇要執行的專案 (空白鍵勾選，"a" 鍵全選，Enter 確認):',
-                        choices: choices,
-                        // ES11 Optional Chaining 範例 (確保 choices 存在)
-                        validate: (answer) => {
-                            if (answer?.length < 1) {
-                                return '請至少選擇一個專案！';
-                            }
-                            return true;
-                        }
-                    }
-                ]);
-                // 4. 回傳勾選的陣列
-                return answers.selectedProjects;
-
-            } catch (error) {
-                console.error('執行選單時發生錯誤:', error?.message ?? '未知錯誤');
-                return [];
-            }
-        }
-
-        const projects = await interactionByTerminalQ(currents);
+        const projects = await Util.interactionByTerminalQ(currents);
         console.log(projects);
         const behavior = Util.getNodeEnvVariable('type');
         const worker = new ScheduleManager(behavior, ...projects.map(p => p.path));

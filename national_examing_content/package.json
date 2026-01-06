@@ -14,7 +14,8 @@
     "configerer": "^1.0.11",
     "databazer": "^1.0.11",
     "lodash": "^4.17.20",
-    "utiller": "^1.0.162"
+    "utiller": "^1.0.162",
+    "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",

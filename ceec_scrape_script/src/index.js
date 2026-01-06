@@ -2,9 +2,10 @@ import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from 'utiller';
 import _ from 'lodash';
 import libpath from 'path';
-import Moment from 'moment';
 import Browser from "./browser";
 import {databazer as Databaser} from "databazer";
+import pdf from 'pdf-parse';
+import fs from "fs";
 
 /** author:明悅
  *  create time:Wed Oct 13 2021 17:25:32 GMT+0800 (Taipei Standard Time)
@@ -176,11 +177,11 @@ class ceec_scrape_script {
 
         const answers = [];
         if (pathInfoOfAnswer !== undefined && info.year >= 90) {
-            const pdfOfAnswer = await Util.getPDFText(pathInfoOfAnswer.absolute);
+            const pdfOfAnswer = await this.getPDFText(pathInfoOfAnswer.absolute);
             answers.push(...this.analysisAnswerTexts(pdfOfAnswer.text, info));
         }
 
-        const pdfOfQuestion = await Util.getPDFText(pathInfoOfQuestion.absolute);
+        const pdfOfQuestion = await this.getPDFText(pathInfoOfQuestion.absolute);
         const texts = pdfOfQuestion.text;
 
         /**
@@ -285,6 +286,14 @@ class ceec_scrape_script {
         const files = Util.findFilePathBy(path, (file) => _.isEqual(file.extension, 'pdf'));
         const file = _.find(files, (file) => _.isEqual(file.fileNameExtension, `110學測英文試卷 .pdf`));
         await this.toEachQuestions(file);
+    }
+
+    /** {numpages, numrender, info, text, version} */
+    async getPDFText(path) {
+        let dataBuffer = fs.readFileSync(path);
+        return pdf(dataBuffer).then((data) => {
+            return data;
+        });
     }
 
 
