@@ -185,15 +185,14 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     uploadBriefImages = async (files) => {
         if (_.sum([this.getLengthOfBriefPhoto(), _.size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
-        await this.handleIdOfBooze();
-
-        const pathsOfImage = await Promise.all(files.map(async (file) => await this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze())));
-
+        const isNew = await this.handleIdOfBooze(true);
+        const pathsOfImage = await Util.execute4Tasks(files, async (file) => await this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze()));
         this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), { photos: this.getBriefPhotos() }, this.getIdOfBooze());
+        if (isNew) this.getComponent().props.navigate(`/gaia/${this.getIdOfBooze()}`);
     };
 
-    handleIdOfBooze = async () => {
+    handleIdOfBooze = async (skipNavigate = false) => {
         const id = Util.isUndefinedNullEmpty(this.getIdOfBooze()) ? this.getParamOfPidInPath() : this.getIdOfBooze();
         if (Util.isUndefinedNullEmpty(id) || _.isEqual(BOOZE_OF_UNCREATED, id)) {
             /** 如果商品ID 還沒創建時，必須先拿到document id才能有唯一碼作為圖片路徑需求 */
@@ -201,8 +200,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             const latest = await this.apiOfBooze.submitBoozeItem(this.getComponent(), this.getObjectOfBooze());
             this.setIdOfBooze(latest.value.id);
             this.setBooze(latest.value);
-            this.getComponent().props.navigate(`/gaia/${this.getIdOfBooze()}`);
-        } else this.setIdOfBooze(id);
+            if (!skipNavigate) this.getComponent().props.navigate(`/gaia/${this.getIdOfBooze()}`);
+            return true;
+        } else {
+            this.setIdOfBooze(id);
+            return false;
+        }
     };
 
     recoverBooze4Sure = async () => {

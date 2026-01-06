@@ -49,9 +49,9 @@ class BaseComponent extends MuiComponent {
 
     setPageFullTitle = (title) => {
         const userInfo = require("./BaseUserInfo").default;
-        const brand = userInfo.getNameOfBrand()
+        const brand = userInfo.getNameOfBrand();
         document.title = `[${brand}]${title}`;
-    }
+    };
 
     isDisposableComponent() {
         return false;

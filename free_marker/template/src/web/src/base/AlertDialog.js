@@ -196,7 +196,7 @@ class AlertDialog extends MuiComponent {
                 />
             );
         } else return null;
-    }
+    };
 
     renderContent = () => {
         const self = this;

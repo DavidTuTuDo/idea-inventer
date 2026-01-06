@@ -10042,7 +10042,7 @@ class BuildApplication {
         await handler.persistImageFolder();
         handler.persistIndexAndLessFiles();
         handler.persistLessLibs();
-        await new beauty(libpath.resolve(CURRENT_PROJECT)).formatAll();
+        await new beauty(libpath.resolve(this.projectRootPath)).formatAll();
         await new beauty(libpath.resolve(PATH_OF_COMPONENT_MODULE)).formatAll();
         Util.appendInfo(`persistent() succeed`);
     }
