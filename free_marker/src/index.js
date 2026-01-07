@@ -8584,7 +8584,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             arrayOfProps.push({ disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfDisabled)}()` });
 
         if (node.hasTypeOfTextField()) arrayOfProps.push({ type: node.getTypeOfTextField() });
-        else if (node.isNumber()) arrayOfProps.push({ type: 'number' });
+        else if (node.isNumber()) arrayOfProps.push({ type: 'text' });
 
 
         switch (typeOfView) {
@@ -8667,7 +8667,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(latest)`)
             }else if (node.isTextFieldView()) {
                 const latest = () => node.hasInputRegEx() ? `self.getLatestValueByEvent(event).replace(${node.getInputRegEx()},'')` : 'self.getLatestValueByEvent(event)';
-                stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(${latest()})` : `${latest()}`}`);
+                stmts.push(`const latestValue = ${node.isNumber() ? `self.handleNumber(event, ${node.getFieldName()})` : `${latest()}`}`);
                 paramStmt = `latestValue`;
                 if (node.isBelong2AutoComplete())
                     stmts.push(`${node.getPreciseAttributeParentName()}.${node.getPreciseViewParent().getFunctionNameOfAutoCompleteInvalidate()}(latestValue).then()`)

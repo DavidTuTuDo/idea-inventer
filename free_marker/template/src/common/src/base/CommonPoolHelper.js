@@ -11,11 +11,19 @@ class CommonPoolHelper {
         this.queues[`functions`] = new InfinitePool(0, `functions`).runByEachTaskInBackGround();
         /** functions處理file IO(WORD->PDF檔) 有可能 timeout */
         this.queues[`functions`].enableTaskTimeout(true, 60000);
+        this.setHandlerForEach();
     }
 
     async submitTo(queueName, async_func, priority = `low`, taskName = "noName") {
         const result = await this.queues[queueName].addTaskAndWait4Result(async_func, priority, taskName);
         return result;
+    }
+
+    setHandlerForEach() {
+        for (const queueName in this.queues) {
+            const handler = (error) => console.log(`在Web專案裡發生的'${queueName}', 發生了${error.message}`);
+            this.queues[queueName].setTaskFailHandler(handler);
+        }
     }
 
     /** 避免很多api 發送時, 需要先完成登入程序, 所以預設是 singleThread 去處理 fetch 和 submit */

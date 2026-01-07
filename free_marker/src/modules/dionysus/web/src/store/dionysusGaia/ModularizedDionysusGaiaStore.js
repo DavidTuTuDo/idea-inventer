@@ -185,14 +185,14 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     uploadBriefImages = async (files) => {
         if (_.sum([this.getLengthOfBriefPhoto(), _.size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
-        const isNew = await this.handleIdOfBooze(true);
+        await this.handleIdOfBooze(true);
         const pathsOfImage = await Util.execute4Tasks(files, async (file) => await this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze()));
+        console.log(`987456 竟然走到這之後，就不會再動了ＱＱ this.getIdOfBooze() => ${this.getIdOfBooze()} `,' ===> ',pathsOfImage);
         this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), { photos: this.getBriefPhotos() }, this.getIdOfBooze());
-        if (isNew) this.getComponent().props.navigate(`/gaia/${this.getIdOfBooze()}`);
     };
 
-    handleIdOfBooze = async (skipNavigate = false) => {
+    handleIdOfBooze = async () => {
         const id = Util.isUndefinedNullEmpty(this.getIdOfBooze()) ? this.getParamOfPidInPath() : this.getIdOfBooze();
         if (Util.isUndefinedNullEmpty(id) || _.isEqual(BOOZE_OF_UNCREATED, id)) {
             /** 如果商品ID 還沒創建時，必須先拿到document id才能有唯一碼作為圖片路徑需求 */
@@ -200,12 +200,11 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             const latest = await this.apiOfBooze.submitBoozeItem(this.getComponent(), this.getObjectOfBooze());
             this.setIdOfBooze(latest.value.id);
             this.setBooze(latest.value);
-            if (!skipNavigate) this.getComponent().props.navigate(`/gaia/${this.getIdOfBooze()}`);
-            return true;
-        } else {
-            this.setIdOfBooze(id);
-            return false;
-        }
+            this.getComponent().props.navigate(`/gaia/${this.getIdOfBooze()}`);
+            await Util.syncDelay(10);
+            /** 1.跳轉後可能產生componentMount/didMount(導致context遺失)，需要讓event loop跑完。
+             *  讓this.component正確指到當前的instance，否則會產生loading會個轉不停（reason:1.） */
+        } else this.setIdOfBooze(id);
     };
 
     recoverBooze4Sure = async () => {
@@ -217,6 +216,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     deleteBooze4Sure = async () => {
         await this.apiOfBooze.deleteBoozeItem(this.getComponent(), this.getIdOfBooze());
         await this.apiOfVariant.deleteVariants(this.getComponent(), true, this.getIdOfBooze());
+        /** todo:需要刪除storage底下的圖片們 */
         this.getComponent().showInfoSnackMessage(`已成功刪除`);
     };
 

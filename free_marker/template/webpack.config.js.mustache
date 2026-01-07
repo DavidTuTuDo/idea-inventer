@@ -158,7 +158,7 @@ const config = {
     }),
     new webpack.IgnorePlugin({
       resourceRegExp: /^\.\/.+/,
-      contextRegExp: /pdf-parse|prompt|winston|nodeutiller/,
+      contextRegExp: /winston|nodeutiller/,
     }),
     new webpack.DefinePlugin({
       process: {
@@ -274,8 +274,10 @@ if (isProd) {
     open: true,
     hot: true,
     host: "0.0.0.0",
+    allowedHosts: 'all',
     historyApiFallback: true,
     client: {
+      webSocketURL: 'auto://0.0.0.0:0/ws',
       overlay: {
         warnings: false,
         runtimeErrors: (error) => {

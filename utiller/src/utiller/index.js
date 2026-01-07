@@ -389,6 +389,32 @@ class Utiller {
         return true;
     }
 
+    /**
+     * 判斷參數是否為 Async Function 或回傳 Promise 的 Task
+     * @param {any} p 待檢查的參數
+     * @returns {boolean}
+     */
+    isAsyncP = (p) => {
+        // 1. 檢查是否為 AsyncFunction 定義
+        // 使用可選鏈 (Optional Chaining) 確保 input 不為空
+        if (p?.constructor?.name === 'AsyncFunction') {
+            return true;
+        }
+
+        // 2. 檢查是否為 Promise 實例 (原生 Promise)
+        if (p instanceof Promise) {
+            return true;
+        }
+
+        // 3. 檢查是否為 Thenable 物件 (廣義 Promise)
+        // 這是為了相容 async/await 語法，因為它能處理任何具有 .then() 的物件
+        return (
+            !!p &&
+            (typeof p === 'object' || typeof p === 'function') &&
+            typeof p.then === 'function'
+        );
+    };
+
     async syncDelayRandom(min = 3000, max = 5000) {
         const random = this.getRandomValue(min, max);
         await this.syncDelay(random);

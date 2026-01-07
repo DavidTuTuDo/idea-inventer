@@ -63,6 +63,40 @@ class MuiComponent extends React.Component {
         }
     }
 
+    handleNumber = (event, currentValue) => {
+        // 1. 取得原始字串
+        let nextValue = event?.target?.value;
+
+        // 2. 如果使用者完全刪除內容，允許回傳空字串 (或是 0，視你的需求而定)
+        if (nextValue === "") return "";
+
+        // 3. 過濾掉非數字與非小數點的字元
+        // 如果過濾後的字串與輸入不符（代表有英文字母），直接擋掉回傳舊值
+        if (/[^0-9.]/g.test(nextValue)) {
+            return currentValue;
+        }
+
+        // 4. 防止輸入多個小數點 (例如 153.12.3)
+        const dots = nextValue.split(".");
+        if (dots.length > 2) {
+            return currentValue;
+        }
+
+        // 5. 處理前導零：僅在「不是 0.」開頭且長度 > 1 時處理
+        if (nextValue.length > 1 && nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
+            nextValue = nextValue.replace(/^0+/, "") || "0";
+        }
+
+        // 6. 驗證是否為合法格式
+        // 檢查是否結尾是點，或是合法的數字字串
+        if (nextValue.endsWith(".") || !isNaN(_.toNumber(nextValue))) {
+            return nextValue;
+        }
+
+        // 7. 若以上皆非，回傳舊值
+        return currentValue;
+    }
+
     gotoUrlWithNewTabDirectly(url) {
         window.open(url, "_blank");
     }

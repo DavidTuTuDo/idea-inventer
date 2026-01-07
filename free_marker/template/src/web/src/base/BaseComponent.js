@@ -47,6 +47,24 @@ class BaseComponent extends MuiComponent {
         this.propsOfMobX = props;
     }
 
+    /** 瘋掉，不知道為什麼task.then()會讓韓式執行到一半，然後異常死掉後，導致loading bar跑不完，只好正規的做好以下任務
+     * @param task 要執行的非同步事件
+     * @param thenDo 如果有行為要在then之後執行，必須是function(同步)
+     * @param catahDo 如果有行為要在catch之後執行，必須是function(同步)
+     * */
+    exeAsyncT = ({ task, thenDo, catchDo }) => {
+        task.then((msg) => {
+            if(Util.isAsyncP(thenDo)) this.exeAsyncT(thenDo)
+            else if (_.isFunction(thenDo)) thenDo(msg);
+            else {/** default behavior => 尚未想到 */
+            }
+        }).catch((error) => {
+            if(Util.isAsyncP(catchDo)) this.exeAsyncT(catchDo)
+            if (_.isFunction(catchDo)) thenDo(error)
+            else this.showErrorSnackMessage(error.message);
+        }).finally(() => this.setLoadingViewVisibility(false))
+    };
+
     setPageFullTitle = (title) => {
         const userInfo = require("./BaseUserInfo").default;
         const brand = userInfo.getNameOfBrand();

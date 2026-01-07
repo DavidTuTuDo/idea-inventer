@@ -20,7 +20,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
 
     onApolloDialogSubmit = async (...param) => {
         const result = param.pop();
-        this.getStore().setScheduleResult(result).then();
+        this.exeAsyncT({task:this.getStore().setScheduleResult(result)});
     };
 
     onDionysusGaiaAppendMainChipClicked(param) {
@@ -73,16 +73,16 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     onFilesSelected(files) {
-        this.getStore().uploadBriefImages(files).then();
+        this.exeAsyncT({task:this.getStore().uploadBriefImages(files)});
     }
 
     onDionysusGaiaCreateChipClicked(param) {
         /** 新增一個booze */
-        this.getStore().updateBooze4Sure().then();
+        this.exeAsyncT({task:this.getStore().updateBooze4Sure()});
     }
 
     onDionysusGaiaUpdateChipClicked(param) {
-        this.getStore().updateBooze4Sure().then();
+        this.exeAsyncT({task:this.getStore().updateBooze4Sure()});
     }
 
     getInjectStyleOfDionysusGaiaUpdateChip(dionysusGaia) {
@@ -94,7 +94,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     onDionysusGaiaRecoverChipClicked(param) {
-        this.getStore().recoverBooze4Sure().then();
+        this.exeAsyncT({task:this.getStore().recoverBooze4Sure()});
     }
 
     onDionysusGaiaDeletedChipClicked(param) {
@@ -105,7 +105,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     onDionysusGaiaVisibilitySwitchChange(param) {
-        this.getStore().onVisibilityChanged().then();
+        this.exeAsyncT({task:this.getStore().onVisibilityChanged()})
     }
 
     isValidOfParamOfPid(pid) {

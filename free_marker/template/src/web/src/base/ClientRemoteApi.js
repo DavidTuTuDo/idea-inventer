@@ -214,6 +214,7 @@ class ClientRemoteApi extends CommonRemoteApi {
         if (view !== undefined) {
             // 替換：移除 instanceof BaseComponent 檢查，改為檢查方法是否存在
             if (view && typeof view.setLoadingViewVisibility === "function") {
+                console.log(`48451615543 handleApiExecute 讓 view.setLoadingViewVisibility`);
                 view.setLoadingViewVisibility(true);
             } else {
                 // 如果 view 存在但沒有 setLoadingViewVisibility 方法，則拋出錯誤

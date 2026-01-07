@@ -184,7 +184,7 @@ else
 fi
 
 # ==========================================
-# 4. 初始化服務 (Web, Firestore, Storage) (冪等性)
+# 4. 初始化服務 (Web, Firestore, Storage, Hosting) (冪等性)
 # ==========================================
 # --- 4A. Web App 檢查與創建 (獲取 firebaseConfig.json) ---
 WEB_APP_EXISTS=false
@@ -220,6 +220,57 @@ echo "📦 啟用 Storage 服務 (使用 Firebase 預設儲存桶)..."
 gcloud services enable storage-component.googleapis.com --project "$PROJECT_ID"
 echo "✅ 儲存桶 gs://${PROJECT_ID}.appspot.com 已存在，跳過手動創建。"
 
+# --- 4D. Hosting 初始化與版本限制設定 (新增功能) ---
+echo "🌐 初始化 Hosting 設定與版本保留上限..."
+gcloud services enable firebasehosting.googleapis.com --project "$PROJECT_ID"
+
+# 建立預設的公開目錄 (如果不存在)
+mkdir -p public
+if [ ! -f "public/index.html" ]; then
+    echo "<h1>Project $PROJECT_ID is ready!</h1>" > public/index.html
+fi
+
+# 自動產生 firebase.json
+if [ ! -f "firebase.json" ]; then
+    cat <<EOF > firebase.json
+{
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
+EOF
+    echo "✅ 已自動生成 firebase.json"
+fi
+
+# 自動產生 .firebaserc
+cat <<EOF > .firebaserc
+{
+  "projects": {
+    "default": "$PROJECT_ID"
+  }
+}
+EOF
+echo "✅ 已自動生成 .firebaserc"
+
+# 使用 gcloud 設定 Hosting 版本的保留上限為 10
+echo "⚙️ 正在設定 Hosting 版本保留上限為 10 個版本..."
+set +e
+gcloud firebase hosting sites update "$PROJECT_ID" \
+    --version-retention-limit=10 \
+    --project "$PROJECT_ID"
+if [ $? -eq 0 ]; then
+    echo "✅ Hosting 版本限制設定成功！"
+else
+    echo "⚠️ 無法透過指令設定 Hosting 限制。這通常是因為網站尚未進行首次部署。"
+    echo "   您可以稍後在 Firebase Console 手動調整，或在首次 'firebase deploy' 後再試一次。"
+fi
+set -e
+
 # ==========================================
 # 5. 安裝 Extension (冪等性，強制重新嘗試)
 # ==========================================
@@ -247,7 +298,6 @@ if [ "$EXTENSION_INSTALLED" = false ]; then
     echo "1. 腳本將暫停，請您手動輸入以下 6 個參數："
     echo "   - LOCATION: $REGION_ASIA"
     echo "   - STAGING_LOCATION: $REGION_ASIA"
-    # 【語法修正】已修正此行缺少 'echo' 的錯誤
     echo "   - SMTP_CONNECTION_URI: $SMTP_URI (請直接貼上此完整字串)"
     echo "   - DEFAULT_FROM: $USER_EMAIL"
     echo "   - DEFAULT_REPLY_TO: $USER_EMAIL"
@@ -312,8 +362,8 @@ echo "憑證位置:"
 echo "   - Web App 配置: ./credential/firebaseConfig.json"
 echo "   - Admin SDK 金鑰: ./credential/admin-sdk-key.json"
 echo ""
-echo "💡 後續步驟 (請手動執行):"
-echo "1. 在當前目錄執行 'firebase init' 建立本地專案結構 (firebase.json)。"
-echo "2. 配置您的 Functions、Hosting 相關檔案。"
+echo "💡 後續步驟:"
+echo "1. 本地專案結構已自動生成 (firebase.json, .firebaserc)。"
+echo "2. 您可以直接執行 'firebase deploy' 部署您的第一個版本。"
 echo "3. 運行 'firebase emulators:start' 開始開發。"
 echo "------------------------------------------------"
