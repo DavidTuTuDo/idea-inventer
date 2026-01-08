@@ -187,7 +187,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
         await this.handleIdOfBooze(true);
         const pathsOfImage = await Util.execute4Tasks(files, async (file) => await this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze()));
-        console.log(`987456 竟然走到這之後，就不會再動了ＱＱ this.getIdOfBooze() => ${this.getIdOfBooze()} `,' ===> ',pathsOfImage);
+        console.log(`987456 竟然走到這之後，就不會再動了ＱＱ this.getIdOfBooze() => ${this.getIdOfBooze()} `, " ===> ", pathsOfImage);
         this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), { photos: this.getBriefPhotos() }, this.getIdOfBooze());
     };

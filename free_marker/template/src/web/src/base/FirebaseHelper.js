@@ -853,31 +853,14 @@ class FirebaseHelper extends BaseFirebase {
      * @param {string} file.name - 原始檔案名稱 (e.g., 'image.jpg')。
      * @param {Blob} file.blob - 檔案的 Blob 物件，包含實際的二進制資料。
      * @param {string} [folder="public"] - 儲存檔案的 Storage 路徑資料夾名稱。
+     * @param {string} [maxSize="5MB"] -單個檔案的儲存上限。
      * @param {string} [fileNameExtension] - 上傳後在 Storage 中使用的檔案名稱（可包含或不包含副檔名）。若提供，將覆蓋 file.name。
      * @param {number} [timeoutMs=30000] - 上傳操作的逾時時間（毫秒）。
      * @param {number} [maxSizeInBytes=5242880] - 允許上傳的最大檔案大小（位元組）。
      * @returns {Promise<string>} - 成功上傳後返回檔案的下載 URL (Download URL)。
      * @throws {Error} - 如果檔案格式無效、超過大小限制、上傳失敗或逾時，則拋出錯誤。
      */
-    uploadStorageFile = async (
-        file,
-        folder = "public",
-        fileNameExtension = undefined,
-        timeoutMs = 30000,
-        maxSizeInBytes = 5 * 1024 * 1024 // 預設 5MB (5242880 bytes)
-    ) => {
-        // --- 輔助函式定義 ---
-
-        // 格式化位元組數為人類可讀的 KB/MB/GB 格式
-        const formatBytes = (bytes, decimals = 2) => {
-            if (bytes === 0) return "0 Bytes";
-            const k = 1024;
-            const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-        };
-
+    uploadStorageFile = async (file, folder = "public", maxSize = "5MB", { fileNameExtension = undefined, timeoutMs = 30000 } = {}) => {
         // 根據檔案名稱判斷 ContentType
         const getContentType = (fileName) => {
             const extension = fileName.split(".").pop().toLowerCase();
@@ -894,22 +877,13 @@ class FirebaseHelper extends BaseFirebase {
             return mimeTypes[extension] || "application/octet-stream";
         };
 
-        // --- 參數檢查 ---
+        if (!file || !file.name || !file.blob) throw new Error("Invalid file format. Expecting { name, blob }.");
 
-        if (!file || !file.name || !file.blob) {
-            throw new Error("Invalid file format. Expecting { name, blob }.");
-        }
+        if (!(file.blob instanceof Blob)) throw new Error("file.blob must be a Blob object.");
 
-        if (!(file.blob instanceof Blob)) {
-            throw new Error("file.blob must be a Blob object.");
-        }
-
+        const maxSizeInBytes = Util.getNumOfFileS(maxSize);
         // 檢查檔案大小並拋出格式化後的錯誤訊息
-        if (file.blob.size > maxSizeInBytes) {
-            throw new Error(`File size (${formatBytes(file.blob.size)}) exceeds the limit of ${formatBytes(maxSizeInBytes)}.`);
-        }
-
-        // --- 準備上傳資料 ---
+        if (file.blob.size > maxSizeInBytes) throw new Error(`檔案 (${Util.getReadableOfFileS(file.blob.size)}) 已超出限制 ${Util.getReadableOfFileS(maxSizeInBytes)}.`);
 
         let timerId;
         const uid = Util.getRandomHashV2(10);
@@ -960,33 +934,15 @@ class FirebaseHelper extends BaseFirebase {
             return downloadURL;
         } catch (error) {
             if (timerId) clearTimeout(timerId); // 清除計時器
-
             // 判斷是否是因為取消而產生的錯誤
-            if (error.code === "storage/canceled") {
-                Util.appendInfo("上傳已被取消 (Timeout)");
-            }
-
+            if (error.code === "storage/canceled") Util.appendInfo("上傳已被取消 (Timeout)");
             throw error;
         }
     };
 
-    uploadStorageFiles = async (files, folder = "public", fileNameExtensions = [], maxSizeInBytes = 5 * 1024 * 1024) => {
-        if (!Array.isArray(files) || files.length === 0) {
-            throw new Error("Invalid input: files should be a non-empty array.");
-        }
-
-        const uploadPromises = files.map(async (file, index) => {
-            try {
-                const fileNameExt = fileNameExtensions[index] ?? undefined;
-                return await this.uploadStorageFile(file, folder, fileNameExt, maxSizeInBytes);
-            } catch (err) {
-                const uid = Util.getRandomHashV2(10);
-                Util.appendError(`${uid} Skipping file due to error: ${err.message}`, err);
-                return null;
-            }
-        });
-
-        const urls = await Promise.all(uploadPromises);
+    uploadStorageFiles = async (files, folder = "public", maxSize = "5MB", { fileNameExtension, timeoutMs = 30000 } = {}) => {
+        if (!Array.isArray(files) || files.length === 0) throw new Error("Invalid input: files should be a non-empty array.");
+        const urls = await Util.execute4Tasks(files, async (file) => await this.uploadStorageFile(file, folder, maxSize, { fileNameExtension, timeoutMs }));
         return urls.filter(Boolean);
     };
 

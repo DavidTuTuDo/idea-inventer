@@ -4186,6 +4186,79 @@ class Utiller {
         }));
     }
 
+    /**
+     * 把檔案大小，找個最適當的表是法aka
+     * 格式化位元組數為人類可讀的 KB/MB/GB 格式
+     */
+    getReadableOfFileS = (bytes, decimals = 2) => {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+    };
+
+    /**
+     * 將儲存容量字串轉換為位元組 (Bytes) 數值
+     * * @param {string|number} input - 容量字串，如 '2.3KB', '3.78MB', '4mb', '3.33kb', '2.2456GB'
+     * @returns {number} - 轉換後的 Byte 數值
+     * @throws {Error} - 當格式不符或單位無法識別時拋出錯誤
+     * * @example
+     * parseStorageSize('3MB');        // 回傳: 3145728
+     * parseStorageSize('4mb');        // 回傳: 4194304
+     * parseStorageSize('3.33kb');     // 回傳: 3409.92
+     * parseStorageSize('1b');         // 回傳: 1 (若 1b 代表 1 Byte)
+     * parseStorageSize('2.2456GB');   // 回傳: 2411183374.336
+     * parseStorageSize('10K');        // 回傳: 10240
+     */
+    getNumOfFileS = (input) => {
+        // 1. 基本類型檢查與格式化
+        if (input === null || input === undefined) {
+            throw new Error('輸入不能為空');
+        }
+
+        // 統一轉大寫並去除兩端空格
+        const str = String(input).toUpperCase().trim();
+
+        // 2. 正規表達式拆分：
+        // (\d+(\.\d+)?) -> 第一群組：數字（支援整數或小數）
+        // \s* -> 允許數字與單位間有空格
+        // ([A-Z]*)      -> 第二群組：單位字母（A-Z）
+        const match = str.match(/^(\d+(\.\d+)?)\s*([A-Z]*)$/);
+
+        if (!match) {
+            throw new Error(`[Invalid Format] 無法解析：'${input}'。請確保格式如 '5MB'`);
+        }
+
+        const value = parseFloat(match[1]);
+        const unit = match[3];
+
+        // 3. 定義單位倍率對照表 (ES11 可使用指數運算子 **)
+        // 根據標準：B=1, K=1024, M=1024^2, G=1024^3, T=1024^4
+        const unitMap = {
+            '': 1,
+            'B': 1,
+            'K': 1024,
+            'KB': 1024,
+            'M': 1024 ** 2,
+            'MB': 1024 ** 2,
+            'G': 1024 ** 3,
+            'GB': 1024 ** 3,
+            'T': 1024 ** 4,
+            'TB': 1024 ** 4
+        };
+
+        // 4. 驗證單位合法性
+        // 使用 in 運算子檢查 Key 是否存在
+        if (!(unit in unitMap)) {
+            throw new Error(`[Unknown Unit] 未知的容量單位：'${unit}'`);
+        }
+
+        // 5. 回傳計算結果
+        return value * unitMap[unit];
+    };
+
 }
 
 if (configerer.DEBUG_MODE) {

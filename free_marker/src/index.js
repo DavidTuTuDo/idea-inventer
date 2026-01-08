@@ -111,6 +111,9 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /** storage上傳檔案時都必須限制單個檔案大小 */
+    fileMaximum = '5MB'
+
     /** 第一次部署functions(gen2)之後會產生一個隨機碼，這會用來組成url */
     randomHashOfFunc = 'abcdefghijk'
 
@@ -4187,7 +4190,7 @@ class BaseBuilder extends PathBase {
                 params = [`predicate = async (objectOfLatest,transaction,ref) => objectOfLatest`, ...params]
                 break;
             case `upload storage file`:
-                params = ['blob', ...params];
+                params = ['blob', ...params, 'options'];
                 break;
             case `fetch without condition`:
             case `delete object`:
@@ -4889,7 +4892,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         child, Util.camel('uploadStorageOf', child.getName()),
                         [
-                            `return await self.uploadStorageFile(blob, folder);`
+                            `return await self.uploadStorageFile(blob, folder, '${child.fileMaximum}', options);`
                         ], `upload storage file`, true, true);
                 }
                 contents.push(`${child.getFieldName()} : ${this.getPreciseValue(child)}`);
@@ -7743,14 +7746,20 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         /** storageFolderPath : permission */
         const task = async (node) => {
             const folderName = node.getStorageFolderName();
-            if (!Util.exist(permissions[folderName])) {
-                permissions[node.getStorageFolderName()] = node.hasPermission() ? node.getStoragePermission() : node.getDefaultStoragePermission();
-            } else {
-                if (node.hasPermission()) {
-                    permissions[folderName] = node.getStoragePermission();
-                }
-            }
-        }
+            const hasPerm = node.hasPermission();
+
+            // 如果該 folder 已存在且 node 本身沒權限，則不執行更新
+            if (permissions[folderName] && !hasPerm) return;
+
+            // 取得基礎權限：優先取專屬權限，否則取預設權限
+            const permission = hasPerm ? node.getStoragePermission() : node.getDefaultStoragePermission();
+
+            // 注入寫入限制條件
+            permission.write = `${permission.write} && request.resource.size < ${Util.getNumOfFileS(node.fileMaximum)}`;
+
+            // 存回全體變數
+            permissions[folderName] = permission;
+        };
         await this.recursiveDoingOfNodeEachStruct((node) => node.hasStorageFolder(), task)
         const stmts = [];
         for (const name in permissions) {

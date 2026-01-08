@@ -20,7 +20,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
 
     onApolloDialogSubmit = async (...param) => {
         const result = param.pop();
-        this.exeAsyncT({task:this.getStore().setScheduleResult(result)});
+        this.exeAsyncT(this.getStore().setScheduleResult(result));
     };
 
     onDionysusGaiaAppendMainChipClicked(param) {
@@ -73,16 +73,16 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     onFilesSelected(files) {
-        this.exeAsyncT({task:this.getStore().uploadBriefImages(files)});
+        this.exeAsyncT(this.getStore().uploadBriefImages(files));
     }
 
     onDionysusGaiaCreateChipClicked(param) {
         /** 新增一個booze */
-        this.exeAsyncT({task:this.getStore().updateBooze4Sure()});
+        this.exeAsyncT(this.getStore().updateBooze4Sure());
     }
 
     onDionysusGaiaUpdateChipClicked(param) {
-        this.exeAsyncT({task:this.getStore().updateBooze4Sure()});
+        this.exeAsyncT(this.getStore().updateBooze4Sure());
     }
 
     getInjectStyleOfDionysusGaiaUpdateChip(dionysusGaia) {
@@ -94,7 +94,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     onDionysusGaiaRecoverChipClicked(param) {
-        this.exeAsyncT({task:this.getStore().recoverBooze4Sure()});
+        this.exeAsyncT(this.getStore().recoverBooze4Sure());
     }
 
     onDionysusGaiaDeletedChipClicked(param) {
@@ -105,7 +105,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     onDionysusGaiaVisibilitySwitchChange(param) {
-        this.exeAsyncT({task:this.getStore().onVisibilityChanged()})
+        this.exeAsyncT(this.getStore().onVisibilityChanged());
     }
 
     isValidOfParamOfPid(pid) {

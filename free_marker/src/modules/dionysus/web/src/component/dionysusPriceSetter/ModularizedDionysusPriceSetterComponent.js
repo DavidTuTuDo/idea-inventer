@@ -16,25 +16,30 @@ class ModularizedDionysusPriceSetterComponent extends BaseDionysusPriceSetterCom
 
     onDionysusPriceSetterBatchUpdateChipClicked(param) {
         const self = this;
-        self.exeAsyncT({task:this.getComponentInstance()
-            .getStore()
-            .onVariantsPriceUpdate(
-                self.getStore()
-                    .getVariants()
-                    .map((each) => this.normalize(each)),
-                self
-            )})
+        self.exeAsyncT(
+            this.getComponentInstance()
+                .getStore()
+                .onVariantsPriceUpdate(
+                    self
+                        .getStore()
+                        .getVariants()
+                        .map((each) => this.normalize(each)),
+                    self
+                )
+        );
     }
 
     onDionysusPriceSetterVariantUpdateIconButtonClicked(param) {
-        this.exeAsyncT({task:this.getComponentInstance()
-            .getStore()
-            .onVariantPriceUpdate(
-                this.normalize(param.object),
-                this.getStore()
-                    .getVariants()
-                    .map((each) => this.normalize(each))
-            )})
+        this.exeAsyncT(
+            this.getComponentInstance()
+                .getStore()
+                .onVariantPriceUpdate(
+                    this.normalize(param.object),
+                    this.getStore()
+                        .getVariants()
+                        .map((each) => this.normalize(each))
+                )
+        );
     }
 
     getInjectStyleOfDionysusPriceSetterVariantUpdateIconButton(variant) {

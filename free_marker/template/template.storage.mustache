@@ -26,29 +26,8 @@ service firebase.storage {
       return request.auth != null && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    function sizeLowerThan2MB() {
-      return request.resource.size < 2 * 1024 * 1024;
-    }
-
-    function sizeLowerThan5MB() {
-        return request.resource.size < 5 * 1024 * 1024;
-    }
-
-    function sizeLowerThan20MB() {
-        return request.resource.size < 20 * 1024 * 1024;
-    }
-
-    function sizeLowerThan25MB() {
-        return request.resource.size < 25 * 1024 * 1024;
-    }
-
-    function sizeLowerThan30MB() {
-        return request.resource.size < 30 * 1024 * 1024;
-    }
-
-
 match /public/{fileId} {
-allow write: if isAdmin() && sizeLowerThan5MB()
+allow write: if isAdmin() && request.resource.size < 5242880
 allow read: if alwaysTrue()
 }
 

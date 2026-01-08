@@ -570,10 +570,19 @@ class CommonRemoteApi {
     }
 
     /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */
-    async uploadStorageFile(blob, folder = "public", fileNameExtension) {
+    async uploadStorageFile(blob, folder = "public", maxSize, options) {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} start upload storage => folder:/${folder}`);
-        const result = await firebase.uploadStorageFile(blob, folder, fileNameExtension);
+        const result = await firebase.uploadStorageFile(blob, folder, maxSize, options);
+        Util.appendInfo(`${uid} finish upload storage => url(${result})`);
+        return result;
+    }
+
+    /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */
+    async uploadStorageFiles(blobs, folder = "public", maxSize, options) {
+        const uid = Util.getRandomHashV2(10);
+        Util.appendInfo(`${uid} start upload storage => folder:/${folder}`);
+        const result = await firebase.uploadStorageFiles(blobs, folder, maxSize, options);
         Util.appendInfo(`${uid} finish upload storage => url(${result})`);
         return result;
     }

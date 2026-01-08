@@ -95,7 +95,7 @@ class MuiComponent extends React.Component {
 
         // 7. 若以上皆非，回傳舊值
         return currentValue;
-    }
+    };
 
     gotoUrlWithNewTabDirectly(url) {
         window.open(url, "_blank");

@@ -52,17 +52,20 @@ class BaseComponent extends MuiComponent {
      * @param thenDo 如果有行為要在then之後執行，必須是function(同步)
      * @param catahDo 如果有行為要在catch之後執行，必須是function(同步)
      * */
-    exeAsyncT = ({ task, thenDo, catchDo }) => {
+    exeAsyncT = (task, { thenDo, catchDo } = {}) => {
         task.then((msg) => {
-            if(Util.isAsyncP(thenDo)) this.exeAsyncT(thenDo)
+            if (Util.isAsyncP(thenDo)) this.exeAsyncT(thenDo);
             else if (_.isFunction(thenDo)) thenDo(msg);
-            else {/** default behavior => 尚未想到 */
+            else {
+                /** default behavior => 尚未想到 */
             }
-        }).catch((error) => {
-            if(Util.isAsyncP(catchDo)) this.exeAsyncT(catchDo)
-            if (_.isFunction(catchDo)) thenDo(error)
-            else this.showErrorSnackMessage(error.message);
-        }).finally(() => this.setLoadingViewVisibility(false))
+        })
+            .catch((error) => {
+                if (Util.isAsyncP(catchDo)) this.exeAsyncT(catchDo);
+                if (_.isFunction(catchDo)) thenDo(error);
+                else this.showErrorSnackMessage(error.message);
+            })
+            .finally(() => this.setLoadingViewVisibility(false));
     };
 
     setPageFullTitle = (title) => {
