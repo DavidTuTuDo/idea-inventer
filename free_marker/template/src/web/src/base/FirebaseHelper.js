@@ -912,7 +912,6 @@ class FirebaseHelper extends BaseFirebase {
             }, timeoutMs);
         });
 
-        /** 讓呼叫畫面可以監測上傳進度
         uploadTask.on('state_changed',
             (snapshot) => {
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -920,7 +919,6 @@ class FirebaseHelper extends BaseFirebase {
                 // 這裡可以發送事件給 UI 更新進度條
             }
         );
-        */
 
         try {
             // 4. 等待 上傳完成 或 逾時錯誤

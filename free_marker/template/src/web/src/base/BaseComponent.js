@@ -5,15 +5,11 @@ import React from "react";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
-import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Slide from "@mui/material/Slide";
-import Backdrop from "@mui/material/Backdrop";
 import Card from "@mui/material/Card";
-import Snackbar from "@mui/material/Snackbar";
 import Chip from "@mui/material/Chip";
-import MuiAlert from "@mui/material/Alert";
 import Config from "../config";
 import { observer } from "mobx-react";
 import Countdown from "react-countdown";
@@ -23,13 +19,12 @@ import ImageDialogView from "./ImageDialogView";
 import UserInfo from "../base/BaseUserInfo";
 import EventBus from "./CommonEventBus";
 import MuiComponent from "./MUIComponent";
-import ArrowBackIosRounded from "@mui/icons-material/ArrowBackIosRounded";
-import ArrowForwardIosRounded from "@mui/icons-material/ArrowForwardIosRounded";
 import AlertDialog from "./AlertDialog";
 import AlertMenu from "./AlertMenu";
 import copy from "copy-to-clipboard";
 import functions from "../functions";
 import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
+import BaseSnackView, { SnackStore } from "./BaseSnackView";
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -39,12 +34,13 @@ class BaseComponent extends MuiComponent {
     jobExecutorLock = false;
     loginDialogRef = React.createRef();
     propsOfMobX;
-
     /** true就表示 Asynctask正在執行中，不能再被觸發, false表示可以 */
+    storeOfSBar;
 
     constructor(props) {
         super(props);
         this.propsOfMobX = props;
+        this.storeOfSBar = new SnackStore();
     }
 
     /** 瘋掉，不知道為什麼task.then()會讓函式執行到一半，然後異常死掉後，導致loading bar跑不完，只好正規的做好以下任務
@@ -93,22 +89,6 @@ class BaseComponent extends MuiComponent {
         return false;
     }
 
-    arrowOfBackward() {
-        return (
-            <div className={"SlideIndicatorArrowDiv"}>
-                <ArrowBackIosRounded />
-            </div>
-        );
-    }
-
-    arrowOfForward() {
-        return (
-            <div className={"SlideIndicatorArrowDiv"}>
-                <ArrowForwardIosRounded />
-            </div>
-        );
-    }
-
     isMobileDevice() {
         return isMobile;
     }
@@ -129,27 +109,6 @@ class BaseComponent extends MuiComponent {
     clearScrollToBottomJobs() {
         this.jobsOfScrollToBottom.length = 0;
     }
-
-    toPreciseNumber = (input, regEx) => {
-        // 核心邏輯 B：處理負號：確保負號 (-) 只在開頭，並只出現一次
-        let numericValue = input.replace(regEx, "");
-        const negativeMatch = numericValue.match(/-/g);
-        if (negativeMatch && negativeMatch.length > 1) {
-            // 如果有多個負號，只保留第一個（開頭的）
-            numericValue = numericValue.substring(0, numericValue.indexOf("-") + 1) + numericValue.substring(numericValue.indexOf("-") + 1).replace(/-/g, "");
-        } else if (negativeMatch && numericValue.indexOf("-") > 0) {
-            // 如果負號不在開頭，將其移除
-            numericValue = numericValue.replace(/-/g, "");
-        }
-
-        // 核心邏輯 C：處理小數點：確保小數點 (.) 只出現一次
-        const decimalMatch = numericValue.match(/\./g);
-        if (decimalMatch && decimalMatch.length > 1) {
-            // 如果有多個小數點，只保留第一個
-            numericValue = numericValue.substring(0, numericValue.indexOf(".") + 1) + numericValue.substring(numericValue.indexOf(".") + 1).replace(/\./g, "");
-        }
-        return _.toNumber(numericValue) ?? "";
-    };
 
     componentWillUnmount() {
         /** 執行unsubscribe */
@@ -176,8 +135,7 @@ class BaseComponent extends MuiComponent {
     }
 
     /**
-     *
-     * @param urlsOfLinePay : {app:'',web:''}
+     * @param stringOfRaw : { app:'universal link(app內可以跳轉到linepay的url=>app:linepay)',web:'網頁版的應用'}
      */
     routeToLinePayCheckoutPage(stringOfRaw) {
         const urlsOfLinePay = JSON.parse(stringOfRaw);
@@ -478,10 +436,15 @@ class BaseComponent extends MuiComponent {
     }
 
     render() {
+        const ObservableSnackView = observer(({ ...props }) => {
+            if (this.isDialogComponent()) return null;
+            return <BaseSnackView {...props} />
+        });
+
         const self = this;
+        console.log(`655456213 ${this.getComponentName()}-BaseComponent的render() 來惹!`)
         return (
             <div className={"RootViewDiv"} style={{ ...this.style, paddingTop: (self.getStore().hasAppBar() ? 8 : 0) + self.getStore().getAppBarHeight() }}>
-                {self.renderOverallLoadingView()}
 
                 <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
                     {self.renderViewByStatus()}
@@ -493,11 +456,18 @@ class BaseComponent extends MuiComponent {
 
                 {self.renderImageDialog()}
 
-                {self.renderSnackView()}
+                <ObservableSnackView
+                    componentX={this}
+                    open={this.storeOfSBar.visible}
+                    store={this.storeOfSBar} />
 
                 {self.renderGlobalDialogView()}
             </div>
         );
+    }
+
+    getSelectedSuggest(value, suggests) {
+        if (_.isArray(suggests) && value) return _.find(suggests, (suggest) => _.isEqual(_.toString(suggest.value), _.toString(value)));
     }
 
     shouldDisplayLoadingArea(items = []) {
@@ -625,22 +595,6 @@ class BaseComponent extends MuiComponent {
         this.enableFileSelectView(accepts, multiple);
     }
 
-    renderOverallLoadingView() {
-        if (this.isNavigator()) {
-            return undefined;
-        }
-
-        return (
-            <Backdrop open={this.getStore().isOverallLoading()} className={"BaseComponentGlobalLoadingRootBackdrop"}>
-                <div className={"BaseComponentGlobalLoadingDiv"}>
-                    <CircularProgress />
-
-                    <Typography className={"BaseComponentGlobalLoadingTypography"}>{this.getStore().getTipOfOverallLoading()}</Typography>
-                </div>
-            </Backdrop>
-        );
-    }
-
     /**
      * Custom hook to trigger the visibility based on scroll direction.
      * 只有在向上滑動 (Scrolled Up) 時才返回 true。
@@ -752,10 +706,6 @@ class BaseComponent extends MuiComponent {
         return false;
     }
 
-    setGlobalLoadingViewVisibility(visibility = true, loadingStringTip = "正在載入中") {
-        this.getStore().setOverallLoadingStatus(visibility, visibility ? loadingStringTip : ``);
-    }
-
     renderImageDialog = () => {
         if (this.isDialogComponent()) return null;
         const self = this;
@@ -780,90 +730,12 @@ class BaseComponent extends MuiComponent {
         this.listOfFunctionOfUnsubscribe.push(subscribeFunction);
     }
 
-    /** ↓↓↓===== SnackView 用到的field,遲早要搬運成獨立的 class =====↓↓↓ */
-    durationOfSnackVisible = 3000;
-    snackExtraTaskFunction = undefined;
-    snackMessageType = "info";
-    snackMessage = "default message";
-
-    defaultSnackExtra() {
-        return {
-            type: `info` /** error,warning,success, info */,
-            duration: 5000,
-            func: {
-                name: "default",
-                task: async () => {
-                    await Util.syncDelay();
-                    Util.appendInfo("default snack task message!");
-                }
-            }
-        };
-    }
-
-    getSelectedSuggest(value, suggests) {
-        if (_.isArray(suggests) && value) return _.find(suggests, (suggest) => _.isEqual(_.toString(suggest.value), _.toString(value)));
-    }
-
-    renderSnackView() {
-        if (this.isDialogComponent()) return null;
-        const self = this;
-
-        function Alert(props) {
-            return <MuiAlert elevation={6} variant="filled" {...props} />;
-        }
-
-        function hasSnackExtraFunction() {
-            return self.snackExtraTaskFunction && self.snackExtraTaskFunction.name !== "default";
-        }
-
-        function onSnackViewCloseClicked() {
-            self.getStore().setSnackVisibility(false);
-            self.snackExtraTaskFunction = self.defaultSnackExtra();
-        }
-
-        function renderSnackExtraFunctionView() {
-            if (hasSnackExtraFunction()) {
-                return (
-                    <Button
-                        className={"BaseSnackFuncButton"}
-                        color="secondary"
-                        size="large"
-                        onClick={() => {
-                            self.snackExtraTaskFunction.task().then();
-                            onSnackViewCloseClicked();
-                        }}>
-                        {self.snackExtraTaskFunction.name}
-                    </Button>
-                );
-            }
-            return null;
-        }
-
-        return (
-            <Snackbar
-                anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left"
-                }}
-                open={this.getStore().getSnackVisibility()}
-                autoHideDuration={self.durationOfSnackVisible}
-                onClose={onSnackViewCloseClicked}>
-                <div>
-                    <Alert className={"BaseSnackAlert"} onClose={onSnackViewCloseClicked} severity={self.snackMessageType}>
-                        {self.snackMessage}
-                    </Alert>
-                    {renderSnackExtraFunctionView()}
-                </div>
-            </Snackbar>
-        );
-    }
-
     showWarningSnackMessage(message) {
         return this.setSnackViewVisibility(true, message, { type: `warning` });
     }
 
-    showInfoSnackMessage(message) {
-        return this.setSnackViewVisibility(true, message, { type: `info` });
+    showInfoSnackMessage(message, func) {
+        return this.setSnackViewVisibility(true, message, { type: `info`, func });
     }
 
     showErrorSnackMessage(message) {
@@ -875,35 +747,21 @@ class BaseComponent extends MuiComponent {
     }
 
     /**
-     * extra.type: |'error','success','info','warning' |
-     * extra.func.tack 只能放 async task */
-    setSnackViewVisibility(visible, message, extra = this.defaultSnackExtra()) {
-        const self = this.getComponentInstance();
-
-        if (visible && self.getStore().getSnackVisibility()) {
-            self.getStore().setSnackVisibility(false);
-            Util.syncDelay(1).then(() => {
-                /** 為了等待響應mobx的行為 ,syncDelay會把行為放在下一個stack */
-                sync().then();
-            });
-        } else {
-            sync().then();
-        }
-
-        async function sync() {
-            extra = Util.merO(self.defaultSnackExtra(), extra);
-            self.durationOfSnackVisible = extra.duration;
-            self.snackExtraTaskFunction = extra.func;
-            self.snackMessage = message;
-            self.snackMessageType = extra.type;
-            await Util.syncDelay(1);
-            /** 因為snackMessage set之後會響應mobx的行為,syncDelay會把setVisible放在下一個stack */
-            self.getStore().setSnackVisibility(visible);
-        }
+     * 控制 SnackBar 顯示與隱藏的核心方法 (已重構為對接 SnackStore)
+     * @param {boolean} visible - true: 顯示, false: 隱藏
+     * @param {string} message - 要顯示的訊息內容
+     * @param {object} config - 額外設定參數 (相容舊有邏輯)
+     * @param {string} [config.type='info'] - 訊息類型: 'info' | 'success' | 'warning' | 'error'
+     * @param {number} [config.duration=3000] - 顯示時間(毫秒)
+     * @param {object} [config.func] - 額外按鈕設定 { name: '按鈕名稱', task: async function }
+     * @returns {boolean} - 總是回傳 true (維持舊有 API 行為)
+     */
+    setSnackViewVisibility(visible, message, config = {}) {
+        console.log(`481521231 有哦!就是要進來這裡實現setSnackViewVisibility()`)
+        if (visible) this.storeOfSBar.execution(message, config.type, config);
+        else this.storeOfSBar.close();
         return true;
     }
-
-    /** ↑↑↑===== SnackView 用到的field,遲早要搬運成獨立的 class =====↑↑↑ */
 
     CountdownView = observer(({ date, title }) => {
         const TimeDisplayView = ({ days, hours, minutes, seconds, completed }) => {
@@ -1155,7 +1013,7 @@ class BaseComponent extends MuiComponent {
         }
     }
 
-    invokePhoneBehavior(phone) {
+    invokePhoneBehavior = (phone) => {
         if (!Util.isUndefinedNullEmpty(phone)) {
             this.copyTextToClipboard(phone);
             const link = document.createElement(`a`);

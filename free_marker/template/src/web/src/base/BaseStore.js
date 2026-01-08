@@ -50,12 +50,6 @@ class BaseStore extends ClientRemoteApi {
     @observable
     messageOfListIsEmpty = "目前遠端沒有資料";
 
-    @observable
-    overallLoading = false;
-
-    @observable
-    overallLoadingTip = "正在載入中．．．";
-
     parentNode;
 
     docRef;
@@ -72,9 +66,6 @@ class BaseStore extends ClientRemoteApi {
 
     @observable
     updateTime;
-
-    @observable
-    snackVisibility = false;
 
     hasNextPageBehavior = true;
 
@@ -294,10 +285,6 @@ class BaseStore extends ClientRemoteApi {
         return _.isEqual(this.state, "loading");
     }
 
-    isOverallLoading() {
-        return this.overallLoading;
-    }
-
     @action
     setErrorMsg(message) {
         Util.appendError(`${this.getComponent().getComponentName()} setErrorMsg被呼叫 => ${message}，這會導致fetch()失效`);
@@ -373,16 +360,6 @@ class BaseStore extends ClientRemoteApi {
 
     filter(obj) {
         return obj;
-    }
-
-    @action
-    setOverallLoadingStatus(loading, string) {
-        this.overallLoading = loading;
-        this.overallLoadingTip = string;
-    }
-
-    getTipOfOverallLoading() {
-        return this.overallLoadingTip;
     }
 
     getSelectorParam() {

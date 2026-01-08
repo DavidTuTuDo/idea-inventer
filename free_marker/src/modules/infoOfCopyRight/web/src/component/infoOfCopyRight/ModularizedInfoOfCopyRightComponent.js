@@ -11,8 +11,11 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
     }
 
     onInfoOfCopyRightCprtButtonClicked(param) {
-        this.showInfoSnackMessage(`當前版本：${Config.VERSION_OF_PACKAGE_JSON}`);
-        Router.gotoHomePage(this);
+        const self = this;
+        this.showInfoSnackMessage(`當前版本：${Config.VERSION_OF_PACKAGE_JSON}`, {
+            name: "首頁",
+            task: async () => Router.gotoHomePage(self)
+        });
     }
 
     getInjectStyleOfInfoOfCopyRightContactButton(infoOfCopyRight) {
