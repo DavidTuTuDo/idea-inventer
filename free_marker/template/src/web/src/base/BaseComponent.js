@@ -25,7 +25,7 @@ import copy from "copy-to-clipboard";
 import functions from "../functions";
 import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
 import BaseSnackView, { SnackStore } from "./BaseSnackView";
-
+import LoadInkingView, { loadInkingStore } from './BaseLoadInkingView';
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
     style = {};
@@ -34,7 +34,7 @@ class BaseComponent extends MuiComponent {
     jobExecutorLock = false;
     loginDialogRef = React.createRef();
     propsOfMobX;
-    /** true就表示 Asynctask正在執行中，不能再被觸發, false表示可以 */
+    /** true就表示 AsyncTask正在執行中，不能再被觸發, false表示可以 */
     storeOfSBar;
 
     constructor(props) {
@@ -132,6 +132,11 @@ class BaseComponent extends MuiComponent {
     /** 意指面畫面還沒產出捲軸效果，可以補花(例如item合計有30個，但fetch一次只拿5個，而產生捲軸效果的threshold是10個，那畫面就會再繼續自動fetch，直到產生捲軸效果)*/
     canVerticalScrollable() {
         return document.body.scrollHeight > window.innerHeight;
+    }
+
+    invalidateLoadInking = (show, { processed = 1, totalFiles = 1, progress = 0, disabled = false } = {}) => {
+        if (show) loadInkingStore.updateLoadInkingState(processed, totalFiles, progress);
+        else loadInkingStore.finish();
     }
 
     /**
@@ -444,6 +449,9 @@ class BaseComponent extends MuiComponent {
                     componentX={this}
                     open={this.storeOfSBar.visible}
                     store={this.storeOfSBar} />
+
+                <LoadInkingView
+                    componentX={this} />
 
                 {self.renderGlobalDialogView()}
             </div>

@@ -911,22 +911,22 @@ class FirebaseHelper extends BaseFirebase {
                 reject(error);
             }, timeoutMs);
         });
+        const { Application } = require("../");
+        const component = Application?.getDionysusGaiaStore()?.getComponent();
+        console.log(`uploadStorageFile() 拿到的component => `,component);
+        uploadTask.on("state_changed", (snapshot) => {
 
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log('上傳進度: ' + progress + '%');
-                // 這裡可以發送事件給 UI 更新進度條
-            }
-        );
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("上傳進度: " + progress + "%");
+            if (component) component.invalidateLoadInking(true, { progress });
+        });
 
         try {
             // 4. 等待 上傳完成 或 逾時錯誤
             // uploadTask 本身可以當作 Promise 使用
             const snapshot = await Promise.race([uploadTask, timeoutPromise]);
-
             if (timerId) clearTimeout(timerId); // 成功了，清除計時器
-
+            if (component) component.invalidateLoadInking(false);
             // 取得網址
             const downloadURL = await getDownloadURL(snapshot.ref);
             return downloadURL;

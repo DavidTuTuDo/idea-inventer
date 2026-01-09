@@ -737,3 +737,67 @@ input[type="number"]::-webkit-outer-spin-button {
         font-size: 16px;
     }
 }
+
+.LoadInkingContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .LoadInkingBreathingContent {
+        margin-top: 15vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 30px;
+        background-color: transparent;
+        pointer-events: none;
+
+        .LoadInkingTitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .LoadInkingCircle {
+            // MUI 樣式覆寫
+            .MuiCircularProgress-root {
+                transition: stroke-dashoffset 0.3s ease;
+            }
+        }
+    }
+
+    .LoadInkingBottomProgress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+
+        .MuiLinearProgress-root {
+            height: 1px;
+            background-color: rgba(0, 0, 0, 0.05);
+
+            .MuiLinearProgress-bar {
+                transition: transform 0.2s linear;
+            }
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .LoadInkingContainer .LoadInkingBreathingContent {
+        margin-top: 10vh;
+        padding: 15px 20px;
+        .LoadInkingTitle {
+            font-size: 0.95rem;
+        }
+    }
+}

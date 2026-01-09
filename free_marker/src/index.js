@@ -3768,17 +3768,12 @@ class PathBase {
 
         function append() {
             const nodes = _.filter(arrayOfEachNode, (each) => each.independence);
-
             for (const node of nodes) {
                 const nameOfReference = node.raw.ref;
-                if (_.isEmpty(nameOfReference)) {
-                    throw new ERROR(9999, `8487896 node has independence(true), but forget to ref='{nameOfNode}' `)
-                }
+                if (_.isEmpty(nameOfReference)) throw new ERROR(9999, `8487896 node has independence(true), but forget to ref='{nameOfNode}' `)
                 const nodeOfReference = mapOfIndexing[nameOfReference];
-                if (_.isUndefined(nodeOfReference)) {
+                if (_.isUndefined(nodeOfReference))
                     throw new ERROR(9999, `8487897 node has independence(true) & ref(${nodeOfReference}), but node(${nodeOfReference}) is not exist in project`)
-                }
-
                 _.merge(node.raw, _.cloneDeep(nodeOfReference));
                 delete node.raw.independence;
                 delete node.raw.ref;
@@ -3790,15 +3785,10 @@ class PathBase {
                 arrayOfEachNode.push({
                     name: node.name,
                     independence: node.independence,
-                    raw: node,
+                    raw: node
                 })
-
-                if (!!node.name)
-                    mapOfIndexing[node.name] = node;
-
-                if (_.isArray(node.children)) {
-                    mapping(...node.children);
-                }
+                if (!!node.name) mapOfIndexing[node.name] = node;
+                if (_.isArray(node.children)) mapping(...node.children);
             }
         }
 
