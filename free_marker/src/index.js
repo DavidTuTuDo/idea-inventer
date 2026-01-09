@@ -3764,7 +3764,7 @@ class PathBase {
 
     /** 把source在Codegen.enrich之前就取代掉independence的節點，未來還能發想更多功能 */
     workOfPrior(pathOfSource) {
-        console.error(`6666666666 => 這裡應該只准近來乙次 => ${this.getClassName()}`)
+        console.info(`6666666666 => 這裡應該只准近來乙次 => ${this.getClassName()}`)
 
         function append() {
             const nodes = _.filter(arrayOfEachNode, (each) => each.independence);
@@ -5342,8 +5342,8 @@ class ComponentBuilder extends BaseBuilder {
                 name: 'BaseEditorComponent',
                 from: '../../base/BaseEditorComponent'
             } : {
-                name: 'BaseComponent',
-                from: '../../base/BaseComponent'
+                name: 'ImpComponent',
+                from: '../../base/ImpComponent'
             }
         );
 
@@ -6773,7 +6773,7 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport(`React`, `react`);
         appGenerator.appendImport(`Store`, `./store`);
         appGenerator.appendImport(`Config`, `./config`);
-        appGenerator.appendImport(`BaseComponent`, `./base/BaseComponent`);
+        appGenerator.appendImport(`ImpComponent`, `./base/ImpComponent`);
         appGenerator.appendImport(`{inject,observer}`, `mobx-react`);
         appGenerator.appendImport(`{Route, Routes, BrowserRouter, useNavigate, useLocation, useParams, Navigate}`, `react-router-dom`);
         // appGenerator.appendImport(`{Route, Routes}`, `react-router`);
@@ -10246,7 +10246,7 @@ if (configerer.DEBUG_MODE) {
         ]
 
         const projects = await Util.interactionByTerminalQ(currents);
-        console.log(projects);
+        console.log(`需要執行的專案有：`,projects);
         const behavior = Util.getNodeEnvVariable('type');
         const worker = new ScheduleManager(behavior, ...projects.map(p => p.path));
         const msg = await worker.resume();
