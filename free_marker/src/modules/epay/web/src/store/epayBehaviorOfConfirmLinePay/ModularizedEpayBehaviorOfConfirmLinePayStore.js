@@ -17,6 +17,7 @@ class ModularizedEpayBehaviorOfConfirmLinePayStore extends BaseEpayBehaviorOfCon
     async onInitialFetchCompleted(collection) {
         const objectOfLinePayInfo = queryString.parse(this.getComponent().props.location.search); //console.log(params) { transactionId:2021062500677569710, orderId:Order2019101500001 };
         const idOfPreciseOrder = _.cloneDeep(objectOfLinePayInfo.orderId);
+        this.getComponent().invalidateProcessingGuard(true);
         try {
             await Functions.httpOnCallConfirmedByLinePay(this.getComponent(), {
                 idOfPreciseOrder,
@@ -25,6 +26,7 @@ class ModularizedEpayBehaviorOfConfirmLinePayStore extends BaseEpayBehaviorOfCon
         } catch (error) {
             this.getComponent().showErrorSnackMessage(error.message);
         } finally {
+            this.getComponent().invalidateProcessingGuard(false);
             this.routeToPage(idOfPreciseOrder);
         }
     }

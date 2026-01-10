@@ -186,8 +186,10 @@ if (isProd) {
                   // ... (其他設置保留)
                   compress: {
                       // ... (其他 compress 設置保留)
-                      // 由於您說 console 已經移除，我們保留 drop_debugger
+                      drop_console: true
                       drop_debugger: true,
+                      unused: true,      // 刪除未使用的變數/函數
+                      dead_code: true,    // 刪除不可達的代碼
                   },
 
                   // ✨ 核心混淆設定：強制重新命名函式和類別名稱

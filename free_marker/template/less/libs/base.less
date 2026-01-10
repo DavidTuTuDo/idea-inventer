@@ -785,3 +785,117 @@ input[type="number"]::-webkit-outer-spin-button {
         }
     }
 }
+
+@guard-bg-color: rgba(232, 245, 233, 0.9);
+@guard-primary-green: #2e7d32;
+@guard-success-green: #1b5e20;
+@guard-glow-green: 0 0 12px rgba(46, 125, 50, 0.2);
+
+.ProcessingGuardContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 12000;
+    background-color: @guard-bg-color;
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+    cursor: wait;
+
+    .ProcessingGuardContentWrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 50px;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.75);
+        border: 1.5px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 20px 60px rgba(27, 94, 32, 0.08);
+    }
+
+    .ProcessingGuardCircleSection {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 28px;
+
+        .ProcessingGuardOuterRing {
+            position: absolute;
+            top: -14px;
+            left: -14px;
+            right: -14px;
+            bottom: -14px;
+            border-radius: 50%;
+            border: 1px dashed @guard-primary-green;
+            opacity: 0.35;
+        }
+
+        .ProcessingGuardTimerCenter {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: @guard-success-green;
+
+            .ProcessingGuardSeconds {
+                font-size: 36px;
+                font-weight: 800;
+                line-height: 1;
+                font-family: 'Roboto Mono', monospace;
+            }
+
+            .ProcessingGuardUnit {
+                font-size: 11px;
+                font-weight: 600;
+                opacity: 0.6;
+                text-transform: uppercase;
+                margin-top: 4px;
+                letter-spacing: 0.5px;
+            }
+        }
+    }
+
+    .ProcessingGuardMessageBlock {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: @guard-success-green;
+
+        .ProcessingGuardIcon {
+            font-size: 34px;
+            margin-bottom: 12px;
+            opacity: 0.85;
+        }
+
+        .ProcessingGuardText {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            line-height: 1.4;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ProcessingGuardContentWrapper {
+            padding: 35px;
+            width: 82%;
+        }
+        .ProcessingGuardCircleSection {
+            transform: scale(0.8);
+            margin-bottom: 20px;
+        }
+        .ProcessingGuardMessageBlock .ProcessingGuardText {
+            font-size: 16px;
+        }
+    }
+}

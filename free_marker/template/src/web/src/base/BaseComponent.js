@@ -16,16 +16,16 @@ import Countdown from "react-countdown";
 import Router from "../router";
 import { isMobile } from "react-device-detect";
 import ImageDialogView from "./ImageDialogView";
-import UserInfo from "../base/BaseUserInfo";
 import EventBus from "./CommonEventBus";
 import MuiComponent from "./MUIComponent";
 import AlertDialog from "./AlertDialog";
 import AlertMenu from "./AlertMenu";
-import copy from "copy-to-clipboard";
-import functions from "../functions";
+
 import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
 import SnackBView, { storeOfSnackB } from "./BaseSnackView";
 import LoadInkingView, { loadInkingStore } from './BaseLoadInkingView';
+import ProcessingGuardView, { processingGuardStore } from './BaseProcessingGuardView';
+
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
     style = {};
@@ -71,6 +71,17 @@ class BaseComponent extends MuiComponent {
                 else this.setLoadingViewVisibility(false)
             });
     };
+
+    /**
+     * ProcessingGuard，通用於交易/前端必須atomic行為時，阻擋不必要點擊的保護層
+     * @param enable 是否顯示
+     * @param textOfTip 字樣
+     * @param secondsOfP 停留秒數
+     */
+    invalidateProcessingGuard(enable, { textOfTip, secondsOfP } = {}) {
+        if (enable) processingGuardStore.show(textOfTip, secondsOfP)
+        else processingGuardStore.hide()
+    }
 
     setPageFullTitle = (title) => {
         const userInfo = require("./BaseUserInfo").default;
@@ -468,6 +479,8 @@ class BaseComponent extends MuiComponent {
                 <SnackBView componentX={self} />
 
                 <LoadInkingView componentX={self} />
+
+                <ProcessingGuardView componentX={self} />
 
                 {self.renderGlobalDialogView()}
             </div>

@@ -62,10 +62,11 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     }
 
     onDionysusPlutusSubmitChipClicked(param) {
+        const self = this;
         this.execute()
             .then((result) => {
                 if (result.succeed) UserInfo.deleteCheckedCartieItemBehavior();
-                return result.behavior().then();
+                return self.exeAsyncT(result.behavior());
             })
             .catch((error) => {
                 console.error(error.message);

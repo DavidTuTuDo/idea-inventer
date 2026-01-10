@@ -1,9 +1,14 @@
 const edit = true;
 
-import BaseComponent from './BaseComponent';
+import BaseComponent from "./BaseComponent";
+import UserInfo from "../base/BaseUserInfo";
+import copy from "copy-to-clipboard";
+import functions from "../functions";
+import { utiller as Util, exceptioner as ERROR } from "utiller";
+import { isMobile } from "react-device-detect";
+
 
 class ImpComponent extends BaseComponent {
-
     constructor(props) {
         super(props);
     }
@@ -106,7 +111,7 @@ class ImpComponent extends BaseComponent {
             link.href = `tel:${phone}`;
             link.click();
         }
-    }
+    };
 
     invokeInstagramApp = (website) => {
         const forceToWebsite = true;
@@ -208,7 +213,6 @@ class ImpComponent extends BaseComponent {
         link.click();
         document.body.removeChild(link);
     }
-
 }
 
 export default ImpComponent;
