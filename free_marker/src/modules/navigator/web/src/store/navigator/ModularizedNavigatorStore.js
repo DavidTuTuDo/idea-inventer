@@ -36,7 +36,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
 
     onInitialFetchCompleted = async (collection) => {
         await super.onInitialFetchCompleted(collection);
-        this.fetchKeywordInBackgroundBehavior(this).then();
+        this.getComponent().exeAsyncT(this.fetchKeywordInBackgroundBehavior(this));
         const nameOfBrand = this.getGlobalPerspective().getNameOfBrand();
         if (!_.isEmpty(nameOfBrand)) UserInfo.setNameOfBrand(nameOfBrand);
         UserInfo.setGlobalPerspective(this.getGlobalPerspective().columnData());

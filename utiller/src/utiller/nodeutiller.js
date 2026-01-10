@@ -817,7 +817,7 @@ class NodeUtiller extends Utiller {
             }
 
         }
-        console.log(`離開updateVersionOfTemplate()的迴圈`)
+        // console.log(`離開updateVersionOfTemplate()的迴圈`)
 
         await this.copyFromFolderToDestFolder(
             '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/',

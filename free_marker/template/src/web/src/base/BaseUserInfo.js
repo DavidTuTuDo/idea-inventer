@@ -86,7 +86,7 @@ class UserInfo {
 
     onAuthStateChangedReceive = (user) => {
         Util.appendInfo("4565231213 收到authStateChanged 通知，我改變了 =>", user);
-        this.specificBehaviorOfLoginStateChange(user).then();
+        Util.exeAsyncT(this.specificBehaviorOfLoginStateChange(user));
     };
 
     /** 拿cookie的token去換到登入資訊然後呼叫emitAuthStateChanged之後的行為 */
@@ -100,8 +100,8 @@ class UserInfo {
             current = await this.apiOfUser.fetchUserItem(Application.getLatestComponent(), user.uid);
 
             //TODO:改成MergeSubmit
-            if (!current.exists) this.apiOfUser.submitUserItem(Application.getLatestComponent(), { ...user, id: user.uid }, user.uid).then();
-            else this.apiOfUser.updateUserItem(Application.getLatestComponent(), user, user.uid).then(); //不要讓main thread卡住
+            if (!current.exists) Util.exeAsyncT(this.apiOfUser.submitUserItem(Application.getLatestComponent(), { ...user, id: user.uid }, user.uid));
+            else Util.exeAsyncT(this.apiOfUser.updateUserItem(Application.getLatestComponent(), user, user.uid)); //不要讓main thread卡住
             Cookie.setUser(user);
             Util.appendInfo("登入成功, 所以寫入資料");
             Util.appendInfo("user info:", user);

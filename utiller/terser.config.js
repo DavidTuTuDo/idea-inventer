@@ -1,6 +1,6 @@
 module.exports = {
     compress: {
-        drop_console: true,      // 移除所有 console
+        drop_console: false,      // 移除所有 console
         drop_debugger: true,     // 移除所有 debugger
         passes: 2,               // 壓縮兩次（更徹底）
 

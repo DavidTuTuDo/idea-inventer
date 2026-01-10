@@ -28,7 +28,7 @@ class ModularizedDionysusVariantPhotoSetterComponent extends BaseDionysusVariant
     }
 
     onFilesSelected(files) {
-        this.getComponentInstance().getStore().onVariantPhotoUpdate(this.currentVaient, files).then();
+        this.exeAsyncT(this.getComponentInstance().getStore().onVariantPhotoUpdate(this.currentVaient, files));
     }
 
     getInjectStyleOfDionysusVariantPhotoSetterVariantPreviewChip(variant) {

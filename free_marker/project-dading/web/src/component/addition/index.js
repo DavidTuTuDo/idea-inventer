@@ -17,17 +17,17 @@ class AdditionComponent extends BaseAdditionComponent {
 
     onAdditionMemberSubmitButtonClicked(param) {
         const member = param.object;
-        member.joinMember2Order().then();
+        this.exeAsyncT(member.joinMember2Order());
     }
 
     onAdditionMemberUpdateButtonClicked(param) {
         const member = param.object;
-        member.updateMember2Order().then();
+        this.exeAsyncT(member.updateMember2Order());
     }
 
     onAdditionBatchUpdateChipClicked(param) {
         const addition = param.object;
-        addition.batchUpdateMember2Order().then();
+        this.exeAsyncT(addition.batchUpdateMember2Order());
     }
 
     onAdditionBatchCancelChipClicked(param) {

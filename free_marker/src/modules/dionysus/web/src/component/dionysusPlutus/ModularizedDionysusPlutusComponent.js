@@ -19,7 +19,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         switch (transport) {
             case Config.TransportMethod.Store711:
                 const tempVar = Util.getRandomHashV2(20);
-                this.getStore().waitResultOfCVS(tempVar).then();
+                this.exeAsyncT(this.getStore().waitResultOfCVS(tempVar));
                 const url = `${Config.urlOfSelectorOfCVS}&TempVar=${tempVar}`;
                 return this.gotoUrlWithNewTabDirectly(`https://emap.presco.com.tw/c2cemap.ashx?eshopid=870&url=${url}`);
             case Config.TransportMethod.StoreFamily:
@@ -50,7 +50,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     onDionysusPlutusWhetherPickupByMySelfCheckboxChange(param) {
         const self = this;
-        self.getStore().whetherPickupByMySelfValidate().then();
+        this.exeAsyncT(self.getStore().whetherPickupByMySelfValidate());
     }
 
     getInjectStyleOfDionysusPlutusFourthDiv(plutus) {
@@ -65,7 +65,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         this.execute()
             .then((result) => {
                 if (result.succeed) UserInfo.deleteCheckedCartieItemBehavior();
-                result.behavior().then();
+                return result.behavior().then();
             })
             .catch((error) => {
                 console.error(error.message);

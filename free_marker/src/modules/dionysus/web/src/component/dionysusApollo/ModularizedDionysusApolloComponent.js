@@ -17,7 +17,7 @@ class ModularizedDionysusApolloComponent extends BaseDionysusApolloComponent {
     }
 
     onDionysusApolloConfirmChipClicked(param) {
-        this.getStore().onScheduleConfirmSubmit().then();
+        this.exeAsyncT(this.getStore().onScheduleConfirmSubmit());
     }
 
     onDionysusApolloLoadChipClicked(param) {

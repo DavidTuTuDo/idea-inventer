@@ -74,28 +74,12 @@ class ImpComponent extends BaseComponent {
     }
 
     showErrorSnackMessage(message) {
+        console.error(message);
         return this.setSnackViewVisibility(true, message, { type: `error` });
     }
 
     showSuccessSnackMessage(message) {
         return this.setSnackViewVisibility(true, message, { type: `success` });
-    }
-
-    /**
-     * 控制 SnackBar 顯示與隱藏的核心方法 (已重構為對接 SnackStore)
-     * @param {boolean} visible - true: 顯示, false: 隱藏
-     * @param {string} message - 要顯示的訊息內容
-     * @param {object} config - 額外設定參數 (相容舊有邏輯)
-     * @param {string} [config.type='info'] - 訊息類型: 'info' | 'success' | 'warning' | 'error'
-     * @param {number} [config.duration=3000] - 顯示時間(毫秒)
-     * @param {object} [config.func] - 額外按鈕設定 { name: '按鈕名稱', task: async function }
-     * @returns {boolean} - 總是回傳 true (維持舊有 API 行為)
-     */
-    setSnackViewVisibility(visible, message, config = {}) {
-        console.log(`481521231 有哦!就是要進來這裡實現setSnackViewVisibility()`)
-        if (visible) this.storeOfSBar.execution(message, config.type, config);
-        else this.storeOfSBar.close();
-        return true;
     }
 
     invokeEMailBehavior(email, subject = "", body = "", children = "") {

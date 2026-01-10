@@ -24,7 +24,7 @@ import AlertMenu from "./AlertMenu";
 import copy from "copy-to-clipboard";
 import functions from "../functions";
 import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
-import BaseSnackView, { SnackStore } from "./BaseSnackView";
+import SnackBView, { storeOfSnackB } from "./BaseSnackView";
 import LoadInkingView, { loadInkingStore } from './BaseLoadInkingView';
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -34,34 +34,42 @@ class BaseComponent extends MuiComponent {
     jobExecutorLock = false;
     loginDialogRef = React.createRef();
     propsOfMobX;
-    /** true就表示 AsyncTask正在執行中，不能再被觸發, false表示可以 */
-    storeOfSBar;
 
     constructor(props) {
         super(props);
         this.propsOfMobX = props;
-        this.storeOfSBar = new SnackStore();
     }
 
-    /** 瘋掉，不知道為什麼task.then()會讓函式執行到一半，然後異常死掉後，導致loading bar跑不完，只好正規的做好以下任務
-     * @param task 要執行的非同步事件
-     * @param thenDo 如果有行為要在then之後執行，必須是function(同步)
-     * @param catahDo 如果有行為要在catch之後執行，必須是function(同步)
-     * */
-    exeAsyncT = (task, { thenDo, catchDo } = {}) => {
-        task.then((msg) => {
-            if (Util.isAsyncP(thenDo)) this.exeAsyncT(thenDo);
-            else if (_.isFunction(thenDo)) thenDo(msg);
-            else {
-                /** default behavior => 尚未想到 */
-            }
-        })
-            .catch((error) => {
-                if (Util.isAsyncP(catchDo)) this.exeAsyncT(catchDo);
-                if (_.isFunction(catchDo)) thenDo(error);
-                else this.showErrorSnackMessage(error.message);
+    /** 瘋掉，不知道為什麼task.then()會讓函式執行到一半，然後異常死掉後(沒執行到最後一行)，導致loading bar跑不完，只好正規的做好以下任務
+     * @param task 要執行的非同步事件[promise | async func()]
+     * @param thenDo 如果有行為要在then之後執行，必須是function|promise
+     * @param catchDo 如果有行為要在catch之後執行，必須是function|promise
+     * @param finallyDo 如果有行為要在catch之後執行，必須是function|promise
+     * @param ignore 發生錯誤時，而且沒有代入catchDo時要不要顯示錯誤
+     **/
+    exeAsyncT = (task, { thenDo, catchDo, finallyDo, ignore } = {}) => {
+        if (!Util.isP(task)) throw new Error(`[exeAsyncT]: Task is not a Promise. Received: ${typeof task}`);
+
+        // 2. 封裝處理邏輯，使其支援鏈接 (Chaining)
+        // 這裡回傳 Promise 確保外部也可以 await 它
+        return task
+            .then(async (result) => {
+                if (Util.isCallable(thenDo)) {
+                    // 使用 await 確保不管是 Async 還是普通 Function 回傳 Promise 都能被等待
+                    await thenDo(result);
+                }
             })
-            .finally(() => this.setLoadingViewVisibility(false));
+            .catch(async (error) => {
+                if (Util.isCallable(catchDo)) await catchDo(error);
+                 else if (!ignore) {
+                    console.trace(error);
+                    this.showErrorSnackMessage(error.message);
+                } else console.error(error.message);
+            })
+            .finally(async () => {
+                if (Util.isCallable(finallyDo)) await finallyDo();
+                else this.setLoadingViewVisibility(false)
+            });
     };
 
     setPageFullTitle = (title) => {
@@ -270,7 +278,7 @@ class BaseComponent extends MuiComponent {
                     return;
                 }
 
-                this.jobExecutor().then();
+                self.exeAsyncT(this.jobExecutor());
             } else {
                 Util.appendInfo(`當前任務還沒執行完畢, 忽略此次呼叫。`);
             }
@@ -424,12 +432,24 @@ class BaseComponent extends MuiComponent {
         return this.propsOfMobX.store || this.getEmptyStore();
     }
 
-    render() {
-        const ObservableSnackView = observer(({ ...props }) => {
-            if (this.isDialogComponent()) return null;
-            return <BaseSnackView {...props} />
-        });
+    /**
+     * 控制 SnackBar 顯示與隱藏的核心方法 (已重構為對接 SnackStore)
+     * @param {boolean} visible - true: 顯示, false: 隱藏
+     * @param {string} message - 要顯示的訊息內容
+     * @param {object} config - 額外設定參數 (相容舊有邏輯)
+     * @param {string} [config.type='info'] - 訊息類型: 'info' | 'success' | 'warning' | 'error'
+     * @param {number} [config.duration=3000] - 顯示時間(毫秒)
+     * @param {object} [config.func] - 額外按鈕設定 { name: '按鈕名稱', task: async function }
+     * @returns {boolean} - 總是回傳 true (維持舊有 API 行為)
+     */
+    setSnackViewVisibility(visible, message, config = {}) {
+        console.log(`481521231 有哦!就是要進來這裡實現setSnackViewVisibility()`)
+        if (visible) storeOfSnackB.execution(message, config.type, config);
+        else storeOfSnackB.close();
+        return true;
+    }
 
+    render() {
         const self = this;
         console.log(`655456213 ${this.getComponentName()}-BaseComponent的render() 來惹!`)
         return (
@@ -445,13 +465,9 @@ class BaseComponent extends MuiComponent {
 
                 {self.renderImageDialog()}
 
-                <ObservableSnackView
-                    componentX={this}
-                    open={this.storeOfSBar.visible}
-                    store={this.storeOfSBar} />
+                <SnackBView componentX={self} />
 
-                <LoadInkingView
-                    componentX={this} />
+                <LoadInkingView componentX={self} />
 
                 {self.renderGlobalDialogView()}
             </div>

@@ -36,7 +36,7 @@ class MainComponent extends BaseMainComponent {
             case "preludes":
                 return Router.gotoPortfolioPage(this, "preludes", Util.getRandomHash(10));
             default:
-                return this.gotoSingerRandomRhythm(func.getId()).then();
+                return this.exeAsyncT(this.gotoSingerRandomRhythm(func.getId()));
         }
     }
 

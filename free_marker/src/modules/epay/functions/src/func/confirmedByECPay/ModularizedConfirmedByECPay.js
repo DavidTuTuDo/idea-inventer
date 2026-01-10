@@ -76,7 +76,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
 
             this.customizeBehaviorOfSucceedTrade();
             Util.appendInfo(`ECPAY完成付款項目,更新了訂單(${contentOfSucceed.MerchantTradeNo})狀態`);
-            sendEmail.handleHttpOnCall({ idOfPreciseOrder: itemOfPreciseOrder.id }).then();
+            Util.exeAsyncT(sendEmail.handleHttpOnCall({ idOfPreciseOrder: itemOfPreciseOrder.id }));
             return "1|OK";
         } else {
             await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {

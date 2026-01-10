@@ -29,7 +29,7 @@ class ModularizedMetisSignUpComponent extends BaseMetisSignUpComponent {
     onMetisSignUpStudentAcceptChipClicked(param) {
         const student = param.object;
         /** 檢查每個欄位有沒有正確 */
-        this.getStore().submitStudentOfClass(student).then();
+        this.exeAsyncT(this.getStore().submitStudentOfClass(student));
     }
 
     getInjectPropsOfMetisSignUpStudentAcceptChip(student) {

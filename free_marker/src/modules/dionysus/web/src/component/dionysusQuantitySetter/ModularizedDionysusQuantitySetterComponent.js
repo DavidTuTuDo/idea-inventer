@@ -18,11 +18,11 @@ class ModularizedDionysusQuantitySetterComponent extends BaseDionysusQuantitySet
     }
 
     onDionysusQuantitySetterBatchUpdateChipClicked(param) {
-        this.getComponentInstance().getStore().onVariantsQuantityUpdate(this.getStore().getVariants(), this).then();
+        this.exeAsyncT(this.getComponentInstance().getStore().onVariantsQuantityUpdate(this.getStore().getVariants(), this));
     }
 
     onDionysusQuantitySetterVariantUpdateIconButtonClicked(param) {
-        this.getComponentInstance().getStore().onVariantQuantityUpdate(param.object).then();
+        this.exeAsyncT(this.getComponentInstance().getStore().onVariantQuantityUpdate(param.object));
     }
 
     getInjectStyleOfDionysusQuantitySetterVariantUpdateIconButton(variant) {

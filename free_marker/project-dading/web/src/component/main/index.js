@@ -82,7 +82,7 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainFilterSubmitButtonClicked(param) {
-        this.getStore().handleCustomFilter(_.cloneDeep(param.object.data())).then();
+        this.exeAsyncT(this.getStore().handleCustomFilter(_.cloneDeep(param.object.data())));
     }
 
     onMainFilterCancelButtonClicked(param) {
@@ -161,15 +161,15 @@ class MainComponent extends BaseMainComponent {
     }
 
     onOrderBySelectedChange(value, param) {
-        this.getStore().handleOrderByCondition().then();
+        this.exeAsyncT(this.getStore().handleOrderByCondition());
     }
 
     onMainAreaOfFuncBaseOnDatePickerChange(param) {
-        this.getStore().handleOrderByCondition(true).then();
+        this.exeAsyncT(this.getStore().handleOrderByCondition(true));
     }
 
     onMainAreaOfFuncAppendOfOrderButtonClicked(param) {
-        this.getStore().appendOrder().then();
+        this.exeAsyncT(this.getStore().appendOrder());
     }
 
     onMainOrderMenuIconButtonClicked(param) {
@@ -232,51 +232,51 @@ class MainComponent extends BaseMainComponent {
     /** -------------------- firebase測試 -------------------- **/
 
     onMainAreaOfFuncBatchOrderButtonClicked(param) {
-        this.getStore().appendsOrder().then();
+        this.exeAsyncT(this.getStore().appendsOrder());
     }
 
     onMainAreaOfFuncBatchUpdateButtonClicked(param) {
-        this.getStore().updateOrdersConditions().then();
+        this.exeAsyncT(this.getStore().updateOrdersConditions());
     }
 
     onMainAreaOfFuncTransactionTestButtonClicked(param) {
-        this.getStore().transactionPeople().then();
+        this.exeAsyncT(this.getStore().transactionPeople());
     }
 
     onMainAreaOfFuncDeleteSpecificButtonClicked(param) {
-        this.getStore().deleteSpecific().then();
+        this.exeAsyncT(this.getStore().deleteSpecific());
     }
 
     onMainAreaOfFuncDocumentAttrAppendItemButtonClicked(param) {
-        this.getStore().appendOrderMember().then();
+        this.exeAsyncT(this.getStore().appendOrderMember());
     }
 
     onMainAreaOfFuncDocumentAttrDeleteItemButtonClicked(param) {
-        this.getStore().deleteOrderMember().then();
+        this.exeAsyncT(this.getStore().deleteOrderMember());
     }
 
     onMainAreaOfFuncIncrementPeopleButtonClicked(param) {
-        this.getStore().incrementPeople().then();
+        this.exeAsyncT(this.getStore().incrementPeople());
     }
 
     onMainAreaOfFuncLengthOfButtonClicked(param) {
-        this.getStore().lengthOfOrder().then();
+        this.exeAsyncT(this.getStore().lengthOfOrder());
     }
 
     onMainAreaOfFuncFetchCountOfButtonClicked(param) {
-        this.getStore().testOfFetchCount().then();
+        this.exeAsyncT(this.getStore().testOfFetchCount());
     }
 
     onMainAreaOfFuncFetchSumOfButtonClicked(param) {
-        this.getStore().testOfFetchSum().then();
+        this.exeAsyncT(this.getStore().testOfFetchSum());
     }
 
     onMainAreaOfFuncFetchAverageOfButtonClicked(param) {
-        this.getStore().testOfFetchAverage().then();
+        this.exeAsyncT(this.getStore().testOfFetchAverage());
     }
 
     onMainAreaOfFuncFetchMultiOfButtonClicked(param) {
-        this.getStore().testOfFetchFetchMulti().then();
+        this.exeAsyncT(this.getStore().testOfFetchFetchMulti());
     }
 
     onMainAreaOfFuncUploadFileButtonClicked(param) {

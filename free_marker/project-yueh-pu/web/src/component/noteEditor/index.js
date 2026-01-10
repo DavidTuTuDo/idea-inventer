@@ -12,7 +12,7 @@ class NoteEditorComponent extends BaseNoteEditorComponent {
     }
 
     onNoteEditorFunctionAreaSubmitButtonClicked(param) {
-        this.getStore().updateStringOfSubmit().then();
+        this.exeAsyncT(this.getStore().updateStringOfSubmit());
     }
 
     onNoteEditorFunctionAreaCancelButtonClicked(param) {

@@ -5,10 +5,10 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import Chip from "@mui/material/Chip";
 import { utiller as Util } from "utiller";
-import _ from "lodash";
-import { action, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable, computed } from "mobx";
+import { observer } from "mobx-react";
 
-export class SnackStore {
+class SnackStore {
     @observable
     visible = false;
 
@@ -21,16 +21,16 @@ export class SnackStore {
     @observable
     duration = 3000;
 
-    /** snackBar點擊後的事件觸發，例如某個snackView點擊後會導引頁面到HomePage() */
+    /** snackBar點擊後的事件觸發 */
+    @observable
     taskOfTouched = null; // { name, task: async()=>{} }
 
     constructor() {
         makeObservable(this);
+        // 初始化時設置預設任務
+        this.taskOfTouched = this.defaultSnackConfigure().func;
     }
 
-    /**
-     * 預設的 Extra 設定
-     */
     defaultSnackConfigure() {
         return {
             type: "info",
@@ -45,22 +45,13 @@ export class SnackStore {
         };
     }
 
-    @action
-    setVisible(visible) {
-        this.visible = visible;
-    }
-
-    get visible() {
-        return this.visible;
-    }
-
+    /** 供外部使用的顯示 function */
     @action
     execution(message, type = "info", config = {}) {
-        const self = this;
         const execute = () => {
             const modifyConfig = { type, ...config };
-            const configuration = Util.merO(self.defaultSnackConfigure(), modifyConfig);
-            // 設置數據
+            const configuration = Util.merO(this.defaultSnackConfigure(), modifyConfig);
+
             this.message = message;
             this.type = configuration.type;
             this.duration = configuration.duration;
@@ -68,88 +59,82 @@ export class SnackStore {
             this.visible = true;
         };
 
-        // 如果當前已經是開啟狀態，先關閉稍微等待後再開啟
         if (this.visible) {
             this.visible = false;
-            Util.syncDelay(10).then(() => {
-                execute();
-            });
+            Util.syncDelay(10).then(() => execute());
         } else {
             execute();
         }
     }
 
+    @action
     close = () => {
-        // 重置為預設 task
-        this.taskOfTouched = this.defaultSnackConfigure.func;
+        const self = true;
         this.visible = false;
+        // 延遲重置，避免動畫中文字消失
+        Util.syncDelay(1000).then(() => {
+            this.taskOfTouched = this.defaultSnackConfigure().func;
+        });
     };
+
+    @computed
+    get hasSnackBomb() {
+        return this.taskOfTouched && this.taskOfTouched.name !== "default";
+    }
 }
 
-/**
- * UI Component (Class Version)
- */
-class BaseSnackView extends React.Component {
+// 在檔案內部直接實例化，比照 LoadInkingStore
+export const storeOfSnackB = new SnackStore();
 
-    constructor(props) {
-        super(props);
-    }
+const BaseSnackView = observer(({ componentX }) => {
+    // 從單一實例化的 snackStore 讀取數據
+    const { visible, duration, type, message, taskOfTouched, hasSnackBomb } = storeOfSnackB;
+    if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
 
-    onSnackViewCloseClicked = (event, reason) => {
-        if (reason === 'clickaway') return;
-        this.props.store.close();
+    const handleClose = (event, reason) => {
+        if (reason === "clickaway") return;
+        storeOfSnackB.close();
     };
 
-    hasSnackBomb = () => {
-        const { store } = this.props;
-        return store.taskOfTouched && store.taskOfTouched.name !== "default";
-    }
-
-    renderSnackTaskBombView = () => {
-        const { store, componentX } = this.props;
-        if (this.hasSnackBomb()) {
+    const renderAction = () => {
+        if (hasSnackBomb) {
             return (
                 <Chip
-                    style={{ color: "#FFF", marginLeft: "8px", marginTop:"3px" }}
+                    style={{ color: "#FFF", marginLeft: "8px", marginTop: "3px" }}
                     size="small"
                     variant="outlined"
-                    label={store.taskOfTouched.name}
+                    label={taskOfTouched.name}
                     onClick={() => {
-                        if (Util.isAsyncP(store.taskOfTouched?.task)) componentX.exeAsyncT(store.taskOfTouched.task());
-                        store.close();
-                    }} />
+                        if (Util.isAsyncP(taskOfTouched?.task)) {
+                            componentX.exeAsyncT(taskOfTouched.task());
+                        } else if (typeof taskOfTouched?.task === "function") {
+                            taskOfTouched.task();
+                        }
+                        storeOfSnackB.close();
+                    }}
+                />
             );
         }
         return null;
     };
 
-    render() {
-        const { store } = this.props;
-        // 防呆：如果沒有傳入 store 則不渲染
-        if (!store) return null;
-
-        return (
-            <Snackbar
-                anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left"
-                }}
-                open={store.visible}
-                autoHideDuration={store.duration}
-                onClose={this.onSnackViewCloseClicked}>
-                <div>
-                    <MuiAlert
-                        elevation={6}
-                        variant="filled"
-                        severity={store.type}
-                        onClose={this.onSnackViewCloseClicked}
-                        action={this.renderSnackTaskBombView()}>
-                        {store.message}
-                    </MuiAlert>
-                </div>
-            </Snackbar>
-        );
-    }
-}
+    return (
+        <Snackbar
+            anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left"
+            }}
+            open={visible}
+            autoHideDuration={duration}
+            onClose={handleClose}>
+            {/* 包一層 div 避免 MUI 渲染錯誤 */}
+            <div>
+                <MuiAlert elevation={6} variant="filled" severity={type} onClose={handleClose} action={renderAction()}>
+                    {message}
+                </MuiAlert>
+            </div>
+        </Snackbar>
+    );
+});
 
 export default BaseSnackView;

@@ -23,15 +23,15 @@ class ExamComponent extends BaseExamComponent {
     }
 
     onOrderByWhatSelectedChange(value) {
-        this.getStore().fetch(this).then();
+        this.exeAsyncT(this.getStore().fetch(this));
     }
 
     onWhichSubjectSelectedChange(value) {
-        this.getStore().fetch(this).then();
+        this.exeAsyncT(this.getStore().fetch(this));
     }
 
     onReplyTypeSelectedChange(value) {
-        this.getStore().fetch(this).then();
+        this.exeAsyncT(this.getStore().fetch(this));
     }
 
     getChoiceButtonColor(choice) {

@@ -35,7 +35,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     componentDidMount() {
         super.componentDidMount();
-        this.getStore().setCurrentTabByType(this.paramOfTypeOfTab).then();
+        this.exeAsyncT(this.getStore().setCurrentTabByType(this.paramOfTypeOfTab));
     }
 
     getInjectStyleOfEpayFootprintOrderOptionOfPendingIconButton(order) {
@@ -111,7 +111,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     onEpayFootprintTransNotifyDivClicked(param) {
         const serial = this.getStore().getDialogInputValueOfEpayFootprintTransNotify();
         if (_.size(serial) < 2) return this.showErrorSnackMessage(`物流編號填寫不正確`);
-        this.remoteAuthorFormTransport(this.order, serial).then();
+        this.exeAsyncT(this.remoteAuthorFormTransport(this.order, serial));
     }
 
     /** 賣家更新備註 */

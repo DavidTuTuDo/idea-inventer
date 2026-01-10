@@ -17,10 +17,10 @@ class ModularizedEpayMethodOfPaymentComponent extends BaseEpayMethodOfPaymentCom
 
         switch (typeOfPayment.idOfUnique) {
             case "linepay":
-                this.performCheckoutByLinePayBehavior(order.raw.id).then();
+                this.exeAsyncT(this.performCheckoutByLinePayBehavior(order.raw.id));
                 break;
             case "ecpay":
-                this.performCheckoutByECPayBehavior(order.raw.id).then();
+                this.exeAsyncT(this.performCheckoutByECPayBehavior(order.raw.id));
                 break;
         }
         // console.log(prop);

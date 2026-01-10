@@ -133,7 +133,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
         super.setCompleted(param);
         this.validateAlertImage();
         if (this.getParentNode() !== undefined) {
-            this.getParentNode().submitQuestionRecord(this).then();
+            this.getComponent().exeAsyncT(this.getParentNode().submitQuestionRecord(this));
         }
     }
 

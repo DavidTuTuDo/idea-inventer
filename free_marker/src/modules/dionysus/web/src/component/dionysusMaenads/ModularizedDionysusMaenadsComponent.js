@@ -39,7 +39,7 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
     }
 
     onDionysusMaenadsVariantOptionLabelChipClicked(param) {
-        this.getStore().setSelectedOption(param.object).then();
+        this.exeAsyncT(this.getStore().setSelectedOption(param.object));
     }
 
     getMaenadsCount(maenads) {

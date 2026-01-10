@@ -11,27 +11,27 @@ class EpayTestComponent extends BaseEpayTestComponent {
     }
 
     onEpayTestCreatePreciseOrderButtonClicked(param) {
-        this.getStore().performEPayCreateOrderBehavior().then();
+        this.exeAsyncT(this.getStore().performEPayCreateOrderBehavior());
     }
 
     onEpayTestCheckoutByEcPayButtonClicked(param) {
-        this.getStore().performCheckoutByECPayBehavior().then();
+        this.exeAsyncT(this.getStore().performCheckoutByECPayBehavior());
     }
 
     onEpayTestCheckoutByLinePayButtonClicked(param) {
-        this.getStore().performCheckoutByLinePayBehavior().then();
+        this.exeAsyncT(this.getStore().performCheckoutByLinePayBehavior());
     }
 
     onEpayTestFindEcPayPageByIdButtonClicked(param) {
-        this.getStore().performECPayPageById().then();
+        this.exeAsyncT(this.getStore().performECPayPageById());
     }
 
     onEpayTestFindLinePayPageByIdButtonClicked(param) {
-        this.getStore().performLinePayPageById().then();
+        this.exeAsyncT(this.getStore().performLinePayPageById());
     }
 
     onEpayTestCancelPreciseOrderButtonClicked(param) {
-        this.getStore().performEPayCancelOrderBehavior().then();
+        this.exeAsyncT(this.getStore().performEPayCancelOrderBehavior());
     }
 
     /** -------------------- async api -------------------- **/

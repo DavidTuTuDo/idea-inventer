@@ -20,11 +20,11 @@ class MyFatefulQuestionsComponent extends BaseMyFatefulQuestionsComponent {
     }
 
     onQuestionTypeSelectedChange(value) {
-        this.getStore().fetch(this).then();
+        this.exeAsyncT(this.getStore().fetch(this));
     }
 
     onWhichSubjectSelectedChange(value) {
-        this.getStore().fetch(this).then();
+        this.exeAsyncT(this.getStore().fetch(this));
     }
 
     onMyFatefulQuestionsFatefulItemCardClicked(param) {

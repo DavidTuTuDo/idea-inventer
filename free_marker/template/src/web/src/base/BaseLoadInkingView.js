@@ -4,7 +4,6 @@ import { observer } from 'mobx-react'; // 如果是 function component，通常�
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import LinearProgress from '@mui/material/LinearProgress';
 import { keyframes } from '@mui/system';
 
 class LoadInkingStore {
@@ -105,7 +104,6 @@ const BaseLoadInkingView = observer(({componentX}) => {
     console.log(componentX.getComponentName(),'走到了這裡');
     return (
         <div className="LoadInkingContainer">
-            {/* 中間上方：呼吸效果區域 */}
             <Box
                 className="LoadInkingBreathingContent"
                 sx={{
@@ -119,13 +117,6 @@ const BaseLoadInkingView = observer(({componentX}) => {
                 </div>
             </Box>
 
-            {/* 底部滿版線條 */}
-            <div className="LoadInkingBottomProgress">
-                <LinearProgress
-                    variant="determinate"
-                    value={progressPercent}
-                />
-            </div>
         </div>
     );
 });

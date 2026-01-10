@@ -38,77 +38,77 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         const object = param.object;
         this.getStore().setSelected("numOfWorker");
         const num = object.getDialogInputValueOfDionysusErosArrowOfNumOfWorker();
-        this.getStore().submitNumOfWorker(num).then();
+        this.exeAsyncT(this.getStore().submitNumOfWorker(num));
     }
 
     onDionysusErosArrowOfThresholdOfFreeShipByCodIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("thresholdOfFreeShipByCod");
         const price = object.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByCod();
-        this.getStore().submitThresholdOFreeShipByCod(price).then();
+        this.exeAsyncT(this.getStore().submitThresholdOFreeShipByCod(price));
     }
 
     onDionysusErosArrowOfThresholdOfCheckoutByCreditIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("thresholdOfCheckoutByCredit");
         const price = object.getDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByCredit();
-        this.getStore().submitThresholdOfCheckoutByCredit(price).then();
+        this.exeAsyncT(this.getStore().submitThresholdOfCheckoutByCredit(price));
     }
 
     onDionysusErosArrowOfThresholdOfFreeShipByRapidlyIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("thresholdOfFreeShipByRapidly");
         const price = object.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly();
-        this.getStore().submitThresholdOfFreeShipByRapidly(price).then();
+        this.exeAsyncT(this.getStore().submitThresholdOfFreeShipByRapidly(price));
     }
 
     onDionysusErosArrowOfThresholdOfFreeShipByHomeDeliveryIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("thresholdOfFreeShipByHomeDelivery");
         const price = object.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByHomeDelivery();
-        this.getStore().submitThresholdOfFreeShipByHomeDelivery(price).then();
+        this.exeAsyncT(this.getStore().submitThresholdOfFreeShipByHomeDelivery(price));
     }
 
     onDionysusErosArrowOfThresholdOfCheckoutByLinePayIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("thresholdOfCheckoutByLinePay");
         const price = object.getDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByLinePay();
-        this.getStore().submitThresholdOfCheckoutByLinePay(price).then();
+        this.exeAsyncT(this.getStore().submitThresholdOfCheckoutByLinePay(price));
     }
 
     onDionysusErosArrowOfThresholdOfFreeShipByStorePickupIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("thresholdOfFreeShipByStorePickup");
         const price = object.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByStorePickup();
-        this.getStore().submitThresholdOfFreeShipByStorePickup(price).then();
+        this.exeAsyncT(this.getStore().submitThresholdOfFreeShipByStorePickup(price));
     }
 
     onDionysusErosArrowOfPercentageOfDiscountIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("percentageOfDiscount");
         const percent = object.getDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount();
-        this.getStore().submitPercentageOfDiscount(percent).then();
+        this.exeAsyncT(this.getStore().submitPercentageOfDiscount(percent));
     }
 
     onDionysusErosArrowOfPercentageFeeOfCodIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("percentageFeeOfCOD");
         const percent = object.getDialogInputValueOfDionysusErosArrowOfPercentageFeeOfCod();
-        this.getStore().submitPercentageFeeOfCOD(percent).then();
+        this.exeAsyncT(this.getStore().submitPercentageFeeOfCOD(percent));
     }
 
     onDionysusErosArrowOfAmountOfAllowAnonymousBuyIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("allowAnonymousBuy");
         const amount = object.getDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy();
-        this.getStore().submitAmountOfAllowAnonymousBuy(amount).then();
+        this.exeAsyncT(this.getStore().submitAmountOfAllowAnonymousBuy(amount));
     }
 
     onDionysusErosArrowOfAmountOfMaximumBuyIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("amountOfMaximum");
         const amount = object.getDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy();
-        this.getStore().submitAmountOfMaximumBuy(amount).then();
+        this.exeAsyncT(this.getStore().submitAmountOfMaximumBuy(amount));
     }
 
     onDionysusErosArrowOfEcPaySetIconButtonClicked(param) {
@@ -116,99 +116,99 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
     }
 
     onDionysusErosEnableOfEnableOfCodSwitchChange(param) {
-        this.getStore().submitEnableOfCOD().then();
+        this.exeAsyncT(this.getStore().submitEnableOfCOD());
     }
 
     onDionysusErosEnableOfBoughtWithoutLoginInSwitchChange(param) {
-        this.getStore().submitWhetherBoughtWithoutLogin().then();
+        this.exeAsyncT(this.getStore().submitWhetherBoughtWithoutLogin());
     }
 
     onDionysusErosEnableOfWhetherDisplaySpecificSwitchChange(param) {
-        this.getStore().submitWhetherDisplaySpecific().then();
+        this.exeAsyncT(this.getStore().submitWhetherDisplaySpecific());
     }
 
     onDionysusErosEnableOfLinepaySwitchChange(param) {
-        this.getStore().submitWhetherEnableOfLinePay().then();
+        this.exeAsyncT(this.getStore().submitWhetherEnableOfLinePay());
     }
 
     onDionysusErosEnableOfEcPaySwitchChange(param) {
-        this.getStore().submitWhetherEnableOfEcPay().then();
+        this.exeAsyncT(this.getStore().submitWhetherEnableOfEcPay());
     }
 
     onDionysusErosEnableOfDirectPaySwitchChange(param) {
-        this.getStore().submitWhetherEnableOfDirectPay().then();
+        this.exeAsyncT(this.getStore().submitWhetherEnableOfDirectPay());
     }
 
     onDionysusErosEnableOfWhetherHomeDeliverySwitchChange(param) {
-        this.getStore().submitWhetherHomeDelivery().then();
+        this.exeAsyncT(this.getStore().submitWhetherHomeDelivery());
     }
 
     onDionysusErosEnableOfWhetherShipByRapidlySwitchChange(param) {
-        this.getStore().submitWhetherShipByRapidly().then();
+        this.exeAsyncT(this.getStore().submitWhetherShipByRapidly());
     }
 
     onDionysusErosEnableOfWhetherShipByStorePickupSwitchChange(param) {
-        this.getStore().submitWhetherShipByStorePickup().then();
+        this.exeAsyncT(this.getStore().submitWhetherShipByStorePickup());
     }
 
     onDionysusErosArrowOfFeeOfHomeDeliveryIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("feeOfHomeDelivery");
         const fee = object.getDialogInputValueOfDionysusErosArrowOfFeeOfHomeDelivery();
-        this.getStore().submitFeeOfHomeDelivery(fee).then();
+        this.exeAsyncT(this.getStore().submitFeeOfHomeDelivery(fee));
     }
 
     onDionysusErosArrowOfFeeOfInStorePickupIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("feeOfInStorePickup");
         const fee = object.getDialogInputValueOfDionysusErosArrowOfFeeOfInStorePickup();
-        this.getStore().submitFeeOfInStorePickup(fee).then();
+        this.exeAsyncT(this.getStore().submitFeeOfInStorePickup(fee));
     }
 
     onDionysusErosArrowOfFeeOfShipByCodIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("feeOfShipByCod");
         const fee = object.getDialogInputValueOfDionysusErosArrowOfFeeOfShipByCod();
-        this.getStore().submitFeeOfShipByCOD(fee).then();
+        this.exeAsyncT(this.getStore().submitFeeOfShipByCOD(fee));
     }
 
     onDionysusErosArrowOfFeeOfRapidOnDeliveryIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("rapidOnDelivery");
         const fee = object.getDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery();
-        this.getStore().submitFeeOfRapidOnDelivery(fee).then();
+        this.exeAsyncT(this.getStore().submitFeeOfRapidOnDelivery(fee));
     }
 
     onDionysusErosArrowOfThresholdOfAllowSelfPickupIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("thresholdOfAllowSelfPickup");
         const fee = object.getDialogInputValueOfDionysusErosArrowOfThresholdOfAllowSelfPickup();
-        this.getStore().submitThresholdOfAllowSelfPickup(fee).then();
+        this.exeAsyncT(this.getStore().submitThresholdOfAllowSelfPickup(fee));
     }
 
     onDionysusErosEnableOfWhetherPickupByBuyerSelfSwitchChange(param) {
-        this.getStore().submitWhetherPickupByBuyerSelf().then();
+        this.exeAsyncT(this.getStore().submitWhetherPickupByBuyerSelf());
     }
 
     onDionysusErosArrowOfMaximumOfUniqueItemsIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("maximumOfUniqueItems");
         const count = object.getDialogInputValueOfDionysusErosArrowOfMaximumOfUniqueItems();
-        this.getStore().submitMaximumOfUniqueItems(count).then();
+        this.exeAsyncT(this.getStore().submitMaximumOfUniqueItems(count));
     }
 
     onDionysusErosArrowOfTtlOfPaymentIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("ttlOfPayment");
         const min = object.getDialogInputValueOfDionysusErosArrowOfTtlOfPayment();
-        this.getStore().submitTTLOfPayment(min).then();
+        this.exeAsyncT(this.getStore().submitTTLOfPayment(min));
     }
 
     onDionysusErosArrowOfTtlOfAnonymousIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("ttlOfAnonymous");
         const min = object.getDialogInputValueOfDionysusErosArrowOfTtlOfAnonymous();
-        this.getStore().submitTTLOfAnonymous(min).then();
+        this.exeAsyncT(this.getStore().submitTTLOfAnonymous(min));
     }
 
     // YouTube 頻道/帳號
@@ -216,7 +216,7 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         const object = param.object;
         this.getStore().setSelected("yt");
         const value = object.getDialogInputValueOfDionysusErosArrowOfYtO();
-        this.getStore().submitYTQ(value).then();
+        this.exeAsyncT(this.getStore().submitYTQ(value));
     }
 
     // Instagram 帳號
@@ -224,7 +224,7 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         const object = param.object;
         this.getStore().setSelected("ig");
         const value = object.getDialogInputValueOfDionysusErosArrowOfIgO();
-        this.getStore().submitIGO(value).then();
+        this.exeAsyncT(this.getStore().submitIGO(value));
     }
 
     // TikTok 帳號
@@ -232,7 +232,7 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         const object = param.object;
         this.getStore().setSelected("tiktokO");
         const value = object.getDialogInputValueOfDionysusErosArrowOfTiktokO();
-        this.getStore().submitTikTokO(value).then();
+        this.exeAsyncT(this.getStore().submitTikTokO(value));
     }
 
     // Facebook 帳號/專頁
@@ -240,7 +240,7 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         const object = param.object;
         this.getStore().setSelected("fbO");
         const value = object.getDialogInputValueOfDionysusErosArrowOfFbO();
-        this.getStore().submitFBO(value).then();
+        this.exeAsyncT(this.getStore().submitFBO(value));
     }
 
     // 電話號碼
@@ -248,7 +248,7 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         const object = param.object;
         this.getStore().setSelected("phoneO");
         const value = object.getDialogInputValueOfDionysusErosArrowOfPhoneO();
-        this.getStore().submitPhoneO(value).then();
+        this.exeAsyncT(this.getStore().submitPhoneO(value));
     }
 
     // UnifiedB (假設是某種統一業務 ID)
@@ -256,7 +256,7 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         const object = param.object;
         this.getStore().setSelected("unifiedB");
         const value = object.getDialogInputValueOfDionysusErosArrowOfUnifiedB();
-        this.getStore().submitUnifiedB(value).then();
+        this.exeAsyncT(this.getStore().submitUnifiedB(value));
     }
 
     // 公司名稱
@@ -264,42 +264,42 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         const object = param.object;
         this.getStore().setSelected("companyO");
         const value = object.getDialogInputValueOfDionysusErosArrowOfCompanyO();
-        this.getStore().submitCompanyO(value).then();
+        this.exeAsyncT(this.getStore().submitCompanyO(value));
     }
 
     onDionysusErosArrowOfAddressOIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("addressO");
         const value = object.getDialogInputValueOfDionysusErosArrowOfAddressO();
-        this.getStore().submitAddressO(value).then();
+        this.exeAsyncT(this.getStore().submitAddressO(value));
     }
 
     onDionysusErosArrowOfEmailOIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("emailO");
         const value = object.getDialogInputValueOfDionysusErosArrowOfEmailO();
-        this.getStore().submitEmailO(value).then();
+        this.exeAsyncT(this.getStore().submitEmailO(value));
     }
 
     onDionysusErosArrowOfLineOIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("lineO");
         const value = object.getDialogInputValueOfDionysusErosArrowOfLineO();
-        this.getStore().submitLineO(value).then();
+        this.exeAsyncT(this.getStore().submitLineO(value));
     }
 
     onDionysusErosArrowOfNameOfDirectPayIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("nameOfDirectPay");
         const value = object.getDialogInputValueOfDionysusErosArrowOfNameOfDirectPay();
-        this.getStore().submitNameOfDirectPay(value).then();
+        this.exeAsyncT(this.getStore().submitNameOfDirectPay(value));
     }
 
     onDionysusErosArrowOfCautionOfDirectPayIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("cautionOfDirectPay");
         const value = object.getDialogInputValueOfDionysusErosArrowOfCautionOfDirectPay();
-        this.getStore().submitCautionOfDirectPay(value).then();
+        this.exeAsyncT(this.getStore().submitCautionOfDirectPay(value));
     }
 
     getPresetObjOfIreneQrcode() {

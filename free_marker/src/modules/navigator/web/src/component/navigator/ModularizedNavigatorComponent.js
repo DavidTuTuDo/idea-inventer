@@ -40,7 +40,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     onNavigatorLoginIconButtonClicked(param) {
-        BaseUserInfo.performLoginBehavior(this.getComponentInstance()).then();
+        this.exeAsyncT(BaseUserInfo.performLoginBehavior(this.getComponentInstance()));
     }
 
     onDrawerClosed() {

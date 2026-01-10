@@ -66,7 +66,7 @@ class EditorOfSubjectComponent extends BaseEditorOfSubjectComponent {
     }
 
     onEditorOfSubjectAreaOfStatementUpdateButtonClicked(param) {
-        this.getStore().updateStatementOfMathTypeStuff().then();
+        this.exeAsyncT(this.getStore().updateStatementOfMathTypeStuff());
     }
 
     /** -------------------- async api -------------------- **/

@@ -314,7 +314,7 @@ class BaseStore extends ClientRemoteApi {
 
         if (props && props.updateTime) this.setUpdateTime(props.updateTime);
 
-        this.onInitialCompleted(props).then();
+        this.onInitialCompleted(props).catch((error) => console.log(`88932 ${this.getClassName()} `, error.message));
     }
 
     /** 當initial()執行完之後，後續要做的項目 */

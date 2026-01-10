@@ -57,7 +57,7 @@ class BaseEditorComponent extends BaseComponent {
                             key={type.name}
                             className={"BaseEditFunctionButton"}
                             color={"primary"}
-                            onClick={() => self.handleAsyncFunction(onClickedAsyncTask, type.name, type.loadingText).then()}
+                            onClick={() => self.exeAsyncT(self.handleAsyncFunction(onClickedAsyncTask, type.name, type.loadingText))}
                             variant={"outlined"}>
                             {type.buttonText}
                         </Button>
@@ -144,7 +144,7 @@ class BaseEditorComponent extends BaseComponent {
     };
 
     onFilesSelected = (files) => {
-        this.uploadImageStorage(this, files).then();
+        this.exeAsyncT(this.uploadImageStorage(this, files));
     };
 
     renderItemEditorView(onEditClickedAsyncTask, hasPath, sign) {

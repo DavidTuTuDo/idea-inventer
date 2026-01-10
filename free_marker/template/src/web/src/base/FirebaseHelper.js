@@ -860,7 +860,7 @@ class FirebaseHelper extends BaseFirebase {
      * @returns {Promise<string>} - 成功上傳後返回檔案的下載 URL (Download URL)。
      * @throws {Error} - 如果檔案格式無效、超過大小限制、上傳失敗或逾時，則拋出錯誤。
      */
-    uploadStorageFile = async (file, folder = "public", maxSize = "5MB", { fileNameExtension = undefined, timeoutMs = 30000 } = {}) => {
+    uploadStorageFile = async (file, folder = "public", maxSize = "5MB", { view, fileNameExtension = undefined, timeoutMs = 30000 } = {}) => {
         // 根據檔案名稱判斷 ContentType
         const getContentType = (fileName) => {
             const extension = fileName.split(".").pop().toLowerCase();
@@ -911,14 +911,10 @@ class FirebaseHelper extends BaseFirebase {
                 reject(error);
             }, timeoutMs);
         });
-        const { Application } = require("../");
-        const component = Application?.getDionysusGaiaStore()?.getComponent();
-        console.log(`uploadStorageFile() 拿到的component => `,component);
         uploadTask.on("state_changed", (snapshot) => {
-
             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
             console.log("上傳進度: " + progress + "%");
-            if (component) component.invalidateLoadInking(true, { progress });
+            if (view) view.invalidateLoadInking(true, { progress });
         });
 
         try {
@@ -926,8 +922,7 @@ class FirebaseHelper extends BaseFirebase {
             // uploadTask 本身可以當作 Promise 使用
             const snapshot = await Promise.race([uploadTask, timeoutPromise]);
             if (timerId) clearTimeout(timerId); // 成功了，清除計時器
-            if (component) component.invalidateLoadInking(false);
-            // 取得網址
+            if (view) view.invalidateLoadInking(false);
             const downloadURL = await getDownloadURL(snapshot.ref);
             return downloadURL;
         } catch (error) {

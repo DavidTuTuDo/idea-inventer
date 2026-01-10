@@ -123,7 +123,7 @@ class Utiller {
             const force = _.toNumber(value)
             return _.isNumber(force) && !isNaN(force) ? force : defaultValue;
         } catch (error) {
-            Util.appendError(`448561684561 ${error.message}`)
+            this.appendError(`448561684561 ${error.message}`)
         }
         return defaultValue;
     }
@@ -135,7 +135,7 @@ class Utiller {
             const force = _.toString(value);
             return this.isOrEquals(force, '', 'undefined') ? defaultValue : trim ? _.trim(force) : force;
         } catch (error) {
-            Util.appendError(`448616845453 ${error.message}`)
+            thisappendError(`448616845453 ${error.message}`)
         }
         return defaultValue;
     }
@@ -261,8 +261,7 @@ class Utiller {
     }
 
     /**
-     * sample:
-     *
+     *  sample:
      *  string = `@desktop: ~"only screen and (min-width: 600px) and (max-width: 1680px)";`;
      *  rule = '@[desktop|mobile|desktop]';
      *  return true | false
@@ -290,20 +289,6 @@ class Utiller {
             this.appendInfo(`wow.... finally got you`);
         }
 
-    }
-
-    test = (word) => {
-        return async () => {
-            await Util.syncDelay(3000);
-            console.log('經過了三秒')
-            await Util.syncDelay(4000);
-            console.log('經過了四秒')
-            await Util.syncDelay(5000);
-            console.log('經過了五秒')
-            await Util.syncDelay(6000);
-            console.log('經過了六秒')
-            return `3423809432804 ${word}`
-        }
     }
 
     /**
@@ -388,32 +373,6 @@ class Utiller {
         }
         return true;
     }
-
-    /**
-     * 判斷參數是否為 Async Function 或回傳 Promise 的 Task
-     * @param {any} p 待檢查的參數
-     * @returns {boolean}
-     */
-    isAsyncP = (p) => {
-        // 1. 檢查是否為 AsyncFunction 定義
-        // 使用可選鏈 (Optional Chaining) 確保 input 不為空
-        if (p?.constructor?.name === 'AsyncFunction') {
-            return true;
-        }
-
-        // 2. 檢查是否為 Promise 實例 (原生 Promise)
-        if (p instanceof Promise) {
-            return true;
-        }
-
-        // 3. 檢查是否為 Thenable 物件 (廣義 Promise)
-        // 這是為了相容 async/await 語法，因為它能處理任何具有 .then() 的物件
-        return (
-            !!p &&
-            (typeof p === 'object' || typeof p === 'function') &&
-            typeof p.then === 'function'
-        );
-    };
 
     async syncDelayRandom(min = 3000, max = 5000) {
         const random = this.getRandomValue(min, max);
@@ -731,7 +690,7 @@ class Utiller {
      * @returns {Array} - 合併後的新陣列
      *
      *
-     * util.getMergedArrayBy(
+     * Util.getMergedArrayBy(
      [{id: 123, name: 'david'}, {id: 321, name: 'Joe'}],
      [{id: 321, age: 13}, {id: 123, age: 30}],
      'id')
@@ -1789,7 +1748,7 @@ class Utiller {
      *
      * sample:
      * const sample = [{name: 'a'}, {name: 'b'}];
-     * console.log(util.toObjectMap(sample, {to: 'newName', from: 'name',func:(p) => (p+'yaya')}));
+     * console.log(Util.toObjectMap(sample, {to: 'newName', from: 'name',func:(p) => (p+'yaya')}));
      * result : [ { newName: 'ayaya' }, { newName: 'byaya' } ]
      */
     toObjectMap(array, ...rules) {
@@ -1809,8 +1768,8 @@ class Utiller {
      * sample:
      const array = [{aa: '1'},{ aa: '2'}, {aa: '3'}];
      const object = {aa: '1', bb: '2', cc: '3'};
-     util.exeAll(object,(each) => each + 1)
-     util.exeAll(array,(each) => {each.aa = each.aa + 1});
+     Util.exeAll(object,(each) => each + 1)
+     Util.exeAll(array,(each) => {each.aa = each.aa + 1});
      console.log(object);  // { aa: '11', bb: '21', cc: '31' }
      console.log(array); // [ { aa: '11' }, { aa: '21' }, { aa: '31' } ]
      * 把collection 裏面的物件執行一下,會mutate本身*/
@@ -1850,7 +1809,7 @@ class Utiller {
      sample:
      const obj1 = {a:1,b:4,c:3};
      const obj2 = {b:3};
-     console.log(util.getIntersectionObject(obj1,obj2)) => { b: 4 }
+     console.log(Util.getIntersectionObject(obj1,obj2)) => { b: 4 }
      */
     getIntersectionObject(objOfMajor, objOfMinor) {
         return this.getObjectWhile(objOfMajor, objOfMinor, ((major, minor, key) => minor[key] !== undefined));
@@ -1860,7 +1819,7 @@ class Utiller {
      sample:
      const obj1 = {a:1,b:4,c:3};
      const obj2 = {b:3};
-     console.log(util.getIntersectionObject(obj1,obj2)) => { a: 1, c: 3 }
+     console.log(Util.getIntersectionObject(obj1,obj2)) => { a: 1, c: 3 }
      */
     getDifferenceObject(objOfMajor, objOfMinor) {
         return this.getObjectWhile(objOfMajor, objOfMinor, ((major, minor, key) => minor[key] === undefined));
@@ -1871,8 +1830,8 @@ class Utiller {
      const obj1 = {b:4,c:2};
      const obj2 = {b:4,c:3};
      const obj3 = {a:1,b:4,c:3};
-     console.log(util.isObjectContainAndEqual(obj1,obj3)) false
-     console.log(util.isObjectContainAndEqual(obj1,obj3)) true
+     console.log(Util.isObjectContainAndEqual(obj1,obj3)) false
+     console.log(Util.isObjectContainAndEqual(obj1,obj3)) true
      targetObject 是數量比較小那個
      */
     isObjectContainAndEqual(targetObject, mainObject) {
@@ -1984,7 +1943,7 @@ class Utiller {
     /**
      const array = _.range(0, 50).map((each) => `index Of each`);
      console.log('origin: ==> ', array.length) //origin: ==>  50
-     const result = util.getSliceArrayWithMutate(array, 10);
+     const result = Util.getSliceArrayWithMutate(array, 10);
      console.log('after: ==> ', result.length, ' | ', array.length) //after: ==>  10  |  40
      */
     getSliceArrayWithMutate(array, n) {
@@ -2006,8 +1965,8 @@ class Utiller {
      * 把array裏面的'指定index' 移動到 '特定index'
      *
      const array = [0,1,2,3,4,5,6,7];
-     console.log(util.getArrayOfMoveToSpecificIndex(array,1,0));const array = [0,1,2,3,4,5,6,7];
-     console.log(util.getArrayOfMoveToSpecificIndex(array,1,0));
+     console.log(Util.getArrayOfMoveToSpecificIndex(array,1,0));const array = [0,1,2,3,4,5,6,7];
+     console.log(Util.getArrayOfMoveToSpecificIndex(array,1,0));
      [
      1, 0, 2, 3,
      4, 5, 6, 7
@@ -2040,7 +1999,7 @@ class Utiller {
     /** 把array裏面的項目移動到指定的index
      *
      *  const array = ['a','b','c','d'];
-     console.log(util.getArrayOfMoveItemToSpecificIndex(array,array[1],0));
+     console.log(Util.getArrayOfMoveItemToSpecificIndex(array,array[1],0));
      //[ 'b', 'a', 'c', 'd' ]
      * */
     getArrayOfMoveItemToSpecificIndex(array, item, indexOfDestination) {
@@ -2051,7 +2010,7 @@ class Utiller {
     /**
      *  把指定的array item 放到頭尾
      *  const array = ['a','b','c','d'];
-     *  console.log(util.getArrayOfMoveSpecificItemToAside(array,array[1]));
+     *  console.log(Util.getArrayOfMoveSpecificItemToAside(array,array[1]));
      *[ 'a', 'c', 'd', 'b' ]
      */
     getArrayOfMoveSpecificItemToAside(array, item, toTail = true) {
@@ -2061,7 +2020,7 @@ class Utiller {
 
     /** 把指定的index放到頭尾
      *  const array = ['a','b','c','d'];
-     console.log(util.getArrayOfMoveSpecificIndexToAside(array,3,false));
+     console.log(Util.getArrayOfMoveSpecificIndexToAside(array,3,false));
      [ 'd', 'a', 'b', 'c' ]
      **/
     getArrayOfMoveSpecificIndexToAside(array, index, toTail = true) {
@@ -2107,9 +2066,7 @@ class Utiller {
      })
 
      */
-    getStringOfHandledHtml(htmlString, predicate = (document) => {
-        console.log(document)
-    }) {
+    getStringOfHandledHtml(htmlString, predicate = (document) => true) {
         const document = parse(htmlString);
         predicate(document);
         return document.toString();
@@ -4257,6 +4214,109 @@ class Utiller {
 
         // 5. 回傳計算結果
         return value * unitMap[unit];
+    }
+
+    /**
+     * 萬用函數檢查：支援 ES5, ES6+, Async, Generator
+     * 解決特定環境下 async function 被轉譯為 object 的問題
+     * @param {any} p - 欲檢查的變數
+     * @returns {boolean}
+     */
+    isCallable = (p) => {
+        // 1. 快速判斷：90% 的情況下 typeof 最快且有效
+        if (typeof p === 'function') return true;
+
+        // 2. 深度判斷：處理被轉譯 (Babel) 後可能變成 object 的 async 函數
+        if (p && typeof p === 'object') {
+            const type = Object.prototype.toString.call(p);
+            const isFunctionTag = [
+                '[object Function]',
+                '[object AsyncFunction]',
+                '[object GeneratorFunction]'
+            ].includes(type);
+
+            if (isFunctionTag) return true;
+
+            // 3. 鴨子類型檢查：如果具備 call 與 apply，視為可執行對象
+            return typeof p.call === 'function' && typeof p.apply === 'function';
+        }
+        return false;
+    }
+
+    /**
+     * 判斷參數是否為 Promise 實體
+     * 如果帶入的是尚未執行的 async function，則拋出錯誤提醒開發者
+     * 通用於 ES5 ~ ES2026
+     * @param {any} p 待檢查的參數
+     * @returns {boolean}
+     */
+    isP = (p) => {
+        if (!p) return false;
+
+        // 1. 偵測開發者錯誤：帶入的是「Async 函式本身」而非「執行後的結果」
+        const type = Object.prototype.toString.call(p);
+        const isAsyncFunction =
+            type === '[object AsyncFunction]' ||
+            (typeof p === 'function' && p.constructor?.name === 'AsyncFunction');
+
+        if (isAsyncFunction) {
+            throw new Error(
+                `[isPromise Error]: You passed an AsyncFunction instead of a Promise. ` +
+                `Did you forget to execute it? (e.g., use 'isPromise(task())' instead of 'isPromise(task)')`
+            );
+        }
+
+        // 2. 檢查標準 Promise 物件
+        if (type === '[object Promise]' || p instanceof Promise) {
+            return true;
+        }
+
+        // 3. 檢查 Thenable 物件 (廣義 Promise, 包含 Bluebird, jQuery.Deferred 等)
+        // 必須排除掉 function 本身（因為有些 function 可能帶有 then 屬性但不是 Promise）
+        // 但要保留 object 形式的 Thenable
+        return (
+            (typeof p === 'object' || typeof p === 'function') &&
+            typeof p.then === 'function'
+        );
+    };
+
+
+    /** 瘋掉，不知道為什麼task.then()會讓函式執行到一半，然後異常死掉後(沒執行到最後一行)，導致loading bar跑不完，只好正規的做好以下任務
+     * @param task 要執行的非同步事件[promise | async func()]
+     * @param thenDo 如果有行為要在then之後執行，必須是function|promise
+     * @param catahDo 如果有行為要在catch之後執行，必須是function|promise
+     * @param finallyDo 如果有行為要在catch之後執行，必須是function|promise
+     * @param ignore 發生錯誤時，而且沒有代入時要不要顯示錯誤
+     **/
+    exeAsyncT = (task, { thenDo, catchDo, finallyDo, ignore = false } = {}) => {
+        // 1. 確保 task 本身是 Promise
+        if (!this.isP(task)) {
+            console.error("Task validation failed:", task);
+            throw new Error(`[exeAsyncT]: task must be a Promise. Did you forget to call the async function?`);
+        }
+
+        // 2. 封裝處理邏輯，使其支援鏈接 (Chaining)
+        // 這裡回傳 Promise 確保外部也可以 await 它
+        return task
+            .then(async (result) => {
+                if (this.isCallable(thenDo)) {
+                    // 使用 await 確保不管是 Async 還是普通 Function 回傳 Promise 都能被等待
+                    await thenDo(result);
+                }
+            })
+            .catch(async (error) => {
+                if (this.isCallable(catchDo)) {
+                    await catchDo(error);
+                } else if (!ignore) {
+                    console.error("[exeAsyncT Catch]:", error);
+                    throw error;
+                }
+            })
+            .finally(async () => {
+                if (this.isCallable(finallyDo)) {
+                    await finallyDo();
+                }
+            });
     };
 
 }
@@ -4264,8 +4324,8 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
           // const utiller = new Utiller();
-            // console.log(utiller.getUrlPath('https://a','123','/123ko/','/gfd'));
-            // console.log(utiller.getUrlPath('123','/123ko/','/gfd'));
+          // console.log(utiller.getUrlPath('https://a','123','/123ko/','/gfd'));
+          // console.log(utiller.getUrlPath('123','/123ko/','/gfd'));
           // console.log(utiller.toPercentageDecimal(30))
           // console.log(utiller.getPriceOfPercentageBehavior(60,30, false));
           // console.log(utiller.generateAllCalendarLinks(utiller.getObjectOfStartEndDateTime('2025/11/10 ｜ 13:00 - 15:00')));

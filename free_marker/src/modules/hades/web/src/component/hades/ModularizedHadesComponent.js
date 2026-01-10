@@ -28,7 +28,7 @@ class ModularizedHadesComponent extends BaseHadesComponent {
             <JobCalendar
                 /** 當日曆日期區間變更時觸發 (由 JobCalendar 控制) */
                 onPeriodChanged={(start, end) => {
-                    self.fetchHadesOfCompound(start, end).then();
+                    self.exeAsyncT(self.fetchHadesOfCompound(start, end));
                 }}
                 /** 將 Store 原始數據標準化後傳入 JobCalendar */
                 courses={self

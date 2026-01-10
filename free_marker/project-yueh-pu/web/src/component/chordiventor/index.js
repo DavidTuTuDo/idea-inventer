@@ -35,7 +35,7 @@ class ChordiventorComponent extends BaseChordiventorComponent {
     }
 
     onChordiventorLoadChipClicked(param) {
-        this.getStore().loadLatestData().then();
+        this.exeAsyncT(this.getStore().loadLatestData());
     }
 
     onChordiventorPersistChipClicked(param) {

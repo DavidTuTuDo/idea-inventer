@@ -25,7 +25,7 @@ class ModularizedIreneTextFetchComponent extends BaseIreneTextFetchComponent {
     }
 
     onIreneTextFetchContentTextFieldChange(param) {
-        this.getStore().onTextFetchChangedNotify().then();
+        this.exeAsyncT(this.getStore().onTextFetchChangedNotify());
     }
 
     onIreneTextFetchClearIconButtonClicked(param) {

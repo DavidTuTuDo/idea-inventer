@@ -91,7 +91,7 @@ class ModularizedDemeterComponent extends BaseDemeterComponent {
         return (
             <JobCalendar
                 onPeriodChanged={(start, end) => {
-                    self.fetchHeraOfCompound(start, end).then();
+                    self.exeAsyncT(self.fetchHeraOfCompound(start, end));
                 }}
                 // courses={self.sample()}
                 courses={self.getStore().getCourses()}

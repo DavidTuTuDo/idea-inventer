@@ -4680,7 +4680,7 @@ class StoreBuilder extends BaseBuilder {
          * */
         baseGenerator.appendFunction(`initial`, ['obj', 'notify = true'], ['action'], [],
             `super.initial(obj)`,
-            ...propsStmt, `if(notify) this.onInitialCompleted(obj).then()`);
+            ...propsStmt, `if(notify) this.onInitialCompleted(obj).catch((error) => console.log('88967 ${this.getClassName()}' , error.message))`);
         baseGenerator.appendConstructor(
             `makeObservable(this)`,
             `this.initial(props)`);
@@ -4882,7 +4882,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         child, Util.camel('uploadStorageOf', child.getName()),
                         [
-                            `return await self.uploadStorageFile(blob, folder, '${child.fileMaximum}', options);`
+                            `return await self.uploadStorageFile(blob, folder, '${child.fileMaximum}', ${self.isWebPlatform() ? '{ ...options, view }' : 'options'});`
                         ], `upload storage file`, true, true);
                 }
                 contents.push(`${child.getFieldName()} : ${this.getPreciseValue(child)}`);
@@ -5416,7 +5416,7 @@ class ComponentBuilder extends BaseBuilder {
         if (componentNode.hasPageTitle()) {
             this.appendStmtIntoComponentDidMount(`this.invalidatePageTitle()`);
         }
-        this.appendStmtIntoComponentDidMount(`this.initialize().then()`)
+        this.appendStmtIntoComponentDidMount(`if(this instanceof ImpComponent) this.exeAsyncT(this.initialize())`)
         baseGenerator.appendFunction(
             {name: `invalidatePageTitle`, arrow: true}, ['title'], [], [],
             `this.setPageFullTitle(title ?? this.getStore().${this.getFunctionNameOfSimpleGetter(componentNode.getStruct().getFieldNameOfPageTitle(), false)})`
@@ -8669,7 +8669,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 stmts.push(`const latestValue = ${node.isNumber() ? `self.handleNumber(event, ${node.getFieldName()})` : `${latest()}`}`);
                 paramStmt = `latestValue`;
                 if (node.isBelong2AutoComplete())
-                    stmts.push(`${node.getPreciseAttributeParentName()}.${node.getPreciseViewParent().getFunctionNameOfAutoCompleteInvalidate()}(latestValue).then()`)
+                    stmts.push(`self.exeAsyncT(${node.getPreciseAttributeParentName()}.${node.getPreciseViewParent().getFunctionNameOfAutoCompleteInvalidate()}(latestValue))`)
             } else if (node.isSliderView()) {
                 paramStmt = `self.getLatestValueByEvent(event)`;
             } else if (node.isAutoCompleteView()) {

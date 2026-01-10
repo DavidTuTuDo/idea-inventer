@@ -100,7 +100,7 @@ class SheetComponent extends BaseSheetComponent {
 
     onSheetAdjustCenterToggleOfJoinToFavoriteSwitchChange(param) {
         this.getStore().refreshTickOfAdjustController();
-        this.getStore().submitFavoritePuState(this.getCheckStateByEvent(param.view)).then();
+        this.exeAsyncT(this.getStore().submitFavoritePuState(this.getCheckStateByEvent(param.view)));
     }
 
     onSheetAdjustCenterToggleOfHideChordSwitchChange(param) {

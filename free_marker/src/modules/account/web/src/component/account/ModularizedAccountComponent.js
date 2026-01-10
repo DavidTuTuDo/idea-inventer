@@ -19,7 +19,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     onAccountArrowOfLogoutIconButtonClicked(param) {
         const self = this;
         UserInfoRef.logout(this.getComponentInstance())
-            .then()
+            .catch((error) => self.showErrorSnackMessage(error.message))
             .finally(() => {
                 self.dismiss();
                 Router.gotoHomePage(self);

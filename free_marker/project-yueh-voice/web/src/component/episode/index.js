@@ -52,7 +52,7 @@ class EpisodeComponent extends BaseEpisodeComponent {
     }
 
     onFilesSelected(files) {
-        this.getStore().uploadVoices(files).then();
+        this.exeAsyncT(this.getStore().uploadVoices(files));
     }
 
     onEpisodeVoiceEnableSwitchChange(param) {

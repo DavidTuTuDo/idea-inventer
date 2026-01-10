@@ -14,7 +14,7 @@ class ModularizedDionysusTextFetcherComponent extends BaseDionysusTextFetcherCom
     }
 
     onDionysusTextFetcherAppendChipClicked(param) {
-        this.getStore().onTextFetcherAppendNotify().then();
+        this.exeAsyncT(this.getStore().onTextFetcherAppendNotify());
     }
 
     onDionysusTextFetcherLeaveChipClicked(param) {
@@ -22,7 +22,7 @@ class ModularizedDionysusTextFetcherComponent extends BaseDionysusTextFetcherCom
     }
 
     onDionysusTextFetcherTitleMainTextFieldChange(param) {
-        this.getStore().onTextFetcherChangedNotify().then();
+        this.exeAsyncT(this.getStore().onTextFetcherChangedNotify());
     }
 
     onDionysusTextFetcherTitleClearIconButtonClicked(param) {

@@ -19,17 +19,17 @@ class ReimburseComponent extends BaseReimburseComponent {
 
   onReimburseRecordSubmitButtonClicked(param) {
     const record = param.object;
-    record.joinRecord2Order().then();
+    this.exeAsyncT(record.joinRecord2Order());
   }
 
   onReimburseRecordUpdateButtonClicked(param) {
     const record = param.object;
-    record.updateRecord2Order().then();
+    this.exeAsyncT(record.updateRecord2Order());
   }
 
   onReimburseBatchUpdateChipClicked(param) {
     const reimburse = param.object;
-    reimburse.batchUpdateRecord2Order().then();
+    this.exeAsyncT(reimburse.batchUpdateRecord2Order());
   }
 
   onReimburseBatchCancelChipClicked(param) {

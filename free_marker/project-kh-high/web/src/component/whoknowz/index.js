@@ -34,7 +34,7 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
     }
 
     onWhoknowzSubmitButtonClicked(param) {
-        this.getStore().submitConfirmedAnswer().then();
+        this.exeAsyncT(this.getStore().submitConfirmedAnswer());
     }
 
     getInjectPropsOfWhoknowzSubmitButton = () => {
