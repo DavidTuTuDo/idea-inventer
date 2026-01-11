@@ -183,20 +183,30 @@ if (isProd) {
           new TerserPlugin({
               // ⚠️ 關鍵：確保 Terser 插件的配置是針對應用程式程式碼
               terserOptions: {
-                  // ... (其他設置保留)
                   compress: {
-                      // ... (其他 compress 設置保留)
-                      drop_console: true,
-                      drop_debugger: true,
-                      unused: true,      // 刪除未使用的變數/函數
-                      dead_code: true,    // 刪除不可達的代碼
+                      passes: 2,
+                      dead_code: true,
+                      unused: true,
+                      inline: true,
+                      join_vars: true,
+                      reduce_vars: true,
+                      collapse_vars: true,
+                      unsafe: false,
+                      unsafe_math: false,
+                      format: {
+                          beautify: false,         // ✅ 不美化，壓縮成一行
+                          comments: false,         // ✅ 移除所有註解
+                          ascii_only: false,       // 支持 Unicode 字符
+                          quote_style: 3,          // 保持原有的引號風格
+                          wrap_iife: false,        // 不包裹立即執行函數
+                      },
                   },
 
                   // ✨ 核心混淆設定：強制重新命名函式和類別名稱
                   // 這將把所有具名函式和類別名替換為 'a', 'b', 'c' 等單字母。
                   keep_classnames: false, // <-- 移除 Class 名稱 (解決 class A {})
                   keep_fnames: false,     // <-- 移除 Function 名稱 (解決 function funcA {})
-
+                  mangle: true, // ✅ 混淆所有變數名（a, b, c...）
                   output: {
                       // 需求 1: 減少體積 (移除所有註釋)
                       comments: false,
