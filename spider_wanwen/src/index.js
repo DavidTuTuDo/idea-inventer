@@ -7,7 +7,7 @@ import puppeteer from 'puppeteer';
 /** author:明悅
  *  create time:Sat Nov 22 2025 05:28:50 GMT+0800 (Taiwan Standard Time)
  */
-const ENABLE_OF_OPEN_BROWSER = true;
+const ENABLE_OF_OPEN_BROWSER = false;
 const THREAD_OF_FETCHER = 7;
 
 class spider_wanwen extends Spider {

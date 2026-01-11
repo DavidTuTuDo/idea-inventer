@@ -70,7 +70,9 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             })
             .catch((error) => {
                 console.error(error.message);
-            });
+            }).finally(() => {
+                self.invalidateProcessingGuard(false)
+        });
     }
 
     execute = async () => {
@@ -112,7 +114,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             return { succeed: false, behavior: async () => this.showErrorSnackMessage(`購物金額上限 ${eros.amountOfMaximumBuy} 元內`) };
 
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
-        this.showInfoSnackMessage(`進入付款流程`);
+        console.log(`94521321 進入付款流程`);
         const enableDialogOfDirectPay = eros.enableOfDirectPay && eros.hasDirectPay;
         const payload = { payNow: { href: eros.hrefOfDirectPay, price: self.getStore().getFeeOfPayment(), title: eros.nameOfDirectPay } };
         switch (selectedOfTransaction) {
@@ -163,6 +165,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     performEPayCreateOrderBehavior = async () => {
         const self = this;
+        self.invalidateProcessingGuard(true, { textOfTip: '建立訂單中，請勿關閉', variant: 'success' });
         const items = toJS(this.getStore().getItemsOfChecked());
         const typeOfTransport = toJS(this.getStore().getTypeOfTransport());
         const typeOfTransaction = toJS(this.getStore().getTypeOfTransaction());
@@ -187,11 +190,13 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     };
 
     performCheckoutByLinePayBehavior = async (id) => {
+        this.invalidateProcessingGuard(true, { textOfTip: '「Line支付」中，請勿關閉', variant: 'success' });
         const result = await Functions.httpOnCallCheckoutByLinePay(this, { idOfPreciseOrder: id });
         this.routeToLinePayCheckoutPage(JSON.stringify(result));
     };
 
     performCheckoutByECPayBehavior = async (id) => {
+        this.invalidateProcessingGuard(true, { textOfTip: '「綠界支付」中，請勿關閉', variant: 'success' });
         const result = await Functions.httpOnCallCheckoutByECPay(this, { idOfPreciseOrder: id });
         this.renderHtmlOfDocument(result.textOfRender);
     };

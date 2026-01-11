@@ -1,3 +1,5 @@
+const edit = true;
+
 import React from 'react';
 import { makeObservable, observable, action, computed } from 'mobx';
 import { observer } from 'mobx-react'; // 如果是 function component，通常也可以用 'mobx-react-lite'
@@ -66,9 +68,18 @@ export const loadInkingStore = new LoadInkingStore();
 // --- Animations (定義在程式碼內) ---
 // --- 修正後的呼吸動畫 (忽明忽滅效果) ---
 const breatheAnimation = keyframes`
-    0% { opacity: 0.2; }    /* 接近消失 */
-    50% { opacity: 1; }     /* 完全顯現 */
-    100% { opacity: 0.2; }  /* 回到接近消失 */
+    0% {
+        opacity: 0.2;
+    }
+    /* 接近消失 */
+    50% {
+        opacity: 1;
+    }
+    /* 完全顯現 */
+    100% {
+        opacity: 0.2;
+    }
+    /* 回到接近消失 */
 `;
 
 function CircularProgressWithLabel(props) {
@@ -79,7 +90,7 @@ function CircularProgressWithLabel(props) {
                 sx={{
                     top: 0, left: 0, bottom: 0, right: 0,
                     position: 'absolute',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}
             >
                 <Typography variant="caption" component="div" sx={{ fontWeight: 'bold' }}>
@@ -91,17 +102,17 @@ function CircularProgressWithLabel(props) {
 }
 
 // 改為 Function Component 並使用 observer
-const BaseLoadInkingView = observer(({componentX}) => {
+const BaseLoadInkingView = observer(({ componentX }) => {
     // 必須在 function 內解構屬性，MobX 才能監控到變化
     const { processedCount, totalCount, progressPercent, shouldShow } = loadInkingStore;
-    if(!componentX.isNotNavigatorNComponentNCprtView()) return null;
+    if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
     if (!shouldShow) return null;
 
     const titleText = (processedCount === totalCount)
         ? '檔案上傳中'
         : `檔案上傳中，已完成 ${processedCount}/${totalCount} 個`;
 
-    console.log(componentX.getComponentName(),'走到了這裡');
+    console.log(componentX.getComponentName(), '走到了這裡');
     return (
         <div className="LoadInkingContainer">
             <Box

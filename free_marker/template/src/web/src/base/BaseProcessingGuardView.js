@@ -1,22 +1,57 @@
-import React from "react";
+const edit = true;
+
+import React from 'react';
 import { makeObservable, observable, action, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import Fitbit from '@mui/icons-material/Fitbit'; // 增加警示圖示
+import QueryBuilderIcon from '@mui/icons-material/QueryBuilder';       // Info
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';       // success
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred'; // Error
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';       // warn
 import { keyframes } from '@mui/system';
 
+const THEME_CONFIG = {
+    info: {
+        primary: '#0288d1',
+        deep: '#01579b',
+        // 從 0.92 改為 0.5 (更透明)
+        bg: 'rgba(2, 136, 209, 0.25)',
+        icon: QueryBuilderIcon,
+        shadowColor: '2, 136, 209'
+    },
+    success: {
+        primary: '#2e7d32',
+        deep: '#1b5e20',
+        // 從 0.92 改為 0.5
+        bg: 'rgba(46, 125, 50, 0.25)',
+        icon: VerifiedUserIcon,
+        shadowColor: '46, 125, 50'
+    },
+    error: {
+        primary: '#d32f2f',
+        deep: '#c62828',
+        // Error 通常需要稍微重一點的阻擋感，設為 0.35 左右
+        bg: 'rgba(211, 47, 47, 0.35)',
+        icon: ReportGmailerrorredIcon,
+        shadowColor: '211, 47, 47'
+    },
+    warn: {
+        primary: '#ed6c02',
+        deep: '#e65100',
+        // warn 設為 0.3
+        bg: 'rgba(237, 108, 2, 0.3)',
+        icon: WarningAmberIcon,
+        shadowColor: '237, 108, 2'
+    }
+};
+
 class ProcessingGuardStore {
-
-    @observable
-    visible = false;
-
-    @observable
-    secondsOfProcess = 30; // 預設 30 秒
-
-    @observable
-    message = "交易進行中，請勿關閉";
+    @observable visible = false;
+    @observable secondsOfProcess = 30;
+    @observable message = "請勿關閉";
+    @observable variant = "info";
 
     timerRef = null;
 
@@ -24,22 +59,15 @@ class ProcessingGuardStore {
         makeObservable(this);
     }
 
-    /**
-     * 啟動防護遮罩
-     * @param {string} msg - 提示訊息
-     * @param {number} seconds - 倒數秒數
-     */
     @action
-    show(msg = "交易進行中，請勿關閉", seconds = 30) {
+    show(msg = "請勿關閉畫面", seconds = 30, variant = "info") {
         this.message = msg;
         this.secondsOfProcess = seconds;
+        this.variant = THEME_CONFIG[variant] ? variant : 'info';
         this.visible = true;
         this.startTimer();
     }
 
-    /**
-     * 隱藏防護遮罩
-     */
     @action
     hide() {
         this.visible = false;
@@ -48,14 +76,13 @@ class ProcessingGuardStore {
 
     @action
     startTimer() {
-        this.stopTimer(); // 先清除舊的
+        this.stopTimer();
         this.timerRef = setInterval(() => {
             runInAction(() => {
                 if (this.secondsOfProcess > 0) {
                     this.secondsOfProcess -= 1;
                 } else {
                     this.stopTimer();
-                    // 倒數結束後的邏輯，例如自動關閉或顯示超時，這裡保留為維持顯示
                 }
             });
         }, 1000);
@@ -70,64 +97,73 @@ class ProcessingGuardStore {
     }
 }
 
-// 匯出 Store 實例
 export const processingGuardStore = new ProcessingGuardStore();
 
-// --- Animations (心跳/脈衝效果) ---
-// 模擬心跳頻率：快速收縮再舒張
-const heartbeatAnimation = keyframes`
-    0% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px rgba(46, 125, 50, 0.3)); }
-    15% { transform: scale(1.04); opacity: 0.9; filter: drop-shadow(0 0 15px rgba(46, 125, 50, 0.6)); }
-    30% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px rgba(46, 125, 50, 0.3)); }
-    45% { transform: scale(1.02); opacity: 0.95; filter: drop-shadow(0 0 10px rgba(46, 125, 50, 0.4)); }
-    100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px rgba(46, 125, 50, 0.3)); }
+const getHeartbeatAnimation = (rgbColor) => keyframes`
+    0% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px rgba(${rgbColor}, 0.3)); }
+    15% { transform: scale(1.04); opacity: 0.95; filter: drop-shadow(0 0 15px rgba(${rgbColor}, 0.6)); }
+    30% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px rgba(${rgbColor}, 0.3)); }
+    45% { transform: scale(1.02); opacity: 0.98; filter: drop-shadow(0 0 10px rgba(${rgbColor}, 0.45)); }
+    100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px rgba(${rgbColor}, 0.3)); }
 `;
 
-// 外圈旋轉特效
 const spinReverse = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(-360deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
 `;
 
-// --- Component ---
-const ProcessingGuardView = observer(({ componentX }) => {
-    const { visible, message, secondsOfProcess } = processingGuardStore;
-    if(!componentX.isNotNavigatorNComponentNCprtView()) return null;
+const BaseProcessingGuardView = observer(() => {
+    const { visible, message, secondsOfProcess, variant } = processingGuardStore;
+
     if (!visible) return null;
 
+    const currentTheme = THEME_CONFIG[variant] || THEME_CONFIG.info;
+    const TargetIcon = currentTheme.icon;
+
     return (
-        <div className="ProcessingGuardContainer">
+        <div
+            className="ProcessingGuardContainer"
+            style={{
+                backgroundColor: currentTheme.bg,
+                cursor: 'wait'
+            }}
+        >
             <Box
                 className="ProcessingGuardContentWrapper"
                 sx={{
-                    // 套用心跳動畫到整個中央區塊
-                    animation: `${heartbeatAnimation} 1.5s infinite ease-in-out`
+                    animation: `${getHeartbeatAnimation(currentTheme.shadowColor)} 2s infinite ease-in-out`,
+                    // 中間卡片保持高不透明度 (0.95)，確保文字易讀
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    border: `1px solid rgba(255, 255, 255, 1)`,
+                    boxShadow: `0 15px 50px rgba(${currentTheme.shadowColor}, 0.2)`
                 }}
             >
-                {/* 科技感圓形 Loading 區塊 */}
                 <div className="ProcessingGuardCircleSection">
-                    {/* 外層裝飾圈 (反向旋轉) */}
-                    <div className="ProcessingGuardOuterRing" style={{ animation: `${spinReverse} 3s linear infinite` }} />
+                    <div
+                        className="ProcessingGuardOuterRing"
+                        style={{
+                            animation: `${spinReverse} 5s linear infinite`,
+                            borderColor: currentTheme.primary
+                        }}
+                    />
 
-                    {/* 主要 Loading Bar */}
                     <CircularProgress
                         className="ProcessingGuardMainLoader"
                         size={140}
                         thickness={3}
                         variant="indeterminate"
-                        sx={{ color: '#2e7d32' }} // 安全深綠色
+                        sx={{ color: currentTheme.primary }}
                     />
 
-                    {/* 中央倒數秒數 */}
-                    <div className="ProcessingGuardTimerCenter">
-                        <span className="ProcessingGuardSeconds">{secondsOfProcess}</span>
-                        <span className="ProcessingGuardUnit">sec</span>
+                    <div className="ProcessingGuardTimerCenter" style={{ color: currentTheme.deep }}>
+                        <span className="ProcessingGuardSeconds">
+                            {secondsOfProcess}
+                        </span>
                     </div>
                 </div>
 
-                {/* 警告文字區塊 */}
-                <div className="ProcessingGuardMessageBlock">
-                    <Fitbit className="ProcessingGuardIcon" />
+                <div className="ProcessingGuardMessageBlock" style={{ color: currentTheme.deep }}>
+                    <TargetIcon className="ProcessingGuardIcon" />
                     <Typography className="ProcessingGuardText">
                         {message}
                     </Typography>
@@ -137,4 +173,4 @@ const ProcessingGuardView = observer(({ componentX }) => {
     );
 });
 
-export default ProcessingGuardView;
+export default BaseProcessingGuardView;

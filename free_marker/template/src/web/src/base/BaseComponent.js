@@ -77,9 +77,10 @@ class BaseComponent extends MuiComponent {
      * @param enable 是否顯示
      * @param textOfTip 字樣
      * @param secondsOfP 停留秒數
+     * @param variant [warn|error|success|info]色系（例如：交易相關應該用success）
      */
-    invalidateProcessingGuard(enable, { textOfTip, secondsOfP } = {}) {
-        if (enable) processingGuardStore.show(textOfTip, secondsOfP)
+    invalidateProcessingGuard(enable, { textOfTip='請勿關閉', secondsOfP ,variant='info'} = {}) {
+        if (enable) processingGuardStore.show(textOfTip, secondsOfP, variant)
         else processingGuardStore.hide()
     }
 
