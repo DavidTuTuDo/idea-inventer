@@ -578,6 +578,14 @@ class CommonRemoteApi {
         return result;
     }
 
+    async deleteStorageFiles(folder = "public") {
+        const uid = Util.getRandomHashV2(10);
+        Util.appendInfo(`${uid} start delete all storage => folder:/${folder}`);
+        const result = await firebase.batchDeleteStorageByPrefix(folder);
+        Util.appendInfo(`${uid} finish delete all storage => folder:/${folder}`);
+        return result;
+    }
+
     /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */
     async uploadStorageFiles(blobs, folder = "public", maxSize, options) {
         const uid = Util.getRandomHashV2(10);
@@ -614,7 +622,6 @@ class CommonRemoteApi {
      const result = await filtering(firebase.database().ref(refPath));
      return result.val();
      }
-
 
      async realtimePostObject(refPath, obj = {}) {
      Util.appendInfo(`write ${refPath}, param ${JSON.stringify(obj)}`);

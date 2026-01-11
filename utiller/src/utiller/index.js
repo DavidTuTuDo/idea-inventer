@@ -58,9 +58,28 @@ class Utiller {
 
     mapOfIdNTimeoutId = {}/**   Key : idOfSetTimout */
 
-    /** '1.九.1' => false
-     *  '1.2.3' => true
-     * */
+    /**
+     * 處理連續重複字串的合併
+     * @param {string[]} arr - 輸入的字串陣列
+     * @returns {string[]} - 傳回合併連續重複項後的新陣列
+     * * @example
+     * // 範例一
+     * const input1 = ['abc', 'abc', 'c', 'abc'];
+     * compactConsecutive(input1);
+     * // 輸出 => ['abc', 'c', 'abc']
+     * * @example
+     * // 範例二
+     * const input2 = ['aa', 'bb', 'bb', 'c', 'dd', 'dd', 'dd', 'dd', 'c'];
+     * compactConsecutive(input2);
+     * // 輸出 => ['aa', 'bb', 'c', 'dd', 'c']
+     */
+    compactConsecutive = (arr) => {
+        // 1. 確保傳入參數為陣列，避免程式崩潰
+        if (!_.isArray(arr)) return [];
+
+        // 2. _.sortedUniq 會移除陣列中連續且重複的元素
+        return _.sortedUniq(arr);
+    };
 
     /**
      * 刪除物件裡面特別的屬性，預設是刪除value為undefined

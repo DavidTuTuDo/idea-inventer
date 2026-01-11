@@ -99,9 +99,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
 
     onDionysusGaiaDeletedChipClicked(param) {
         const self = this;
-        this.getStore()
-            .deleteBooze4Sure()
-            .then(() => Router.gotoDionysusPage(self));
+        this.exeAsyncT(self.getStore().deleteBooze4Sure(), { thenDo: () => Router.gotoDionysusPage(self) });
     }
 
     onDionysusGaiaVisibilitySwitchChange(param) {

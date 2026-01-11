@@ -70,9 +70,10 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             })
             .catch((error) => {
                 console.error(error.message);
-            }).finally(() => {
-                self.invalidateProcessingGuard(false)
-        });
+            })
+            .finally(() => {
+                self.invalidateProcessingGuard(false);
+            });
     }
 
     execute = async () => {
@@ -165,7 +166,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     performEPayCreateOrderBehavior = async () => {
         const self = this;
-        self.invalidateProcessingGuard(true, { textOfTip: '建立訂單中，請勿關閉', variant: 'success' });
+        self.invalidateProcessingGuard(true, { textOfTip: "建立訂單中，請勿關閉", variant: "success" });
         const items = toJS(this.getStore().getItemsOfChecked());
         const typeOfTransport = toJS(this.getStore().getTypeOfTransport());
         const typeOfTransaction = toJS(this.getStore().getTypeOfTransaction());
@@ -190,13 +191,13 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     };
 
     performCheckoutByLinePayBehavior = async (id) => {
-        this.invalidateProcessingGuard(true, { textOfTip: '「Line支付」中，請勿關閉', variant: 'success' });
+        this.invalidateProcessingGuard(true, { textOfTip: "「Line支付」中，請勿關閉", variant: "success" });
         const result = await Functions.httpOnCallCheckoutByLinePay(this, { idOfPreciseOrder: id });
         this.routeToLinePayCheckoutPage(JSON.stringify(result));
     };
 
     performCheckoutByECPayBehavior = async (id) => {
-        this.invalidateProcessingGuard(true, { textOfTip: '「綠界支付」中，請勿關閉', variant: 'success' });
+        this.invalidateProcessingGuard(true, { textOfTip: "「綠界支付」中，請勿關閉", variant: "success" });
         const result = await Functions.httpOnCallCheckoutByECPay(this, { idOfPreciseOrder: id });
         this.renderHtmlOfDocument(result.textOfRender);
     };

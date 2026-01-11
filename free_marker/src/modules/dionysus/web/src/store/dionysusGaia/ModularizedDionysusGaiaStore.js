@@ -213,10 +213,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     deleteBooze4Sure = async () => {
+        this.getComponent().invalidateProcessingGuard(true, { textOfTip: "刪除商品中，請勿關閉" });
+        const result = await this.apiOfImage.deleteStorageFilesOfHref(this.getComponent(), this.getIdOfBooze());
         await this.apiOfBooze.deleteBoozeItem(this.getComponent(), this.getIdOfBooze());
         await this.apiOfVariant.deleteVariants(this.getComponent(), true, this.getIdOfBooze());
-        /** todo:需要刪除storage底下的圖片們 */
-        this.getComponent().showInfoSnackMessage(`已成功刪除`);
+        Util.appendInfo(`刪除對象：`, this.getIdOfBooze(), " \n結果報告：", result);
+        this.getComponent().invalidateProcessingGuard(false);
     };
 
     getObjectOfBooze = () => {

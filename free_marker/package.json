@@ -15,7 +15,7 @@
         "fs-extra": "^11.3.0",
         "lodash": "^4.17.20",
         "mustache": "^4.1.0",
-        "utiller": "^1.0.485"
+        "utiller": "^1.0.486"
     },
     "devDependencies": {
         "@babel/cli": "^7.28.3",

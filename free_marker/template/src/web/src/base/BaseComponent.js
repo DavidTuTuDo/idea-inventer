@@ -23,8 +23,8 @@ import AlertMenu from "./AlertMenu";
 
 import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
 import SnackBView, { storeOfSnackB } from "./BaseSnackView";
-import LoadInkingView, { loadInkingStore } from './BaseLoadInkingView';
-import ProcessingGuardView, { processingGuardStore } from './BaseProcessingGuardView';
+import LoadInkingView, { loadInkingStore } from "./BaseLoadInkingView";
+import ProcessingGuardView, { processingGuardStore } from "./BaseProcessingGuardView";
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -48,6 +48,8 @@ class BaseComponent extends MuiComponent {
      * @param ignore 發生錯誤時，而且沒有代入catchDo時要不要顯示錯誤
      **/
     exeAsyncT = (task, { thenDo, catchDo, finallyDo, ignore } = {}) => {
+        console.log(`🌱 ${this.getComponentInstance().getComponentName()} 執行 exeAsyncT()`);
+
         if (!Util.isP(task)) throw new Error(`[exeAsyncT]: Task is not a Promise. Received: ${typeof task}`);
 
         // 2. 封裝處理邏輯，使其支援鏈接 (Chaining)
@@ -61,14 +63,14 @@ class BaseComponent extends MuiComponent {
             })
             .catch(async (error) => {
                 if (Util.isCallable(catchDo)) await catchDo(error);
-                 else if (!ignore) {
+                else if (!ignore) {
                     console.trace(error);
-                    this.showErrorSnackMessage(error.message);
+                    this.getComponentInstance().showErrorSnackMessage(error.message);
                 } else console.error(error.message);
             })
             .finally(async () => {
                 if (Util.isCallable(finallyDo)) await finallyDo();
-                else this.setLoadingViewVisibility(false)
+                else this.getComponentInstance().setLoadingViewVisibility(false);
             });
     };
 
@@ -79,9 +81,9 @@ class BaseComponent extends MuiComponent {
      * @param secondsOfP 停留秒數
      * @param variant [warn|error|success|info]色系（例如：交易相關應該用success）
      */
-    invalidateProcessingGuard(enable, { textOfTip='請勿關閉', secondsOfP ,variant='info'} = {}) {
-        if (enable) processingGuardStore.show(textOfTip, secondsOfP, variant)
-        else processingGuardStore.hide()
+    invalidateProcessingGuard(enable, { textOfTip = "請勿關閉", secondsOfP, variant = "info" } = {}) {
+        if (enable) processingGuardStore.show(textOfTip, secondsOfP, variant);
+        else processingGuardStore.hide();
     }
 
     setPageFullTitle = (title) => {
@@ -157,7 +159,7 @@ class BaseComponent extends MuiComponent {
     invalidateLoadInking = (show, { processed = 1, totalFiles = 1, progress = 0, disabled = false } = {}) => {
         if (show) loadInkingStore.updateLoadInkingState(processed, totalFiles, progress);
         else loadInkingStore.finish();
-    }
+    };
 
     /**
      * @param stringOfRaw : { app:'universal link(app內可以跳轉到linepay的url=>app:linepay)',web:'網頁版的應用'}
@@ -455,7 +457,7 @@ class BaseComponent extends MuiComponent {
      * @returns {boolean} - 總是回傳 true (維持舊有 API 行為)
      */
     setSnackViewVisibility(visible, message, config = {}) {
-        console.log(`481521231 有哦!就是要進來這裡實現setSnackViewVisibility()`)
+        console.log(`481521231 有哦!就是要進來這裡實現setSnackViewVisibility()`);
         if (visible) storeOfSnackB.execution(message, config.type, config);
         else storeOfSnackB.close();
         return true;
@@ -463,10 +465,9 @@ class BaseComponent extends MuiComponent {
 
     render() {
         const self = this;
-        console.log(`655456213 ${this.getComponentName()}-BaseComponent的render() 來惹!`)
+        console.log(`655456213 ${this.getComponentName()}-BaseComponent的render() 來惹!`);
         return (
             <div className={"RootViewDiv"} style={{ ...this.style, paddingTop: (self.getStore().hasAppBar() ? 8 : 0) + self.getStore().getAppBarHeight() }}>
-
                 <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
                     {self.renderViewByStatus()}
                 </div>
@@ -879,7 +880,6 @@ class BaseComponent extends MuiComponent {
     propsMobX() {
         return this.propsOfMobX;
     }
-
 }
 
 export default BaseComponent;

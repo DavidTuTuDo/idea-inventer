@@ -1,15 +1,14 @@
 const edit = true;
 
-import React from 'react';
-import { makeObservable, observable, action, computed } from 'mobx';
-import { observer } from 'mobx-react'; // 如果是 function component，通常也可以用 'mobx-react-lite'
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
-import { keyframes } from '@mui/system';
+import React from "react";
+import { makeObservable, observable, action, computed } from "mobx";
+import { observer } from "mobx-react"; // 如果是 function component，通常也可以用 'mobx-react-lite'
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
+import { keyframes } from "@mui/system";
 
 class LoadInkingStore {
-
     @observable
     processedCount = 0;
 
@@ -53,12 +52,7 @@ class LoadInkingStore {
      */
     @computed
     get shouldShow() {
-        return (
-            !this.disabled &&
-            this.processedCount > 0 &&
-            this.totalCount > 0 &&
-            this.progressPercent > 0
-        );
+        return !this.disabled && this.processedCount > 0 && this.totalCount > 0 && this.progressPercent > 0;
     }
 }
 
@@ -84,16 +78,20 @@ const breatheAnimation = keyframes`
 
 function CircularProgressWithLabel(props) {
     return (
-        <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+        <Box sx={{ position: "relative", display: "inline-flex" }}>
             <CircularProgress variant="determinate" {...props} size={60} thickness={4.5} />
             <Box
                 sx={{
-                    top: 0, left: 0, bottom: 0, right: 0,
-                    position: 'absolute',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}
-            >
-                <Typography variant="caption" component="div" sx={{ fontWeight: 'bold' }}>
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    position: "absolute",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                }}>
+                <Typography variant="caption" component="div" sx={{ fontWeight: "bold" }}>
                     {`${Math.round(props.value)}%`}
                 </Typography>
             </Box>
@@ -108,11 +106,9 @@ const BaseLoadInkingView = observer(({ componentX }) => {
     if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
     if (!shouldShow) return null;
 
-    const titleText = (processedCount === totalCount)
-        ? '檔案上傳中'
-        : `檔案上傳中，已完成 ${processedCount}/${totalCount} 個`;
+    const titleText = processedCount === totalCount ? "檔案上傳中" : `檔案上傳中，已完成 ${processedCount}/${totalCount} 個`;
 
-    console.log(componentX.getComponentName(), '走到了這裡');
+    console.log(componentX.getComponentName(), "走到了這裡");
     return (
         <div className="LoadInkingContainer">
             <Box
@@ -120,14 +116,12 @@ const BaseLoadInkingView = observer(({ componentX }) => {
                 sx={{
                     // 3秒一個週期，符合人類安靜呼吸頻率
                     animation: `${breatheAnimation} 3s ease-in-out infinite`
-                }}
-            >
+                }}>
                 <div className="LoadInkingTitle">{titleText}</div>
                 <div className="LoadInkingCircle">
                     <CircularProgressWithLabel value={progressPercent} />
                 </div>
             </Box>
-
         </div>
     );
 });

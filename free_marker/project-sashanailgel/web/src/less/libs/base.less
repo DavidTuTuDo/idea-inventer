@@ -737,3 +737,145 @@ input[type="number"]::-webkit-outer-spin-button {
         font-size: 16px;
     }
 }
+
+.LoadInkingContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .LoadInkingBreathingContent {
+        margin-top: 15vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 30px;
+        background-color: transparent;
+        pointer-events: none;
+
+        .LoadInkingTitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .LoadInkingCircle {
+            // MUI 樣式覆寫
+            .MuiCircularProgress-root {
+                transition: stroke-dashoffset 0.3s ease;
+            }
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .LoadInkingContainer .LoadInkingBreathingContent {
+        margin-top: 10vh;
+        padding: 15px 20px;
+        .LoadInkingTitle {
+            font-size: 0.95rem;
+        }
+    }
+}
+
+.ProcessingGuardContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 12000;
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+
+    .ProcessingGuardContentWrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 50px;
+        border-radius: 28px;
+    }
+
+    .ProcessingGuardCircleSection {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 28px;
+
+        .ProcessingGuardOuterRing {
+            position: absolute;
+            top: -14px;
+            left: -14px;
+            right: -14px;
+            bottom: -14px;
+            border-radius: 50%;
+            border-width: 1px;
+            border-style: dashed;
+            opacity: 0.4;
+        }
+
+        .ProcessingGuardTimerCenter {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            .ProcessingGuardSeconds {
+                font-size: 42px;
+                font-weight: 800;
+                line-height: 1;
+                font-family: "Roboto Mono", monospace;
+            }
+        }
+    }
+
+    .ProcessingGuardMessageBlock {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .ProcessingGuardIcon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .ProcessingGuardText {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            line-height: 1.4;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ProcessingGuardContentWrapper {
+            padding: 35px;
+            width: 82%;
+        }
+        .ProcessingGuardCircleSection {
+            transform: scale(0.85);
+            margin-bottom: 20px;
+        }
+        .ProcessingGuardMessageBlock .ProcessingGuardText {
+            font-size: 16px;
+        }
+    }
+}

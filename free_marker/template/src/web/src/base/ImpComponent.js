@@ -7,7 +7,6 @@ import functions from "../functions";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import { isMobile } from "react-device-detect";
 
-
 class ImpComponent extends BaseComponent {
     constructor(props) {
         super(props);

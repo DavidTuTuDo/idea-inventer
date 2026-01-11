@@ -225,8 +225,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 target = { author: map.author };
             } else if (isIPassMoney()) {
                 target = { iPASSMoney: map.iPASSMoney };
-            }
-            else {
+            } else {
                 target = { error: map.error };
                 // throw new ERROR(9999, `54564564371 不應該走到這裡`)
             }
@@ -248,9 +247,8 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 unknown: `尚未選擇`,
                 ecpay: `綠界支付`,
                 author: `賣家自行確認`,
-                iPASSMoney:`iPASS MONEY`,
-                error: `未知的錯誤`,
-
+                iPASSMoney: `iPASS MONEY`,
+                error: `未知的錯誤`
             });
         }
 
@@ -264,7 +262,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 unknown: `unknown`,
                 ecpay: `ecpay`,
                 author: `author`,
-                iPASSMoney:`iPASSMoney`,
+                iPASSMoney: `iPASSMoney`,
 
                 error: `error`
             });
@@ -296,7 +294,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 error: ``,
                 author: ``,
                 ecpay: ``,
-                iPASSMoney: ``,
+                iPASSMoney: ``
             });
         }
 

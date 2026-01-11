@@ -1957,6 +1957,7 @@ class CodegenNode {
 
     getDefaultStoragePermission() { return {
         write: 'isAdmin()',
+        delete: 'isAdmin()',
         read: 'alwaysTrue()',
     }; }
 
@@ -4085,11 +4086,11 @@ class BaseBuilder extends PathBase {
     }
 
     /** type 可以是 fetch|submit, submit,就會依據node的type去做事*/
-    getParamsInFunctionByPlatform(node, type = 'fetch', uploadFile = false, isArgument = false, mustache) {
+    getParamsInFunctionByPlatform(node, type = 'fetch', storageUsage = false, isArgument = false, mustache) {
         const self = this;
 
 
-        let params = uploadFile ? node.getParamsOfStorageFolder() : node.getParamsInPath();
+        let params = storageUsage ? node.getParamsOfStorageFolder() : node.getParamsInPath();
         switch (type) {
             case 'fetch cheap ids of array':
             case 'fetch ids of array':
@@ -4181,6 +4182,9 @@ class BaseBuilder extends PathBase {
                 break;
             case `upload storage file`:
                 params = ['blob', ...params, 'options'];
+                break;
+            case `delete storage files`:
+                params = [...params];
                 break;
             case `fetch without condition`:
             case `delete object`:
@@ -4834,11 +4838,11 @@ class RemoteFunctionHandler extends BaseBuilder {
             return stmts.join(',');
         }
 
-        function generateApiFunction(node, name, logicStmts = [], type, isAsync = true, uploadFile = false) {
+        function generateApiFunction(node, name, logicStmts = [], type, isAsync = true, storageUsage = false) {
             const preStmts = [`const self = this`];
             /** asString => 就是把 `${variable}` => '${variable}' 免得造成unknown issue */
             const asString = Util.isOrEquals(type, "fetch batch items", "batch submit parent");
-            preStmts.push(uploadFile ? `const folder = \`${node.getStorageFolderOfRouterString()}\`` :
+            preStmts.push(storageUsage ? `const folder = \`${node.getStorageFolderOfRouterString()}\`` :
               `let path = ${asString ? `\'${node.getPathOfRouterString()}/\${id}\'` : `\`${node.getPathOfRouterString()}\``}`
             );
             let stmts = [];
@@ -4847,7 +4851,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                 stmts.push(...logicStmts);
                 stmts.push(`}`);
                 if (self.isWebPlatform())
-                    stmts.push(`return await self.runUIAsyncTask(task, '${type}', ${uploadFile ? 'folder' : 'path'}${appendViewInParamStmt()})`)
+                    stmts.push(`return await self.runUIAsyncTask(task, '${type}', ${storageUsage ? 'folder' : 'path'}${appendViewInParamStmt()})`)
                 else
                     stmts.push(`return await task()`);
             } else {
@@ -4855,7 +4859,7 @@ class RemoteFunctionHandler extends BaseBuilder {
             }
 
             const comment = `${node.getPreciseAttributeParentName()}-${node.getName()}:${type}`;
-            const pramsOfWhole = self.getParamsInFunctionByPlatform(node, type, uploadFile);
+            const pramsOfWhole = self.getParamsInFunctionByPlatform(node, type, storageUsage);
             const stmtsOfWhole = [...preStmts, ...stmts];
             if (isAsync) {
                 generator.appendAsyncFunction(name, pramsOfWhole, [], [comment],
@@ -4879,11 +4883,20 @@ class RemoteFunctionHandler extends BaseBuilder {
 
 
                 if (child.hasStorageFolder()) {
+                    const params = this.isWebPlatform() ? [child.getName()] :
+                        Util.compactConsecutive([child.getNodeOfStruct().getName(), child.getPreciseAttributeParentName(), child.getName()]);
+
                     generateApiFunction(
-                        child, Util.camel('uploadStorageOf', child.getName()),
+                        child, Util.camel('uploadStorageOf', ...params),
                         [
                             `return await self.uploadStorageFile(blob, folder, '${child.fileMaximum}', ${self.isWebPlatform() ? '{ ...options, view }' : 'options'});`
                         ], `upload storage file`, true, true);
+
+                    generateApiFunction(
+                        child, Util.camel('deleteStorageFilesOf', ...params),
+                        [
+                            `return await self.deleteStorageFiles(folder);`
+                        ], `delete storage files`, true, true);
                 }
                 contents.push(`${child.getFieldName()} : ${this.getPreciseValue(child)}`);
             }

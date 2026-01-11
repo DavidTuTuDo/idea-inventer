@@ -995,145 +995,165 @@ class FirebaseHelper extends BaseFirebase {
         return Util.array2Obj(multi.map((query) => Util.getObject(query.name, result[query.name])));
     };
 
-    batchDeleteStorageByPrefixes = async (prefixes, batchCount = 50) => {
-        /**
-         * 辅助函数：将数组分割成指定大小的块
-         * @param {Array<T>} array 原始数组
-         * @param {number} size 块的大小
-         * @returns {Array<Array<T>>} 分割后的块数组
-         */
-        const chunkArray = (array, size) => {
-            const chunked = [];
-            for (let i = 0; i < array.length; i += size) {
-                chunked.push(array.slice(i, i + size));
-            }
-            return chunked;
-        };
+    /**
+     *【入口函式】批量處理多個路徑前綴的刪除任務
+     * 採用分批序列處理，避免同時對 Firebase 發起過多請求。
+     * @param {string[]} prefixes - 目標路徑字串陣列，例如 ['public/uid/folder1', 'public/uid/folder2']
+     * @param {number} [batchCount=20] - 並發刪除的批次大小 (Web 端建議保持在 20-50 之間)
+     * @returns {Promise<Array<{status: string, path?: string, reason?: string}>>} 回傳所有操作的詳細結果報告
+     */
+    batchDeleteStorageByPrefixes = async (prefixes, batchCount = 20) => {
+        // ES11: 使用 Nullish Coalescing (??) 確保 prefixes 至少為空陣列，防止 crash
+        const safePrefixes = prefixes ?? [];
 
-        /**
-         * 递归地删除给定引用下的所有文件（包括子文件夹）。
-         * @param {object} currentRef - 当前路径的 StorageReference 对象
-         * @param {number} internalBatchSize - 内部并发删除的批次大小
-         * @returns {Promise<object[]>} 内部删除操作的结果列表
-         */
-        async function deleteFolderContents(currentRef, internalBatchSize) {
-            let listResult;
-            try {
-                listResult = await listAll(currentRef);
-            } catch (listError) {
-                // 如果 listAll 失败（例如：路径不存在或权限不足），记录错误并返回空结果
-                const path = currentRef.fullPath || currentRef.toString();
-                console.error(`[List Failed] 无法列出路径 ${path} 下的文件: ${listError.message}`);
-                return [{ status: "rejected", path, reason: `List failed: ${listError.message}` }];
-            }
-
-            let allDeletePromises = [];
-
-            // 1. 处理当前路径下的所有文件 (items)
-            for (const itemRef of listResult.items) {
-                // 对每个文件创建删除 Promise，并捕获错误
-                const deletePromise = deleteObject(itemRef)
-                    .then(() => ({ status: "fulfilled", path: itemRef.fullPath, message: `Deleted ${itemRef.fullPath}` }))
-                    .catch((error) => ({ status: "rejected", path: itemRef.fullPath, reason: error.message }));
-
-                allDeletePromises.push(deletePromise);
-            }
-
-            // 2. 递归处理所有子文件夹 (prefixes)
-            for (const prefixRef of listResult.prefixes) {
-                // 递归调用，并将返回的 Promise 收集起来
-                const nestedResultsPromise = deleteFolderContents(prefixRef, internalBatchSize);
-                allDeletePromises.push(nestedResultsPromise.then((res) => res.flat())); // 扁平化嵌套结果
-            }
-
-            // 3. 严格执行批次删除，防止过多并发请求
-            let finalResults = [];
-            const deleteChunks = chunkArray(allDeletePromises, internalBatchSize);
-
-            for (const chunk of deleteChunks) {
-                // 使用 Promise.allSettled 并行执行当前批次，并等待完成
-                const chunkResults = await Promise.allSettled(chunk);
-
-                // 收集结果：处理来自递归调用的嵌套数组结果
-                for (const result of chunkResults) {
-                    if (result.status === "fulfilled") {
-                        // 如果结果是数组（来自嵌套递归），则扁平化；否则直接添加
-                        if (Array.isArray(result.value)) {
-                            finalResults.push(...result.value);
-                        } else {
-                            finalResults.push(result.value);
-                        }
-                    } else {
-                        finalResults.push(result.reason); // Rejected promise
-                    }
-                }
-            }
-
-            return finalResults.flat(); // 最终返回扁平化的操作结果列表
-        }
-
-        if (!prefixes || prefixes.length === 0) {
-            console.log("batchDeleteStorageByPrefixesWeb: 沒有要處理的前綴。");
+        if (safePrefixes.length === 0) {
+            console.warn("batchDeleteStorageByPrefixes: 未提供任何路徑前綴。");
             return [];
         }
 
-        console.log(`batchDeleteStorageByPrefixesWeb: 開始批量刪除，共 ${prefixes.length} 個前綴，批次大小: ${batchCount}`);
+        console.log(`🚀 開始批量刪除，目標路徑數: ${safePrefixes.length}，批次大小: ${batchCount}`);
 
-        const prefixChunks = chunkArray(prefixes, batchCount);
-        let allOperationResults = [];
+        // Lodash: 使用 _.chunk 快速分割陣列
+        const prefixChunks = _.chunk(safePrefixes, batchCount);
+        let allResults = [];
         let chunkIndex = 0;
 
-        // 1. 串行處理每個前綴批次 (使用 for...of + await)
-        for (const prefixChunk of prefixChunks) {
+        // 外層迴圈：處理「路徑前綴」的批次 (串行處理以降低負載)
+        for (const chunk of prefixChunks) {
             chunkIndex++;
-            console.log(`\n--- 開始處理批次 ${chunkIndex}/${prefixChunks.length} (${prefixChunk.length} 個前綴) ---`);
+            console.log(`\n--- 正在處理第 ${chunkIndex}/${prefixChunks.length} 批次 (本批 ${chunk.length} 個路徑) ---`);
 
-            // 2. 在每個批次內部，並行發起 "list and delete" 任務 (使用 Promise.allSettled)
-            const prefixDeleteTasks = prefixChunk.map((prefix) => {
-                const pathRef = ref(this.storage(), prefix);
-
-                // deleteFolderContents 負責遞歸和內部批次控制
-                return deleteFolderContents(pathRef, batchCount)
-                    .then((results) => ({ status: "fulfilled", prefix, results }))
-                    .catch((error) => ({ status: "rejected", prefix, reason: error.message }));
+            // 將當前批次的路徑轉換為 Promise 任務
+            // 注意：這裡使用 map 回傳 Promise，實現批次內的並行處理
+            const batchTasks = chunk.map((path) => {
+                const pathRef = ref(this.storage(), path);
+                // 呼叫單一路徑處理邏輯
+                return this.batchDeleteStorageByPrefix(pathRef, batchCount)
+                    .then((results) => ({ status: "fulfilled", prefix: path, details: results }))
+                    .catch((err) => ({ status: "rejected", prefix: path, reason: err.message }));
             });
 
-            // 3. 等待當前批次中的所有前綴處理完成
-            const chunkResults = await Promise.allSettled(prefixDeleteTasks);
+            // ES11: Promise.allSettled 等待所有任務完成 (無論成功或失敗)，不會因單一失敗而中斷
+            const chunkResults = await Promise.allSettled(batchTasks);
 
-            // 收集結果
-            allOperationResults = allOperationResults.concat(chunkResults.map((r) => r.value || r.reason));
+            // 整理結果：解構賦值取出 value 或 reason
+            const processedResults = chunkResults.map((res) => (res.status === "fulfilled" ? res.value : { status: "rejected", reason: res.reason }));
+
+            allResults.push(...processedResults);
         }
 
-        // 4. 統計和報告最終結果
-        const successfulDeletes = allOperationResults.filter((r) => r.status === "fulfilled");
-        const failedDeletes = allOperationResults.filter((r) => r.status === "rejected");
-        let totalFilesDeleted = 0;
-        successfulDeletes.forEach((s) => {
-            if (s.results) {
-                // s.results 是內部檔案刪除的結果列表
-                totalFilesDeleted += s.results.filter((r) => r.status === "fulfilled").length;
+        this.logDeleteReport(allResults);
+        return allResults;
+    };
+
+    /**
+     * 【核心邏輯】遞迴刪除指定 StorageReference 下的所有檔案與子資料夾
+     * 已實作嚴格的批次控制，針對單一資料夾內的大量檔案 (e.g., 400 files)
+     * 會強制將刪除請求分批 (e.g., 20 at a time) 執行。
+     * @param {object} storageRef - Firebase Storage Reference 物件
+     * @param {number} batchSize - 批次大小 (例如 20)
+     * @returns {Promise<Array>} 該路徑下所有刪除操作的結果陣列
+     */
+    batchDeleteStorageByPrefix = async (storageRef, batchSize = 20) => {
+        let listResult;
+        try {
+            // listAll 會列出該層級下「所有」檔案與子資料夾
+            // 注意：若單一資料夾檔案數破萬，建議改用 list() 配合 pageToken 分頁讀取
+            listResult = await listAll(_.isString(storageRef) ? ref(this.storage(), storageRef) : storageRef);
+        } catch (error) {
+            const path = storageRef?.fullPath ?? "unknown_path";
+            console.error(`[ListAll Error] Path: ${path}, Msg: ${error.message}`);
+            // 若讀取失敗，直接回傳失敗結果，不中斷整體流程
+            return [{ status: "rejected", path, reason: `ListAll failed: ${error.message}` }];
+        }
+
+        const operationResults = [];
+
+        // =================================================================
+        // 1. 檔案處理區塊 (File Processing) - 嚴格批次刪除
+        // =================================================================
+        const files = listResult.items ?? [];
+        console.log(`${_.isString(storageRef) ? storageRef:'$ref'} 數量：`,files.length);
+        if (files.length > 0) {
+            // Lodash: 將所有檔案切成小批次 (e.g., 400 files -> 20 chunks of 20)
+            const fileChunks = _.chunk(files, batchSize);
+
+            // 序列處理每個批次 (Sequential Loop)
+            for (const [index, chunk] of fileChunks.entries()) {
+                // 建立當前批次的 Promise 任務
+                const deleteTasks = chunk.map((fileRef) =>
+                    deleteObject(fileRef)
+                        .then(() => ({ status: "fulfilled", path: fileRef.fullPath, type: "file" }))
+                        .catch((err) => ({ status: "rejected", path: fileRef.fullPath, reason: err.message }))
+                );
+
+                // ES11: 等待這一批 (20個) 全部 "Settled" (無論成功失敗) 才會進入下一批
+                // 這就是防止瞬間發出 400 個 request 的關鍵
+                const chunkResults = await Promise.allSettled(deleteTasks);
+
+                // 收集結果
+                const formattedResults = chunkResults.map((res) => (res.status === "fulfilled" ? res.value : res.reason));
+                operationResults.push(...formattedResults);
             }
-        });
+        }
 
-        console.log(`\n========================================================`);
-        console.log(`總嘗試刪除的前綴數: ${allOperationResults.length}`);
-        console.log(`-> 成功處理前綴數量: ${successfulDeletes.length}`);
-        console.log(`-> 失敗處理前綴數量: ${failedDeletes.length}`);
-        console.log(`-> 總計成功刪除的文件數: ${totalFilesDeleted}`);
+        // =================================================================
+        // 2. 子資料夾處理區塊 (Folder Recursion) - 亦採用批次控制
+        // =================================================================
+        const folders = listResult.prefixes ?? [];
+        if (folders.length > 0) {
+            // 雖然子資料夾通常較少，但為了安全，也對遞迴操作進行分批
+            const folderChunks = _.chunk(folders, batchSize);
 
-        if (failedDeletes.length > 0) {
-            console.error("部分前綴處理失敗詳情:");
-            failedDeletes.forEach((f) => {
-                console.error(` - 前綴: ${f.prefix}, 原因: ${f.reason}`);
-            });
-        } else {
-            console.log("所有前綴批次處理成功完成。");
+            for (const folderChunk of folderChunks) {
+                // 建立遞迴任務
+                const recursionTasks = folderChunk.map((folderRef) => this.batchDeleteStorageByPrefix(folderRef, batchSize));
+
+                const chunkResults = await Promise.allSettled(recursionTasks);
+
+                // 處理遞迴回傳的結果 (結果會是陣列的陣列，需要攤平)
+                for (const res of chunkResults) {
+                    if (res.status === "fulfilled") {
+                        // res.value 是遞迴回傳的 operationResults 陣列
+                        operationResults.push(...(res.value ?? []));
+                    } else {
+                        // 遞迴本身發生未捕獲的錯誤 (較少見)
+                        operationResults.push({ status: "rejected", type: "folder_recursion_error", reason: res.reason });
+                    }
+                }
+            }
+        }
+
+        return operationResults;
+    };
+
+    /**
+     * 【輔助方法】生成並列印刪除報告
+     * @private
+     */
+    logDeleteReport(results) {
+        // 過濾出成功的頂層前綴操作
+        const successItems = results.filter((r) => r.status === "fulfilled");
+        const failedItems = results.filter((r) => r.status === "rejected");
+
+        // 計算實際刪除的檔案總數 (需遍歷 details 陣列)
+        // ES11: Optional Chaining (?.) 避免 details 為 undefined 時報錯
+        const totalFilesDeleted = successItems.reduce((acc, curr) => {
+            const fileCount = curr.details?.filter((d) => d.status === "fulfilled" && d.type === "file").length ?? 0;
+            return acc + fileCount;
+        }, 0);
+
+        console.log(`\n==================== 📊 刪除任務報告 ====================`);
+        console.log(`總路徑數: ${results.length} | ✅ 成功路徑: ${successItems.length} | ❌ 失敗路徑: ${failedItems.length}`);
+        console.log(`🗑️ 總計已刪除檔案數: ${totalFilesDeleted}`);
+
+        if (failedItems.length > 0) {
+            console.group("❌ 失敗詳情:");
+            failedItems.forEach((f) => console.error(`路徑: ${f.prefix}, 原因: ${f.reason}`));
+            console.groupEnd();
         }
         console.log(`========================================================\n`);
-
-        return allOperationResults;
-    };
+    }
 }
 
 export default new FirebaseHelper();

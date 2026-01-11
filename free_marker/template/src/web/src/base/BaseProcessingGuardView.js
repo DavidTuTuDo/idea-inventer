@@ -1,49 +1,49 @@
 const edit = true;
 
-import React from 'react';
-import { makeObservable, observable, action, runInAction } from 'mobx';
-import { observer } from 'mobx-react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
-import QueryBuilderIcon from '@mui/icons-material/QueryBuilder';       // Info
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';       // success
-import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred'; // Error
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';       // warn
-import { keyframes } from '@mui/system';
+import React from "react";
+import { makeObservable, observable, action, runInAction } from "mobx";
+import { observer } from "mobx-react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
+import QueryBuilderIcon from "@mui/icons-material/QueryBuilder"; // Info
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser"; // success
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred"; // Error
+import WarningAmberIcon from "@mui/icons-material/WarningAmber"; // warn
+import { keyframes } from "@mui/system";
 
 const THEME_CONFIG = {
     info: {
-        primary: '#0288d1',
-        deep: '#01579b',
+        primary: "#0288d1",
+        deep: "#01579b",
         // 從 0.92 改為 0.5 (更透明)
-        bg: 'rgba(2, 136, 209, 0.25)',
+        bg: "rgba(2, 136, 209, 0.25)",
         icon: QueryBuilderIcon,
-        shadowColor: '2, 136, 209'
+        shadowColor: "2, 136, 209"
     },
     success: {
-        primary: '#2e7d32',
-        deep: '#1b5e20',
+        primary: "#2e7d32",
+        deep: "#1b5e20",
         // 從 0.92 改為 0.5
-        bg: 'rgba(46, 125, 50, 0.25)',
+        bg: "rgba(46, 125, 50, 0.25)",
         icon: VerifiedUserIcon,
-        shadowColor: '46, 125, 50'
+        shadowColor: "46, 125, 50"
     },
     error: {
-        primary: '#d32f2f',
-        deep: '#c62828',
+        primary: "#d32f2f",
+        deep: "#c62828",
         // Error 通常需要稍微重一點的阻擋感，設為 0.35 左右
-        bg: 'rgba(211, 47, 47, 0.35)',
+        bg: "rgba(211, 47, 47, 0.35)",
         icon: ReportGmailerrorredIcon,
-        shadowColor: '211, 47, 47'
+        shadowColor: "211, 47, 47"
     },
     warn: {
-        primary: '#ed6c02',
-        deep: '#e65100',
+        primary: "#ed6c02",
+        deep: "#e65100",
         // warn 設為 0.3
-        bg: 'rgba(237, 108, 2, 0.3)',
+        bg: "rgba(237, 108, 2, 0.3)",
         icon: WarningAmberIcon,
-        shadowColor: '237, 108, 2'
+        shadowColor: "237, 108, 2"
     }
 };
 
@@ -63,7 +63,7 @@ class ProcessingGuardStore {
     show(msg = "請勿關閉畫面", seconds = 30, variant = "info") {
         this.message = msg;
         this.secondsOfProcess = seconds;
-        this.variant = THEME_CONFIG[variant] ? variant : 'info';
+        this.variant = THEME_CONFIG[variant] ? variant : "info";
         this.visible = true;
         this.startTimer();
     }
@@ -125,19 +125,17 @@ const BaseProcessingGuardView = observer(() => {
             className="ProcessingGuardContainer"
             style={{
                 backgroundColor: currentTheme.bg,
-                cursor: 'wait'
-            }}
-        >
+                cursor: "wait"
+            }}>
             <Box
                 className="ProcessingGuardContentWrapper"
                 sx={{
                     animation: `${getHeartbeatAnimation(currentTheme.shadowColor)} 2s infinite ease-in-out`,
                     // 中間卡片保持高不透明度 (0.95)，確保文字易讀
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    backgroundColor: "rgba(255, 255, 255, 0.95)",
                     border: `1px solid rgba(255, 255, 255, 1)`,
                     boxShadow: `0 15px 50px rgba(${currentTheme.shadowColor}, 0.2)`
-                }}
-            >
+                }}>
                 <div className="ProcessingGuardCircleSection">
                     <div
                         className="ProcessingGuardOuterRing"
@@ -147,26 +145,16 @@ const BaseProcessingGuardView = observer(() => {
                         }}
                     />
 
-                    <CircularProgress
-                        className="ProcessingGuardMainLoader"
-                        size={140}
-                        thickness={3}
-                        variant="indeterminate"
-                        sx={{ color: currentTheme.primary }}
-                    />
+                    <CircularProgress className="ProcessingGuardMainLoader" size={140} thickness={3} variant="indeterminate" sx={{ color: currentTheme.primary }} />
 
                     <div className="ProcessingGuardTimerCenter" style={{ color: currentTheme.deep }}>
-                        <span className="ProcessingGuardSeconds">
-                            {secondsOfProcess}
-                        </span>
+                        <span className="ProcessingGuardSeconds">{secondsOfProcess}</span>
                     </div>
                 </div>
 
                 <div className="ProcessingGuardMessageBlock" style={{ color: currentTheme.deep }}>
                     <TargetIcon className="ProcessingGuardIcon" />
-                    <Typography className="ProcessingGuardText">
-                        {message}
-                    </Typography>
+                    <Typography className="ProcessingGuardText">{message}</Typography>
                 </div>
             </Box>
         </div>

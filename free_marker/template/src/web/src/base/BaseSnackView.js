@@ -71,10 +71,6 @@ class SnackStore {
     close = () => {
         const self = true;
         this.visible = false;
-        // 延遲重置，避免動畫中文字消失
-        Util.syncDelay(1000).then(() => {
-            this.taskOfTouched = this.defaultSnackConfigure().func;
-        });
     };
 
     @computed
