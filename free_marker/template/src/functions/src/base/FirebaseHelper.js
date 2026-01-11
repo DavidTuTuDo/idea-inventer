@@ -755,107 +755,56 @@ class FirebaseHelper extends BaseFirebase {
      * @param {number} [batchCount=MAX_COUNT_OF_STORAGE_BATCH] - 限制同时处理的前缀数量（批次大小）。
      * @returns {Promise<Object[]>} - 返回所有操作结果的状态数组（包含 status, prefix, reason/message）。
      */
-    batchDeleteStorageByPrefixes = async (prefixes = [""], batchCount = MAX_COUNT_OF_STORAGE_BATCH) => {
-        if (!prefixes || prefixes.length === 0) {
-            console.log("batchDeleteStorageByPrefixes: 没有要处理的前缀。");
+    batchDeleteStorageByPrefixes = async (prefixes, batchCount = 20) => {
+        const safePrefixes = prefixes ?? [];
+
+        if (safePrefixes.length === 0) {
+            console.warn("batchDeleteStorageByPrefixes: 未提供任何路徑前綴。");
             return [];
         }
 
-        const BUCKET = this.storage().bucket();
+        console.log(`🚀 開始 Storage 批量刪除（Admin SDK），目標路徑數: ${safePrefixes.length}，批次大小: ${batchCount}`);
 
-        /**
-         * 辅助函数：将数组分割成指定大小的块
-         * @param {Array<any>} array - 原始数组
-         * @param {number} size - 块的大小
-         * @returns {Array<Array<any>>} - 分块后的数组
-         */
-        const chunkArray = (array, size) => {
-            const chunked = [];
-            for (let i = 0; i < array.length; i += size) {
-                chunked.push(array.slice(i, i + size));
-            }
-            return chunked;
-        };
+        const prefixChunks = _.chunk(safePrefixes, batchCount);
+        const allResults = [];
 
-        /**
-         * 删除单个 Storage 前缀下的所有文件，并处理错误。
-         * @param {string} prefix - 要删除的路径前缀
-         * @returns {Promise<object>} - 操作结果状态对象
-         */
-        const deleteSinglePrefix = async (prefix) => {
-            try {
-                // 使用 Google Cloud Storage 的 deleteFiles 方法批量删除文件
-                await BUCKET.deleteFiles({ prefix });
+        // 外層：prefix 批次（序列處理）
+        for (const [index, chunk] of prefixChunks.entries()) {
+            console.log(`\n--- 正在處理第 ${index + 1}/${prefixChunks.length} 批次（${chunk.length} 個 prefix）---`);
 
-                console.log(`[成功] 删除了前缀: ${prefix}`);
-                return { status: "fulfilled", prefix, message: `Deleted files under ${prefix}` };
-            } catch (error) {
-                // 捕获所有错误，包括路径下没有文件的“错误”（如果 GCS 抛出的话），
-                // 确保不中断主流程，并记录失败信息。
-                const errorMessage = error.message || String(error);
-                console.error(`[失败] 删除前缀 ${prefix} 时出错: ${errorMessage}`);
-                return { status: "rejected", prefix, reason: errorMessage };
-            }
-        };
-
-        console.log(`batchDeleteStorageByPrefixes: 开始批量删除，共 ${prefixes.length} 个前缀，批次大小: ${batchCount}`);
-
-        const prefixChunks = chunkArray(prefixes, batchCount);
-        let allResults = [];
-        let chunkIndex = 0;
-
-        // 使用 for...of 和 await 确保批次串行执行
-        for (const chunk of prefixChunks) {
-            chunkIndex++;
-            console.log(`\n--- 开始处理批次 ${chunkIndex}/${prefixChunks.length} (${chunk.length} 个任务) ---`);
-
-            // 将当前批次中的所有前缀转换为 Promise
-            const deletePromises = chunk.map((prefix) => deleteSinglePrefix(prefix));
-
-            // 使用 Promise.allSettled 并行执行当前批次的所有删除操作
-            const results = await Promise.allSettled(deletePromises);
-
-            // 收集结果。allSettled 的结果是 {status, value/reason}
-            // 只有 fulfilled 状态的结果包含 value，rejected 状态包含 reason
-            allResults = allResults.concat(
-                results.map((r) =>
-                    r.status === "fulfilled"
-                        ? r.value
-                        : {
-                            status: r.status,
-                            prefix: r.reason?.prefix || "Unknown",
-                            reason: r.reason?.message || String(r.reason)
-                        }
-                )
+            const batchTasks = chunk.map((prefix) =>
+                this.batchDeleteStorageByPrefix(prefix, batchCount)
+                    .then((details) => ({
+                        status: "fulfilled",
+                        prefix,
+                        details
+                    }))
+                    .catch((err) => ({
+                        status: "rejected",
+                        prefix,
+                        reason: err.message
+                    }))
             );
-        }
 
-        // 修正 Promise.allSettled 结果处理
-        allResults = allResults.filter((r) => r.prefix); // 过滤掉可能由 Promise.allSettled 格式導致的無效結果
+            const settledResults = await Promise.allSettled(batchTasks);
 
-        // 统计和报告最终结果
-        const successfulDeletes = allResults.filter((r) => r.status === "fulfilled");
-        const failedDeletes = allResults.filter((r) => r.status === "rejected");
-
-        console.log(`\n========================================================`);
-        console.log(`总删除尝试: ${allResults.length}`);
-        console.log(`成功处理前缀数量: ${successfulDeletes.length}`);
-        console.log(`失败处理前缀数量: ${failedDeletes.length}`);
-
-        if (failedDeletes.length > 0) {
-            console.error("部分删除失败详情:");
-            failedDeletes.forEach((f) => {
-                console.error(` - 前缀: ${f.prefix}, 原因: ${f.reason}`);
+            settledResults.forEach((res) => {
+                if (res.status === "fulfilled") {
+                    allResults.push(res.value);
+                } else {
+                    allResults.push({
+                        status: "rejected",
+                        reason: res.reason
+                    });
+                }
             });
-        } else {
-            console.log("所有前缀批次处理成功完成。");
         }
-        console.log(`========================================================\n`);
 
+        this.logDeleteReport(allResults);
         return allResults;
     };
 
-    batchDeleteStorageByPrefix = async (prefix = '', batchSize = 20) => {
+    batchDeleteStorageByPrefix = async (prefix = "", batchSize = 20) => {
         let files;
 
         try {
@@ -910,6 +859,28 @@ class FirebaseHelper extends BaseFirebase {
 
         return operationResults;
     };
+
+    logDeleteReport(results = []) {
+        const successItems = results.filter((r) => r.status === "fulfilled");
+        const failedItems = results.filter((r) => r.status === "rejected");
+
+        const totalFilesDeleted = successItems.reduce((acc, curr) => {
+            const count = curr.details?.filter((d) => d.status === "fulfilled" && d.type === "file").length ?? 0;
+            return acc + count;
+        }, 0);
+
+        console.log(`\n==================== 📊 刪除任務報告 ====================`);
+        console.log(`總路徑數: ${results.length} | ✅ 成功: ${successItems.length} | ❌ 失敗: ${failedItems.length}`);
+        console.log(`🗑️ 已刪除檔案總數: ${totalFilesDeleted}`);
+
+        if (failedItems.length > 0) {
+            console.group("❌ 失敗詳情");
+            failedItems.forEach((f) => console.error(`Prefix: ${f.prefix}, 原因: ${f.reason}`));
+            console.groupEnd();
+        }
+
+        console.log(`========================================================\n`);
+    }
 }
 
 export default new FirebaseHelper();
