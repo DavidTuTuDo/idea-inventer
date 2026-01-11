@@ -3,11 +3,7 @@ const edit = true;
 import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
 import BaseFirebase from "./BaseFirebase";
-import CommonPoolHelper from "./CommonPoolHelper";
-import Config from "../config";
 import { Timestamp, FieldValue, FieldPath } from "firebase-admin/firestore";
-import { connectFunctionsEmulator, httpsCallable } from "firebase-admin/functions";
-import { ref, uploadBytes, getDownloadURL } from "firebase-admin/storage";
 import libpath from "path";
 
 const MAX_COUNT_OF_FIRESTORE_BATCH = 300;
@@ -826,10 +822,10 @@ class FirebaseHelper extends BaseFirebase {
                     r.status === "fulfilled"
                         ? r.value
                         : {
-                              status: r.status,
-                              prefix: r.reason?.prefix || "Unknown",
-                              reason: r.reason?.message || String(r.reason)
-                          }
+                            status: r.status,
+                            prefix: r.reason?.prefix || "Unknown",
+                            reason: r.reason?.message || String(r.reason)
+                        }
                 )
             );
         }
@@ -857,6 +853,62 @@ class FirebaseHelper extends BaseFirebase {
         console.log(`========================================================\n`);
 
         return allResults;
+    };
+
+    batchDeleteStorageByPrefix = async (prefix = '', batchSize = 20) => {
+        let files;
+
+        try {
+            [files] = await this.storage().bucket().getFiles({ prefix });
+        } catch (error) {
+            console.error(`[getFiles Error] Prefix: ${prefix}`, error.message);
+            return [
+                {
+                    status: "rejected",
+                    path: prefix,
+                    reason: `getFiles failed: ${error.message}`
+                }
+            ];
+        }
+
+        if (!files || files.length === 0) {
+            return [];
+        }
+
+        const operationResults = [];
+        const fileChunks = _.chunk(files, batchSize);
+
+        // 嚴格分批刪除（避免瞬間大量 request）
+        for (const [index, chunk] of fileChunks.entries()) {
+            console.log(`🗑️ 刪除 prefix=${prefix}，第 ${index + 1}/${fileChunks.length} 批`);
+
+            const deleteTasks = chunk.map((file) =>
+                file
+                    .delete()
+                    .then(() => ({
+                        status: "fulfilled",
+                        path: file.name,
+                        type: "file"
+                    }))
+                    .catch((err) => ({
+                        status: "rejected",
+                        path: file.name,
+                        reason: err.message
+                    }))
+            );
+
+            const settled = await Promise.allSettled(deleteTasks);
+
+            settled.forEach((res) => {
+                if (res.status === "fulfilled") {
+                    operationResults.push(res.value);
+                } else {
+                    operationResults.push(res.reason);
+                }
+            });
+        }
+
+        return operationResults;
     };
 }
 
