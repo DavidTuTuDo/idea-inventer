@@ -79,7 +79,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     execute = async () => {
         const self = this;
         const eros = await this.App().getDionysusCartieStore().modifyErosInfoOfAuthor();
-
+        await Util.syncDelay(10);
         const selectedOfTransport = this.getStore().getTypeOfTransport();
         const selectedOfTransaction = this.getStore().getTypeOfTransaction();
         const price = this.getStore().getFeeOfPayment();
@@ -115,6 +115,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             return { succeed: false, behavior: async () => this.showErrorSnackMessage(`購物金額上限 ${eros.amountOfMaximumBuy} 元內`) };
 
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
+        await Util.syncDelay(10);
         console.log(`94521321 進入付款流程`);
         const enableDialogOfDirectPay = eros.enableOfDirectPay && eros.hasDirectPay;
         const payload = { payNow: { href: eros.hrefOfDirectPay, price: self.getStore().getFeeOfPayment(), title: eros.nameOfDirectPay } };

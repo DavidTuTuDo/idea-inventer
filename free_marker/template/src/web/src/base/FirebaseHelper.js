@@ -1073,7 +1073,7 @@ class FirebaseHelper extends BaseFirebase {
         // 1. 檔案處理區塊 (File Processing) - 嚴格批次刪除
         // =================================================================
         const files = listResult.items ?? [];
-        console.log(`${_.isString(storageRef) ? storageRef:'$ref'} 數量：`,files.length);
+        console.log(`${_.isString(storageRef) ? storageRef : "$ref"} 數量：`, files.length);
         if (files.length > 0) {
             // Lodash: 將所有檔案切成小批次 (e.g., 400 files -> 20 chunks of 20)
             const fileChunks = _.chunk(files, batchSize);

@@ -101,7 +101,7 @@ const BaseSnackView = observer(({ componentX }) => {
                     variant="outlined"
                     label={taskOfTouched.name}
                     onClick={() => {
-                        if (Util.isAsyncP(taskOfTouched?.task)) {
+                        if (Util.isCallable(taskOfTouched?.task)) {
                             componentX.exeAsyncT(taskOfTouched.task());
                         } else if (typeof taskOfTouched?.task === "function") {
                             taskOfTouched.task();

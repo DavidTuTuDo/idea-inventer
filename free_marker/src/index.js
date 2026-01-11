@@ -4851,7 +4851,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                 stmts.push(...logicStmts);
                 stmts.push(`}`);
                 if (self.isWebPlatform())
-                    stmts.push(`return await self.runUIAsyncTask(task, '${type}', ${storageUsage ? 'folder' : 'path'}${appendViewInParamStmt()})`)
+                    stmts.push(`return await self.runUIAsyncTask(task, '${type}', ${storageUsage ? 'folder' : 'path'}${appendViewInParamStmt()},'${name}')`)
                 else
                     stmts.push(`return await task()`);
             } else {

@@ -188,6 +188,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         await this.handleIdOfBooze(true);
         const pathsOfImage = await Util.execute4Tasks(files, async (file) => await this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze()));
         this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
+        await Util.syncDelay(10);
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), { photos: this.getBriefPhotos() }, this.getIdOfBooze());
     };
 
@@ -215,9 +216,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     deleteBooze4Sure = async () => {
         this.getComponent().invalidateProcessingGuard(true, { textOfTip: "刪除商品中，請勿關閉" });
         const result = await this.apiOfImage.deleteStorageFilesOfHref(this.getComponent(), this.getIdOfBooze());
+        await Util.syncDelay(10);
         await this.apiOfBooze.deleteBoozeItem(this.getComponent(), this.getIdOfBooze());
+        await Util.syncDelay(10);
         await this.apiOfVariant.deleteVariants(this.getComponent(), true, this.getIdOfBooze());
         Util.appendInfo(`刪除對象：`, this.getIdOfBooze(), " \n結果報告：", result);
+        await Util.syncDelay(10);
         this.getComponent().invalidateProcessingGuard(false);
     };
 
@@ -267,11 +271,14 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         /** variants裡面要放商品名稱，免得結帳還要去拿龐大的Booze物件 */
         this.setInitCompleted(true);
         const variants = await this.apiOfVariant.fetchDocumentIdsOfVariant(this.getComponent(), this.getIdOfBooze());
+        await Util.syncDelay(10);
+
         await this.apiOfVariant.updateVariants(
             this.getComponent(),
             variants.map((id) => ({ id, nameOfBooze: this.getName(), visibility: this.getVisibility(), isHomeTeaching: this.getIsHomeTeaching() })),
             this.getIdOfBooze()
         );
+        await Util.syncDelay(10);
         this.invalidateBooze({ ...result.value });
         this.setIsNewBie(alertNewbie);
         if (alertNewbie) this.getComponent().showInfoSnackMessage(`請繼續編輯「數量」、「價格」及各項「圖片」`);
@@ -355,6 +362,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     updateSpecificAttributes = async () => {
         await this.handleIdOfBooze();
+        await Util.syncDelay(10);
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), this.modifySpecificAttribute(), this.getIdOfBooze());
     };
 
@@ -389,14 +397,16 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             }),
             this.getIdOfBooze()
         );
-
+        await Util.syncDelay(10);
         if (_.size(submits) > 0) await this.submitCustomVariant(submits);
-        if (component instanceof BaseComponent) component.dismiss();
         this.getComponent().showSuccessSnackMessage(`已更新全部數量`);
+        await Util.syncDelay(500);
+        if (component instanceof BaseComponent) component.dismiss();
     };
 
     submitCustomVariant = async (submits) => {
         await this.updateSpecificAttributes();
+        await Util.syncDelay(10);
         await this.apiOfVariant.submitVariants(
             this.getComponent(),
             submits.map((each) => {
@@ -424,6 +434,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     onVariantPriceUpdate = async (variant, variants) => {
         await this.apiOfVariant.updateVariantItem(this.getComponent(), { price: variant.price, priceB4Discount: variant.priceB4Discount }, variant.id, this.getIdOfBooze());
+        await Util.syncDelay(10);
         await this.updatePriceOfBooze(variants);
         this.getComponent().showSuccessSnackMessage(`${variant.labelOfVariant} $${variant.price})`);
     };
@@ -441,22 +452,26 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         const updates = _.filter(variants, (variants) => variants.existing);
 
         if (_.size(submits) > 0) await this.submitCustomVariant(submits);
+        await Util.syncDelay(10);
         await this.updatePriceOfBooze(variants);
+        await Util.syncDelay(10);
         await this.apiOfVariant.updateVariants(
             this.getComponent(),
             updates.map((each) => ({ id: each.id, price: each.price, priceB4Discount: each.priceB4Discount })),
             this.getIdOfBooze()
         );
-
-        if (component instanceof BaseComponent) component.dismiss();
         this.getComponent().showSuccessSnackMessage(`已更新全部價格`);
+        await Util.syncDelay(500);
+        if (component instanceof BaseComponent) component.dismiss();
     };
 
     onVariantPhotoUpdate = async (variant, files) => {
         if (_.size(files) < 1) this.getComponent().showSuccessSnackMessage(`選取圖片出現異常問題`);
         const href = await this.apiOfImage.uploadStorageOfHref(this.getComponent(), files[0], this.getIdOfBooze());
         variant.setPhoto(href);
+        await Util.syncDelay(10);
         await this.apiOfVariant.updateVariantItem(this.getComponent(), { photo: href }, variant.id, this.getIdOfBooze());
+        await Util.syncDelay(10);
         this.getComponent().showSuccessSnackMessage(`已更新(${variant.labelOfVariant})`);
     };
 

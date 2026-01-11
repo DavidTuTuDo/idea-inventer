@@ -29,7 +29,7 @@ class CommonPoolHelper {
     /** 避免很多api 發送時, 需要先完成登入程序, 所以預設是 singleThread 去處理 fetch 和 submit */
     enableParallelMode() {
         for (const queueName in this.queues) {
-            this.queues[queueName].setWorker(15);
+            this.queues[queueName].setWorker(1000);
         }
         this.paralledMode = true;
         Util.appendInfo("45642123132 set pool helper parallel mode succeed!");
