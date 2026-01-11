@@ -16,7 +16,7 @@ module.exports = {
         ["@babel/plugin-transform-class-properties", { loose: true }],
         ["@babel/plugin-transform-runtime", { regenerator: true }],
     ],
-    comments: false,
-    minified: true,
-    compact: true,
+    // comments: false,
+    // minified: true,
+    // compact: true,
 };
