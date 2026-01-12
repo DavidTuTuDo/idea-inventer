@@ -49,7 +49,7 @@ class ModularizedIreneMiniWebComponent extends BaseIreneMiniWebComponent {
                     width: "100%",
                     height: "100vh", // 高度设置
                     border: "none",
-                    display: self.getStore().isGlobalLoading() ? "none" : "block" // 加载中隐藏 iframe
+                    display: self.getStore().isAppLoading() ? "none" : "block" // 加载中隐藏 iframe
                 }}
             />
         );

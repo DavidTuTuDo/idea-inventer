@@ -5794,7 +5794,8 @@ class ComponentBuilder extends BaseBuilder {
         function getStmtsOfRenderEmptyView(node) {
             const stmts = []
             if (node.needEmptyTip()) {
-                stmts.push(`{self.renderListEmptyView(${node.getFieldName()}, ${node.hasPath()})}`)
+                generator.appendImport(`ListEmptyTrigger`, `../../base/ListEmptyTrigger`);
+                stmts.push(`<ListEmptyTrigger hasPath={${node.hasPath()}} component={self} size={_.size(${node.getFieldName()})}  />`)
             }
             return stmts;
         }
@@ -8422,7 +8423,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     }
 
     stmtsOfClickCaution = [`event.stopPropagation()`,
-        `if(self.getStore().isGlobalLoading()) return self.showWarningSnackMessage(i18n.location().toastOfPageIsLoading)`];
+        `if(self.getStore().isAppLoading()) return self.showWarningSnackMessage(i18n.location().toastOfPageIsLoading)`];
 
     /* typeOfView 可以是 default | list | wrap */
     enrichTextFieldBehavior(node, typeOfView = 'default') {

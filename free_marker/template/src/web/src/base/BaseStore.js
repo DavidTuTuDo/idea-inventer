@@ -284,7 +284,7 @@ class BaseStore extends ClientRemoteApi {
         return this.state === "stable" || this.state === "loading";
     }
 
-    isGlobalLoading() {
+    isAppLoading() {
         return _.isEqual(this.state, "loading");
     }
 

@@ -480,47 +480,7 @@ class BaseComponent extends MuiComponent {
         return !this.getStore().isInitialFetchCompleted() && _.size(items) < 1;
     }
 
-    renderListEmptyView = (items = [], hasPath) => {
-        const ListEmptyView = this.ListEmptyView;
-        return <ListEmptyView size={_.size(items)} isGlobalLoading={this.getStore().isGlobalLoading()} component={this} hasPath={hasPath} />;
-    };
-
-    App = () => {
-        return require("../").Application;
-    };
-
-    ListEmptyView = observer(({ hasPath, component, isGlobalLoading, size }) => {
-        if (isGlobalLoading || size > 0) {
-            return null;
-        }
-
-        function renderRetryButton() {
-            if (hasPath) {
-                return (
-                    <Chip
-                        onClick={async () => {
-                            if (component instanceof BaseComponent) {
-                                const store = component.getStore();
-                                await store.fetch(component);
-                            }
-                        }}
-                        icon={<RestartAltOutlined />}
-                        label={"重試"}
-                        color={"primary"}
-                        variant={"outlined"}
-                        className={`BaseListEmptyRetryButton`}></Chip>
-                );
-            }
-            return null;
-        }
-
-        return (
-            <div className={`BaseListEmptyDiv`}>
-                <Typography className={`BaseListEmptyTypography`}>{this.getStore().getMessageOfListIsEmpty()}</Typography>
-                {renderRetryButton()}
-            </div>
-        );
-    });
+    App = () => require("../").Application;
 
     renderSelectorView = () => {
         const self = this;

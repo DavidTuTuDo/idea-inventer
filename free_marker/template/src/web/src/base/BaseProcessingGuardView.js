@@ -132,7 +132,7 @@ const BaseProcessingGuardView = observer(() => {
                 sx={{
                     animation: `${getHeartbeatAnimation(currentTheme.shadowColor)} 2s infinite ease-in-out`,
                     // 中間卡片保持高不透明度 (0.95)，確保文字易讀
-                    backgroundColor: "rgba(255, 255, 255, 0.95)",
+                    backgroundColor: "rgba(255, 255, 255, 0.7)",
                     border: `1px solid rgba(255, 255, 255, 1)`,
                     boxShadow: `0 15px 50px rgba(${currentTheme.shadowColor}, 0.2)`
                 }}>

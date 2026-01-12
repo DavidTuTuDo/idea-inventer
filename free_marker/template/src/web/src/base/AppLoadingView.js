@@ -1,13 +1,14 @@
+const edit = true;
+
 import React from "react";
 import { observable, action, makeObservable } from "mobx";
 import { observer } from "mobx-react";
-import { LinearProgress } from "@mui/material";
+import LinearProgress from "@mui/material/LinearProgress";
 
 class AppLoadingStore {
 
     @observable
     visible = false;
-
 
     constructor() {
         makeObservable(this);
