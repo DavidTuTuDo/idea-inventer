@@ -6,6 +6,8 @@ import copy from "copy-to-clipboard";
 import functions from "../functions";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import { isMobile } from "react-device-detect";
+import _ from 'lodash';
+import Router from'../router';
 
 class ImpComponent extends BaseComponent {
     constructor(props) {
