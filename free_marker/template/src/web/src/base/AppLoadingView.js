@@ -6,7 +6,6 @@ import { observer } from "mobx-react";
 import LinearProgress from "@mui/material/LinearProgress";
 
 class AppLoadingStore {
-
     @observable
     visible = false;
 
@@ -28,7 +27,6 @@ export const storeOfAppLoading = new AppLoadingStore();
  * 使用 observer 確保只有這裡會因為 visible 改變而 re-render
  */
 const AppLoadingView = observer(({ componentX }) => {
-
     const { visible } = storeOfAppLoading;
     if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
     if (!visible) return null;

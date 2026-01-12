@@ -25,7 +25,7 @@ import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
 import SnackBView, { storeOfSnackB } from "./BaseSnackView";
 import LoadInkingView, { storeOfloadInking } from "./BaseLoadInkingView";
 import ProcessingGuardView, { storeOfProcessingGuard } from "./BaseProcessingGuardView";
-import AppLoadingView , { storeOfAppLoading } from "./AppLoadingView";
+import AppLoadingView, { storeOfAppLoading } from "./AppLoadingView";
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -71,7 +71,11 @@ class BaseComponent extends MuiComponent {
             })
             .finally(async () => {
                 if (Util.isCallable(finallyDo)) await finallyDo();
-                else this.getComponentInstance().enableAppLoading(false);
+                else {
+                    this.getComponentInstance().enableAppLoading(false);
+                    this.getComponentInstance().invalidateProcessingGuard(false);
+                    this.getComponentInstance().invalidateLoadInking(false);
+                }
             });
     };
 

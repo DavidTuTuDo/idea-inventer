@@ -37,8 +37,8 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow:
-            1px 1px 0 #888,
-                -1px -1px 0 #fff;
+        1px 1px 0 #888,
+        -1px -1px 0 #fff;
 }
 
 .CenterInParentColumn {
@@ -288,32 +288,29 @@
     justify-content: center;
     padding: 80px 40px;
     background-color: #ffffff;
-    // 雙重邊框設計：模擬機殼構造
-    border: 1px solid @tech-black;
+    border: 1px solid @tech-black; /** 雙重邊框設計：模擬機殼構造 */
     outline: 4px solid rgba(0, 0, 0, 0.03);
     outline-offset: -12px;
     position: relative;
     margin: 20px;
     overflow: hidden;
 
-    // 四角的工業座標刻度
     &::before {
-        content: "";
+        content: ""; /** 四角的工業座標刻度 */
         position: absolute;
         top: 0;
         left: 0;
         width: 40px;
         height: 40px;
         background:
-                linear-gradient(90deg, @tech-black 2px, transparent 2px) 0 0 / 10px 10px,
-                linear-gradient(@tech-black 2px, transparent 2px) 0 0 / 10px 10px;
+            linear-gradient(90deg, @tech-black 2px, transparent 2px) 0 0 / 10px 10px,
+            linear-gradient(@tech-black 2px, transparent 2px) 0 0 / 10px 10px;
         opacity: 0.2;
     }
 
-    // 右下角的技術規格文字
     &::after {
         content: "SYS_STATUS: NULL_DEVIATION // ERR_CODE: 0x000";
-        position: absolute;
+        position: absolute; /** 右下角的技術規格文字 */
         bottom: 10px;
         right: 15px;
         font-family: "Courier New", monospace;
@@ -334,10 +331,8 @@
     text-transform: uppercase;
     margin-bottom: 48px !important;
     position: relative;
-    clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%); // 工業切角設計
-
-    // 文字裝飾線
-    border-right: 6px solid @tech-gray-dark;
+    clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%); /** 工業切角設計 */
+    border-right: 6px solid @tech-gray-dark; /** 文字裝飾線 */
 }
 
 .BaseListEmptyRetryButton {
@@ -350,7 +345,7 @@
     padding: 10px 30px !important;
     height: auto !important;
     position: relative;
-    box-shadow: 4px 4px 0px @tech-gray-light; // 硬質投影
+    box-shadow: 4px 4px 0px @tech-gray-light; /** 硬質投影 */
     transition: all 0.1s !important;
 
     .MuiChip-icon {
@@ -366,7 +361,7 @@
         background: @tech-black !important;
         color: #ffffff !important;
         box-shadow: 0px 0px 0px transparent;
-        transform: translate(2px, 2px); // 模擬實體按鈕壓下去的動感
+        transform: translate(2px, 2px); /** 模擬實體按鈕壓下去的動感 */
 
         .MuiChip-icon {
             color: #ffffff !important;
@@ -891,8 +886,11 @@ input[type="number"]::-webkit-outer-spin-button {
         align-items: center;
         justify-content: center;
         padding: 50px;
-        margin: 15px;
+        margin: 25px;
         border-radius: 28px;
+        @media @desktop {
+            margin: auto;
+        }
     }
 
     .ProcessingGuardCircleSection {

@@ -185,11 +185,13 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     uploadBriefImages = async (files) => {
         if (_.sum([this.getLengthOfBriefPhoto(), _.size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
+        this.getComponent().invalidateProcessingGuard(true, { textOfTip: "圖片上傳中，請勿關閉", variant: "warn" });
         await this.handleIdOfBooze(true);
-        const pathsOfImage = await Util.execute4Tasks(files, async (file) => await this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze()));
+        await Util.syncDelay(10);
+        const pathsOfImage = await Util.execute4Tasks(files, async (file) => await this.apiOfImage.uploadStorageOfHref(undefined, file, this.getIdOfBooze()));
         this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
         await Util.syncDelay(10);
-        await this.apiOfBooze.updateBoozeItem(this.getComponent(), { photos: this.getBriefPhotos() }, this.getIdOfBooze());
+        await this.apiOfBooze.updateBoozeItem(undefined, { photos: this.getBriefPhotos() }, this.getIdOfBooze());
     };
 
     handleIdOfBooze = async () => {
