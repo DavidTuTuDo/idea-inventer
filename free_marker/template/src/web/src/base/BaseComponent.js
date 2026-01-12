@@ -23,8 +23,9 @@ import AlertMenu from "./AlertMenu";
 
 import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
 import SnackBView, { storeOfSnackB } from "./BaseSnackView";
-import LoadInkingView, { loadInkingStore } from "./BaseLoadInkingView";
-import ProcessingGuardView, { processingGuardStore } from "./BaseProcessingGuardView";
+import LoadInkingView, { storeOfloadInking } from "./BaseLoadInkingView";
+import ProcessingGuardView, { storeOfProcessingGuard } from "./BaseProcessingGuardView";
+import AppLoadingView , { storeOfAppLoading } from "./AppLoadingView";
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -70,7 +71,7 @@ class BaseComponent extends MuiComponent {
             })
             .finally(async () => {
                 if (Util.isCallable(finallyDo)) await finallyDo();
-                else this.getComponentInstance().setLoadingViewVisibility(false);
+                else this.getComponentInstance().enableAppLoading(false);
             });
     };
 
@@ -82,8 +83,8 @@ class BaseComponent extends MuiComponent {
      * @param variant [warn|error|success|info]色系（例如：交易相關應該用success）
      */
     invalidateProcessingGuard(enable, { textOfTip = "請勿關閉", secondsOfP, variant = "info" } = {}) {
-        if (enable) processingGuardStore.show(textOfTip, secondsOfP, variant);
-        else processingGuardStore.hide();
+        if (enable) storeOfProcessingGuard.show(textOfTip, secondsOfP, variant);
+        else storeOfProcessingGuard.hide();
     }
 
     setPageFullTitle = (title) => {
@@ -136,7 +137,7 @@ class BaseComponent extends MuiComponent {
         /** 執行unsubscribe */
 
         /** unmount 應該要把當前的toast 關掉, 才不會遺留錯誤資訊到下一個頁面 */
-        this.setSnackViewVisibility(false);
+        this.updateSnackStatus(false);
 
         while (this.listOfFunctionOfUnsubscribe.length > 0) {
             const unSub = this.listOfFunctionOfUnsubscribe.shift();
@@ -157,8 +158,8 @@ class BaseComponent extends MuiComponent {
     }
 
     invalidateLoadInking = (show, { processed = 1, totalFiles = 1, progress = 0, disabled = false } = {}) => {
-        if (show) loadInkingStore.updateLoadInkingState(processed, totalFiles, progress);
-        else loadInkingStore.finish();
+        if (show) storeOfloadInking.updateLoadInkingState(processed, totalFiles, progress);
+        else storeOfloadInking.finish();
     };
 
     /**
@@ -339,28 +340,17 @@ class BaseComponent extends MuiComponent {
         return <div />;
     }
 
-    renderLoadingView() {
-        if (this.isDialogComponent()) return null;
-        if (this.getStore().isGlobalLoading()) {
-            return (
-                <div className={"BaseLoadingViewDiv"}>
-                    <LinearProgress className={`BaseLoadingLinearProgress`} />
-                </div>
-            );
-        }
-    }
-
-    setLoadingViewVisibility(show = true) {
-        // console.trace(`setLoadingViewVisibility 呼叫追蹤: show = ${show}`);
-        this.getStore().setState(show ? "loading" : "stable");
+    enableAppLoading(enable = true) {
+        this.getStore().setState(enable ? "loading" : "stable");
+        storeOfAppLoading.setVisible(enable);
     }
 
     async executeAsyncTaskWithLoading(task) {
         try {
-            this.setLoadingViewVisibility();
+            this.enableAppLoading();
             await task();
         } finally {
-            this.setLoadingViewVisibility(false);
+            this.enableAppLoading(false);
         }
     }
 
@@ -389,17 +379,6 @@ class BaseComponent extends MuiComponent {
             task: task
         });
         this.getLoginDialogRef().open();
-    };
-
-    renderViewByStatus = () => {
-        switch (this.getStore().getState()) {
-            case "stable":
-                return this.renderView();
-            case "error":
-                return this.renderErrorView();
-            default:
-                return this.renderView();
-        }
     };
 
     onGoHomeClicked = (viewParam) => {
@@ -456,23 +435,27 @@ class BaseComponent extends MuiComponent {
      * @param {object} [config.func] - 額外按鈕設定 { name: '按鈕名稱', task: async function }
      * @returns {boolean} - 總是回傳 true (維持舊有 API 行為)
      */
-    setSnackViewVisibility(visible, message, config = {}) {
-        console.log(`481521231 有哦!就是要進來這裡實現setSnackViewVisibility()`);
+    updateSnackStatus(visible, message, config = {}) {
         if (visible) storeOfSnackB.execution(message, config.type, config);
         else storeOfSnackB.close();
         return true;
     }
 
+    renderViewByStatus = () => {
+        if (this.getStore().allowed) return this.renderView();
+        else this.renderErrorView();
+    };
+
     render() {
         const self = this;
-        console.log(`655456213 ${this.getComponentName()}-BaseComponent的render() 來惹!`);
+        console.log(`⚠️⚠️⚠️ 事發地：【${this.getComponentName()}】 注意！APP 全域 re-render()。`);
         return (
             <div className={"RootViewDiv"} style={{ ...this.style, paddingTop: (self.getStore().hasAppBar() ? 8 : 0) + self.getStore().getAppBarHeight() }}>
                 <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
                     {self.renderViewByStatus()}
                 </div>
 
-                {self.renderLoadingView()}
+                <AppLoadingView componentX={self} />
 
                 {self.renderSelectorView()}
 

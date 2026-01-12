@@ -224,9 +224,9 @@ class ClientRemoteApi extends CommonRemoteApi {
     handleApiExecute(path, type, view, name) {
         if (view !== undefined) {
             // 替換：移除 instanceof BaseComponent 檢查，改為檢查方法是否存在
-            if (view && typeof view.setLoadingViewVisibility === "function") {
+            if (view && typeof view.enableAppLoading === "function") {
                 console.log(`☀️ ${name}|${type}|${path} execute 即將 loading-> true`);
-                view.setLoadingViewVisibility(true);
+                view.enableAppLoading(true);
             } else {
                 // 如果 view 存在但沒有 setLoadingViewVisibility 方法，則拋出錯誤
                 // 註：這假設 BaseComponent 或其 Store wrapper 是唯一具有此方法的實例。
@@ -238,10 +238,10 @@ class ClientRemoteApi extends CommonRemoteApi {
     handleApiException(path, type, error, view, name) {
         if (view !== undefined) {
             // 替換：移除 instanceof BaseComponent 檢查，改為檢查方法是否存在
-            if (view && typeof view.setSnackViewVisibility === "function") {
+            if (view && typeof view.updateSnackStatus === "function") {
                 const errorMsg = `${type} ${[path]}, ${error.message}`;
                 console.log(`💔 ${name}|${type}|${path} execute 即將 wrong -> true`);
-                view.setSnackViewVisibility(true, errorMsg, { type: `error`, duration: 3600 });
+                view.updateSnackStatus(true, errorMsg, { type: `error`, duration: 3600 });
             }
         }
     }
@@ -249,9 +249,9 @@ class ClientRemoteApi extends CommonRemoteApi {
     handleApiFinally(path, type, view, name) {
         if (view !== undefined) {
             // 替換：移除 instanceof BaseComponent 檢查，改為檢查方法是否存在
-            if (view && typeof view.setLoadingViewVisibility === "function") {
+            if (view && typeof view.enableAppLoading === "function") {
                 console.log(`🌙 ${name}|${type}|${path} execute 即將 loading-> false`);
-                view.setLoadingViewVisibility(false);
+                view.enableAppLoading(false);
             }
         } else console.log(`💢 ${name}|${type}|${path} view 遺失了，所以無法將 loading-> false 💢`);
     }

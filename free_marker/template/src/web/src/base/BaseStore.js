@@ -1,6 +1,6 @@
 const edit = true;
 
-import { action, observable, isObservableObject, toJS, runInAction } from "mobx"; // [新增] 引入 runInAction
+import { computed, action, observable, isObservableObject, toJS, runInAction } from "mobx"; // [新增] 引入 runInAction
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import _ from "lodash";
 import ClientRemoteApi from "./ClientRemoteApi";
@@ -275,10 +275,13 @@ class BaseStore extends ClientRemoteApi {
         }
     }
 
-    // ==========================================
-
     getState() {
         return this.state;
+    }
+
+    @computed
+    get allowed() {
+        return this.state === "stable" || this.state === "loading";
     }
 
     isGlobalLoading() {

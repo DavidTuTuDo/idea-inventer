@@ -6214,6 +6214,7 @@ class ComponentBuilder extends BaseBuilder {
 
         if (!this.hasRootRenderViewFunction) {
             generator.appendFunction({ name: "renderView", arrow: true }, [], [], [],
+                `console.log('🔥🔥 ${node.getName()} component 出現 re-render()')`,
                 `const ${node.getName()} = this.getStore()`,
                 ...getContentStmt(node, generator));
             this.hasRootRenderViewFunction = true;

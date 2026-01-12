@@ -97,7 +97,7 @@ class ProcessingGuardStore {
     }
 }
 
-export const processingGuardStore = new ProcessingGuardStore();
+export const storeOfProcessingGuard = new ProcessingGuardStore();
 
 const getHeartbeatAnimation = (rgbColor) => keyframes`
     0% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px rgba(${rgbColor}, 0.3)); }
@@ -113,7 +113,7 @@ const spinReverse = keyframes`
 `;
 
 const BaseProcessingGuardView = observer(() => {
-    const { visible, message, secondsOfProcess, variant } = processingGuardStore;
+    const { visible, message, secondsOfProcess, variant } = storeOfProcessingGuard;
 
     if (!visible) return null;
 

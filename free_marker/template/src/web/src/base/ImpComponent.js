@@ -70,20 +70,20 @@ class ImpComponent extends BaseComponent {
     }
 
     showWarningSnackMessage(message) {
-        return this.setSnackViewVisibility(true, message, { type: `warning` });
+        return this.updateSnackStatus(true, message, { type: `warning` });
     }
 
     showInfoSnackMessage(message, func) {
-        return this.setSnackViewVisibility(true, message, { type: `info`, func });
+        return this.updateSnackStatus(true, message, { type: `info`, func });
     }
 
     showErrorSnackMessage(message) {
         console.error(message);
-        return this.setSnackViewVisibility(true, message, { type: `error` });
+        return this.updateSnackStatus(true, message, { type: `error` });
     }
 
     showSuccessSnackMessage(message) {
-        return this.setSnackViewVisibility(true, message, { type: `success` });
+        return this.updateSnackStatus(true, message, { type: `success` });
     }
 
     invokeEMailBehavior(email, subject = "", body = "", children = "") {
@@ -163,14 +163,14 @@ class ImpComponent extends BaseComponent {
                 if (_.isFunction(functionOfGotoPage)) {
                     functionOfGotoPage(this.getComponentInstance(), ...words);
                 } else {
-                    this.setSnackViewVisibility(true, `4097 can't handle ${page}`, { type: "error" });
+                    this.updateSnackStatus(true, `4097 can't handle ${page}`, { type: "error" });
                 }
                 break;
             default:
                 if (_.isEmpty(routeString)) {
                     /** doing nothing */
                 } else {
-                    this.setSnackViewVisibility(true, `can't handle ${routeString}`, { type: "error" });
+                    this.updateSnackStatus(true, `can't handle ${routeString}`, { type: "error" });
                 }
                 break;
         }
@@ -181,7 +181,7 @@ class ImpComponent extends BaseComponent {
         if (restfulResult.status === "succeed") {
             await succeedBehavior(restfulResult.data);
         } else if (restfulResult.status === "fail") {
-            this.setSnackViewVisibility(true, restfulResult.message, { type: "warning" });
+            this.updateSnackStatus(true, restfulResult.message, { type: "warning" });
         } else {
             throw new ERROR(7007, `status ===> ${restfulResult.status}`);
         }

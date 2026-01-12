@@ -524,12 +524,12 @@ class CommonRemoteApi {
     }
 
     showLoadingView(view) {
-        if (view !== undefined && view.setLoadingViewVisibility) view.setLoadingViewVisibility(true);
+        if (view !== undefined && view.enableAppLoading) view.enableAppLoading(true);
     }
 
     closeLoadingView(view) {
-        if (view !== undefined && view.setLoadingViewVisibility) {
-            view.setLoadingViewVisibility(false);
+        if (view !== undefined && view.enableAppLoading) {
+            view.enableAppLoading(false);
         }
     }
 

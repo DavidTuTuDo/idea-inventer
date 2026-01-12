@@ -57,7 +57,7 @@ class LoadInkingStore {
 }
 
 // 匯出 Store 實例
-export const loadInkingStore = new LoadInkingStore();
+export const storeOfloadInking = new LoadInkingStore();
 
 // --- Animations (定義在程式碼內) ---
 // --- 修正後的呼吸動畫 (忽明忽滅效果) ---
@@ -102,7 +102,7 @@ function CircularProgressWithLabel(props) {
 // 改為 Function Component 並使用 observer
 const BaseLoadInkingView = observer(({ componentX }) => {
     // 必須在 function 內解構屬性，MobX 才能監控到變化
-    const { processedCount, totalCount, progressPercent, shouldShow } = loadInkingStore;
+    const { processedCount, totalCount, progressPercent, shouldShow } = storeOfloadInking;
     if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
     if (!shouldShow) return null;
 
