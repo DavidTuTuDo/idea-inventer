@@ -4183,6 +4183,9 @@ class BaseBuilder extends PathBase {
             case `upload storage file`:
                 params = ['blob', ...params, 'options'];
                 break;
+            case `upload storage files`:
+                params = ['blobs', ...params, 'options'];
+                break;
             case `delete storage files`:
                 params = [...params];
                 break;
@@ -4887,10 +4890,16 @@ class RemoteFunctionHandler extends BaseBuilder {
                         Util.compactConsecutive([child.getNodeOfStruct().getName(), child.getPreciseAttributeParentName(), child.getName()]);
 
                     generateApiFunction(
-                        child, Util.camel('uploadStorageOf', ...params),
+                        child, Util.camel('uploadFileOf', ...params),
                         [
                             `return await self.uploadStorageFile(blob, folder, '${child.fileMaximum}', ${self.isWebPlatform() ? '{ ...options, view }' : 'options'});`
                         ], `upload storage file`, true, true);
+
+                    generateApiFunction(
+                        child, Util.camel('uploadFilesOf', ...params),
+                        [
+                            `return await self.uploadStorageFiles(blobs, folder, '${child.fileMaximum}', ${self.isWebPlatform() ? '{ ...options, view }' : 'options'});`
+                        ], `upload storage files`, true, true);
 
                     generateApiFunction(
                         child, Util.camel('deleteStorageFilesOf', ...params),

@@ -164,6 +164,11 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo("submit", _async, "high", `upload storage file`);
     }
 
+    async uploadStorageFiles(blobs, folder = "public", maxSize, options) {
+        const _async = async () => await super.uploadStorageFiles(blobs, folder, maxSize, options);
+        return await CommonPoolHelper.submitTo("submit", _async, "high", `upload storage file`);
+    }
+
     async deleteStorageFiles(folder = "public") {
         const _async = async () => await super.deleteStorageFiles(folder);
         return await CommonPoolHelper.submitTo("submit", _async, "high", `delete storage files`);

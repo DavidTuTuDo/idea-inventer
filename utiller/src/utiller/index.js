@@ -4163,6 +4163,40 @@ class Utiller {
     }
 
     /**
+     * 異步並行處理集合中的每個項目，並等待所有任務完成（無論成功或失敗）。
+     * 類似 Promise.allSettled，每個結果都會回傳其執行狀態。
+     *
+     * @param {Collection} collection - 要處理的元素陣列。預設為空陣列 []。
+     * @param {ItemTask} task - 必須是一個非同步函式 (async function)。對集合中的每個元素執行一次。
+     * @returns {Promise<Array<{ status: 'fulfilled', value: any } | { status: 'rejected', reason: any }>>}
+     *          - 一個 Promise，解析為所有任務的結果狀態陣列。
+     * @throws {Error} - 如果 task 參數不是一個 async function，則拋出錯誤。
+     */
+    execute4Settled = async (collection = [], task) => {
+        // 1. 檢查 task 是否存在且為函式
+        if (!task || typeof task !== 'function') {
+            throw new Error('Task function is required and must be a function.');
+        }
+
+        // 2. 檢查 task 是否為 async function
+        if (task.constructor.name !== 'AsyncFunction') {
+            throw new Error('Task function must be an asynchronous function (async function) to ensure proper Promise handling.');
+        }
+
+        // 3. 處理空集合
+        if (collection.length === 0) {
+            return Promise.resolve([]);
+        }
+
+        // 4. Promise.allSettled：無論成功或失敗都會回傳結果
+        return await Promise.allSettled(
+            collection.map((child, index) =>
+                task(child, index, collection)
+            )
+        );
+    };
+
+    /**
      * 把檔案大小，找個最適當的表是法aka
      * 格式化位元組數為人類可讀的 KB/MB/GB 格式
      */

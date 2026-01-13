@@ -182,16 +182,23 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         });
     }
 
-    uploadBriefImages = async (files) => {
+    uploadBriefImages = async (files = []) => {
         if (_.sum([this.getLengthOfBriefPhoto(), _.size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
-        this.getComponent().invalidateProcessingGuard(true, { textOfTip: "圖片上傳中，請勿關閉", variant: "warn" });
+        /** todo:loadingProgress還沒設計好，單張上傳會有進度0～100%  */
+        const useUploadProgress = files.length === 1;
+        const view = useUploadProgress ? this.getComponent() : undefined;
+        if (!useUploadProgress) this.getComponent().invalidateProcessingGuard(true, { textOfTip: "圖片上傳中，請勿關閉", variant: "warn" });
         await this.handleIdOfBooze(true);
-        await Util.syncDelay(10);
-        const pathsOfImage = await Util.execute4Tasks(files, async (file) => await this.apiOfImage.uploadStorageOfHref(undefined, file, this.getIdOfBooze()));
+        await Util.syncDelay(10);// 防止promise機制 掉線
+        const pathsOfImage = useUploadProgress ? [await this.apiOfImage.uploadFileOfHref(view, files[0], this.getIdOfBooze())]
+            : await this.apiOfImage.uploadFilesOfHref(view, files, this.getIdOfBooze())
         this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
-        await Util.syncDelay(10);
-        await this.apiOfBooze.updateBoozeItem(undefined, { photos: this.getBriefPhotos() }, this.getIdOfBooze());
+        await Util.syncDelay(10);// 防止promise 掉線
+        await this.apiOfBooze.updateBoozeItem(view, { photos: this.getBriefPhotos() }, this.getIdOfBooze());
+        await Util.syncDelay(10);// 防止promise 掉線
+        if (pathsOfImage.length !== files.length)
+            return this.getComponent().showWarningSnackMessage(`部分圖片因不明原因，上傳失敗`);
     };
 
     handleIdOfBooze = async () => {
@@ -218,12 +225,15 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     deleteBooze4Sure = async () => {
         this.getComponent().invalidateProcessingGuard(true, { textOfTip: "刪除商品中，請勿關閉" });
         const result = await this.apiOfImage.deleteStorageFilesOfHref(this.getComponent(), this.getIdOfBooze());
-        await Util.syncDelay(10);
-        await this.apiOfBooze.deleteBoozeItem(this.getComponent(), this.getIdOfBooze());
-        await Util.syncDelay(10);
-        await this.apiOfVariant.deleteVariants(this.getComponent(), true, this.getIdOfBooze());
         Util.appendInfo(`刪除對象：`, this.getIdOfBooze(), " \n結果報告：", result);
         await Util.syncDelay(10);
+        Util.appendInfo(`刪除${this.getIdOfBooze()}的 variant！`);
+        await this.apiOfVariant.deleteVariants(this.getComponent(), true, this.getIdOfBooze());
+        await Util.syncDelay(10);
+        Util.appendInfo(`刪除${this.getIdOfBooze()}的 booze！`);
+        await this.apiOfBooze.deleteBoozeItem(this.getComponent(), this.getIdOfBooze());
+        await Util.syncDelay(10);
+        Util.appendInfo(`完成刪除${this.getIdOfBooze()}的 全套一條龍！`);
         this.getComponent().invalidateProcessingGuard(false);
     };
 
@@ -469,7 +479,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     onVariantPhotoUpdate = async (variant, files) => {
         if (_.size(files) < 1) this.getComponent().showSuccessSnackMessage(`選取圖片出現異常問題`);
-        const href = await this.apiOfImage.uploadStorageOfHref(this.getComponent(), files[0], this.getIdOfBooze());
+        const href = await this.apiOfImage.uploadFileOfHref(this.getComponent(), files[0], this.getIdOfBooze());
         variant.setPhoto(href);
         await Util.syncDelay(10);
         await this.apiOfVariant.updateVariantItem(this.getComponent(), { photo: href }, variant.id, this.getIdOfBooze());

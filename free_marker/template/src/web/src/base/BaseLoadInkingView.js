@@ -107,15 +107,13 @@ const BaseLoadInkingView = observer(({ componentX }) => {
     if (!shouldShow) return null;
 
     const titleText = processedCount === totalCount ? "檔案上傳中" : `檔案上傳中，已完成 ${processedCount}/${totalCount} 個`;
-
-    console.log(componentX.getComponentName(), "走到了這裡");
     return (
         <div className="LoadInkingContainer">
             <Box
                 className="LoadInkingBreathingContent"
                 sx={{
                     // 3秒一個週期，符合人類安靜呼吸頻率
-                    animation: `${breatheAnimation} 3s ease-in-out infinite`
+                    animation: `${breatheAnimation} 1s ease-in-out infinite`
                 }}>
                 <div className="LoadInkingTitle">{titleText}</div>
                 <div className="LoadInkingCircle">

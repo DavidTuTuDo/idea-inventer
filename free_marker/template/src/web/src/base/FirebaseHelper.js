@@ -53,6 +53,7 @@ import { ref, getDownloadURL, uploadBytesResumable, listAll, deleteObject } from
 import event from "../event";
 
 const MAX_COUNT_OF_FIRESTORE_BATCH = 500;
+const MAX_SIZE_PER_UPLOAD = 10;
 
 const RemoteDo = {
     Query: 1, // fetch
@@ -837,14 +838,26 @@ class FirebaseHelper extends BaseFirebase {
     };
 
     /**
-     *
+     * 內部私有方法：驗證單個檔案格式與大小
+     * @param {object} file
+     * @param {number} maxSizeInBytes
+     */
+    validateStorageFile = (file, maxSizeInBytes) => {
+        if (!file || !file.name || !file.blob) throw new Error("Invalid file format. Expecting { name, blob }.");
+        if (!(file.blob instanceof Blob)) throw new Error("file.blob must be a Blob object.");
+        if (file.blob.size > maxSizeInBytes) {
+            throw new Error(`${file.name ? `：${file.name}` : ""}(${Util.getReadableOfFileS(file.blob.size)}) 已超出限制 ${Util.getReadableOfFileS(maxSizeInBytes)}.`);
+        }
+    };
+
+    /**
      * 這是針對用desktop/mobile 選擇的檔案上傳機制
-     *  前端以blob為主，而file selected選到的資料格式如下
+     * 前端以blob為主，而file selected選到的資料格式如下
      * {
-     *     "name": "截圖 2024-07-15 下午8.38.30.png",
-     *     "index": "0",
-     *     "blob": file,
-     *     "url": "blob:http://localhost:8080/4f6c25b3-8d6f-4d06-a236-6f9a4b13211a"
+     * "name": "截圖 2024-07-15 下午8.38.30.png",
+     * "index": "0",
+     * "blob": file,
+     * "url": "blob:http://localhost:8080/4f6c25b3-8d6f-4d06-a236-6f9a4b13211a"
      * }
      *
      * 執行檔案上傳至 Firebase Storage，具備檔案大小檢查、MIME 類型推斷，以及可配置的逾時機制。
@@ -877,13 +890,10 @@ class FirebaseHelper extends BaseFirebase {
             return mimeTypes[extension] || "application/octet-stream";
         };
 
-        if (!file || !file.name || !file.blob) throw new Error("Invalid file format. Expecting { name, blob }.");
-
-        if (!(file.blob instanceof Blob)) throw new Error("file.blob must be a Blob object.");
-
         const maxSizeInBytes = Util.getNumOfFileS(maxSize);
-        // 檢查檔案大小並拋出格式化後的錯誤訊息
-        if (file.blob.size > maxSizeInBytes) throw new Error(`檔案 (${Util.getReadableOfFileS(file.blob.size)}) 已超出限制 ${Util.getReadableOfFileS(maxSizeInBytes)}.`);
+
+        // 使用共通檢查邏輯
+        this.validateStorageFile(file, maxSizeInBytes);
 
         let timerId;
         const uid = Util.getRandomHashV2(10);
@@ -933,10 +943,47 @@ class FirebaseHelper extends BaseFirebase {
         }
     };
 
-    uploadStorageFiles = async (files, folder = "public", maxSize = "5MB", { fileNameExtension, timeoutMs = 30000 } = {}) => {
+    /** 參考uploadStorageFile去做多圖上傳 */
+    uploadStorageFiles = async (files = [], folder = "public", maxSize = "5MB", { fileNameExtension, timeoutMs = 30000 } = {}) => {
         if (!Array.isArray(files) || files.length === 0) throw new Error("Invalid input: files should be a non-empty array.");
-        const urls = await Util.execute4Tasks(files, async (file) => await this.uploadStorageFile(file, folder, maxSize, { fileNameExtension, timeoutMs }));
-        return urls.filter(Boolean);
+
+        if (files.length > MAX_SIZE_PER_UPLOAD)
+            throw new Error(`上傳數量不可超過 ${MAX_SIZE_PER_UPLOAD} 個`);
+
+        const maxSizeInBytes = Util.getNumOfFileS(maxSize);
+
+        // 使用共通檢查邏輯，避免重複程式碼
+        files.forEach((file) => this.validateStorageFile(file, maxSizeInBytes));
+
+        const result = await Util.execute4Settled(files, async (file) => await this.uploadStorageFile(file, folder, maxSize, { fileNameExtension, timeoutMs }));
+        /**
+         * [
+         *     {
+         *         "status": "rejected",
+         *         "reason": { FirebaseError物件
+         *             "code": "storage/unauthorized",
+         *             "customData": {
+         *                 "serverResponse": ""
+         *             },
+         *             "name": "FirebaseError",
+         *             "status_": 403,
+         *             "_baseMessage": "Firebase Storage: User does not have permission to access 'dionysus/F8DIu6x4d1SfjhJHKbIR/images/IMG_3059.HEIC'. (storage/unauthorized)"
+         *         }
+         *     },
+         *     {
+         *         "status": "fulfilled",
+         *         "value": "https://firebasestorage.googleapis.com/v0/b/sasha-22b8c.appspot.com/o/dionysus%2FF8DIu6x4d1SfjhJHKbIR%2Fimages%2F%E6%88%AA%E5%9C%96%202026-01-08%20%E4%B8%8B%E5%8D%884.28.46.png?alt=media&token=51d07031-5a37-464f-822f-6d077929d2f5"
+         *     },
+         *     {
+         *         "status": "fulfilled",
+         *         "value": "https://firebasestorage.googleapis.com/v0/b/sasha-22b8c.appspot.com/o/dionysus%2FF8DIu6x4d1SfjhJHKbIR%2Fimages%2F%E6%88%AA%E5%9C%96%202026-01-06%20%E6%99%9A%E4%B8%8A9.25.48.png?alt=media&token=61257928-1ee9-4c65-8a8d-4c7929efb937"
+         *     }
+         * ]
+         *
+         */
+        return result
+            .filter(res => res.status === 'fulfilled')
+            .map(res => res.value);
     };
 
     /** 針對query後的documents總數

@@ -40,7 +40,7 @@ class EpisodeStore extends BaseEpisodeStore {
         const covered = true;
         for (const file of files) {
             const name = Util.getFileNameFromPath(file.name);
-            const pathOfResource = await this.storeOfPiece.uploadStorageOfPathOfResource(this.getComponent(), file.blob);
+            const pathOfResource = await this.storeOfPiece.uploadFilesOfPathOfResource(this.getComponent(), file.blob);
             const resultOfCelestial = await this.storeOfPiece.submitPieceItem(this.getComponent(), {
                 idOfUser: UserInfoRef.getUid(),
                 nameOfEpisode,
