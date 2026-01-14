@@ -4,14 +4,20 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
-const CompressionPlugin = require("compression-webpack-plugin"); // <<<<<<<<<<< 1. 引入壓縮套件
+const CompressionPlugin = require("compression-webpack-plugin");
 
 // 載入我們在步驟 1 中生成的映射表
 const classNameMap = require('./classNameMap.json');
 
-const isProd = process.env.NODE_ENV === 'production';
+const isProd = process.env.prod === 'true';
 const enableOfBundleSize = false;
 const enableSourceMap = false;
+
+console.log('--- WEBPACK BUILD INFO ---');
+console.log('NODE_ENV:', process.env.NODE_ENV ?? 'not set');
+console.log('isProd Variable:', isProd);
+console.log('---------------------------');
+console.log(`有哪些環境變數可以用：\n`,process.env);
 
 // 建立一個給 string-replace-loader 使用的替換規則陣列
 const replacements = [];
@@ -187,6 +193,7 @@ if (isProd) {
                   compress: {
                       // ... (其他 compress 設置保留)
                       drop_console: true,
+                      pure_funcs: ["console.log", "console.info", "console.debug"],
                       drop_debugger: true,
                       unused: true,      // 刪除未使用的變數/函數
                       dead_code: true,    // 刪除不可達的代碼
@@ -196,7 +203,7 @@ if (isProd) {
                   // 這將把所有具名函式和類別名替換為 'a', 'b', 'c' 等單字母。
                   keep_classnames: false, // <-- 移除 Class 名稱 (解決 class A {})
                   keep_fnames: false,     // <-- 移除 Function 名稱 (解決 function funcA {})
-
+                  mangle: true,
                   output: {
                       // 需求 1: 減少體積 (移除所有註釋)
                       comments: false,
