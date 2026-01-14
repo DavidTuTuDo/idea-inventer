@@ -2,12 +2,18 @@
 @tablet: ~'only screen and (min-width: 320px) and (max-width: 600px)';
 @mobile: ~'only screen and (min-width: 320px) and (max-width: 600px)';
 .AccountPaper:extend(.CenterInParentColumn) {
-    gap: 4px;
+    gap: 2px;
     margin: auto;
     min-height: 50vh;
-    padding: 15px;
-    padding-bottom: 30px;
-    border-radius: 20px;
+    padding: 20px 10px;
+    padding-bottom: 50px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 80px -10px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    animation: fadeInMove 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow: hidden;
     @media @mobile {
         /** empty style */
     }
@@ -16,12 +22,15 @@
     }
     @media @desktop {
         width: 90%;
+        max-width: 800px;
     }
 }
 .AccountDivWrap {
     gap: 10px;
     margin: auto;
-    width: 90vw;
+    width: 95vw;
+    padding-top: 20px;
+    padding-bottom: 40px;
     @media @mobile {
         /** empty style */
     }
@@ -33,8 +42,11 @@
     }
 }
 .AccountInfoDiv:extend(.CenterInParentColumn) {
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
     @media @mobile {
-        /** empty style */
+        margin-bottom: 10px;
     }
     @media @tablet {
         /** empty style */
@@ -44,12 +56,20 @@
     }
 }
 .AccountInfoUrlOfHeadPhotoAvatar {
-    width: 60px;
-    height: 60px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    width: 85px;
+    height: 85px;
+    margin-top: 5px;
+    border: 4px solid #ffffff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s ease;
+    animation: floatAvatar 6s ease-in-out infinite;
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
     @media @mobile {
-        /** empty style */
+        width: 110px;
+        height: 110px;
     }
     @media @tablet {
         /** empty style */
@@ -59,8 +79,15 @@
     }
 }
 .AccountInfoValueOfNameTypography {
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+    color: #1a1a1a;
+    background: linear-gradient(45deg, #1a1a1a, #4a4a4a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     @media @mobile {
-        /** empty style */
+        font-size: 1.1rem;
     }
     @media @tablet {
         /** empty style */
@@ -70,14 +97,21 @@
     }
 }
 .AccountInfoValueOfEmailTypography {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    background: #f5f5f7;
+    padding: 4px 12px;
+    border-radius: 15px;
     @media @mobile {
-        font-size: 0.7rem;
+        /** empty style */
     }
     @media @tablet {
-        font-size: 0.7rem;
+        /** empty style */
     }
     @media @desktop {
-        font-size: 0.8rem;
+        font-size: 1rem;
     }
 }
 .AccountBasicDiv:extend(.CenterInParentRow) {
