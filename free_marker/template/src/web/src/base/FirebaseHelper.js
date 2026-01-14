@@ -947,8 +947,7 @@ class FirebaseHelper extends BaseFirebase {
     uploadStorageFiles = async (files = [], folder = "public", maxSize = "5MB", { fileNameExtension, timeoutMs = 30000 } = {}) => {
         if (!Array.isArray(files) || files.length === 0) throw new Error("Invalid input: files should be a non-empty array.");
 
-        if (files.length > MAX_SIZE_PER_UPLOAD)
-            throw new Error(`上傳數量不可超過 ${MAX_SIZE_PER_UPLOAD} 個`);
+        if (files.length > MAX_SIZE_PER_UPLOAD) throw new Error(`上傳數量不可超過 ${MAX_SIZE_PER_UPLOAD} 個`);
 
         const maxSizeInBytes = Util.getNumOfFileS(maxSize);
 
@@ -981,9 +980,7 @@ class FirebaseHelper extends BaseFirebase {
          * ]
          *
          */
-        return result
-            .filter(res => res.status === 'fulfilled')
-            .map(res => res.value);
+        return result.filter((res) => res.status === "fulfilled").map((res) => res.value);
     };
 
     /** 針對query後的documents總數

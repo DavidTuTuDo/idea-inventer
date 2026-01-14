@@ -4,12 +4,10 @@ import _ from "lodash";
 import React from "react";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import Typography from "@mui/material/Typography";
-import LinearProgress from "@mui/material/LinearProgress";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Slide from "@mui/material/Slide";
 import Card from "@mui/material/Card";
-import Chip from "@mui/material/Chip";
 import Config from "../config";
 import { observer } from "mobx-react";
 import Countdown from "react-countdown";
@@ -20,8 +18,6 @@ import EventBus from "./CommonEventBus";
 import MuiComponent from "./MUIComponent";
 import AlertDialog from "./AlertDialog";
 import AlertMenu from "./AlertMenu";
-
-import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
 import SnackBView, { storeOfSnackB } from "./BaseSnackView";
 import LoadInkingView, { storeOfloadInking } from "./BaseLoadInkingView";
 import ProcessingGuardView, { storeOfProcessingGuard } from "./BaseProcessingGuardView";
@@ -33,12 +29,14 @@ class BaseComponent extends MuiComponent {
     componentStyle = {};
     jobsOfScrollToBottom = [];
     jobExecutorLock = false;
-    loginDialogRef = React.createRef();
     propsOfMobX;
 
     constructor(props) {
         super(props);
         this.propsOfMobX = props;
+        this.imgDialogRef = React.createRef();
+        this.loginDialogRef = React.createRef();
+        this.fileChooserInputRef = React.createRef();
     }
 
     /** 瘋掉，不知道為什麼task.then()會讓函式執行到一半，然後異常死掉後(沒執行到最後一行)，導致loading bar跑不完，只好正規的做好以下任務
@@ -49,7 +47,7 @@ class BaseComponent extends MuiComponent {
      * @param ignore 發生錯誤時，而且沒有代入catchDo時要不要顯示錯誤
      **/
     exeAsyncT = (task, { thenDo, catchDo, finallyDo, ignore } = {}) => {
-        console.log(`🌱 ${this.getComponentInstance().getComponentName()} 執行 exeAsyncT()`);
+        console.log(`🌱 ${this?.getComponentName()} 執行 exeAsyncT()`);
 
         if (!Util.isP(task)) throw new Error(`[exeAsyncT]: Task is not a Promise. Received: ${typeof task}`);
 
@@ -220,14 +218,12 @@ class BaseComponent extends MuiComponent {
         return !this.isNavigator() && !this.isComponentView() && !this.isCPRT();
     }
 
-    viewInitial() {
-        this.fileChooserInputRef = React.createRef();
+    viewInitial = () => {
         if (!this.isNavigator() && Config.isScrollingHide) {
             /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
             if (!this.isComponentView()) this.getStore().setAppBarHeight(isMobile ? 60 : 55);
         }
-        this.imageDialogRef = React.createRef();
-    }
+    };
 
     reloadPage = () => {
         window.location.reload();
@@ -463,7 +459,14 @@ class BaseComponent extends MuiComponent {
 
                 {self.renderSelectorView()}
 
-                {self.renderImageDialog()}
+                <AlertDialog
+                    viewX={"ImageDialogView"}
+                    ref={this.imgDialogRef}
+                    paramObject={self.getStore().getImageDialogParam()}
+                    customView={ImageDialogView}
+                    needActionButtons={false}
+                    component={self}
+                />
 
                 <SnackBView componentX={self} />
 
@@ -471,7 +474,15 @@ class BaseComponent extends MuiComponent {
 
                 <ProcessingGuardView componentX={self} />
 
-                {self.renderGlobalDialogView()}
+                <AlertDialog
+                    viewX={"GlobalDialogView"}
+                    ref={self.loginDialogRef}
+                    title={self.getStore().getGlobalDialogContent().title}
+                    content={self.getStore().getGlobalDialogContent().content}
+                    component={this}
+                    needActionButtons={true}
+                    task={self.getStore().getGlobalDialogContent().task}
+                />
             </div>
         );
     }
@@ -519,6 +530,9 @@ class BaseComponent extends MuiComponent {
                 });
         }
         if (_.size(array) > 0) this.onFilesSelected(array);
+
+        /** 將事件內選到檔案清空，不然選到同一個檔案將無法觸發onChange */
+        event.target.value = "";
     };
 
     /** 給子類別繼承用的 */
@@ -652,19 +666,6 @@ class BaseComponent extends MuiComponent {
         return false;
     }
 
-    renderImageDialog = () => {
-        if (this.isDialogComponent()) return null;
-        const self = this;
-        const params = this.getStore().getImageDialogParam();
-        return this.renderAlertDialog({
-            ref: this.imageDialogRef,
-            paramObject: params,
-            customView: ImageDialogView,
-            needActionButtons: false,
-            component: self
-        });
-    };
-
     /** imageDialogRef只會實作在 '非dialog的' component */
     openImageDialog = (imgUrl) => {
         const component = this.getComponentInstance();
@@ -731,21 +732,12 @@ class BaseComponent extends MuiComponent {
         }
     }
 
-    renderGlobalDialogView = () => {
-        const self = this;
-        const dialog = self.getStore().getGlobalDialogContent();
-        return this.renderAlertDialog({
-            ref: self.loginDialogRef,
-            title: dialog.title,
-            content: dialog.content,
-            component: this,
-            needActionButtons: true,
-            task: dialog.task
-        });
-    };
-
     getLoginDialogRef = () => {
         return this.loginDialogRef.current;
+    };
+
+    getImgDialogRef = () => {
+        return this.imgDialogRef.current;
     };
 
     getKeywordSuggests = () => {
@@ -764,56 +756,6 @@ class BaseComponent extends MuiComponent {
         if (Util.isOrEquals(param, ...allows)) isValid = true;
 
         return isValid;
-    }
-
-    renderAlertDialog = ({
-        ref,
-        title,
-        content,
-        task,
-        customView,
-        paramObject,
-        needActionButtons,
-        textInput,
-        component,
-        enableCancel,
-        callback,
-        storeX,
-        useCustomCancel = false,
-        disposablePage = false,
-        fullWidth = false,
-        strict = false
-    }) => {
-        if (disposablePage && this.App().getStoreObject()) {
-            const nameOfComponent = customView.nameOfComponent;
-            const store = this.App().getStoreObject()[`${nameOfComponent}`];
-            if (store) store.clean();
-        }
-
-        return (
-            <AlertDialog
-                title={title}
-                content={content}
-                callback={callback}
-                submitAsyncTask={task}
-                needActionButtons={needActionButtons}
-                enableCancel={enableCancel}
-                useCustomCancel={useCustomCancel}
-                customView={customView}
-                paramObject={paramObject}
-                textInput={textInput}
-                component={component}
-                fullWidth={fullWidth}
-                strict={strict}
-                storeX={storeX}
-                ref={ref}
-            />
-        );
-    };
-
-    isWrapByDialog() {
-        const dialog = this.propsOfMobX.dialog;
-        return dialog instanceof AlertDialog;
     }
 
     funcOfDialogCallback() {

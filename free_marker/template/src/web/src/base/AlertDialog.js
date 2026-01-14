@@ -47,256 +47,359 @@ class DialogStore {
     }
 }
 
-@observer
-class AlertDialog extends MuiComponent {
-    constructor(props) {
-        super(props);
-        this.dialog = new DialogStore();
-        this.onSubmitClick = props.onSubmitClick;
-        this.enableCancel = props.enableCancel ?? true;
-        this.fullWidth = props.fullWidth;
-        this.strict = props.strict;
-        this.useCustomCancel = props.useCustomCancel ?? false;
-        this.component = props.component;
-        this.useTextInput = props.textInput && props.textInput.enable;
-    }
+/**
+ * 通用警告/確認視窗組件
+ * 整合了 CustomView (客製化內容)、TextInput (文字輸入)、Disposable Store (用完即丟的 Store 清理) 等邏輯。
+ * @props {string} title - [可選] 視窗標題
+ * @props {string} content - [可選] 視窗純文字內容 (若有 customView 則忽略此項)
+ * @props {function} task - [可選] 按下「確認」鍵後的異步任務 (通常是 API 呼叫)
+ * @props {boolean} needActionButtons - [默認 false] 是否顯示底部的「取消/確認」按鈕
+ * @props {boolean} enableCancel - [默認 true] 是否啟用「取消」按鈕
+ * @props {boolean} useCustomCancel - [默認 false] 是否使用 CustomView 內部的取消機制 (會隱藏預設的關閉 Chip)
+ * @props {React.Component} customView - [可選] 客製化的 React Component 內容
+ * @props {object} paramObject - [可選] 傳遞給 submitAsyncTask 或 CustomView 的參數物件
+ * @props {object} textInput - [可選] 文字輸入框設定 { enable: boolean, label: string, value: any, type: string, onTextFieldChange: func }
+ * @props {object} component - [必填] 呼叫此 Dialog 的 Parent Component (通常傳入 `this`)，用於錯誤處理或 Context 獲取
+ * @props {boolean} fullWidth - [默認 false] 是否將寬度撐滿
+ * @props {boolean} strict - [默認 false] 嚴格模式：點擊背景或 ESC 不會關閉視窗，強制使用者操作按鈕
+ * @props {string} storeX - [可選] 指定要 inject 給 CustomView 的 MobX Store 名稱
+ * @props {boolean} disposablePage - [默認 false] 是否為一次性頁面 (開啟時會自動清理對應 Store 的資料)
+ * @props {function} callback - [可選] 通用回調函數，傳遞給 CustomView 使用
+ */
+/**
+ * 通用警告/確認視窗組件
+ * 整合了 CustomView (客製化內容)、TextInput (文字輸入)、Disposable Store (用完即丟的 Store 清理) 等邏輯。
+ * @props {string} title - [可選] 視窗標題
+ * @props {string} content - [可選] 視窗純文字內容 (若有 customView 則忽略此項)
+ * @props {function} task - [可選] 按下「確認」鍵後的異步任務 (通常是 API 呼叫)
+ * @props {boolean} needActionButtons - [默認 false] 是否顯示底部的「取消/確認」按鈕
+ * @props {boolean} enableCancel - [默認 true] 是否啟用「取消」按鈕
+ * @props {boolean} useCustomCancel - [默認 false] 是否使用 CustomView 內部的取消機制 (會隱藏預設的關閉 Chip)
+ * @props {React.Component} customView - [可選] 客製化的 React Component 內容
+ * @props {object} paramObject - [可選] 傳遞給 submitAsyncTask 或 CustomView 的參數物件
+ * @props {object} textInput - [可選] 文字輸入框設定 { enable: boolean, label: string, value: any, type: string, onTextFieldChange: func }
+ * @props {object} component - [必填] 呼叫此 Dialog 的 Parent Component (通常傳入 `this`)，用於錯誤處理或 Context 獲取
+ * @props {boolean} fullWidth - [默認 false] 是否將寬度撐滿
+ * @props {boolean} strict - [默認 false] 嚴格模式：點擊背景或 ESC 不會關閉視窗，強制使用者操作按鈕
+ * @props {string} storeX - [可選] 指定要 inject 給 CustomView 的 MobX Store 名稱
+ * @props {boolean} disposablePage - [默認 false] 是否為一次性頁面 (開啟時會自動清理對應 Store 的資料)
+ * @props {function} callback - [可選] 通用回調函數，傳遞給 CustomView 使用
+ */
+const AlertDialog = observer(
+    React.forwardRef((props, ref) => {
+        // 初始化 DialogStore，保證只建立一次
+        const [dialogStore] = React.useState(() => new DialogStore());
 
-    /** object 是可以帶到customView裡面的變數 */
-    open = (paramObject = {}) => {
-        if (!_.isObject(paramObject)) {
-            Util.appendError(`9831, paramObject should be object, not ${paramObject}`);
-            return;
-        }
-        if (paramObject !== undefined) {
-            this.getStore().setPropsOfCustomView(paramObject);
-        }
-        this.getStore().setVisibility(true);
-    };
+        /** 獲取 App 實例 (用於獲取 Store) */
+        const getApp = () => {
+            if (props.component && props.component.App) {
+                return props.component.App();
+            }
+            // Fallback: 嘗試使用舊有的 require 方式
+            try {
+                const { Application } = require("../");
+                return Application;
+            } catch (e) {
+                console.warn("AlertDialog: Cannot find Application instance.");
+                return null;
+            }
+        };
 
-    /** 按下esc也會產生close的行為 */
-    close = () => {
-        if (!this.strict) this.getStore().setVisibility(false);
-        else this.component instanceof BaseComponent ? this.component.showErrorSnackMessage(`避免資料遺失，請點擊視窗關閉的提示鍵`) : "";
-    };
+        /** 輔助：清理 Store */
+        const cleanDisposableStore = (nameOfComponent) => {
+            const app = getApp();
+            if (app && app.getStoreObject()) {
+                const store = app.getStoreObject()[`${nameOfComponent}`];
+                if (store && typeof store.clean === "function") {
+                    store.clean();
+                }
+            }
+        };
 
-    dismiss = () => {
-        this.getStore().setVisibility(false);
-    };
+        /**
+         * 開啟視窗
+         * @param {object} paramObject - 動態傳入的參數，會覆蓋 props 中的 paramObject
+         */
+        const open = (paramObject = {}) => {
+            // 1. 參數驗證
+            if (!_.isObject(paramObject)) {
+                Util.appendError(`AlertDialog: paramObject should be object, not ${typeof paramObject}`);
+                return;
+            }
 
-    onSubmitClicked = async () => {
-        const submitAsyncTask = this.props.submitAsyncTask;
-        const paramObject = this.props.paramObject;
-        this.dismiss();
-        await submitAsyncTask();
-    };
+            // 2. 處理一次性頁面的 Store 清理邏輯
+            if (props.disposablePage && props.customView?.nameOfComponent) {
+                cleanDisposableStore(props.customView.nameOfComponent);
+            }
 
-    /** 如果base component已經是dialog(account -> append reader)，而當前的view又使用遇到text input(鍵盤會跳出來)的view，iphone會resize，導致整個view被unmount */
-    mightCauseResizeUnmount = () => {
-        return this.component.isDialogComponent() && this.useTextInput && !isDesktop;
-    };
+            // 3. 設定 Custom View 參數
+            const finalParamObject = !_.isEmpty(paramObject) ? paramObject : props.paramObject || {};
+            dialogStore.setPropsOfCustomView(finalParamObject);
 
-    getStore() {
-        return this.dialog;
-    }
+            // 4. 顯示視窗
+            dialogStore.setVisibility(true);
+        };
 
-    render() {
-        const self = this;
+        /** 強制關閉 */
+        const dismiss = () => {
+            dialogStore.setVisibility(false);
+        };
+
+        /**
+         * 關閉視窗
+         */
+        const close = () => {
+            const strict = props.strict || false;
+            if (!strict) {
+                dismiss();
+            } else {
+                props.component instanceof BaseComponent
+                    ? props.component.showErrorSnackMessage(`避免資料遺失，請點擊視窗關閉的提示鍵`)
+                    : console.warn("Strict mode: Cannot close dialog via backdrop click.");
+            }
+        };
+
+        /** 確認按鈕點擊處理 */
+        const onSubmitClicked = async () => {
+            const { task } = props;
+            dismiss();
+            if (task) {
+                await task();
+            }
+        };
+
+        /** 檢測是否可能導致 Resize Unmount 的問題 */
+        const mightCauseResizeUnmount = () => {
+            const useTextInput = props.textInput && props.textInput.enable;
+            if (!props.component) return false;
+
+            const isDialog = typeof props.component.isDialogComponent === "function" && props.component.isDialogComponent();
+            return isDialog && useTextInput && !isDesktop;
+        };
+
+        // 將方法暴露給 Parent Component (透過 ref 調用)
+        React.useImperativeHandle(ref, () => ({
+            open,
+            close,
+            dismiss,
+            getStore: () => dialogStore
+        }));
+
+        const hasCustomView = () => {
+            return !!props.customView;
+        };
+
+        const injectPaperProps = () => {
+            if (hasCustomView()) {
+                return {
+                    PaperProps: {
+                        style: {
+                            backgroundColor: "transparent",
+                            boxShadow: "none",
+                            margin: "auto",
+                            position: "relative"
+                        }
+                    }
+                };
+            } else if (mightCauseResizeUnmount()) {
+                return {
+                    PaperProps: {
+                        style: {
+                            display: "inline-block",
+                            boxShadow: "none",
+                            verticalAlign: "middle",
+                            margin: "70px auto",
+                            position: "relative",
+                            transform: "none",
+                            left: "0",
+                            right: "0"
+                        }
+                    }
+                };
+            }
+            return {};
+        };
+
+        const renderTitle = () => {
+            const { title } = props;
+            return !_.isEmpty(title) ? <DialogTitle>{title}</DialogTitle> : null;
+        };
+
+        const renderTextField = () => {
+            const { textInput } = props;
+            const useTextInput = textInput && textInput.enable;
+
+            if (useTextInput) {
+                return (
+                    <TextField
+                        autoFocus
+                        required
+                        margin="dense"
+                        value={textInput.value || ""}
+                        label={textInput.label}
+                        type={textInput.type || "text"}
+                        fullWidth
+                        variant="standard"
+                        onChange={(event) => {
+                            if (textInput.onTextFieldChange) {
+                                textInput.onTextFieldChange(event);
+                            }
+                        }}
+                    />
+                );
+            }
+            return null;
+        };
+
+        /**
+         * 手動注入 Store，避免在 Render 中使用 inject HOC 導致 Crash
+         */
+        const getInjectedProps = (storeX) => {
+            if (!storeX) return {};
+
+            const app = getApp();
+            if (app && app.getStoreObject()) {
+                const targetStore = app.getStoreObject()[storeX];
+                if (targetStore) {
+                    return { [storeX]: targetStore };
+                }
+            }
+            return {};
+        };
+
+        const renderCustomCancelChip = () => {
+            const { useCustomCancel } = props;
+            if (useCustomCancel) return null;
+
+            return (
+                <div className={"BaseAlertDialogDismissView"}>
+                    <Chip
+                        className={`BaseAlertDialogDismissChip`}
+                        label={`關閉視窗`}
+                        variant={`outlined`}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            dismiss();
+                        }}
+                    />
+                </div>
+            );
+        };
+
+        const renderContent = () => {
+            const { customView: CustomView, component, content, callback, storeX, paramObject: propsParamObject } = props;
+
+            const dynamicParams = dialogStore.getPropsOfCustomView();
+
+            if (hasCustomView()) {
+                const dismissButton = renderCustomCancelChip();
+
+                // 這裡不再使用 inject HOC，而是直接手動查找 store 並當作 props 傳入
+                // 這樣可以保持 Component 結構穩定，解決 Concurrent Rendering Error
+
+                // 1. 準備 Store (如果有的話)
+                const injectedStoreProps = !Util.isUndefinedNullEmpty(storeX) ? getInjectedProps(storeX) : {};
+
+                // 2. 準備 CustomView (加上 Observer 確保內部更新)
+                // 注意：require 放在 render 裡雖然不佳，但為了相容舊邏輯先保留，但移除了 inject
+                let FinalCustomView = CustomView;
+                if (!Util.isUndefinedNullEmpty(storeX)) {
+                    const { Application } = require("../");
+                    // 注意：在 Functional Component 中動態產生 Component 可能會導致 Remount，
+                    // 但為了維持原 Class 行為這裡保留原樣。
+                    FinalCustomView = Application.safeObserver(CustomView);
+                }
+
+                // 3. 組合所有 Props
+                const allProps = {
+                    component: component,
+                    callback: callback,
+                    paramObject: propsParamObject,
+                    dialog: { open, close, dismiss, getStore: () => dialogStore }, // 模擬原本傳入的 this
+                    ...injectedStoreProps, // 注入的 store (e.g. { epayMethodOfPayment: storeInstance })
+                    ...dynamicParams // open() 傳入的參數
+                };
+
+                return (
+                    <DialogContent className={"BaseAlertDialogContent"}>
+                        <div className={"BaseAlertDialogCustomView"}>
+                            <FinalCustomView {...allProps} />
+                            {dismissButton}
+                        </div>
+                    </DialogContent>
+                );
+            }
+
+            return (
+                <DialogContent>
+                    <DialogContentText className={"BaseAlertDialogContent"} whiteSpace={"pre-line"}>
+                        {content}
+                    </DialogContentText>
+                    {renderTextField()}
+                </DialogContent>
+            );
+        };
+
+        const renderCancelButton = () => {
+            const enableCancel = props.enableCancel ?? true;
+            if (!enableCancel) return null;
+            return (
+                <Button onClick={dismiss} color="primary">
+                    取消
+                </Button>
+            );
+        };
+
+        const renderActionButton = () => {
+            const { needActionButtons } = props;
+            if (!needActionButtons) return null;
+
+            return (
+                <DialogActions>
+                    {renderCancelButton()}
+                    <Button onClick={onSubmitClicked} color="primary" autoFocus>
+                        確認
+                    </Button>
+                </DialogActions>
+            );
+        };
+
+        const visible = dialogStore.getVisibility();
+
+        if (!visible) return null;
+
         return (
             <Dialog
                 className={"BaseAlertDialog"}
-                {...this.injectPaperProps()}
+                {...injectPaperProps()}
                 scroll={"paper"}
-                fullWidth={!!self.fullWidth}
-                fullScreen={self.hasCustomView() ? true : false}
+                fullWidth={!!props.fullWidth}
+                fullScreen={hasCustomView()}
                 maxWidth={true}
-                onClick={(event, reason) => {
-                    event.stopPropagation();
-                }}
+                onClick={(e) => e.stopPropagation()}
                 sx={
-                    this.mightCauseResizeUnmount()
+                    mightCauseResizeUnmount()
                         ? {
                               "& .MuiDialog-container": {
-                                  display: "block", // 禁用 flex，防止動態置中計算
-                                  textAlign: "center", // 讓內部的 Paper 水平置中
+                                  display: "block",
+                                  textAlign: "center",
                                   height: "100%",
                                   overflowY: "auto"
                               }
                           }
                         : {}
                 }
-                disablePortal={this.mightCauseResizeUnmount()}
-                disableScrollLock={this.mightCauseResizeUnmount()}
-                disableEnforceFocus={this.mightCauseResizeUnmount()}
-                open={self.getStore().getVisibility()}
-                onClose={self.close}>
-                {this.renderTitle()}
-
-                {this.renderContent()}
-
-                {this.renderActionButton()}
+                disablePortal={mightCauseResizeUnmount()}
+                disableScrollLock={mightCauseResizeUnmount()}
+                disableEnforceFocus={mightCauseResizeUnmount()}
+                open={visible}
+                onClose={close}>
+                {renderTitle()}
+                {renderContent()}
+                {renderActionButton()}
             </Dialog>
         );
-    }
-
-    injectPaperProps = () => {
-        if (this.hasCustomView()) {
-            return {
-                PaperProps: {
-                    style: {
-                        backgroundColor: "transparent",
-                        boxShadow: "none",
-                        margin: "auto",
-                        position: "relative"
-                    }
-                }
-            };
-        } else if (this.mightCauseResizeUnmount()) {
-            return {
-                PaperProps: {
-                    style: {
-                        display: "inline-block", // 搭配 textAlign: center 達成水平置中
-                        boxShadow: "none",
-                        verticalAlign: "middle", // 垂直基準線
-                        margin: "70px auto", // 與頂部保持距離，水平自動
-                        position: "relative", // 脫離 fixed 置中邏輯
-                        transform: "none", // 禁用 MUI 的 transform 位移
-                        left: "0",
-                        right: "0"
-                    }
-                }
-            };
-        }
-    };
-
-    renderTitle() {
-        const self = this;
-        const title = this.props.title;
-        if (!_.isEmpty(title)) {
-            return <DialogTitle>{title}</DialogTitle>;
-        }
-        return null;
-    }
-
-    renderTextField = () => {
-        const textInput = this.props.textInput;
-        if (this.useTextInput) {
-            return (
-                <TextField
-                    autoFocus
-                    required
-                    margin="dense"
-                    value={textInput.value}
-                    label={textInput.label}
-                    type={textInput.type}
-                    fullWidth
-                    variant="standard"
-                    onChange={(event) => {
-                        textInput.onTextFieldChange(event);
-                    }}
-                />
-            );
-        } else return null;
-    };
-
-    renderContent = () => {
-        const self = this;
-        const CustomView = this.props.customView;
-        const paramObject = this.props.paramObject;
-        const component = this.props.component;
-        const content = this.props.content;
-        const callback = this.props.callback;
-        const storeX = this.props.storeX;
-
-        if (!self.getStore().getVisibility()) return null;
-
-        if (this.hasCustomView()) {
-            if (Util.isUndefinedNullEmpty(storeX))
-                /** ImageDialogView 這種不需要inject store的component走這裡！ */
-                return (
-                    <DialogContent className={"BaseAlertDialogContent"}>
-                        <div className={"BaseAlertDialogCustomView"}>
-                            <CustomView component={component} callback={callback} paramObject={paramObject} dialog={self} {...self.getStore().getPropsOfCustomView()} />
-
-                            {this.renderCustomCancelChip()}
-                        </div>
-                    </DialogContent>
-                );
-            const { Application } = require("../");
-            const ObservedCustomView = Application.safeObserver(CustomView);
-            const CustomViewWrapper = inject(storeX)((props) => {
-                const all = { ...props, ...self.getStore().getPropsOfCustomView() };
-                return <ObservedCustomView component={component} callback={callback} paramObject={paramObject} dialog={self} {...all} />;
-            });
-
-            return (
-                <DialogContent className={"BaseAlertDialogContent"}>
-                    <div className={"BaseAlertDialogCustomView"}>
-                        <CustomViewWrapper />
-
-                        {this.renderCustomCancelChip()}
-                    </div>
-                </DialogContent>
-            );
-        }
-        return (
-            <DialogContent>
-                <DialogContentText className={"BaseAlertDialogContent"} whiteSpace={"pre-line"}>
-                    {content}
-                </DialogContentText>
-                {this.renderTextField()}
-            </DialogContent>
-        );
-    };
-
-    renderCustomCancelChip = () => {
-        if (this.useCustomCancel) {
-            return null;
-        }
-
-        return (
-            <div className={"BaseAlertDialogDismissView"}>
-                <Chip
-                    className={`BaseAlertDialogDismissChip`}
-                    label={`關閉視窗`}
-                    variant={`outlined`}
-                    onClick={(event) => {
-                        event.stopPropagation();
-                        this.dismiss();
-                    }}
-                />
-            </div>
-        );
-    };
-
-    hasCustomView() {
-        return this.props.customView;
-    }
-
-    renderActionButton() {
-        const self = this;
-        const needActionButtons = this.props.needActionButtons;
-
-        if (!needActionButtons) return null;
-
-        return (
-            <DialogActions>
-                {this.renderCancelButton()}
-
-                <Button onClick={async () => await self.onSubmitClicked()} color="primary" autoFocus>
-                    確認
-                </Button>
-            </DialogActions>
-        );
-    }
-
-    renderCancelButton = () => {
-        if (!this.enableCancel) return null;
-        return (
-            <Button onClick={this.dismiss} color="primary">
-                取消
-            </Button>
-        );
-    };
-}
+    })
+);
 
 export default AlertDialog;

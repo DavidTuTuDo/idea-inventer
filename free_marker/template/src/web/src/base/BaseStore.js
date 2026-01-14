@@ -30,15 +30,6 @@ class BaseStore extends ClientRemoteApi {
     }
 
     @observable
-    globalDialogContent = {
-        task: async () => {
-            await Util.syncDelay(10);
-        },
-        title: "標題",
-        content: "內容"
-    };
-
-    @observable
     initialFetchCompleted = false;
 
     @observable
@@ -56,18 +47,24 @@ class BaseStore extends ClientRemoteApi {
     /** 用來記錄firebase的doc,可以找到next page的關鍵 */
 
     @observable
-    selectorParams = this.getDefaultSelectorParam();
-
-    @observable
-    imageDialogParams = this.getDefaultImageDialogParam();
-
-    @observable
     appBarHeight = 0;
 
     @observable
     updateTime;
 
     hasNextPageBehavior = true;
+
+    selectorParams = this.getDefaultSelectorParam();
+
+    globalDialogContent = {
+        task: async () => {
+            await Util.syncDelay(10);
+        },
+        title: "標題",
+        content: "內容"
+    };
+
+    imageDialogParams = this.getDefaultImageDialogParam();
 
     // ==========================================
     // [新增] Loading Timeout 相關設定
@@ -83,8 +80,6 @@ class BaseStore extends ClientRemoteApi {
 
     /** 計時器 ID，不需要 observable */
     _loadingTimer = null;
-
-    // ==========================================
 
     constructor(props) {
         super(props);
@@ -425,13 +420,11 @@ class BaseStore extends ClientRemoteApi {
         };
     }
 
-    @action
     setSelectorParam(params) {
         const mixer = Util.merO(this.getDefaultSelectorParam(), params);
         this.selectorParams = mixer;
     }
 
-    @action
     setImageDialogParam(params) {
         const mixer = Util.merO(this.getDefaultImageDialogParam(), params);
         this.imageDialogParams = mixer;

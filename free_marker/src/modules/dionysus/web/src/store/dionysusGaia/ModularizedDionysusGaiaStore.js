@@ -190,15 +190,15 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         const view = useUploadProgress ? this.getComponent() : undefined;
         if (!useUploadProgress) this.getComponent().invalidateProcessingGuard(true, { textOfTip: "圖片上傳中，請勿關閉", variant: "warn" });
         await this.handleIdOfBooze(true);
-        await Util.syncDelay(10);// 防止promise機制 掉線
-        const pathsOfImage = useUploadProgress ? [await this.apiOfImage.uploadFileOfHref(view, files[0], this.getIdOfBooze())]
-            : await this.apiOfImage.uploadFilesOfHref(view, files, this.getIdOfBooze())
+        await Util.syncDelay(10); // 防止promise機制 掉線
+        const pathsOfImage = useUploadProgress
+            ? [await this.apiOfImage.uploadFileOfHref(view, files[0], this.getIdOfBooze())]
+            : await this.apiOfImage.uploadFilesOfHref(view, files, this.getIdOfBooze());
         this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
-        await Util.syncDelay(10);// 防止promise 掉線
+        await Util.syncDelay(10); // 防止promise 掉線
         await this.apiOfBooze.updateBoozeItem(view, { photos: this.getBriefPhotos() }, this.getIdOfBooze());
-        await Util.syncDelay(10);// 防止promise 掉線
-        if (pathsOfImage.length !== files.length)
-            return this.getComponent().showWarningSnackMessage(`部分圖片因不明原因，上傳失敗`);
+        await Util.syncDelay(10); // 防止promise 掉線
+        if (pathsOfImage.length !== files.length) return this.getComponent().showWarningSnackMessage(`部分圖片因不明原因，上傳失敗`);
     };
 
     handleIdOfBooze = async () => {

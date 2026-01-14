@@ -1708,91 +1708,92 @@ class CodegenNode {
 
         function getTaskStmts() {
             if (self.hasConfirmDialog())
-                return `task:async() => self.${self.hasDeletedView() && self.isAlertDialog4Deleted() ?
-                  self.getFunctionNameOfDeleted() : self.getFunctionNameOfClicked()}(objectOfParam)`;
+                return `task={ async() => self.${self.hasDeletedView() && self.isAlertDialog4Deleted() ?
+                    self.getFunctionNameOfDeleted() : self.getFunctionNameOfClicked()}(objectOfParam)}`;
             /** AlertDialog是WrapView，所以getFunctionNameOfClicked會對現有的Click Instance造成影響，所以不帶入type */
         }
 
         function getActionButtonStmts() {
             const need = self.getAlertDialog().needActionButtons ?? true;
-            return `needActionButtons:${need}`
+            return `needActionButtons={${need}}`
         }
 
         function getEnableCancelStmts() {
             const need = self.getAlertDialog().enableCancel ?? true;
-            return `enableCancel:${need}`
+            return `enableCancel={${need}}`
         }
 
         function getCustomViewStmts() {
             if (self.hasCustomViewDialog()) {
                 const view = self.getAlertDialog().customView;
                 const component = self.getSpecificComponent(view);
-                return [`customView:${self.getAlertDialog().customView}`,`storeX:'${component.getStruct().getName()}'`];
+                return [`customView={${self.getAlertDialog().customView}}`, `storeX={'${component.getStruct().getName()}'}`];
             } else return [];
         }
 
         function getStmtCallBack() {
             if (self.hasCallbackOfDialog() && self.hasCallbackOfDialog()) {
-                return `callback:self.${self.getFuncNameOfDialogCallback(self.getAlertDialog().customView)}`;
+                return `callback={self.${self.getFuncNameOfDialogCallback(self.getAlertDialog().customView)}}`;
             }
         }
 
         function getParamObject() {
             const param = self.getObservableName();
             if (!Util.isUndefinedNullEmpty(param)) {
-                return `paramObject:${param}`;
+                return `paramObject={${param}}`;
             }
         }
 
         function getStmtOfDialogTitle() {
             const dialog = self.getAlertDialog();
-            return _.isEmpty(dialog.title) ? '' : `title: ${self.getObservableName()}.${self.getFunctionNameOfDialogTitleGetterWithBracket()}`;
+            return _.isEmpty(dialog.title) ? '' : `title={${self.getObservableName()}.${self.getFunctionNameOfDialogTitleGetterWithBracket()}}`;
         }
 
 
         function getStmtOfDialogContent() {
             const dialog = self.getAlertDialog();
-            return _.isEmpty(dialog.content) ? '' : `content: ${self.getObservableName()}.${self.getFunctionNameOfDialogContentGetterWithBracket()}`;
+            return _.isEmpty(dialog.content) ? '' : `content={${self.getObservableName()}.${self.getFunctionNameOfDialogContentGetterWithBracket()}}`;
         }
 
 
         function getStmtDialogInput() {
             const stmts = [];
             if (self.hasInputFieldDialog()) {
-                stmts.push(`textInput:{enable:true`);
+                stmts.push(`textInput={{enable:true`);
                 stmts.push(`label:${self.getObservableName()}.${self.getFunctionNameOfDialogInputLabelGetterWithBracket()}`)
                 stmts.push(`value:${self.getObservableName()}.${self.getFunctionNameOfDialogInputValueGetterWithBracket()}`)
                 stmts.push(`onTextFieldChange:(event, value) => {${self.getObservableName()}.${self.getFunctionNameOfDialogInputValueSetter()}(self.getLatestValueByEvent(event))}`)
-                stmts.push(`type:'${self.getAlertDialog().textInput.type}'}`);
+                stmts.push(`type:'${self.getAlertDialog().textInput.type}'}}`);
                 return stmts.join(',');
             }
             return '';
         }
 
         function getStmtOfFullWidth() {
-            return self.hasFullWidthOfDialog() ? `fullWidth:true` : ``;
+            return self.hasFullWidthOfDialog() ? `fullWidth={true}` : ``;
         }
 
         function getStmtOfStrictMode() {
-            return self.hasStrictMode() || self.hasInputFieldDialog() ? `strict:true` : ``;
+            return self.hasStrictMode() || self.hasInputFieldDialog() ? `strict={true}` : ``;
         }
 
         function getStmtOfCustomCancelButton() {
-            return self.hasCustomCancelButton() ? `useCustomCancel:true` : ``;
+            return self.hasCustomCancelButton() ? `useCustomCancel={true}` : ``;
         }
 
         function getStmtOfDisposable() {
             if (!self.hasCustomViewDialog()) return '';
             const nodeOfSpecificComponent = self.getSpecificComponent(self.getAlertDialog().customView);
-            return nodeOfSpecificComponent.isDisposablePage() ? `disposablePage:true` : ``;
+            return nodeOfSpecificComponent.isDisposablePage() ? `disposablePage={true}` : ``;
         }
 
         if (this.hasAlertDialog()) {
+            generator.appendImport('AlertDialog', '../../base/AlertDialog');
             const nameOfRef = this.getFieldNameOfAlertDialog();
             if (this.isAlertDialogNeedGlobalRef()) {
                 generator.appendField(nameOfRef, 'React.createRef()');
                 generator.appendFunction(Util.camel('get', nameOfRef), [], [], [],
-                  `return this.${nameOfRef}.current`)
+                    `return this.${nameOfRef}.current`)
             }
 
             if (this.hasCustomViewDialog() && this.getAlertDialog().presetObj)
@@ -1800,8 +1801,8 @@ class CodegenNode {
 
             const stmtOfRef = this.isAlertDialogNeedGlobalRef() ? `self.${nameOfRef}` : nameOfRef
             const props = [
-                `ref:${stmtOfRef}`,
-                `component:self`,
+                `ref={${stmtOfRef}}`,
+                `component={self}`
             ];
             props.push(getActionButtonStmts());
             props.push(getEnableCancelStmts());
@@ -1817,11 +1818,10 @@ class CodegenNode {
             props.push(getStmtOfFullWidth());
             props.push(getStmtOfCustomCancelButton());
             _.remove(props, (each) => _.isEmpty(each))
-            stmt.push(`{
-            this.renderAlertDialog(
-            {
-            ${props.join(',')}
-            })}`)
+            stmt.push(`
+            <AlertDialog
+            ${props.join('\n')}
+            />`)
         }
     }
 
@@ -6931,7 +6931,7 @@ class AppBuilder extends ComponentBuilder {
             appGenerator.appendConstructor(`if (process.env.NODE_ENV === 'development') window.store = this.store;`);
 
         appGenerator.appendFunction({ name: `getRenderView`, arrow:true }, [],
-          [], [], 'const self = this;',...stmtsOfRenderView,`return (${entire.join("")})`);
+          [], [], 'console.log(`🛑🛑🛑🛑 注意！root re-render()`)','const self = this;',...stmtsOfRenderView,`return (${entire.join("")})`);
 
         appGenerator.appendField(`observedCache`, `new WeakMap()`);
         appGenerator.appendFunction({ name: `safeObserver`, arrow:true }, ['component'],
