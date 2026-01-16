@@ -74,13 +74,15 @@ import _ from "lodash";
                 // 這裡直接傳入 cleanedVariants
                 const price = hasV ? Util.findLowestValue(cleanedVariants, "price") : 0;
                 const priceB4Discount = hasV ? Util.findLowestValue(cleanedVariants, "priceB4Discount") : 0;
-                const gallery = product.photos?.map((photo) => ({ href: photo })) ?? [];
+                const gallery = product.photoOfDemo ? [{ href: product.photoOfDemo }] : [];
+                const banners = product.photos?.map((photo) => ({ href: photo })) ?? [];
                 const additional = getAllPhotos(product).map((photo) => ({ href: photo }));
 
                 // console.log(`${product.name}`,` ==> `,additional);
 
                 const expression = getExpression(product);
-                gallery.push(...additional);
+                gallery.push(...banners, ...additional);
+                // console.log('b=> ',banners,'ad=> ',additional,'ga=> ',gallery);
                 const rangeOfPrice = Util.getStringOfValueRange(variants.map((each) => ({ price: safeToNumber(each.price) })));
                 const id = Util.getRandomHashV2(20);
                 return {
