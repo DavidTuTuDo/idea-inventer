@@ -164,14 +164,18 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
             if (!order.isTransported) this.appendErrorLog(9999, `652112132132 商品尚未完成物流程序`);
             _.remove(order.items, (item) => item.isTaskJob); //只有實體商品需要寄出，把課程拿掉
             const isBuyer = true;
-            this.sendEmailTo({ isTransportCompleted, nameOfBrand: global.nameOfBrand, isBuyer, order, global });
-        } else [true, false].forEach((isBuyer) => this.sendEmailTo({ nameOfBrand: global.nameOfBrand, isBuyer, order, global }));
+            this.sendEmailTo({ isTransportCompleted, isBuyer, order, global });
+        } else [true, false].forEach((isBuyer) => this.sendEmailTo({ isBuyer, order, global }));
         /** 買家/賣家各寄送一份通知 */
     }
 
-    sendEmailTo({ isTransportCompleted, nameOfBrand, isBuyer, order, global }) {
+    sendEmailTo({ isTransportCompleted, isBuyer, order, global }) {
         const recipient = isBuyer ? order.email : Config.email;
-        const subject = isTransportCompleted ? `[${nameOfBrand}]您的商品已寄出，請留意簡訊` : isBuyer ? `[${nameOfBrand}]您的款項已確認` : `[${nameOfBrand}]您有新的成交訂單`;
+        const subject = isTransportCompleted
+            ? `[${global.nameOfBrand}]您的商品已寄出，請留意簡訊`
+            : isBuyer
+              ? `[${global.nameOfBrand}]您的款項已確認`
+              : `[${global.nameOfBrand}]您有新的成交訂單`;
 
         const xxx = {
             methodOfTransaction: Config.LabelOfTransactionMethod(order.typeOfTransaction),
@@ -183,16 +187,18 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         };
 
         const latest = Util.merO(order, xxx);
-        FirebaseHelper.firestore()
-            .collection("mail")
-            .add({
-                to: [recipient, ...this.listOfCC()],
-                message: {
-                    subject,
-                    html: this.generateOrderEmailHTML(latest)
-                }
-            })
-            .then(() => this.appendLog("Queued email for delivery!"));
+        Util.exeAsyncT(
+            FirebaseHelper.firestore()
+                .collection("mail")
+                .add({
+                    to: [recipient, ...this.listOfCC()],
+                    message: {
+                        subject,
+                        html: this.generateOrderEmailHTML(latest)
+                    }
+                }),
+            { thenDo: () => this.appendLog(`${Config.admin.project_id} queued email for delivery!`) }
+        );
     }
 
     /** 轉寄給相關人['s4360349@ntut.edu.tw'] */
