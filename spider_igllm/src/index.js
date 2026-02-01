@@ -18,7 +18,7 @@ class spider_igllm extends Spider {
         const cookies4MetaAuth = [
             {
                 name: 'sessionid',
-                value: '1626208095%3AXax8QgSRW2n0lg%3A14%3AAYh0MwtLkPTxPXOJpkLEDgnbUX10_9xGM67nzjEwHbpm', // 替換為實際值
+                value: '1626208095%3A73h0mQtlSselsE%3A10%3AAYjF2Z0Wp166Vh5PBT_qnV0AfVagxF9WXnM2o3AxeI0', // 替換為實際值
                 domain: '.instagram.com',
                 path: '/',
                 secure: true,
@@ -35,7 +35,7 @@ class spider_igllm extends Spider {
             },
             {
                 name: 'csrftoken',
-                value: 'QUIeEqEgIo22pNxRHSYozYc5h3miyFa6', // 替換為實際值
+                value: 'izGk4qLpfOExg7PZ9LrOJW5EFewODl1w', // 替換為實際值
                 domain: '.instagram.com',
                 path: '/',
                 secure: true,
@@ -43,7 +43,7 @@ class spider_igllm extends Spider {
             },
             {
                 name: 'datr',
-                value: 'UJ0tZ6IcJPtp7aPMqvYSttq3', // 替換為實際值
+                value: 'IrVoaWnG0L_x_muuoXO3eg13', // 替換為實際值
                 domain: '.instagram.com',
                 path: '/',
                 secure: true,
@@ -51,7 +51,7 @@ class spider_igllm extends Spider {
             },
             {
                 name: 'mid',
-                value: 'ZzozPAAEAAEHmNwtz-aDWmCZ1_RR', // 替換為實際值
+                value: 'aIHB2wAEAAGV9971C15l9EGytAHT', // 替換為實際值
                 domain: '.instagram.com',
                 path: '/',
                 secure: true,
@@ -59,7 +59,7 @@ class spider_igllm extends Spider {
             },
             {
                 name: 'ig_did',
-                value: '959F431C-8E37-4973-8B39-23FDA019685E', // 替換為實際值
+                value: 'F5AE58DD-B964-4B95-9BA8-C884BF902C63', // 替換為實際值
                 domain: '.instagram.com',
                 path: '/',
                 secure: true,
