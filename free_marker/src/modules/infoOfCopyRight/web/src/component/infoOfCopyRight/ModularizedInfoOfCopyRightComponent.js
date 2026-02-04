@@ -4,10 +4,15 @@ import Config from "../../config";
 import BaseInfoOfCopyRightComponent from "./BaseInfoOfCopyRightComponent";
 import Router from "../../router";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import { isMobile } from "react-device-detect";
 
 class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
     constructor(props) {
         super(props);
+    }
+
+    getInjectStyleOfInfoOfCopyRightCprtButton(infoOfCopyRight) {
+        return Util.getVisibleOrNone(Config.useCartie ? !isMobile : false);
     }
 
     onInfoOfCopyRightCprtButtonClicked(param) {

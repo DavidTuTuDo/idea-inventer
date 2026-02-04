@@ -387,6 +387,20 @@ class AppStyle {
 
     InfoOfCopyRightUsagesDiv = {};
 
+    /** => following for infoOfRefundNTurnPolicy  component  */
+
+    InfoOfRefundNTurnPolicyMainContentTypography = {};
+
+    InfoOfRefundNTurnPolicyMainSeparatorDiv = {};
+
+    InfoOfRefundNTurnPolicyMainTitleTypography = {};
+
+    InfoOfRefundNTurnPolicyMainDiv = {};
+
+    InfoOfRefundNTurnPolicyPaperWrap = {};
+
+    InfoOfRefundNTurnPolicyDiv = {};
+
     /** => following for infoOfCopyRightPrivacy  component  */
 
     InfoOfCopyRightPrivacyMainContentTypography = {};
@@ -458,6 +472,12 @@ class AppStyle {
     InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesReactFragmentWrap = {};
 
     InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesButton = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeSeparator00Typography = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeRefundNTurnPolicyReactFragmentWrap = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeRefundNTurnPolicyButton = {};
 
     InfoOfCopyRightUpperGroupRightAreaPrivilegeDiv = {};
 

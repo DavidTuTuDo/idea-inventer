@@ -397,7 +397,7 @@ if (configerer.DEBUG_MODE) {
             await handler.initial();
             const result= await Util.measureExecutionTime(handler.fetchProductListPageInfos.bind(handler));
             console.log(result.zh_TW);
-            await handler.finish();
+            await handler.terminate();
         }
     )();
 }

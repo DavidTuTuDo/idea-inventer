@@ -10251,7 +10251,7 @@ if (configerer.DEBUG_MODE) {
                 name:'康新生技',
                 path:'./project-kx-bio'
             },{
-                name:'丸卉',
+                name:'芄食品',
                 path:'./project-wan-hui'
             },{
                 name:'莎夏',

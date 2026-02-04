@@ -3,6 +3,32 @@
 @desktop: ~'only screen and (min-width: 601px)';
 @import "../../../node_modules/react-h5-audio-player/lib/styles.less";
 
+@keyframes fadeInMove {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes floatAvatar {
+    0% {
+        transform: translateY(0px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    50% {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+    100% {
+        transform: translateY(0px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+}
+
 .CenterInParentRow {
     flex-direction: row;
     display: flex;
@@ -276,21 +302,102 @@
     flex-direction: column;
 }
 
-.BaseListEmptyDiv:extend(.CenterInParentColumn) {
-    width: 50vw;
-    padding: 20px;
-    border-radius: 10px;
-    position: absolute;
-    top: 50%; /*將元素推到父容器的中間點 (上/左 50%) */
-    left: 50%;
-    transform: translate(-50%, -50%); /*使用 transform 往回移動自身寬高的一半，完成置中 */
+@tech-black: #121212;
+@tech-gray-dark: #455a64;
+@tech-gray-light: #b0bec5;
+@tech-line: rgba(0, 0, 0, 0.1);
+
+.BaseListEmptyDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px;
+    background-color: #ffffff;
+    border: 1px solid @tech-black; /** 雙重邊框設計：模擬機殼構造 */
+    outline: 4px solid rgba(0, 0, 0, 0.03);
+    outline-offset: -12px;
+    position: relative;
+    margin: 20px;
+    overflow: hidden;
+
+    &::before {
+        content: ""; /** 四角的工業座標刻度 */
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 40px;
+        height: 40px;
+        background:
+            linear-gradient(90deg, @tech-black 2px, transparent 2px) 0 0 / 10px 10px,
+            linear-gradient(@tech-black 2px, transparent 2px) 0 0 / 10px 10px;
+        opacity: 0.2;
+    }
+
+    &::after {
+        content: "SYS_STATUS: NULL_DEVIATION // ERR_CODE: 0x000";
+        position: absolute; /** 右下角的技術規格文字 */
+        bottom: 10px;
+        right: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 9px;
+        color: @tech-gray-light;
+        letter-spacing: 1px;
+    }
 }
 
 .BaseListEmptyTypography {
+    background-color: @tech-black !important;
+    color: #ffffff !important;
+    padding: 16px 40px !important;
+    font-family: "Roboto Mono", "Consolas", monospace !important;
+    font-weight: 800 !important;
+    font-size: 1.3rem !important;
+    letter-spacing: 5px !important;
+    text-transform: uppercase;
+    margin-bottom: 48px !important;
+    position: relative;
+    clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%); /** 工業切角設計 */
+    border-right: 6px solid @tech-gray-dark; /** 文字裝飾線 */
 }
 
 .BaseListEmptyRetryButton {
-    margin-top: 20px;
+    border-radius: 0px !important;
+    border: 2px solid @tech-black !important;
+    background: #ffffff !important;
+    color: @tech-black !important;
+    font-weight: 900 !important;
+    letter-spacing: 2px !important;
+    padding: 10px 30px !important;
+    height: auto !important;
+    position: relative;
+    box-shadow: 4px 4px 0px @tech-gray-light; /** 硬質投影 */
+    transition: all 0.1s !important;
+
+    .MuiChip-icon {
+        color: @tech-black !important;
+        font-size: 20px !important;
+    }
+
+    .MuiChip-label {
+        padding-left: 15px !important;
+    }
+
+    &:hover {
+        background: @tech-black !important;
+        color: #ffffff !important;
+        box-shadow: 0px 0px 0px transparent;
+        transform: translate(2px, 2px); /** 模擬實體按鈕壓下去的動感 */
+
+        .MuiChip-icon {
+            color: #ffffff !important;
+        }
+    }
+
+    &:active {
+        background: #000000 !important;
+        transform: translate(4px, 4px);
+    }
 }
 
 .BaseAlertDialog:extend(.CenterInParentColumn) {
@@ -735,5 +842,151 @@ input[type="number"]::-webkit-outer-spin-button {
     }
     @media @desktop {
         font-size: 16px;
+    }
+}
+
+.LoadInkingContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .LoadInkingBreathingContent {
+        margin-top: 15vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 30px;
+        background-color: transparent;
+        pointer-events: none;
+
+        .LoadInkingTitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .LoadInkingCircle {
+            // MUI 樣式覆寫
+            .MuiCircularProgress-root {
+                transition: stroke-dashoffset 0.3s ease;
+            }
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .LoadInkingContainer .LoadInkingBreathingContent {
+        margin-top: 10vh;
+        padding: 15px 20px;
+        .LoadInkingTitle {
+            font-size: 0.95rem;
+        }
+    }
+}
+
+.ProcessingGuardContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 12000;
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+
+    .ProcessingGuardContentWrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 50px;
+        margin: 25px;
+        border-radius: 28px;
+        @media @desktop {
+            margin: auto;
+        }
+    }
+
+    .ProcessingGuardCircleSection {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 28px;
+
+        .ProcessingGuardOuterRing {
+            position: absolute;
+            top: -14px;
+            left: -14px;
+            right: -14px;
+            bottom: -14px;
+            border-radius: 50%;
+            border-width: 1px;
+            border-style: dashed;
+            opacity: 0.4;
+        }
+
+        .ProcessingGuardTimerCenter {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            .ProcessingGuardSeconds {
+                font-size: 42px;
+                font-weight: 800;
+                line-height: 1;
+                font-family: "Roboto Mono", monospace;
+            }
+        }
+    }
+
+    .ProcessingGuardMessageBlock {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .ProcessingGuardIcon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .ProcessingGuardText {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            line-height: 1.4;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ProcessingGuardContentWrapper {
+            padding: 35px;
+            width: 82%;
+        }
+        .ProcessingGuardCircleSection {
+            transform: scale(0.85);
+            margin-bottom: 20px;
+        }
+        .ProcessingGuardMessageBlock .ProcessingGuardText {
+            font-size: 16px;
+        }
     }
 }
