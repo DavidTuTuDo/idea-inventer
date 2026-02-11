@@ -85,12 +85,13 @@ class SheetStore extends BaseSheetStore {
         if (_.size(result.guitarpus) > 0) {
             const pu = result.guitarpus[0];
             await this.updateFavoriteToggleState(_.size(result.guitarpus) > 0 ? pu.id : "");
-            this.exeAsyncT(this.apiOfHistory
-                .submitPuOfRecordItem(view, {
+            this.exeAsyncT(
+                this.apiOfHistory.submitPuOfRecordItem(view, {
                     idOfGuitarPu: pu.id,
                     name: pu.name,
                     singer: pu.singer
-                }));
+                })
+            );
         }
         return result;
     }

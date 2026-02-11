@@ -80,7 +80,7 @@ const Config = {
     MAX_COUNTS_IN_RANK: 1000, RANK_TABLE_NAME: 'RANK', DATABASE_COLUMN_STATE: ['FAIL','DONE', 'ING', 'NOT'],
 }
 
-const mergeObjectConfig = Util.mergeObject(configerer, Config);
+const mergeObjectConfig = Util.merO(configerer, Config);
 
 
 export default mergeObjectConfig;

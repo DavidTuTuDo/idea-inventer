@@ -21,7 +21,7 @@
     "lodash": "^4.17.20",
     "puppeteer": "^22.6.0",
     "query-string": "^7.0.1",
-    "utiller": "^1.0.447"
+    "utiller": "^1.0.487"
   },
   "devDependencies": {
     "@babel/cli": "^7.28.3",
