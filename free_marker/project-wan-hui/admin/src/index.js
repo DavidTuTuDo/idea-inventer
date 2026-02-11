@@ -60,6 +60,8 @@ import _ from "lodash";
         await api.batchDeleteStorageByPrefixes(ids.map((id) => `dionysus/${id}/images/`));
         /** batch delete booze/variant */
         await api.deleteBatchBoozeVariantItems(ids);
+        return;
+
         let products = Util.getFileContextInJSON("./temp/variants.json");
         console.log(`丸卉食品合計商品共有： `, _.size(products), ` 個`);
         await api.submitBatchBoozeVariantItems(
@@ -139,23 +141,23 @@ import _ from "lodash";
         await api.submitOptions([
             {
                 name: "LINE支付",
-                image: "https://d.line-scdn.net/linepay/portal/v-250924/portal/assets/img/linepay-logo-tw.png",
+                image: "https://d.line-scdn.net/linepay/portal/v-260122/portal/assets/img/linepay-logo-tw.png",
                 description: "",
                 indexOfSequence: 3,
                 idOfUnique: "linepay"
-            },
-            {
-                name: "綠界支付",
-                image: "https://www.ecpay.com.tw/Content/themes/WebStyle20131201/images/service/ecpay_fb.png",
-                description: "信用卡、ATM、超商條碼",
-                indexOfSequence: 2,
-                idOfUnique: "ecpay"
             }
+            // {
+            //     name: "綠界支付",
+            //     image: "https://www.ecpay.com.tw/Content/themes/WebStyle20131201/images/service/ecpay_fb.png",
+            //     description: "信用卡、ATM、超商條碼",
+            //     indexOfSequence: 2,
+            //     idOfUnique: "ecpay"
+            // }
         ]);
     }
     // console.log(`全桌壞光光！`)
 
-    await uploadCatalogs();
+    // await uploadCatalogs();
     await uploadPaymentOptions();
     await uploadBoozeVariants();
 })();

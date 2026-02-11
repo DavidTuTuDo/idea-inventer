@@ -310,7 +310,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
                 label: "",
                 options: Util.getArrayOfFillMissingValues(this.getBriefSubs().map((each) => each.columnData()))
             }
-        ];
+        ].filter(attr => attr.options?.length > 0);
         Util.appendInfo(object);
         return object;
     }

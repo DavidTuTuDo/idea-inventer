@@ -720,7 +720,7 @@ class BaseComponent extends MuiComponent {
         if (forceSelf) return this;
 
         if (this.isDialogComponent() || this.isComponentView()) {
-            return this.propsOfMobX.component;
+            return this.propsOfMobX?.component ?? this;
         } else {
             return this;
         }

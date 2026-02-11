@@ -98,19 +98,19 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
                     transport.setAvailable(this.eros?.whetherPickupByBuyerSelf && this.getPriceB4Transport() >= this.eros?.thresholdOfAllowSelfPickup);
                     break;
                 case Config.TransportMethod.Store711: //7-11 取貨
-                    transport.setDescription(`已付款，滿 ${this.eros?.thresholdOfFreeShipByStorePickup} 元免運`);
+                    transport.setDescription(`滿 ${this.eros?.thresholdOfFreeShipByStorePickup} 元免運`);
                     transport.setPrice(this.eros?.feeOfInStorePickup);
                     transport.setFreeOfThreshold(this.eros?.thresholdOfFreeShipByStorePickup);
                     transport.setAvailable(this.eros?.whetherShipByStorePickup);
                     break;
                 case Config.TransportMethod.StoreFamily: //全家 取貨
-                    transport.setDescription(`已付款，滿 ${this.eros?.thresholdOfFreeShipByStorePickup} 元免運`);
+                    transport.setDescription(`滿 ${this.eros?.thresholdOfFreeShipByStorePickup} 元免運`);
                     transport.setPrice(this.eros?.feeOfInStorePickup);
                     transport.setFreeOfThreshold(this.eros?.thresholdOfFreeShipByStorePickup);
                     transport.setAvailable(this.eros?.whetherShipByStorePickup);
                     break;
                 case Config.TransportMethod.RapidOnDay: //當日到(14:00前下單)
-                    transport.setDescription(`已付款，滿 ${this.eros?.thresholdOfFreeShipByRapidly} 元免運`);
+                    transport.setDescription(`滿 ${this.eros?.thresholdOfFreeShipByRapidly} 元免運`);
                     transport.setPrice(this.eros?.feeOfRapidOnDelivery);
                     transport.setFreeOfThreshold(this.eros?.thresholdOfFreeShipByRapidly);
                     transport.setAvailable(this.eros?.whetherShipByRapidly);

@@ -103,7 +103,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         if (Util.or(isAddressShouldFormed(), _.isEmpty(this.getStore().getEmail()), _.isEmpty(this.getStore().getPhone()), _.isEmpty(this.getStore().getName())))
             return { succeed: false, behavior: async () => this.showWarningSnackMessage(`資料尚未完整填寫，請再度確認欄位內容`) };
         if (Util.isOrEquals(selectedOfTransport, Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711) && _.size(this.getStore().getCvs()) < 3)
-            return { succeed: false, behavior: async () => this.showWarningSnackMessage(`需填入收店代碼`) };
+            return { succeed: false, behavior: async () => this.showWarningSnackMessage(`需填入收店代碼，點擊「放大鏡」`) };
 
         const enableOfBoughtWithoutLoginIn = UserInfo.getGlobalPerspectiveAttr("enableOfBoughtWithoutLoginIn");
         const amountOfAllowAnonymousBuy = UserInfo.getGlobalPerspectiveAttr("amountOfAllowAnonymousBuy");
