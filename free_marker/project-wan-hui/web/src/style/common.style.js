@@ -239,6 +239,20 @@ class CommonStyle {
 
     IreneQrcodeMainScanTitleTypography = {};
 
+    IreneQrcodeMainScanOwlRemitSerialLabelOfRemitSerialTypography = {};
+
+    IreneQrcodeMainScanOwlRemitSerialDivWrap = {};
+
+    IreneQrcodeMainScanOwlRemitSerialTypography = {};
+
+    IreneQrcodeMainScanOwlRemitBankLabelOfRemitBankTypography = {};
+
+    IreneQrcodeMainScanOwlRemitBankDivWrap = {};
+
+    IreneQrcodeMainScanOwlRemitBankTypography = {};
+
+    IreneQrcodeMainScanOwlDiv = {};
+
     IreneQrcodeMainScanHrefDivWrap = {};
 
     IreneQrcodeMainScanHrefQrCode = {};

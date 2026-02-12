@@ -239,6 +239,20 @@ class AppStyle {
 
     IreneQrcodeMainScanTitleTypography = {};
 
+    IreneQrcodeMainScanOwlRemitSerialLabelOfRemitSerialTypography = {};
+
+    IreneQrcodeMainScanOwlRemitSerialDivWrap = {};
+
+    IreneQrcodeMainScanOwlRemitSerialTypography = {};
+
+    IreneQrcodeMainScanOwlRemitBankLabelOfRemitBankTypography = {};
+
+    IreneQrcodeMainScanOwlRemitBankDivWrap = {};
+
+    IreneQrcodeMainScanOwlRemitBankTypography = {};
+
+    IreneQrcodeMainScanOwlDiv = {};
+
     IreneQrcodeMainScanHrefDivWrap = {};
 
     IreneQrcodeMainScanHrefQrCode = {};

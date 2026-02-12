@@ -59,7 +59,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
                     transaction.setAvailable(UserInfo.containsPhysicalGoodOfCheckedItem() && this.eros?.enableOfCOD);
                     break;
                 case Config.TransactionMethod.DirectPay: //現金
-                    transaction.setDescription(`訂單成立後，可使用掃碼付款`);
+                    transaction.setDescription(`訂單成立後，可使用轉帳付款`);
                     transaction.setAvailable(this.eros?.enableOfDirectPay && priceOfWithoutTransport >= this.eros?.thresholdOfAllowSelfPickup);
                     transaction.setPrice(-1);
                     transaction.setFreeOfThreshold(0);

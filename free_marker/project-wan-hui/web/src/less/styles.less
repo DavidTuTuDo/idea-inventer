@@ -13353,6 +13353,8 @@
     height: 100%;
     border-radius: 10px;
     min-height: 60vh;
+    min-width: 90vw;
+
     @media @mobile {
         /** empty style */
     }
@@ -13365,6 +13367,7 @@
     }
 }
 .IreneQrcodeMainDiv:extend(.CenterInParentColumn) {
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -13428,7 +13431,8 @@
 }
 .IreneQrcodeMainScanDiv:extend(.CenterInParentColumn) {
     background: white;
-    padding: 13px;
+    padding: 15px;
+    width: 100%;
     border-radius: 8px;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -13469,6 +13473,88 @@
 }
 .IreneQrcodeMainScanHrefDivWrap {
     border-radius: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlDiv:extend(.CenterInParentColumn) {
+    align-items: flex-start;
+    width: 100%;
+    gap: 15px;
+    min-height: 250px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitBankTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitBankDivWrap:extend(.CenterInParentRow) {
+    font-size: 1.2rem;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitBankLabelOfRemitBankTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitSerialTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitSerialDivWrap:extend(.IreneQrcodeMainScanOwlRemitBankDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitSerialLabelOfRemitSerialTypography {
     @media @mobile {
         /** empty style */
     }

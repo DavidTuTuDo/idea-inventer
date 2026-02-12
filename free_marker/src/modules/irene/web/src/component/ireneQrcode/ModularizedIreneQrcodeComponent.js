@@ -17,12 +17,21 @@ class ModularizedIreneQrcodeComponent extends BaseIreneQrcodeComponent {
         return { backgroundColor: this.getStore().getColor() ?? `#06a748` };
     }
 
+    getWrapInjectStyleOfIreneQrcodeHrefQrCode(ireneQrcode) {
+        return Util.getVisibleOrNone(!this.getStore().getUseRemit());
+    }
+
     getWrapInjectStyleOfIreneQrcodeSubTypography(ireneQrcode) {
         return Util.getVisibleOrNone(_.size(ireneQrcode.getSub()) > 0);
     }
 
     onIreneQrcodeScanDivClicked(param) {
+        if (this.getStore().getUseRemit()) return this.copyTextToClipboard(this.getStore().getRemitSerial().replace(/\D/g, ""), `已複製匯款帳號`);
         this.gotoUrlWithNewTabDirectly(this.getStore().getHref());
+    }
+
+    getInjectStyleOfIreneQrcodeOwlDiv(ireneQrcode) {
+        return Util.getVisibleOrNone(this.getStore().getUseRemit());
     }
 }
 
