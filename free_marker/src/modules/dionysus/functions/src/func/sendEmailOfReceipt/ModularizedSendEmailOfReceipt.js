@@ -181,7 +181,8 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
             methodOfTransaction: Config.LabelOfTransactionMethod(order.typeOfTransaction),
             methodOfTransport: Config.LabelOfTransportMethod(order.typeOfTransport),
             isBuyer,
-            displayImage: isBuyer,
+            displayImage: true,
+            // displayImage: todo isBuyer, 有些情況，賣家不想看到圖片
             isTransportSucceed: order.isTransported,
             global
         };

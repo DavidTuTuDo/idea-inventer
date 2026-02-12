@@ -21,6 +21,7 @@
     "ecpay_aio_nodejs": "^1.2.2",
     "firebase-admin": "^12.2.0",
     "firebase-functions": "^5.0.1",
+    "googleapis": "^140.0.1",
     "linepayer": "^1.0.28",
     "lodash": "^4.17.20",
     "pizzip": "^3.1.7",

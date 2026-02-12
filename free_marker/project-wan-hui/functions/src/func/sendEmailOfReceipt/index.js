@@ -8,8 +8,7 @@ class SendEmailOfReceipt extends ModularizedSendEmailOfReceipt {
     }
 
     listOfCC() {
-        return [];
-        // return ["doraemon.leung.1@gmail.com"];
+        return ["doraemon.leung.1@gmail.com"];
     }
 }
 

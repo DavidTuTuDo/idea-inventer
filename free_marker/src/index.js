@@ -246,7 +246,7 @@ class CodegenNode {
     isExtraComponent = false;
 
     listOfImplementsOfAlertItemClicked = [];
-    /** dalertMenu的 items,在點擊後的事件實作 */
+    /** AlertMenu的 items,在點擊後的事件實作 */
 
     /** 如果 Typography 只有一個value，想要偷懶的加上Label 和icon 可以這樣做 */
     labelView = {

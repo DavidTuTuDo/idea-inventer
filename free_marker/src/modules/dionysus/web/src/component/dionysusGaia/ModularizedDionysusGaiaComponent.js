@@ -41,6 +41,11 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         if (photo !== undefined) photo.remove();
     }
 
+    onDionysusGaiaBriefPhotoHrefImgClicked(param) {
+        const photo = param.object;
+        if (photo !== undefined) photo.moveSelfToAside(false);
+    }
+
     /** 主選項 */
     onDionysusGaiaBriefMainLabelChipDeleted(param) {
         if (this.getStore().getInitCompleted()) return this.showWarningSnackMessage(`商品已成立，無法刪除選項`);
