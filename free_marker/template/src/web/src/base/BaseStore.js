@@ -56,18 +56,6 @@ class BaseStore extends ClientRemoteApi {
 
     selectorParams = this.getDefaultSelectorParam();
 
-    @observable
-    globalDialogContent = {
-        task: async () => {
-            await Util.syncDelay(10);
-        },
-        title: "標題",
-        content: "內容"
-    };
-
-    @observable
-    imageDialogParams = this.getDefaultImageDialogParam();
-
     // ==========================================
     // [新增] Loading Timeout 相關設定
     // ==========================================
@@ -122,17 +110,6 @@ class BaseStore extends ClientRemoteApi {
         return isObservableObject(param) ? toJS(param) : param;
     }
 
-    @action
-    setGlobalDialogContent(
-        dialogContent = {
-            title: "標題",
-            content: "內容",
-            task: async () => await Util.syncDelay(10)
-        }
-    ) {
-        this.globalDialogContent = dialogContent;
-    }
-
     isFetchAbleToGo() {
         const isLoadingOrError = Util.isOrEquals(this.getState(), "error", "loading");
         return !this.isInitialFetchCompleted() && !isLoadingOrError;
@@ -140,10 +117,6 @@ class BaseStore extends ClientRemoteApi {
 
     isErrorState() {
         return _.isEqual(this.state, "error");
-    }
-
-    getGlobalDialogContent() {
-        return this.globalDialogContent;
     }
 
     @action
@@ -403,10 +376,6 @@ class BaseStore extends ClientRemoteApi {
         return this.initialFetchCompleted;
     }
 
-    getImageDialogParam() {
-        return this.imageDialogParams;
-    }
-
     getDefaultSelectorParam() {
         return {
             type: "file",
@@ -425,12 +394,6 @@ class BaseStore extends ClientRemoteApi {
     setSelectorParam(params) {
         const mixer = Util.merO(this.getDefaultSelectorParam(), params);
         this.selectorParams = mixer;
-    }
-
-    @action
-    setImageDialogParam(params) {
-        const mixer = Util.merO(this.getDefaultImageDialogParam(), params);
-        this.imageDialogParams = mixer;
     }
 
     clean() {

@@ -40,22 +40,16 @@ class ImpComponent extends BaseComponent {
 
     enableLoginConfirmDialog = () => {
         const self = this;
-        this.getStore().setGlobalDialogContent({
-            title: "此功能必須登入",
+        this.executeXDialog({
+            title: "登入請求",
             content: "此功能必須登入,點擊確認後將喚起登入頁面",
             task: async () => await self.invokeLoginBehavior()
-        });
-        Util.performActionWithoutTimingIssue(() => self.getLoginDialogRef().open());
+        })
     };
 
     enableAlertDialog = (title = "標題", content = "內容", task = async () => true) => {
         const self = this;
-        this.getStore().setGlobalDialogContent({
-            title,
-            content,
-            task
-        });
-        Util.performActionWithoutTimingIssue(() => self.getLoginDialogRef().open());
+        this.executeXDialog({ title, content, task })
     };
 
     invokeLoginBehavior = async () => {
@@ -116,7 +110,6 @@ class ImpComponent extends BaseComponent {
 
     invokeInstagramApp = (website) => {
         const forceToWebsite = true;
-
         const username = Util.getTailStringSplitBy(website, "/");
         if (isMobile && !forceToWebsite) {
             window.open(`instagram://user?username=${username}`, "_blank");
@@ -214,6 +207,33 @@ class ImpComponent extends BaseComponent {
         link.click();
         document.body.removeChild(link);
     }
+
+    gotoUrlWithNewTab = (url) => {
+        const task = async () => this.gotoUrlWithNewTabDirectly(url);
+        this.enableExternalLinkDialog(url, task);
+    };
+
+    gotoExternalUrl = (url = "") => {
+        const task = async () => this.gotoExternalUrlDirectly(url);
+        this.enableExternalLinkDialog(url, task);
+    };
+
+    enableExternalLinkDialog = (url, task) => {
+        this.getGeneralDialogRef().current.activate({
+            title: "是否開啟新頁面",
+            content: `即將前往外部網站\n\n${url}`,
+            task: task
+        })
+    };
+
+    executeXDialog = (info) => {
+        this.getGeneralDialogRef().current.activate(info)
+    }
+
+    openImageDialog = (imgUrl) => {
+        this.getImageDialogRef().current?.activate({ href: imgUrl });
+    };
+
 }
 
 export default ImpComponent;

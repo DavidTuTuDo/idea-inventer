@@ -16,7 +16,7 @@ import { isMobile } from "react-device-detect";
 import ImageDialogView from "./ImageDialogView";
 import EventBus from "./CommonEventBus";
 import MuiComponent from "./MUIComponent";
-import AlertDialog from "./AlertDialog";
+import DialogX from "./DialogX";
 import AlertMenu from "./AlertMenu";
 import SnackBView, { storeOfSnackB } from "./BaseSnackView";
 import LoadInkingView, { storeOfloadInking } from "./BaseLoadInkingView";
@@ -35,7 +35,7 @@ class BaseComponent extends MuiComponent {
         super(props);
         this.propsOfMobX = props;
         this.imgDialogRef = React.createRef();
-        this.loginDialogRef = React.createRef();
+        this.generalDialogRef = React.createRef();
         this.fileChooserInputRef = React.createRef();
     }
 
@@ -362,25 +362,6 @@ class BaseComponent extends MuiComponent {
         return window.location.href;
     };
 
-    gotoUrlWithNewTab = (url) => {
-        const task = async () => this.gotoUrlWithNewTabDirectly(url);
-        this.enableExternalLinkDialog(url, task);
-    };
-
-    gotoExternalUrl = (url = "") => {
-        const task = async () => this.gotoExternalUrlDirectly(url);
-        this.enableExternalLinkDialog(url, task);
-    };
-
-    enableExternalLinkDialog = (url, task) => {
-        this.getStore().setGlobalDialogContent({
-            title: "是否開啟新頁面",
-            content: `即將前往外部網站\n\n${url}`,
-            task: task
-        });
-        this.getLoginDialogRef().open();
-    };
-
     onGoHomeClicked = (viewParam) => {
         Router.routeToHomePage(this.getComponentInstance());
     };
@@ -459,32 +440,35 @@ class BaseComponent extends MuiComponent {
 
                 {self.renderSelectorView()}
 
-                <AlertDialog
-                    viewX={"ImageDialogView"}
-                    ref={this.imgDialogRef}
-                    paramObject={self.getStore().getImageDialogParam()}
-                    customView={ImageDialogView}
-                    needActionButtons={false}
-                    component={self}
-                />
-
                 <SnackBView componentX={self} />
 
                 <LoadInkingView componentX={self} />
 
                 <ProcessingGuardView componentX={self} />
 
-                <AlertDialog
-                    viewX={"GlobalDialogView"}
-                    ref={self.loginDialogRef}
-                    title={self.getStore().getGlobalDialogContent().title}
-                    content={self.getStore().getGlobalDialogContent().content}
-                    component={this}
-                    needActionButtons={true}
-                    task={self.getStore().getGlobalDialogContent().task}
+                <DialogX
+                    viewX={"ImageDialogView"}
+                    ref={this.imgDialogRef}
+                    customView={ImageDialogView}
+                    needActionButtons={false}
+                    componentX={self}
                 />
+
+                <DialogX
+                    ref={this.generalDialogRef}
+                    viewX={"GlobalDialogView"}
+                    componentX={self} />
+
             </div>
         );
+    }
+
+    getImageDialogRef() {
+        return this.imgDialogRef
+    }
+
+    getGeneralDialogRef = () => {
+        return this.generalDialogRef
     }
 
     getSelectedSuggest(value, suggests) {
@@ -665,12 +649,6 @@ class BaseComponent extends MuiComponent {
     isCPRT() {
         return false;
     }
-
-    /** imageDialogRef只會實作在 '非dialog的' component */
-    openImageDialog = (imgUrl) => {
-        const component = this.getComponentInstance();
-        component?.imageDialogRef?.current?.open({ href: imgUrl });
-    };
 
     /** 如果頁面有聽callback, 統一用這個method */
     subscribe(subscribeFunction) {
