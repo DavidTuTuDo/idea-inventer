@@ -56,6 +56,7 @@ class BaseStore extends ClientRemoteApi {
 
     selectorParams = this.getDefaultSelectorParam();
 
+    @observable
     globalDialogContent = {
         task: async () => {
             await Util.syncDelay(10);
@@ -64,6 +65,7 @@ class BaseStore extends ClientRemoteApi {
         content: "內容"
     };
 
+    @observable
     imageDialogParams = this.getDefaultImageDialogParam();
 
     // ==========================================
@@ -425,6 +427,7 @@ class BaseStore extends ClientRemoteApi {
         this.selectorParams = mixer;
     }
 
+    @action
     setImageDialogParam(params) {
         const mixer = Util.merO(this.getDefaultImageDialogParam(), params);
         this.imageDialogParams = mixer;

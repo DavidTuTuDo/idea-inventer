@@ -145,19 +145,19 @@ import _ from "lodash";
                 description: "",
                 indexOfSequence: 3,
                 idOfUnique: "linepay"
+            },
+            {
+                name: "綠界支付",
+                image: "https://www.ecpay.com.tw/Content/themes/WebStyle20131201/images/service/ecpay_fb.png",
+                description: "信用卡、ATM、超商條碼",
+                indexOfSequence: 2,
+                idOfUnique: "ecpay"
             }
-            // {
-            //     name: "綠界支付",
-            //     image: "https://www.ecpay.com.tw/Content/themes/WebStyle20131201/images/service/ecpay_fb.png",
-            //     description: "信用卡、ATM、超商條碼",
-            //     indexOfSequence: 2,
-            //     idOfUnique: "ecpay"
-            // }
         ]);
     }
     // console.log(`全桌壞光光！`)
 
     // await uploadCatalogs();
     await uploadPaymentOptions();
-    await uploadBoozeVariants();
+    // await uploadBoozeVariants();
 })();
