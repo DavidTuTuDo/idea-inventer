@@ -31,6 +31,10 @@ class BaseComponent extends MuiComponent {
     jobExecutorLock = false;
     propsOfMobX;
 
+    // [新增] 補花重試計數器與防呆上限，避免無止盡自動 fetch 造成死迴圈
+    autoFillRetryCount = 0;
+    MAX_AUTO_FILL_RETRIES = 5;
+
     constructor(props) {
         super(props);
         this.propsOfMobX = props;
@@ -248,7 +252,8 @@ class BaseComponent extends MuiComponent {
     };
 
     getThresholdOfScrollToBottom() {
-        return 5;
+        // [修改] 建議拉大至 100 提早預載，讓使用者體驗更無縫
+        return 100;
     }
 
     disappearKeyboard() {
@@ -257,15 +262,19 @@ class BaseComponent extends MuiComponent {
 
     isValidOfScrollToBottom = () => {
         let documentHeight = document.body.scrollHeight;
-        let currentScroll = window.scrollY + window.innerHeight;
+        // [修改] 加上 Math.ceil 避免部分瀏覽器或 Retina 螢幕產生小數點造成的誤差
+        let currentScroll = Math.ceil(window.scrollY + window.innerHeight);
         let isScrollDown = window.scrollY > 0;
         /** 應該要記錄scrollY, 然後判斷偏移量 */
-        let modifier = 1;
-        let isScrollToEnd = currentScroll + modifier > documentHeight;
+            // [修改] 使用設定的 Threshold 取代寫死的 modifier = 1
+        let modifier = this.getThresholdOfScrollToBottom() || 100;
+        // [修改] 改為 >= 確保在設定的 Threshold 範圍內都能精準觸發
+        let isScrollToEnd = currentScroll + modifier >= documentHeight;
         return isScrollDown && isScrollToEnd;
     };
 
-    onScrollToBottomListener = (event) => {
+    // [修改] 使用 lodash.throttle 包裝，限制每 300ms 最多觸發一次，避免滑動時頻繁計算造成效能瓶頸
+    onScrollToBottomListener = _.throttle((event) => {
         const self = this;
 
         /** modifier 距離底部的threshold */
@@ -298,7 +307,7 @@ class BaseComponent extends MuiComponent {
                 Util.appendInfo(`當前任務還沒執行完畢, 忽略此次呼叫。`);
             }
         }
-    };
+    }, 300);
 
     hasScrollToBottomTask() {
         return this.jobsOfScrollToBottom.length > 0;
@@ -327,11 +336,26 @@ class BaseComponent extends MuiComponent {
 
     /** 要是沒有產生出捲軸效果(), 但是有next page設計的話, canVerticalScrollable() 一定要實作hasNextPage的邏輯 */
     invalidateNextPageBehavior = async () => {
-        await Util.syncDelay(50);
+        // [修改] 延長等待時間至 150ms，確保 React 渲染和瀏覽器 Paint 確實完成，避免 canVerticalScrollable 誤判
+        await Util.syncDelay(150);
         if (!this.getStore().isErrorState() && this.getStore().hasNextPage() && this.hasScrollToBottomTask() && !this.canVerticalScrollable()) {
-            Util.appendInfo(`補花功能啟動`);
+
+            // [新增] 補花防呆機制：若重試次數達上限則強制停止，防止 API 異常或 CSS 樣式問題導致的無限迴圈
+            if (this.autoFillRetryCount >= this.MAX_AUTO_FILL_RETRIES) {
+                Util.appendError(`補花功能已達到上限 (${this.MAX_AUTO_FILL_RETRIES}次)，強制停止。請檢查 API 回傳或頁面高度設定。`);
+                this.autoFillRetryCount = 0; // 重置計數器
+                return;
+            }
+
+            // [修改] 將原本單純的 Log 加入紀錄次數，方便 Debug
+            Util.appendInfo(`補花功能啟動 (第 ${this.autoFillRetryCount + 1} 次)`);
+            this.autoFillRetryCount++;
+
             await Util.syncDelay(50);
             await this.jobExecutor();
+        } else {
+            // [新增] 如果畫面已產生捲軸效果，或沒有下一頁，則歸零計數器
+            this.autoFillRetryCount = 0;
         }
     };
 
