@@ -386,6 +386,16 @@ class InfinitePool {
                         reject(error);
                     }
                 }, self.timeOfTaskTimeout);
+            } else {
+                // [修復] Issue 2: 即使關閉超時機制，也設定一個絕對保底的超時 (1小時)，避免客端 Promise 卡死導致 Worker 永久佔滿
+                timeoutHash = setTimeout(() => {
+                    try {
+                        this.printLogMessage(`982533, taskWrapper執行中,發生極限保底超時: 3600000 ms`, true)
+                        throw new ERROR(4010, self.getPoollerLogFormat(`TASK HASH:${hashOfTask} REACHED ABSOLUTE TIMEOUT 3600000 ms`))
+                    } catch (error) {
+                        reject(error);
+                    }
+                }, 3600000); // 1 小時
             }
 
             // 執行客戶端委託的任務
@@ -409,45 +419,45 @@ class InfinitePool {
                     this.printLogMessage(`98942,(TASK HASH:${hashOfTask}) taskWrapper()裡面第一個promise(為了timeout設計)完成了`)
                 })
         })
-        .then(() => {
-            // 能走到這裡，代表沒有 timeout 的狀況下執行了委託的任務
-            if (!isAssignedTaskCompleted) {
-                throw assignedTaskError;
-            } else {
-                this.printLogMessage(`9894841,(TASK HASH:${hashOfTask}) taskWrapper()裡面第二個promise(整個任務)完成了`)
-                return `${this.getLogMessageOfTaskHash(hashOfTask)} completed`;
-            }
-        })
-        .catch(error => {
-            // 如果發生 timeout 或是客端任務掉進去 catch 都會跑到這裡
-            isAssignedTaskCompleted = false;
-            assignedTaskError = error;
-
-            // [修復] 改進錯誤處理邏輯
-            if (!self.isWait4ResultTask(hashOfTask)) {
-                if (self.handlerOfAssignTaskFail !== undefined) {
-                    // 使用錯誤處理器處理錯誤，不再拋出
-                    try {
-                        self.handlerOfAssignTaskFail(assignedTaskError);
-                    } catch (handlerError) {
-                        // 如果錯誤處理器本身出錯，記錄但不拋出
-                        this.printLogMessage(`錯誤處理器執行失敗: ${handlerError.message}`, true, handlerError);
-                    }
+            .then(() => {
+                // 能走到這裡，代表沒有 timeout 的狀況下執行了委託的任務
+                if (!isAssignedTaskCompleted) {
+                    throw assignedTaskError;
                 } else {
-                    // 沒有錯誤處理器時，記錄錯誤但不拋出（避免未處理的 rejection）
-                    this.printLogMessage(`任務執行失敗但未設置錯誤處理器: ${assignedTaskError.message}`, true, assignedTaskError);
+                    this.printLogMessage(`9894841,(TASK HASH:${hashOfTask}) taskWrapper()裡面第二個promise(整個任務)完成了`)
+                    return `${this.getLogMessageOfTaskHash(hashOfTask)} completed`;
                 }
-            }
-        })
-        .finally(() => {
-            const result = {
-                assignedTaskCompleted: isAssignedTaskCompleted,
-                resolve: assignedTaskResult,
-                reject: assignedTaskError
-            };
-            self.removeResolveOrRejectPromiseByHash(hashOfTask, result);
-            this.printLogMessage(`98943213, ${this.getLogMessageOfTaskHash(hashOfTask)} taskWrapper()裡面第2個promise完成了`, false, result)
-        })
+            })
+            .catch(error => {
+                // 如果發生 timeout 或是客端任務掉進去 catch 都會跑到這裡
+                isAssignedTaskCompleted = false;
+                assignedTaskError = error;
+
+                // [修復] 改進錯誤處理邏輯
+                if (!self.isWait4ResultTask(hashOfTask)) {
+                    if (self.handlerOfAssignTaskFail !== undefined) {
+                        // 使用錯誤處理器處理錯誤，不再拋出
+                        try {
+                            self.handlerOfAssignTaskFail(assignedTaskError);
+                        } catch (handlerError) {
+                            // 如果錯誤處理器本身出錯，記錄但不拋出
+                            this.printLogMessage(`錯誤處理器執行失敗: ${handlerError.message}`, true, handlerError);
+                        }
+                    } else {
+                        // 沒有錯誤處理器時，記錄錯誤但不拋出（避免未處理的 rejection）
+                        this.printLogMessage(`任務執行失敗但未設置錯誤處理器: ${assignedTaskError.message}`, true, assignedTaskError);
+                    }
+                }
+            })
+            .finally(() => {
+                const result = {
+                    assignedTaskCompleted: isAssignedTaskCompleted,
+                    resolve: assignedTaskResult,
+                    reject: assignedTaskError
+                };
+                self.removeResolveOrRejectPromiseByHash(hashOfTask, result);
+                this.printLogMessage(`98943213, ${this.getLogMessageOfTaskHash(hashOfTask)} taskWrapper()裡面第2個promise完成了`, false, result)
+            })
     }
 
     /**
@@ -515,6 +525,16 @@ class InfinitePool {
                 if (_index >= 0) {
                     this.queueOfAssignTask[prior].splice(_index, 1);
                     this.removeTaskMapByHash(hash);
+
+                    // [修復] Issue 4: 若該任務是被 Wait4Result 等待，主動 reject 避免外部 await 永遠卡死
+                    if (this.mapOfHashNCallbackWrapper[hash]) {
+                        this.mapOfHashNCallbackWrapper[hash]({
+                            assignedTaskCompleted: false,
+                            reject: new ERROR(4012, `Task ${hash} removed before execution`)
+                        });
+                        delete this.mapOfHashNCallbackWrapper[hash];
+                    }
+
                     return true;
                 }
             }
@@ -610,15 +630,26 @@ class InfinitePool {
      */
     runByParams = async (functionOfAsyncTask, ...params) => {
         if (functionOfAsyncTask === undefined) {
-            functionOfAsyncTask = this.queueOfAssignTask['low'].shift().task;
+            // [修復] Issue 3: 避免佇列空的時候使用 .shift() 引發 TypeError
+            const taskInfo = this.queueOfAssignTask['low'].shift();
+            if (taskInfo) {
+                functionOfAsyncTask = taskInfo.task;
+            }
         }
-        if (!_.isFunction(functionOfAsyncTask))
+
+        // [修復] 允許 triggerBgInstance 純喚醒時不傳入參數 (只處理舊任務)，避免拋錯
+        if (functionOfAsyncTask !== undefined && !_.isFunction(functionOfAsyncTask))
             throw new ERROR(4006, `runByParams error, typeof task can't be ${typeof functionOfAsyncTask}`);
         if (!_.isArray(params))
             throw new ERROR(4006, `runByParams error, typeof params can't be ${typeof params}`);
 
         this.beforeRun();
-        this.add(functionOfAsyncTask);
+
+        // [修復] 只有在真的有傳入 (或取到) 函數時才執行 add
+        if (functionOfAsyncTask) {
+            this.add(functionOfAsyncTask);
+        }
+
         this.appendParamInToQueue(...params)
         this.setState(configerer.POOLLER_STATE.RUN_BY_PARAMS);
 
@@ -989,7 +1020,18 @@ class InfinitePool {
             })
 
             self.printLogMessage(`454652321, 開始任務(taskWrapper): run() 裡面的execute開始執行, task(state = NOT)的長度 ${_.size(tasks)}`);
-            const result = _.size(tasks) > 0 ? await Promise.race(tasks) : '4542131684, task is empty';
+
+            // [修復] Issue 1: 避免當所有任務狀態皆為 'ING' 時，Promise.race 收不到新任務導致 Event Loop 死迴圈
+            let result;
+            if (_.size(tasks) > 0) {
+                result = await Promise.race(tasks);
+            } else if (self.queueOfExecutingTask.length > 0) {
+                await Util.syncDelay(50); // 強制讓出執行權
+                result = 'waiting for ING tasks';
+            } else {
+                result = '4542131684, task is empty';
+            }
+
             self.printLogMessage(`54121445161, 結束任務(taskWrapper): run() 裡面的execute結束執行`);
             return result;
         }
