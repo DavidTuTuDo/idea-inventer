@@ -11,6 +11,10 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
         super(props);
     }
 
+    getInjectStyleOfInfoOfCopyRightRefundNTurnPolicyButton(infoOfCopyRight) {
+        return Util.getVisibleOrNone(Config.useCartie);
+    }
+
     getInjectStyleOfInfoOfCopyRightCprtButton(infoOfCopyRight) {
         return Util.getVisibleOrNone(Config.useCartie ? !isMobile : false);
     }
