@@ -613,6 +613,14 @@ class AppStyle {
 
     EpayFootprintOrderAreaOfTransportDiv = {};
 
+    EpayFootprintOrderAoaAddressLabelOfAddressTypography = {};
+
+    EpayFootprintOrderAoaAddressDivWrap = {};
+
+    EpayFootprintOrderAoaAddressTypography = {};
+
+    EpayFootprintOrderAoaDiv = {};
+
     EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography = {};
 
     EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap = {};
@@ -620,6 +628,22 @@ class AppStyle {
     EpayFootprintOrderAreaOfPaymentRuleRuleTypography = {};
 
     EpayFootprintOrderAreaOfPaymentRuleDiv = {};
+
+    EpayFootprintOrderAopPhoneNumberLabelOfPhoneNumberTypography = {};
+
+    EpayFootprintOrderAopPhoneNumberDivWrap = {};
+
+    EpayFootprintOrderAopPhoneNumberTypography = {};
+
+    EpayFootprintOrderAopDiv = {};
+
+    EpayFootprintOrderAoiNameLabelOfNameTypography = {};
+
+    EpayFootprintOrderAoiNameDivWrap = {};
+
+    EpayFootprintOrderAoiNameTypography = {};
+
+    EpayFootprintOrderAoiDiv = {};
 
     EpayFootprintOrderRemarkLabelOfRemarkTypography = {};
 
@@ -1734,6 +1758,24 @@ class AppStyle {
     DionysusGaiaAreaOfNameRowDiv = {};
 
     DionysusGaiaAreaOfNameDiv = {};
+
+    DionysusGaiaBanBriefBanDeleteIconHighlightOffRounded = {};
+
+    DionysusGaiaBanBriefBanDeleteIconButton = {};
+
+    DionysusGaiaBanBriefBanHrefImg = {};
+
+    DionysusGaiaBanBriefBanDivList = {};
+
+    DionysusGaiaBanBriefBanDiv = {};
+
+    DionysusGaiaBanRowJoinBanChip = {};
+
+    DionysusGaiaBanRowLabelOfUploadBanTypography = {};
+
+    DionysusGaiaBanRowDiv = {};
+
+    DionysusGaiaBanDiv = {};
 
     DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconHighlightOffRounded = {};
 

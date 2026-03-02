@@ -266,7 +266,7 @@ class BaseComponent extends MuiComponent {
         let currentScroll = Math.ceil(window.scrollY + window.innerHeight);
         let isScrollDown = window.scrollY > 0;
         /** 應該要記錄scrollY, 然後判斷偏移量 */
-            // [修改] 使用設定的 Threshold 取代寫死的 modifier = 1
+        // [修改] 使用設定的 Threshold 取代寫死的 modifier = 1
         let modifier = this.getThresholdOfScrollToBottom() || 100;
         // [修改] 改為 >= 確保在設定的 Threshold 範圍內都能精準觸發
         let isScrollToEnd = currentScroll + modifier >= documentHeight;
@@ -339,7 +339,6 @@ class BaseComponent extends MuiComponent {
         // [修改] 延長等待時間至 150ms，確保 React 渲染和瀏覽器 Paint 確實完成，避免 canVerticalScrollable 誤判
         await Util.syncDelay(150);
         if (!this.getStore().isErrorState() && this.getStore().hasNextPage() && this.hasScrollToBottomTask() && !this.canVerticalScrollable()) {
-
             // [新增] 補花防呆機制：若重試次數達上限則強制停止，防止 API 異常或 CSS 樣式問題導致的無限迴圈
             if (this.autoFillRetryCount >= this.MAX_AUTO_FILL_RETRIES) {
                 Util.appendError(`補花功能已達到上限 (${this.MAX_AUTO_FILL_RETRIES}次)，強制停止。請檢查 API 回傳或頁面高度設定。`);
@@ -470,30 +469,20 @@ class BaseComponent extends MuiComponent {
 
                 <ProcessingGuardView componentX={self} />
 
-                <DialogX
-                    viewX={"ImageDialogView"}
-                    ref={this.imgDialogRef}
-                    customView={ImageDialogView}
-                    needActionButtons={false}
-                    componentX={self}
-                />
+                <DialogX viewX={"ImageDialogView"} ref={this.imgDialogRef} customView={ImageDialogView} needActionButtons={false} componentX={self} />
 
-                <DialogX
-                    ref={this.generalDialogRef}
-                    viewX={"GlobalDialogView"}
-                    componentX={self} />
-
+                <DialogX ref={this.generalDialogRef} viewX={"GlobalDialogView"} componentX={self} />
             </div>
         );
     }
 
     getImageDialogRef() {
-        return this.imgDialogRef
+        return this.imgDialogRef;
     }
 
     getGeneralDialogRef = () => {
-        return this.generalDialogRef
-    }
+        return this.generalDialogRef;
+    };
 
     getSelectedSuggest(value, suggests) {
         if (_.isArray(suggests) && value) return _.find(suggests, (suggest) => _.isEqual(_.toString(suggest.value), _.toString(value)));

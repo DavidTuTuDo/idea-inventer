@@ -44,12 +44,12 @@ class ImpComponent extends BaseComponent {
             title: "登入請求",
             content: "此功能必須登入,點擊確認後將喚起登入頁面",
             task: async () => await self.invokeLoginBehavior()
-        })
+        });
     };
 
     enableAlertDialog = (title = "標題", content = "內容", task = async () => true) => {
         const self = this;
-        this.executeXDialog({ title, content, task })
+        this.executeXDialog({ title, content, task });
     };
 
     invokeLoginBehavior = async () => {
@@ -223,17 +223,16 @@ class ImpComponent extends BaseComponent {
             title: "是否開啟新頁面",
             content: `即將前往外部網站\n\n${url}`,
             task: task
-        })
+        });
     };
 
     executeXDialog = (info) => {
-        this.getGeneralDialogRef().current.activate(info)
-    }
+        this.getGeneralDialogRef().current.activate(info);
+    };
 
     openImageDialog = (imgUrl) => {
         this.getImageDialogRef().current?.activate({ href: imgUrl });
     };
-
 }
 
 export default ImpComponent;

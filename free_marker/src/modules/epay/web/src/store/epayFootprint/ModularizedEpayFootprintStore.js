@@ -334,6 +334,10 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
         return {
             raw: order,
+            name: order.name,
+            phoneNumber: order.phoneNumber,
+            needAddress: order.needAddress,
+            address: order.address,
             remarkDisabled: order.anonymous,
             anonymous: order.anonymous,
             processOfPayment: getStringOfPaymentProcess(),

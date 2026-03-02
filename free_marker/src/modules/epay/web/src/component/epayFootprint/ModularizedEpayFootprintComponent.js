@@ -15,6 +15,10 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         this.registerScrollToBottomJob(this.getStore().fetch);
     }
 
+    getInjectStyleOfEpayFootprintOrderAoaDiv(order) {
+        return Util.getVisibleOrNone(order.getNeedAddress());
+    }
+
     isValidOfParamOfTypeOfTab(string) {
         return Util.containsBy(["anonymousX", "all", "completed", "pending", "failure", "status", "unpaid", "unshipped", "succeed", "cancelled"], string);
     }

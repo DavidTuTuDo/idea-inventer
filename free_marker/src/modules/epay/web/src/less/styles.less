@@ -171,10 +171,10 @@
     margin: auto;
     width: 100%;
     @media @mobile {
-        width: 98vw;
+        /** empty style */
     }
     @media @tablet {
-        width: 98vw;
+        /** empty style */
     }
     @media @desktop {
         width: 760px;
@@ -220,7 +220,6 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfHeadDiv:extend(.CenterInParentRow) {
-    gap: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -409,7 +408,7 @@
 }
 .EpayFootprintOrderBriefDiv:extend(.CenterInParentRow) {
     justify-content: flex-start;
-    gap: 5px;
+    gap: 2px;
     width: 100%;
     padding-right: 1px;
     border-bottom: 1px solid #bbb;
@@ -468,7 +467,7 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderBriefSectionOfDescriptionNameOfProductTypography {
+.EpayFootprintOrderBriefSectionOfDescriptionNameOfProductTypography:extend(.BeautyTitle) {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -495,7 +494,7 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderBriefSectionOfDescriptionSpecificOfProductTypography {
+.EpayFootprintOrderBriefSectionOfDescriptionSpecificOfProductTypography:extend(.BeautyContent) {
     margin-top: 8px;
     @media @mobile {
         /** empty style */
@@ -507,7 +506,7 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderBriefSectionOfDescriptionQuantityTypography {
+.EpayFootprintOrderBriefSectionOfDescriptionQuantityTypography:extend(.BeautyContent) {
     @media @mobile {
         /** empty style */
     }
@@ -518,7 +517,7 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderBriefSectionOfDescriptionPriceTypography {
+.EpayFootprintOrderBriefSectionOfDescriptionPriceTypography:extend(.BeautyContent) {
     @media @mobile {
         /** empty style */
     }
@@ -698,6 +697,94 @@
         /** empty style */
     }
 }
+.EpayFootprintOrderAoiDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoiNameTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoiNameDivWrap:extend(.EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoiNameLabelOfNameTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAopDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAopPhoneNumberTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAopPhoneNumberDivWrap:extend(.EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAopPhoneNumberLabelOfPhoneNumberTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
 .EpayFootprintOrderAreaOfPaymentRuleDiv {
     @media @mobile {
         /** empty style */
@@ -724,6 +811,11 @@
     justify-content: space-between;
     align-items: flex-end;
     width: 100%;
+    padding-right: 1px;
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.8;
+    color: #333;
+    letter-spacing: 0.2px;
     @media @mobile {
         /** empty style */
     }
@@ -735,6 +827,50 @@
     }
 }
 .EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoaDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoaAddressTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoaAddressDivWrap:extend(.EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoaAddressLabelOfAddressTypography {
     @media @mobile {
         /** empty style */
     }

@@ -13,7 +13,9 @@ import { utiller as Util } from "utiller";
 class DialogXStore {
     @observable
     dialogInfo = {
-        task: async () => { await Util.syncDelay(10); },
+        task: async () => {
+            await Util.syncDelay(10);
+        },
         title: "標題",
         content: "內容"
     };
@@ -34,7 +36,7 @@ class DialogXStore {
         this.dialogInfo = { ...this.dialogInfo, ...info };
 
         // 如果 info 中帶有 href 或 image 相關參數，同步更新 imageParams
-        if (info && (info.href !== undefined)) {
+        if (info && info.href !== undefined) {
             this.setImageParam(info);
         }
     }
@@ -74,39 +76,40 @@ class DialogXStore {
 /**
  * DialogX 組件
  */
-const DialogX = observer(forwardRef((props, ref) => {
-    const {
-        componentX,
-        customView,
-        viewX,
-        needActionButtons = true,
-    } = props;
+const DialogX = observer(
+    forwardRef((props, ref) => {
+        const { componentX, customView, viewX, needActionButtons = true } = props;
 
-    // 建立每個實例唯一的 Store
-    const localStore = useMemo(() => new DialogXStore(), []);
+        // 建立每個實例唯一的 Store
+        const localStore = useMemo(() => new DialogXStore(), []);
 
-    // 暴露方法給父層的 ref.current
-    useImperativeHandle(ref, () => ({
-        activate: (info) => localStore.activate(info),
-        setInfo: (info) => localStore.setInfo(info),
-        setImageParam: (params) => localStore.setImageParam(params),
-        get info() { return localStore.dialogInfo; },
-        get imageParams() { return localStore.imageParams; }
-    }));
+        // 暴露方法給父層的 ref.current
+        useImperativeHandle(ref, () => ({
+            activate: (info) => localStore.activate(info),
+            setInfo: (info) => localStore.setInfo(info),
+            setImageParam: (params) => localStore.setImageParam(params),
+            get info() {
+                return localStore.dialogInfo;
+            },
+            get imageParams() {
+                return localStore.imageParams;
+            }
+        }));
 
-    return (
-        <AlertDialog
-            ref={(node) => localStore.setRef(node)}
-            title={localStore.dialogInfo.title}
-            content={localStore.dialogInfo.content}
-            needActionButtons={needActionButtons}
-            task={localStore.dialogInfo.task}
-            component={componentX}
-            {...(customView && { customView })}
-            paramObject={localStore.imageParams}
-            viewX={viewX}
-        />
-    );
-}));
+        return (
+            <AlertDialog
+                ref={(node) => localStore.setRef(node)}
+                title={localStore.dialogInfo.title}
+                content={localStore.dialogInfo.content}
+                needActionButtons={needActionButtons}
+                task={localStore.dialogInfo.task}
+                component={componentX}
+                {...(customView && { customView })}
+                paramObject={localStore.imageParams}
+                viewX={viewX}
+            />
+        );
+    })
+);
 
 export default DialogX;
