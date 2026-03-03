@@ -39,10 +39,10 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         feeOfTransport,
         discountOfTotal,
         methodOfTransaction,
-        methodOTransport,
+        methodOfTransport,
         serialOfTransport,
         remark,
-        phone,
+        phoneNumber,
         address,
         needAddress,
         id,
@@ -88,32 +88,30 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
             .join("");
 
         const customerInfo = `
-    ${valid(remark) ? `<div style="margin-bottom:4px;">客戶備註：${remark}</div>` : ""}
-    ${
-        valid(address) && needAddress
-            ? `<div style="margin-bottom:4px;">客戶地址：${address} 
-        <a href="https://www.google.com/maps/search/${encodeURIComponent(address)}" style="font-size:12px;color:#0066cc;text-decoration:none;">[開啟地圖]</a></div>`
-            : ""
-    }
-    ${methodOTransport ? `<div style="margin-bottom:4px;">取貨方式：${methodOTransport}</div>` : ""}
-    ${serialOfTransport ? `<div style="margin-bottom:4px;">物流編號：${serialOfTransport}</div>` : ""}
-    ${phone ? `<div>聯絡方式：${phone}</div>` : ""}`;
+    ${valid(name) ? `<div>客戶姓名：${name}</div>` : ""}
+    ${valid(address) && needAddress ? `<div >客戶地址：${address} 
+    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" style="font-size:12px;color:#0066cc;text-decoration:none;">[開啟地圖]</a></div>` : ""}
+    ${valid(remark) ? `<div>客戶備註：${remark}</div>` : ""}
+    ${valid(phoneNumber) ? `<div style="margin-bottom:4px;">聯絡方式：${phoneNumber}</div>` : ""}`;
 
         const paymentInfo = `
-    <div>物流費用：NT$${toCurrency(feeOfTransport)}</div>
-    <div>優惠禮金：NT$${toCurrency(discountOfTotal)}</div>
+    <div style="color:#555;">物流費用：NT$${toCurrency(feeOfTransport)}</div>
+    <div style="color:#555;">優惠禮金：NT$${toCurrency(discountOfTotal)}</div>
     <div style="font-weight:bold;">實收費用：NT$${toCurrency(priceOfTotal)}</div>
-    <div style="color:#555;">付費方式：${methodOfTransaction}</div>`;
+    <div style="color:#555;">付費方式：${methodOfTransaction}</div>
+    <div style="color:#555;">運送方式：${methodOfTransport}</div>
+    ${valid(serialOfTransport) ? `<div style="color:#555; margin-bottom:4px;">物流編號：${serialOfTransport}</div>` : ""}`;
 
         const footer = `
     <div style="margin-top:20px;font-size:12px;color:#555;border-top:1px solid #ccc;padding-top:10px;">
-      ${valid(global?.company) ? `<div>${global.company}</div>` : ""}
+      ${valid(global?.companyO) ? `<div>${global.companyO}</div>` : ""}
       ${valid(global?.unifiedB) ? `<div>統編：${global.unifiedB}</div>` : ""}
       ${valid(global?.phoneO) ? `<div>電話：${global.phoneO}</div>` : ""}
       <div style="margin-top:6px;">
-        ${valid(global?.fbO) ? `<a href="${global.fb}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/facebook-new.png" width="18"></a>` : ""}
-        ${valid(global?.igO) ? `<a href="${global.ig}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/instagram-new.png" width="18"></a>` : ""}
-        ${valid(global?.ytO) ? `<a href="${global.yt}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/youtube-play.png" width="18"></a>` : ""}
+        ${valid(global?.fbO) ? `<a href="${global.fbO}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/facebook-new.png" width="18"></a>` : ""}
+        ${valid(global?.igO) ? `<a href="${global.igO}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/instagram-new.png" width="18"></a>` : ""}
+        ${valid(global?.ytO) ? `<a href="${global.ytO}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/youtube-play.png" width="18"></a>` : ""}
+        ${valid(global?.tiktokO) ? `<a href="${global.tiktokO}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/tiktok.png" width="18"></a>` : ""}
         ${valid(global?.lineO) ? `<a href="https://line.me/R/ti/g/${global.lineO}"><img src="https://img.icons8.com/ios-filled/50/808080/line-me.png" width="18"></a>` : ""}
       </div>
     </div>`;
@@ -161,7 +159,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
 
         if (isTransportCompleted) {
             /** 商品已寄出通知 */
-            if (!order.isTransported) this.appendErrorLog(9999, `652112132132 商品尚未完成物流程序`);
+            if (!order.isTransported) return this.appendErrorLog(9999, `652112132132 商品尚未完成物流程序`);
             _.remove(order.items, (item) => item.isTaskJob); //只有實體商品需要寄出，把課程拿掉
             const isBuyer = true;
             this.sendEmailTo({ isTransportCompleted, isBuyer, order, global });
