@@ -542,11 +542,13 @@ class BaseComponent extends MuiComponent {
         Util.syncDelay("10").then(() => this.fileChooserInputRef.current.click());
     };
 
+    /** file chooser選擇完會呼叫 onFilesSelected */
     enableImageSelectView(multiple = false) {
         const accepts = `image/*`;
         this.enableFileSelectView(accepts, multiple);
     }
 
+    /** file chooser選擇完會呼叫 onFilesSelected */
     enableVoiceSelectView(multiple = false) {
         const accepts = `audio/*`;
         this.enableFileSelectView(accepts, multiple);

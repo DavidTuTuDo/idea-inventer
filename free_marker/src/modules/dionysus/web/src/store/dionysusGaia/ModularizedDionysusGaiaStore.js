@@ -10,6 +10,7 @@ import BoozeImage from "../dionysusBoozePhoto";
 import { action } from "mobx";
 import BaseComponent from "../../base/BaseComponent";
 import UserInfo from "../../base/BaseUserInfo";
+import Config from "../../config";
 
 const MAXIMUM_IMAGE_OF_BOOZE = 8;
 const MAXIMUM_TEXT_OF_NAME = 50;
@@ -182,7 +183,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         });
     }
 
-    uploadBriefImages = async (files = []) => {
+    uploadBriefImages = async (files = [], type = Config.ImageUploadMethod.Minion) => {
         if (_.sum([this.getLengthOfBriefPhoto(), _.size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
         /** todo:loadingProgress還沒設計好，單張上傳會有進度0～100%  */
@@ -194,9 +195,27 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         const pathsOfImage = useUploadProgress
             ? [await this.apiOfImage.uploadFileOfHref(view, files[0], this.getIdOfBooze())]
             : await this.apiOfImage.uploadFilesOfHref(view, files, this.getIdOfBooze());
-        this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
+
+        switch (type) {
+            case Config.ImageUploadMethod.Minion:
+                this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
+                break;
+            case Config.ImageUploadMethod.Banner:
+                this.pushBriefBans(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
+                break;
+        }
+
         await Util.syncDelay(10); // 防止promise 掉線
-        await this.apiOfBooze.updateBoozeItem(view, { photos: this.getBriefPhotos() }, this.getIdOfBooze());
+
+        switch (type) {
+            case Config.ImageUploadMethod.Minion:
+                await this.apiOfBooze.updateBoozeItem(view, { photos: this.getBriefPhotos() }, this.getIdOfBooze());
+                break;
+            case Config.ImageUploadMethod.Banner:
+                await this.apiOfBooze.updateBoozeItem(view, { bans: this.getBriefBans() }, this.getIdOfBooze());
+                break;
+        }
+
         await Util.syncDelay(10); // 防止promise 掉線
         if (pathsOfImage.length !== files.length) return this.getComponent().showWarningSnackMessage(`部分圖片因不明原因，上傳失敗`);
     };

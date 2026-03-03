@@ -3583,12 +3583,10 @@
         gap: 10px;
     }
 }
-.DionysusGaiaAreaOfPhotoUploadBriefPhotoHrefImg {
+.DionysusGaiaAreaOfPhotoUploadBriefPhotoHrefImg:extend(.SquareRatioImg) {
     width: 80px;
     height: 80px;
-    object-fit: cover;
-    object-position: center;
-    display: block;
+    border-radius: 0;
     @media @mobile {
         /** empty style */
     }
@@ -3636,7 +3634,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaBanDiv {
+.DionysusGaiaBanDiv:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -3647,7 +3645,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaBanRowDiv {
+.DionysusGaiaBanRowDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -3691,7 +3689,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaBanBriefBanDivList {
+.DionysusGaiaBanBriefBanDivList:extend(.DionysusGaiaAreaOfPhotoUploadBriefPhotoDivList) {
     @media @mobile {
         /** empty style */
     }
@@ -3703,17 +3701,24 @@
     }
 }
 .DionysusGaiaBanBriefBanHrefImg {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     @media @mobile {
-        /** empty style */
+        padding: 10px;
+        border-radius: 0;
     }
     @media @tablet {
-        /** empty style */
+        padding: 20px;
     }
     @media @desktop {
-        /** empty style */
+        padding: 40px 0;
     }
 }
-.DionysusGaiaBanBriefBanDeleteIconButton {
+.DionysusGaiaBanBriefBanDeleteIconButton:extend(.DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconButton) {
     @media @mobile {
         /** empty style */
     }

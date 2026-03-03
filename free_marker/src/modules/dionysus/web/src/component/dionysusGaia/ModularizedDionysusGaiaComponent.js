@@ -4,18 +4,17 @@ import { utiller as Util } from "utiller";
 import _ from "lodash";
 import Router from "../../router";
 import BaseDionysusGaiaComponent from "./BaseDionysusGaiaComponent";
+import Config from "../../config";
 
 class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
+    stateOfUpload = Config.ImageUploadMethod.Minion;
+
     constructor(props) {
         super(props);
     }
 
     getInjectStyleOfDionysusGaiaAddImageIconButton(dionysusGaia) {
         return Util.getVisibleOrNone(dionysusGaia.getLengthOfBriefPhoto() === 0);
-    }
-
-    onDionysusGaiaAddImageIconButtonClicked(param) {
-        this.enableImageSelectView(true);
     }
 
     onApolloDialogSubmit = async (...param) => {
@@ -32,6 +31,17 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     onDionysusGaiaJoinPhotoChipClicked(param) {
+        this.stateOfUpload = Config.ImageUploadMethod.Minion;
+        this.enableImageSelectView(true);
+    }
+
+    onDionysusGaiaAddImageIconButtonClicked(param) {
+        this.stateOfUpload = Config.ImageUploadMethod.Minion;
+        this.enableImageSelectView(true);
+    }
+
+    onDionysusGaiaJoinBanChipClicked(param) {
+        this.stateOfUpload = Config.ImageUploadMethod.Banner;
         this.enableImageSelectView(true);
     }
 
@@ -39,6 +49,11 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         if (this.getStore().getLengthOfBriefPhoto() <= 1) return this.showWarningSnackMessage(`需要至少一張商品圖片`);
         const photo = param.object;
         if (photo !== undefined) photo.remove();
+    }
+
+    onDionysusGaiaBriefBanDeleteIconButtonClicked(param) {
+        const banner = param.object;
+        if (banner !== undefined) banner.remove();
     }
 
     onDionysusGaiaBriefPhotoHrefImgClicked(param) {
@@ -78,7 +93,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     onFilesSelected(files) {
-        this.exeAsyncT(this.getStore().uploadBriefImages(files));
+        this.exeAsyncT(this.getStore().uploadBriefImages(files, this.stateOfUpload));
     }
 
     onDionysusGaiaCreateChipClicked(param) {
