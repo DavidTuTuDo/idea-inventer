@@ -81,8 +81,8 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.setStatement(booze.statement);
         this.setBriefMains(...this.getOptionsOfBrief(booze, "main"));
         this.setBriefSubs(...this.getOptionsOfBrief(booze, "sub"));
-        this.setBriefPhotos(...booze.photos);
-        this.setBriefBans(...booze.bans);
+        this.setBriefPhotos(...booze?.photos?? []);
+        this.setBriefBans(...booze?.bans?? []);
         this.setSelectedTypeOfProp(booze.selectedTypeOfProp ?? 1);
         this.setVisibility(booze.visibility ?? false);
         this.setTypeOfPropDisabled(booze.initCompleted);
