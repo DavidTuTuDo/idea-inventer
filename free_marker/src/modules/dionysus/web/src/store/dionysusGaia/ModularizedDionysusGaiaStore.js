@@ -82,6 +82,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.setBriefMains(...this.getOptionsOfBrief(booze, "main"));
         this.setBriefSubs(...this.getOptionsOfBrief(booze, "sub"));
         this.setBriefPhotos(...booze.photos);
+        this.setBriefBans(...booze.bans);
         this.setSelectedTypeOfProp(booze.selectedTypeOfProp ?? 1);
         this.setVisibility(booze.visibility ?? false);
         this.setTypeOfPropDisabled(booze.initCompleted);
@@ -263,6 +264,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             name: this.getName(),
             statement: this.getStatement(),
             photos: this.getBriefPhotos(),
+            bans: this.getBriefBans(),
             photoOfDemo: this.getLengthOfBriefPhoto() > 0 ? _.head(this.getBriefPhotos()).href : "",
             ...this.modifySpecificAttribute(),
             visibility: this.getVisibility(),

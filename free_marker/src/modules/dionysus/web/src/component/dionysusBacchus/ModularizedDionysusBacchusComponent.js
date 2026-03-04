@@ -1,4 +1,4 @@
-const editor = true;
+const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
@@ -11,8 +11,15 @@ class ModularizedDionysusBacchusComponent extends BaseDionysusBacchusComponent {
         super(props);
     }
 
+    getListInjectStyleOfDionysusBacchusBanDiv(dionysusBacchus) {
+        return Util.getVisibleOrNone(_.size(dionysusBacchus.getBans()) > 0);
+    }
+
+    getWrapInjectStyleOfDionysusBacchusStatementTypography(dionysusBacchus) {
+        return Util.getVisibleOrNone(_.size(dionysusBacchus.getStatement()) > 0);
+    }
+
     onDionysusBacchusBackToHomeChipClicked(param) {
-        // Router.gotoDionysusPage(this);
         this.gotoPreviewPage();
     }
 

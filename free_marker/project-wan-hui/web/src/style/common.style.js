@@ -2287,7 +2287,15 @@ class CommonStyle {
 
     DionysusBacchusDetailContentPhotoDiv = {};
 
+    DionysusBacchusDetailContentStatementDivWrap = {};
+
     DionysusBacchusDetailContentStatementTypography = {};
+
+    DionysusBacchusDetailContentBanHrefImg = {};
+
+    DionysusBacchusDetailContentBanDivList = {};
+
+    DionysusBacchusDetailContentBanDiv = {};
 
     DionysusBacchusDetailContentDiv = {};
 

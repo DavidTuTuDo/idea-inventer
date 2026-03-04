@@ -89,8 +89,12 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
 
         const customerInfo = `
     ${valid(name) ? `<div>客戶姓名：${name}</div>` : ""}
-    ${valid(address) && needAddress ? `<div >客戶地址：${address} 
-    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" style="font-size:12px;color:#0066cc;text-decoration:none;">[開啟地圖]</a></div>` : ""}
+    ${
+        valid(address) && needAddress
+            ? `<div >客戶地址：${address} 
+    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" style="font-size:12px;color:#0066cc;text-decoration:none;">[開啟地圖]</a></div>`
+            : ""
+    }
     ${valid(remark) ? `<div>客戶備註：${remark}</div>` : ""}
     ${valid(phoneNumber) ? `<div style="margin-bottom:4px;">聯絡方式：${phoneNumber}</div>` : ""}`;
 

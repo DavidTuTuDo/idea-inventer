@@ -2287,7 +2287,15 @@ class AppStyle {
 
     DionysusBacchusDetailContentPhotoDiv = {};
 
+    DionysusBacchusDetailContentStatementDivWrap = {};
+
     DionysusBacchusDetailContentStatementTypography = {};
+
+    DionysusBacchusDetailContentBanHrefImg = {};
+
+    DionysusBacchusDetailContentBanDivList = {};
+
+    DionysusBacchusDetailContentBanDiv = {};
 
     DionysusBacchusDetailContentDiv = {};
 
