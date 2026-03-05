@@ -4,10 +4,9 @@ import React from "react";
 import { action, makeObservable, observable } from "mobx";
 import { observer } from "mobx-react";
 import Config from "../config";
-import { utiller as Util } from 'utiller';
+import { utiller as Util } from "utiller";
 
 class SplashStore {
-
     @observable
     visible = true;
 
@@ -39,16 +38,14 @@ class SplashStore {
         // 3. 動畫結束後，在 action 中更新最後的隱藏狀態
         // 這裡直接修改或是呼叫另一個 action 都可以
         this.executeClose();
-    };
+    }
 
     @action
     executeClose = () => {
         this.visible = false;
         this.isFading = false;
-    }
+    };
 }
-
-
 
 export const storeOfSplash = new SplashStore();
 
@@ -102,8 +99,8 @@ const styles = {
         justifyContent: "center"
     },
     logo: {
-        width: "35%",
-        maxWidth: '256px',
+        width: "50%",
+        maxWidth: "360px",
         height: "auto", // 確保比例正確
         objectFit: "contain",
         animation: "logoFadeIn 0.8s ease-out"
