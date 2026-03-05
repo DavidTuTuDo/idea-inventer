@@ -10,6 +10,7 @@ import BaseComponent from "./BaseComponent";
 import EventBus from "./CommonEventBus";
 import AccountUser from "../store/accountUser";
 import CommonPoolHelper from "./CommonPoolHelper";
+import { storeOfSplash } from "./SplashX";
 
 class UserInfo {
     @observable
@@ -94,7 +95,6 @@ class UserInfo {
         let current = "";
         if (this.isValidUser(user)) {
             Util.appendInfo(`firebase-auth取得authorized user(${user.uid})，執行enableParallelMode，讓firebase api依據權限拿資料`);
-            CommonPoolHelper.enableParallelMode();
             Util.appendInfo(`7381271928 => 會員在firebase-authentication存在裡了`, user);
             const { Application } = require("../");
             current = await this.apiOfUser.fetchUserItem(Application.getLatestComponent(), user.uid);
@@ -118,6 +118,7 @@ class UserInfo {
     invalidateLoginState = (user) => {
         Util.appendInfo(`112132132 不論有沒有有登入，都要記得enableParallelMode`, user);
         CommonPoolHelper.enableParallelMode();
+        storeOfSplash.hide();
         this.isLoginSucceed = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
         this.adminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
         this.adminHelper = this.isLoginWithSucceed() && user.isAdmin;
@@ -199,12 +200,13 @@ class UserInfo {
                             Util.appendInfo(`7328438281 authResult => `, authResult);
                         } else {
                             Util.appendInfo(`4548414, didn't retrieve credential`);
-                            self.setAuthProcessing(false);
                         }
                     }, view);
                 } catch (error) {
                     Util.appendError(`${error.message}`);
+                } finally {
                     self.setAuthProcessing(false);
+                    storeOfSplash.hide();
                 }
             });
         };

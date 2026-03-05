@@ -111,6 +111,9 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /** 企業色，可以在每個專案裡面設定客製化 */
+    colorX = '#1877F2';
+
     /** storage上傳檔案時都必須限制單個檔案大小 */
     fileMaximum = '5MB'
 
@@ -7448,6 +7451,8 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`locateOfFirestore`, JSON.stringify(sourceObj.locationOfFirestore));
         baseConfigGenerator.appendField(`locateOfStorage`, JSON.stringify(sourceObj.locationOfStorage));
         baseConfigGenerator.appendField(`nameOfBrand`, JSON.stringify(sourceObj.title), [], []);
+        baseConfigGenerator.appendField(`colorX`, JSON.stringify(sourceObj.colorX), [], []);
+
         const enums = this.getAllEnums();
         for (const key in enums) {
             const objOfMain = enums[key];

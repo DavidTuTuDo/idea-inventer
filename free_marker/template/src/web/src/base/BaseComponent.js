@@ -7,10 +7,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Slide from "@mui/material/Slide";
-import Card from "@mui/material/Card";
 import Config from "../config";
-import { observer } from "mobx-react";
-import Countdown from "react-countdown";
 import Router from "../router";
 import { isMobile } from "react-device-detect";
 import ImageDialogView from "./ImageDialogView";
@@ -22,6 +19,7 @@ import SnackBView, { storeOfSnackB } from "./BaseSnackView";
 import LoadInkingView, { storeOfloadInking } from "./BaseLoadInkingView";
 import ProcessingGuardView, { storeOfProcessingGuard } from "./BaseProcessingGuardView";
 import AppLoadingView, { storeOfAppLoading } from "./AppLoadingView";
+import SplashX from "./SplashX";
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -455,6 +453,9 @@ class BaseComponent extends MuiComponent {
         console.log(`⚠️⚠️⚠️ 事發地：【${this.getComponentName()}】 注意！APP 全域 re-render()。`);
         return (
             <div className={"RootViewDiv"} style={{ ...this.style, paddingTop: (self.getStore().hasAppBar() ? 8 : 0) + self.getStore().getAppBarHeight() }}>
+
+                <SplashX componentX={self} />
+
                 <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
                     {self.renderViewByStatus()}
                 </div>
@@ -469,7 +470,7 @@ class BaseComponent extends MuiComponent {
 
                 <ProcessingGuardView componentX={self} />
 
-                <DialogX viewX={"ImageDialogView"} ref={this.imgDialogRef} customView={ImageDialogView} needActionButtons={false} componentX={self} />
+                <DialogX ref={this.imgDialogRef} viewX={"ImageDialogView"} customView={ImageDialogView} needActionButtons={false} componentX={self} />
 
                 <DialogX ref={this.generalDialogRef} viewX={"GlobalDialogView"} componentX={self} />
             </div>
@@ -669,44 +670,6 @@ class BaseComponent extends MuiComponent {
     subscribe(subscribeFunction) {
         this.listOfFunctionOfUnsubscribe.push(subscribeFunction);
     }
-
-    CountdownView = observer(({ date, title }) => {
-        const TimeDisplayView = ({ days, hours, minutes, seconds, completed }) => {
-            const UnitView = ({ count, unit }) => {
-                return (
-                    <Card className={"BaseCountdownCountCard"}>
-                        <Typography className={"BaseCountdownCountTypography"}>{count}</Typography>
-                        <Typography className={"BaseCountdownUnitTypography"}>{unit}</Typography>
-                    </Card>
-                );
-            };
-
-            if (completed) {
-                /** Render a completed state */
-                return null;
-            } else {
-                const times = [
-                    { unit: "天", count: days },
-                    { unit: "小時", count: hours },
-                    { unit: "分鐘", count: minutes },
-                    { unit: "秒", count: seconds }
-                ];
-                return (
-                    <div className={"BaseCountdownCountDiv"}>
-                        <Typography className={"BaseCountdownTitleTypography"}>{title}</Typography>
-                        <div />
-                        <div className={"ListBaseCountdownCountDiv"}>
-                            {times.map((each) => (
-                                <UnitView key={each.unit} count={each.count} unit={each.unit} />
-                            ))}
-                        </div>
-                    </div>
-                );
-            }
-        };
-
-        return <Countdown renderer={TimeDisplayView} date={Util.getCurrentTimeStamp() + Util.getDurationOfMillionSec(date)} />;
-    });
 
     /** 通常呼叫這個method, 是要呼叫loading狀態, 例如dialog要拿到自己的component instance, 要forceSelf = true */
     getComponentInstance = (forceSelf = false) => {

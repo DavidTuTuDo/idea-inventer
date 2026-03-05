@@ -7,6 +7,9 @@ import _ from "lodash";
 import { Parser } from "html-to-react";
 import { utiller as Util } from "utiller";
 import { toJS, isObservable } from "mobx";
+import Countdown from "react-countdown";
+import Card from "@mui/material/Card";
+
 
 class MuiComponent extends React.Component {
     constructor(props) {
@@ -152,6 +155,44 @@ class MuiComponent extends React.Component {
         if (event && event.target) return event.target.value;
         return "";
     }
+
+    CountdownView = observer(({ date, title }) => {
+        const TimeDisplayView = ({ days, hours, minutes, seconds, completed }) => {
+            const UnitView = ({ count, unit }) => {
+                return (
+                    <Card className={"BaseCountdownCountCard"}>
+                        <Typography className={"BaseCountdownCountTypography"}>{count}</Typography>
+                        <Typography className={"BaseCountdownUnitTypography"}>{unit}</Typography>
+                    </Card>
+                );
+            };
+
+            if (completed) {
+                /** Render a completed state */
+                return null;
+            } else {
+                const times = [
+                    { unit: "天", count: days },
+                    { unit: "小時", count: hours },
+                    { unit: "分鐘", count: minutes },
+                    { unit: "秒", count: seconds }
+                ];
+                return (
+                    <div className={"BaseCountdownCountDiv"}>
+                        <Typography className={"BaseCountdownTitleTypography"}>{title}</Typography>
+                        <div />
+                        <div className={"ListBaseCountdownCountDiv"}>
+                            {times.map((each) => (
+                                <UnitView key={each.unit} count={each.count} unit={each.unit} />
+                            ))}
+                        </div>
+                    </div>
+                );
+            }
+        };
+
+        return <Countdown renderer={TimeDisplayView} date={Util.getCurrentTimeStamp() + Util.getDurationOfMillionSec(date)} />;
+    });
 }
 
 export default MuiComponent;
