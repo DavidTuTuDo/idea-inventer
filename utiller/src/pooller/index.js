@@ -692,7 +692,7 @@ class InfinitePool {
             }
 
             // 為了讓 while 不要停止運算 !this.ruleOfStopInfiniteRun()
-            await Util.syncDelay(10);
+            await Util.syncDelay(33);
             this.printLogMessage(`788143, runByEachTask() 為了讓while不要停止運算`);
         }
         this.printLogMessage(`7881952, runByEachTask() 結束了while()`);
@@ -1026,7 +1026,7 @@ class InfinitePool {
             if (_.size(tasks) > 0) {
                 result = await Promise.race(tasks);
             } else if (self.queueOfExecutingTask.length > 0) {
-                await Util.syncDelay(50); // 強制讓出執行權
+                await Util.syncDelay(33); // 強制讓出執行權
                 result = 'waiting for ING tasks';
             } else {
                 result = '4542131684, task is empty';
@@ -1249,8 +1249,9 @@ if (configerer.DEBUG_MODE) {
          * 展示如何添加任務並等待結果，以及優先級處理
          */
         async function exampleOfRunByTaskWait4ResultAndRunInBackground() {
-            const pool = new InfinitePool(1, 'david').runByEachTaskInBackGround();
-            pool.enableTaskTimeout(true, 3000);
+            const numOfWorkers = 0;
+            const pool = new InfinitePool(numOfWorkers, 'david').runByEachTaskInBackGround();
+            pool.enableTaskTimeout(true, 40000);
 
             function asyncTask(sign, taskSpend = 2000) {
                 return async () => {
@@ -1259,7 +1260,7 @@ if (configerer.DEBUG_MODE) {
                 }
             }
 
-            function startTimoutTask(delayTime, taskSpendTime, sign, priority = 'low') {
+            function startTimeoutTask(delayTime, taskSpendTime, sign, priority = 'low') {
                 setTimeout(async () => {
                     try {
                         const printSign = await pool.addTaskAndWait4Result(asyncTask(sign, taskSpendTime), priority);
@@ -1270,12 +1271,16 @@ if (configerer.DEBUG_MODE) {
                 }, delayTime);
             }
 
-            startTimoutTask(0, 1000, 'A', 'low')
-            startTimoutTask(1000, 1000, 'C', 'low')
-            startTimoutTask(1000, 1000, 'G', 'high')
-            startTimoutTask(500, 4000, 'B', 'low')
-            startTimoutTask(3000, 1000, 'D', 'medium')
-            startTimoutTask(10000, 2000, 'E', 'medium')
+            setTimeout(async => {
+                pool.setWorker(2);
+            }, 15000)
+
+            startTimeoutTask(10, 1000, 'A', 'low')
+            startTimeoutTask(1000, 1000, 'C', 'low')
+            startTimeoutTask(1000, 1000, 'G', 'high')
+            startTimeoutTask(500, 4000, 'B', 'low')
+            startTimeoutTask(3000, 1000, 'D', 'medium')
+            startTimeoutTask(10000, 2000, 'E', 'medium')
 
             while (pool.isRunning()) {
                 console.log('system is running');

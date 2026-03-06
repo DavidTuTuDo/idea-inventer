@@ -16,7 +16,7 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
     }
 
     getInjectStyleOfInfoOfCopyRightCprtButton(infoOfCopyRight) {
-        return Util.getVisibleOrNone(Config.useCartie ? !isMobile : false);
+        return Util.getVisibleOrNone(!isMobile);
     }
 
     onInfoOfCopyRightCprtButtonClicked(param) {

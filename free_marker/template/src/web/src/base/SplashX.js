@@ -32,11 +32,9 @@ class SplashStore {
         this.isFading = true;
 
         // 2. 使用您定義的 syncDelay 等待動畫時間 (500ms)
-        // 假設 Util.syncDelay 已經在您的工具類別中
         await Util.syncDelay(500);
 
         // 3. 動畫結束後，在 action 中更新最後的隱藏狀態
-        // 這裡直接修改或是呼叫另一個 action 都可以
         this.executeClose();
     }
 
@@ -59,11 +57,20 @@ const SplashX = observer(({ componentX }) => {
         <div
             style={{
                 ...styles.container,
-                // 根據 isFading 狀態切換透明度
                 opacity: isFading ? 0 : 1,
-                // 淡出時關閉點擊事件，避免擋住底層 APP 的操作
                 pointerEvents: isFading ? "none" : "auto"
             }}>
+
+            {/* 為了支援您的 logoFadeIn 動畫，順手幫您加上 style 標籤 */}
+            <style>
+                {`
+                    @keyframes logoFadeIn {
+                        from { opacity: 0; transform: scale(0.9); }
+                        to { opacity: 1; transform: scale(1); }
+                    }
+                `}
+            </style>
+
             <div style={styles.centerContent}>
                 <img src="./images/logo.png" alt="App Logo" style={styles.logo} />
             </div>
@@ -79,21 +86,23 @@ const SplashX = observer(({ componentX }) => {
 const styles = {
     container: {
         position: "fixed",
+        // 取代 100vh/100vw，這樣能完美貼齊手機真實的 viewport
         top: 0,
+        bottom: 0,
         left: 0,
-        width: "100vw",
-        height: "100vh",
+        right: 0,
         backgroundColor: "#F5F5F5",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "space-between",
         zIndex: 99999,
-        // 加入 CSS transition 漸變效果，時間與 setTimeout 保持一致 (500ms = 0.5s)
-        transition: "opacity 0.5s ease-out"
+        transition: "opacity 0.5s ease-out",
+        // 移除 flex 相關設定，改由子元素各自進行絕對定位
     },
     centerContent: {
-        flex: 1,
+        // 圖層方式：絕對定位在正中央
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "100%", // 確保內部的 logo 可以根據寬度計算 % 數
         display: "flex",
         alignItems: "center",
         justifyContent: "center"
@@ -101,15 +110,20 @@ const styles = {
     logo: {
         width: "50%",
         maxWidth: "360px",
-        height: "auto", // 確保比例正確
+        height: "auto",
         objectFit: "contain",
-        animation: "logoFadeIn 0.8s ease-out"
+        animation: "logoFadeIn 0.8s ease-out forwards" // 加上 forwards 確保動畫結束停留在最終狀態
     },
     bottomContent: {
+        // 圖層方式：絕對定位在底部
+        position: "absolute",
+        bottom: "40px", // 距離底部的安全距離
+        left: "50%",
+        transform: "translateX(-50%)", // 讓元素水平置中
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        paddingBottom: "40px"
+        width: "100%"
     },
     fromText: {
         color: "#888888",
