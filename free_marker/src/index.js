@@ -5441,7 +5441,7 @@ class ComponentBuilder extends BaseBuilder {
         if (componentNode.hasPageTitle()) {
             this.appendStmtIntoComponentDidMount(`this.invalidatePageTitle()`);
         }
-        this.appendStmtIntoComponentDidMount(`if(this instanceof ImpComponent) this.exeAsyncT(this.initialize())`)
+        this.appendStmtIntoComponentDidMount(`if(this instanceof ImpComponent && _.isFunction(this.exeAsyncT)) this.exeAsyncT(this.initialize())`)
         baseGenerator.appendFunction(
             {name: `invalidatePageTitle`, arrow: true}, ['title'], [], [],
             `this.setPageFullTitle(title ?? this.getStore().${this.getFunctionNameOfSimpleGetter(componentNode.getStruct().getFieldNameOfPageTitle(), false)})`
