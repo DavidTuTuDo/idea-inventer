@@ -17,6 +17,72 @@ class SheetComponent extends BaseSheetComponent {
         super(props);
     }
 
+    async optimize() {
+        // 避免race condition
+        await Util.syncDelay(10);
+        // --- 配置區域 ---
+        const TARGET_CLASS = "SheetGuitarpuCurrentContextTypography";
+        const WRAPPER_CLASS = "SheetGuitarpuPaperWrap";
+        const BUFFER = 24;
+        const STEP = 0.1;
+        const DELAY_MS = 50;
+        const MAX_LOOP = 50;
+
+        const wrapper = document.getElementsByClassName(WRAPPER_CLASS)[0];
+        if (!wrapper) return;
+
+        // 取得第一個元素來做初步判斷
+        const firstTextElement = document.getElementsByClassName(TARGET_CLASS)[0];
+        if (!firstTextElement) return;
+
+        const targetWidth = wrapper.offsetWidth - BUFFER;
+
+        // --- 🚨 增加的邏輯：首道防線 ---
+        // 如果一開始就已經小於等於目標寬度，直接終止，不執行任何縮小
+        if (firstTextElement.scrollWidth <= targetWidth) {
+            // console.log(
+            //     `%c 🛡️ 安全跳過 | Current (${firstTextElement.scrollWidth.toFixed(1)}px) <= Target (${targetWidth.toFixed(1)}px) `,
+            //     "background: #e0f2f1; color: #00897b; padding: 4px; border: 1px solid #00897b;"
+            // );
+            return;
+        }
+
+        let safetyLoop = 0;
+        // console.log(`%c 🎯 Optimize Start | Target: ${targetWidth}px (Buffer: ${BUFFER}) `, "background: #222; color: #bada55; font-weight: bold; padding: 5px;");
+
+        while (safetyLoop < MAX_LOOP) {
+            const textElement = document.getElementsByClassName(TARGET_CLASS)[0];
+            if (!textElement) break;
+
+            let currentWidth = textElement.scrollWidth;
+            const isOver = currentWidth > targetWidth;
+
+            // console.log(
+            //     `%c[Loop ${safetyLoop}]%c Current: ${currentWidth.toFixed(1)}px %c Target: ${targetWidth}px `,
+            //     "color: #888;",
+            //     `color: white; background: ${isOver ? "#E91E63" : "#4CAF50"}; padding: 2px 5px; font-family: monospace;`,
+            //     "color: #00bcd4; font-weight: bold;"
+            // );
+
+            // 判斷達標則退出
+            if (!isOver) {
+                console.log(`%c ✅ 達標停止: ${currentWidth.toFixed(1)}px <= ${targetWidth}px `, "color: #4CAF50; font-weight: bold; border: 1px solid #4CAF50; padding: 2px;");
+                break;
+            }
+
+            // 執行縮小行為
+            this.adjustBunchOfFontSizeByClassName(TARGET_CLASS, false, STEP);
+
+            if (window.Util && Util.syncDelay) {
+                await Util.syncDelay(DELAY_MS);
+            } else {
+                await new Promise((r) => setTimeout(r, DELAY_MS));
+            }
+
+            safetyLoop++;
+        }
+    }
+
     getWrapInjectStyleOfSheetGuitarpuFloatAreaMarkOfYuehImg(floatArea) {
         return Util.getVisibleOrNone(!this.isComponentView() && this.hasCopyright(), true);
     }
@@ -91,6 +157,8 @@ class SheetComponent extends BaseSheetComponent {
     onSheetAdjustCenterEnlargeButtonClicked(param) {
         this.getStore().refreshTickOfAdjustController();
         this.adjustBunchOfFontSizeByClassName("SheetGuitarpuCurrentContextTypography");
+
+        this.logMetrics("SheetGuitarpuCurrentContextTypography", "SheetGuitarpuPaperWrap");
     }
 
     onSheetAdjustCenterShrinkButtonClicked(param) {

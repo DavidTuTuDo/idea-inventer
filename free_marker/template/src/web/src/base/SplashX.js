@@ -60,7 +60,6 @@ const SplashX = observer(({ componentX }) => {
                 opacity: isFading ? 0 : 1,
                 pointerEvents: isFading ? "none" : "auto"
             }}>
-
             {/* 為了支援您的 logoFadeIn 動畫，順手幫您加上 style 標籤 */}
             <style>
                 {`
@@ -93,7 +92,7 @@ const styles = {
         right: 0,
         backgroundColor: "#F5F5F5",
         zIndex: 99999,
-        transition: "opacity 0.5s ease-out",
+        transition: "opacity 0.5s ease-out"
         // 移除 flex 相關設定，改由子元素各自進行絕對定位
     },
     centerContent: {

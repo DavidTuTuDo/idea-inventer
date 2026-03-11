@@ -141,6 +141,7 @@ class SheetStore extends BaseSheetStore {
             pu.setTonalityOfOriginal(this.normalizeTonality(pu.getTonalityOfOriginal()));
             pu.setTonalityOfContext(this.normalizeTonality(pu.getTonalityOfContext()));
             this.invalidate(true);
+            await this.getComponent().optimize();
         } else {
             this.setMessageOfListIsEmpty(`使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`);
             this.setErrorMsg(`使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`);

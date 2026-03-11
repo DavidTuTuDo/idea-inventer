@@ -10,7 +10,6 @@ import { toJS, isObservable } from "mobx";
 import Countdown from "react-countdown";
 import Card from "@mui/material/Card";
 
-
 class MuiComponent extends React.Component {
     constructor(props) {
         super(props);
@@ -154,6 +153,38 @@ class MuiComponent extends React.Component {
     getLatestValueByEvent(event) {
         if (event && event.target) return event.target.value;
         return "";
+    }
+
+    /**
+     * 監測指定 classNames 的寬度變化
+     * @param {...string} targetClasses - 可傳入多個 className
+     */
+    logMetrics(...targetClasses) {
+        const report = {};
+        const cssHeader = "background: #222; color: #00ff00; padding: 4px 8px; font-weight: bold; border-radius: 4px;";
+
+        targetClasses.forEach(className => {
+            const elements = document.getElementsByClassName(className);
+
+            if (elements.length === 0) {
+                report[className] = "Not Found";
+                return;
+            }
+
+            // 如果該 class 有多個元素（像你的 Typography 每一行都是同個 class）
+            // 我們取其中「最寬」的一個作為指標數值
+            let maxWidth = 0;
+            Array.from(elements).forEach(el => {
+                const w = el.scrollWidth;
+                if (w > maxWidth) maxWidth = w;
+            });
+
+            report[className] = `${maxWidth.toFixed(1)}px`;
+        });
+
+        // 🚀 顯眼輸出
+        console.log(`%c 📏 寬度指標監測 [${new Date().toLocaleTimeString()}] `, cssHeader);
+        console.dir(report); // 使用 dir 以物件格式呈現，方便點開查看詳情
     }
 
     CountdownView = observer(({ date, title }) => {

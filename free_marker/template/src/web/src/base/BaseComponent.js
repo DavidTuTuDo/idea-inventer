@@ -453,7 +453,6 @@ class BaseComponent extends MuiComponent {
         console.log(`⚠️⚠️⚠️ 事發地：【${this.getComponentName()}】 注意！APP 全域 re-render()。`);
         return (
             <div className={"RootViewDiv"} style={{ ...this.style, paddingTop: (self.getStore().hasAppBar() ? 8 : 0) + self.getStore().getAppBarHeight() }}>
-
                 <SplashX componentX={self} />
 
                 <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
