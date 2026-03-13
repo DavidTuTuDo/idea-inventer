@@ -20,6 +20,7 @@ import LoadInkingView, { storeOfloadInking } from "./BaseLoadInkingView";
 import ProcessingGuardView, { storeOfProcessingGuard } from "./BaseProcessingGuardView";
 import AppLoadingView, { storeOfAppLoading } from "./AppLoadingView";
 import SplashX from "./SplashX";
+import RulesSnack from "./RulesSnack";
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -454,6 +455,8 @@ class BaseComponent extends MuiComponent {
         return (
             <div className={"RootViewDiv"} style={{ ...this.style, paddingTop: (self.getStore().hasAppBar() ? 8 : 0) + self.getStore().getAppBarHeight() }}>
                 <SplashX componentX={self} />
+
+                <RulesSnack componentX={self} />
 
                 <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
                     {self.renderViewByStatus()}
