@@ -1,11 +1,10 @@
-import { inject } from "mobx-react";
+const edit = true;
+
 import BaseEditorOfSubjectComponent from "./BaseEditorOfSubjectComponent";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import { observer } from "mobx-react";
 import Question from "../../store/examQuestion";
-@inject("editorOfSubject")
-@observer
+
 class EditorOfSubjectComponent extends BaseEditorOfSubjectComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

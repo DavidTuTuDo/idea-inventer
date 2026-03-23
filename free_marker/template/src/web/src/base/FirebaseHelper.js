@@ -556,12 +556,14 @@ class FirebaseHelper extends BaseFirebase {
             finalConditions = [...conditions, orderByCondition];
         }
 
+        _.remove(finalConditions, (each) => each.disabled);
         // ---【分頁穩定性檢查】---
 
         let lastDocSnap = null;
         let batchCount = 0;
         let totalFetched = 0;
         const all = [];
+
 
         while (true) {
             let queryConstraints = [...finalConditions];

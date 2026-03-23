@@ -1,17 +1,13 @@
+const edit = true;
+
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import { observer } from "mobx-react";
-import { inject } from "mobx-react";
 import BaseWhoknowzComponent from "./BaseWhoknowzComponent";
 import ExamQuestionView from "../exam";
 import React from "react";
 import ExamStore from "../../store/exam";
-@inject("whoknowz")
-@observer
+
 class WhoknowzComponent extends BaseWhoknowzComponent {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
 
     constructor(props) {
         super(props);

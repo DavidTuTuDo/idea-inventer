@@ -1,9 +1,10 @@
+const edit = true;
+
 /** this code are generated, modify is no sense.
  author:David Tu,
  email:freshingmoon0725@gmail.com
  updateTime:2021-06-04-15-31-08
  */
-import { observer, inject } from "mobx-react";
 import BasePurchaseComponent from "./BasePurchaseComponent";
 import Router from "../../router";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
@@ -11,8 +12,6 @@ import UserInfo from "../../base/BaseUserInfo";
 import _ from "lodash";
 import Functions from "../../functions";
 
-@inject("purchase")
-@observer
 class PurchaseComponent extends BasePurchaseComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

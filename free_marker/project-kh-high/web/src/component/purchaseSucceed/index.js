@@ -1,3 +1,5 @@
+const edit = true;
+
 /** this code are generated, modify is no sense.
  author:David Tu,
  email:freshingmoon0725@gmail.com
@@ -5,9 +7,6 @@
  */
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import { observer } from "mobx-react";
-import { inject } from "mobx-react";
 import BasePurchaseSucceedComponent from "./BasePurchaseSucceedComponent";
 import queryString from "query-string";
 import Router from "../../router";
@@ -15,8 +14,6 @@ import Cookie from "../../cookie";
 import UserInfo from "../../base/BaseUserInfo";
 import Functions from "../../functions";
 
-@inject("purchaseSucceed")
-@observer
 class PurchaseSucceedComponent extends BasePurchaseSucceedComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

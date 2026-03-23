@@ -1,14 +1,11 @@
+const edit = true;
+
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import { observer } from "mobx-react";
-import { inject } from "mobx-react";
 import BaseMyFatefulQuestionsComponent from "./BaseMyFatefulQuestionsComponent";
 import Router from "../../router";
 import Cookie from "../../cookie";
 
-@inject("myFatefulQuestions")
-@observer
 class MyFatefulQuestionsComponent extends BaseMyFatefulQuestionsComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

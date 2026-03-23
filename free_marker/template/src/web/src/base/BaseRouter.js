@@ -30,12 +30,14 @@ class BaseRouter {
     }
 
     routeTo(component, path) {
-        if (component !== undefined && component.props !== undefined && component.props.navigate !== undefined) {
-            const navigate = component.props.navigate;
-            navigate(path);
-        } else {
-            Util.appendError(`45665512 component為undefined,可能是為了拿url [${path}]`);
+        const navigate = component?.props?.navigate;
+
+        if (navigate) {
+            return navigate(path);
         }
+
+        // 如果執行到這裡，代表導航失敗
+        return Util.appendError(`45665512 導航失敗：可能是 component 缺失或未提供 navigate props [${path}]`);
     }
 
     getCurrentPath = () => {

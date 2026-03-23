@@ -1,16 +1,15 @@
+const edit = true;
+
 /** this code are generated, modify is no sense.
  author:David Tu,
  email:freshingmoon0725@gmail.com
  updateTime:2021-04-19-21-49-49
  */
-import { observer, inject } from "mobx-react";
 import BaseExamComponent from "./BaseExamComponent";
 import { utiller as Util } from "utiller";
 import _ from "lodash";
 import Router from "../../router";
 
-@inject("exam")
-@observer
 class ExamComponent extends BaseExamComponent {
     constructor(props) {
         super(props);

@@ -1,34 +1,33 @@
 const edit = true;
 
-import Api from './api';
-import {databazer as Databaser, builder as Builder} from "databazer";
-import {utiller as Util, pooller as InfinitePool} from "utiller";
-import _ from 'lodash';
-import Listener from './listener'
+import Api from "./api";
+import { databazer as Databaser, builder as Builder } from "databazer";
+import { utiller as Util, pooller as InfinitePool } from "utiller";
+import _ from "lodash";
+import Listener from "./listener";
 import firebase from "./base/FirebaseHelper";
-import {linepayer as LinePay} from "linepayer";
-import libpath from 'path';
-import config from './config';
-import dayjs from 'dayjs';
+import { linepayer as LinePay } from "linepayer";
+import libpath from "path";
+import config from "./config";
+import dayjs from "dayjs";
 
 const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
 
-
 (async () => {
-    console.log(`注意注意, 五秒後要部署到admin server了,動到prod的資料就爆炸了.`)
-    await Util.syncDelay(5000)
+    console.log(`注意注意, 五秒後要部署到admin server了,動到prod的資料就爆炸了.`);
+    await Util.syncDelay(5000);
 
     const api = new Api();
     const listener = new Listener();
 
     /** 部署新的題目到雲端 */
-    async function deployQuestions({dbpath = '', year = 120}) {
+    async function deployQuestions({ dbpath = "", year = 120 }) {
         function getTypeOfMathBySubjectName(subject) {
-            if(_.isEqual(subject,'數學A')) {
+            if (_.isEqual(subject, "數學A")) {
                 return 1;
             }
 
-            if(_.isEqual(subject,'數學B')) {
+            if (_.isEqual(subject, "數學B")) {
                 return 2;
             }
 
@@ -38,216 +37,212 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
         const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/${dbpath}`);
         await db.init();
 
-        const qs = (_.isNumber(year) && year > 0) ?
-            await db.fetchRecords('QUESTION', new Builder().equal('year', year).stmt()) :
-            await db.fetchRecords('QUESTION')
+        const qs = _.isNumber(year) && year > 0 ? await db.fetchRecords("QUESTION", new Builder().equal("year", year).stmt()) : await db.fetchRecords("QUESTION");
 
         let questions = qs.map((q) => {
             /** 把`a...b...c..` 換成 ['a...','b...','c....']*/
             const choiceStringArray = q.choices.split(`#&#@#`);
-            q.topic = {name: q.topic, images: []},
-                q.choices = choiceStringArray.map((stmt) => {
-                        return {statement: stmt}
-                    }
-                )
+            ((q.topic = { name: q.topic, images: [] }),
+                (q.choices = choiceStringArray.map((stmt) => {
+                    return { statement: stmt };
+                })));
 
-            q.subject = _.startsWith(q.subject,'數學') ? '數學' : q.subject;
-            q.timesOfYear = _.isEqual(q.extra, '正式') ? 1 : 2;
+            q.subject = _.startsWith(q.subject, "數學") ? "數學" : q.subject;
+            q.timesOfYear = _.isEqual(q.extra, "正式") ? 1 : 2;
             q.typeOfMath = getTypeOfMathBySubjectName(q.subject);
             delete q.uid;
             q.type = q.nameOfExam;
             return q;
-        })
+        });
         // console.log(...questions)
         await api.submitQuestions(questions);
     }
 
     async function beforeStartService() {
         await api.deletePurchasePlans();
-        await api.deleteMyShortcuts('BYnJOAlUa5aCnpxvoeiIyCzRXSt1', true);
-        await api.deleteShortcuts();
-        await api.submitShortcuts(
+        // await api.deleteMyShortcuts("BYnJOAlUa5aCnpxvoeiIyCzRXSt1", true);
+        await api.deleteWholeShortcuts();
+        await api.submitShortcuts([
             {
-                title: '回到首頁',
-                icon: 'muIcon:Bedtime',
+                title: "回到首頁",
+                icon: "muIcon:Bedtime",
                 route: `route:main`,
-                indexOfSequence: 0,
-            }
-            ,
+                indexOfSequence: 0
+            },
             {
-                title: '我的歷史錯誤',
-                icon: 'muIcon:Rule',
+                title: "我的歷史錯誤",
+                icon: "muIcon:Rule",
                 route: `route:historyWrong`,
-                indexOfSequence: 2,
-            }
-            ,
+                indexOfSequence: 2
+            },
             {
-                title: '問過的問題',
-                icon: 'muIcon:HistoryToggleOff',
+                title: "問過的問題",
+                icon: "muIcon:HistoryToggleOff",
                 route: `route:myFatefulQuestions:stupidAsk`,
-                indexOfSequence: 2,
+                indexOfSequence: 2
             },
             {
-                title: '回答的題目',
-                icon: 'muIcon:Rule',
+                title: "回答的題目",
+                icon: "muIcon:Rule",
                 route: `route:myFatefulQuestions:kindlyReply`,
-                indexOfSequence: 2,
-            }
-            , {
-                title: '最愛的題目',
-                icon: 'muIcon:FavoriteBorder',
-                route: `route:myFatefulQuestions:favorite`,
-                indexOfSequence: 2,
+                indexOfSequence: 2
             },
             {
-                title: '相關網站',
-                icon: 'muIcon:Whatshot',
+                title: "最愛的題目",
+                icon: "muIcon:FavoriteBorder",
+                route: `route:myFatefulQuestions:favorite`,
+                indexOfSequence: 2
+            },
+            {
+                title: "相關網站",
+                icon: "muIcon:Whatshot",
                 indexOfSequence: 3,
                 subs: [
                     {
-                        title: '大考入學中心',
-                        icon: 'muIcon:School',
-                        route: 'path:https://www.ceec.edu.tw/',
-                        indexOfSequence: 2,
+                        title: "大考入學中心",
+                        icon: "muIcon:School",
+                        route: "path:https://www.ceec.edu.tw/",
+                        indexOfSequence: 2
                     },
                     {
-                        title: '大數數學',
-                        icon: 'muIcon:Calculate',
+                        title: "大數數學",
+                        icon: "muIcon:Calculate",
                         route: `path:https://bignmath.weebly.com/`,
-                        indexOfSequence: 1,
+                        indexOfSequence: 1
                     }
                 ]
-            },
-        )
-
+            }]
+        );
         await api.submitHistoryFilter({
             whichSubjects: [
-                {label: "全部", value: "all"},
-                {label: "英文", value: "英文"},
-                {label: "數學", value: "數學"},
-                {label: "國文", value: "國文"},
-                {label: "自然", value: "自然"},
-                {label: "社會", value: "社會"},
+                { label: "全部", value: "all" },
+                { label: "英文", value: "英文" },
+                { label: "數學", value: "數學" },
+                { label: "國文", value: "國文" },
+                { label: "自然", value: "自然" },
+                { label: "社會", value: "社會" }
             ],
             replyTypes: [
-                {value: "wrong", label: "答錯"},
-                {value: "right", label: "答對"},
-                {value: "all", label: "全部"},
+                { value: "wrong", label: "答錯" },
+                { value: "right", label: "答對" },
+                { value: "all", label: "全部" }
             ],
             orderByWhats: [
                 {
-                    label: '最近',
-                    value: 'latest'
+                    label: "最近",
+                    value: "latest"
                 },
                 {
-                    label: '作答耗時(最久)',
-                    value: 'duration'
-                },
+                    label: "作答耗時(最久)",
+                    value: "duration"
+                }
             ]
         });
 
         await api.submitExamHistoryInfo({
             maxYear: 111,
             minYear: 91,
-            marks: [{value: 91, label: '91年'}, {value: 100, label: '100年'},
-                {value: 106, label: '106年'}, {
-                    value: 112, label: '112年'
-                }],
+            marks: [
+                { value: 91, label: "91年" },
+                { value: 100, label: "100年" },
+                { value: 106, label: "106年" },
+                {
+                    value: 112,
+                    label: "112年"
+                }
+            ],
             historyExams: [
-                {value: '91-1', label: '91年'},
-                {value: '91-2', label: '91年(補考)'},
-                {value: '92-1', label: '92年'},
-                {value: '92-2', label: '92年(補考)'},
-                {value: '93-1', label: '93年'},
-                {value: '94-1', label: '94年'},
-                {value: '95-1', label: '95年'},
-                {value: '96-1', label: '96年'},
-                {value: '97-1', label: '97年'},
-                {value: '98-1', label: '98年'},
-                {value: '99-1', label: '99年'},
-                {value: '100-1', label: '100年'},
-                {value: '101-1', label: '101年'},
-                {value: '102-1', label: '102年'},
-                {value: '103-1', label: '103年'},
-                {value: '104-1', label: '104年'},
-                {value: '105-1', label: '105年'},
-                {value: '106-1', label: '106年'},
-                {value: '107-1', label: '107年'},
-                {value: '108-1', label: '108年'},
-                {value: '109-1', label: '109年'},
-                {value: '110-1', label: '110年'},
-                {value: '111-1', label: '111年'},
+                { value: "91-1", label: "91年" },
+                { value: "91-2", label: "91年(補考)" },
+                { value: "92-1", label: "92年" },
+                { value: "92-2", label: "92年(補考)" },
+                { value: "93-1", label: "93年" },
+                { value: "94-1", label: "94年" },
+                { value: "95-1", label: "95年" },
+                { value: "96-1", label: "96年" },
+                { value: "97-1", label: "97年" },
+                { value: "98-1", label: "98年" },
+                { value: "99-1", label: "99年" },
+                { value: "100-1", label: "100年" },
+                { value: "101-1", label: "101年" },
+                { value: "102-1", label: "102年" },
+                { value: "103-1", label: "103年" },
+                { value: "104-1", label: "104年" },
+                { value: "105-1", label: "105年" },
+                { value: "106-1", label: "106年" },
+                { value: "107-1", label: "107年" },
+                { value: "108-1", label: "108年" },
+                { value: "109-1", label: "109年" },
+                { value: "110-1", label: "110年" },
+                { value: "111-1", label: "111年" }
             ]
-        })
-        await api.submitExpired({expiredTime: dayjs('2022-01-22').valueOf()})
+        });
+        await api.submitExpired({ expiredTime: dayjs("2027-01-18").valueOf() });
 
         await api.submitPurchasePlans(
             {
                 id: 1001,
                 pid: 1001,
-                name: '1個月',
+                name: "1個月",
                 price: 60,
-                priceTip: '平均一個月60元',
-                fullName: '明悅科技-1個月',
-                duration: '31d'
+                priceTip: "平均一個月60元",
+                fullName: "明悅科技-1個月",
+                duration: "31d"
             },
             {
                 id: 1002,
                 pid: 1002,
-                name: '2個月',
+                name: "2個月",
                 price: 110,
-                priceTip: '平均一個月55元',
-                fullName: '明悅科技-2個月',
-                duration: '62d'
+                priceTip: "平均一個月55元",
+                fullName: "明悅科技-2個月",
+                duration: "62d"
             },
             {
                 id: 1003,
                 pid: 1003,
-                name: '3個月',
+                name: "3個月",
                 price: 150,
-                priceTip: '平均一個月50元',
-                fullName: '明悅科技-3個月',
-                duration: '63d'
-            })
+                priceTip: "平均一個月50元",
+                fullName: "明悅科技-3個月",
+                duration: "63d"
+            }
+        );
     }
 
     async function transactionSample() {
         /** transaction initialBehaviorOfMathOptionalQuestion */
-        await firebase.firestore().collection('tests').doc('first').set({index: 1});
+        await firebase.firestore().collection("tests").doc("first").set({ index: 1 });
         const asyncTasks = _.range(20).map(() => {
             return async () => {
                 await firebase.firestore().runTransaction(async (transaction) => {
-                    const ref = firebase.firestore().collection('tests').doc('first');
+                    const ref = firebase.firestore().collection("tests").doc("first");
                     const result = await transaction.get(ref);
                     const newbie = result.data().index + 1;
-                    await transaction.update(ref, {index: newbie});
-                })
-            }
+                    await transaction.update(ref, { index: newbie });
+                });
+            };
         });
 
-        const pool = new InfinitePool(5)
+        const pool = new InfinitePool(5);
         await pool.runByEachTask(asyncTasks);
     }
 
     async function sampleOfDeleteEnglish() {
         for (const year of [99, 98, 97, 96]) {
-            const result = await api.fetchQuestions(
-                {where: (stmt) => stmt.where('year', '==', year)},
-                {where: (stmt) => stmt.where('subject', '==', '英文')}
-            );
+            const result = await api.fetchQuestions({ where: (stmt) => stmt.where("year", "==", year) }, { where: (stmt) => stmt.where("subject", "==", "英文") });
 
             for (const each of result) {
-                console.log(`delete ${each.subject} ${each.year} ${each.qid}-${each.id}`)
+                console.log(`delete ${each.subject} ${each.year} ${each.qid}-${each.id}`);
                 await api.deleteQuestionItem(each.id);
             }
         }
     }
 
-
     async function batchDeleteSubjectMap() {
         for (const year of OFFICIAL_YEARS_OF_YEARS) {
             console.log(`正在刪除 SubjectIds ${year}`);
-            await api.deleteSubjectIds(false, [{where: (stmt) => stmt.where('year', '==', year)}]);
+            await api.deleteSubjectIds(false, [{ where: (stmt) => stmt.where("year", "==", year) }]);
         }
     }
 
@@ -256,17 +251,19 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
         await batchDeleteSubjectMap();
         for (const year of OFFICIAL_YEARS_OF_YEARS) {
             console.log(`正在fetch ${year}`);
-            const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)});
+            const questions = await api.fetchQuestions({ where: (stmt) => stmt.where("year", "==", year) });
             console.log(`submit id/map year=> ${year}年`, questions.length);
-            await api.submitSubjectIds(questions.map(q => {
-                return {
-                    quid: q.id,
-                    year: q.year,
-                    subject: q.subject,
-                    timesOfYear: q.timesOfYear,
-                    typeOfMath: q.typeOfMath,
-                }
-            }));
+            await api.submitSubjectIds(
+                questions.map((q) => {
+                    return {
+                        quid: q.id,
+                        year: q.year,
+                        subject: q.subject,
+                        timesOfYear: q.timesOfYear,
+                        typeOfMath: q.typeOfMath
+                    };
+                })
+            );
         }
     }
 
@@ -288,7 +285,8 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             "Stg4Zo6yWgY0qRz0B3kU",
             "PhqnzWHxGnTSY3Bzemd2",
             "Nckv0dkkh3hrq4iCDebU",
-            "rZ5sDQdezejlhuOg3I9C"]
+            "rZ5sDQdezejlhuOg3I9C"
+        ];
 
         const answsers = [
             "GCDABHFEJ",
@@ -308,11 +306,10 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             "DHIAEJGFB",
             "CDGIHFBAE",
             "GIAJHDBFE"
-        ]
+        ];
 
         const combines = _.zip(ids, answsers);
         // console.log(combines)
-
 
         for (const each of combines) {
             const item = await api.fetchQuestionItem(each.shift());
@@ -321,7 +318,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             delete item.id;
             delete item.updateTime;
 
-            const as = answerString.split('')
+            const as = answerString.split("");
             const waitForSubmits = [];
             let index = 32;
             for (const a of as) {
@@ -336,69 +333,70 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             const result = await api.submitQuestions(...waitForSubmits);
             console.log(result);
         }
-
-
     }
-
 
     async function migrate() {
         for (const year of OFFICIAL_YEARS_OF_YEARS) {
             console.log(`正在fetch ${year}`);
-            const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)});
+            const questions = await api.fetchQuestions({ where: (stmt) => stmt.where("year", "==", year) });
             console.log(`submit id/map year=> ${year}年`, questions.length);
             const afters = questions.map((q) => {
-                return {...q, timesOfYear: 1}
-            })
+                return { ...q, timesOfYear: 1 };
+            });
             await api.submitQuestions(...afters);
         }
     }
 
     async function testBatchFunctions() {
-        const fetchAll = await api.fetchItems('testBatch');
+        const fetchAll = await api.fetchItems("testBatch");
         // const samples = _.range(0,300).map((each) => { return {name:`update ,text${each}`}})
         // await api.updateItems('testBatch',...samples)
         const news = fetchAll.map((each) => {
-            return {id: each.id}
-        })
+            return { id: each.id };
+        });
 
-        await api.updateItems('testBatch', ...news.map((each) => {
-            return {
-                id: each.id,
-                sign: Util.getRandomHash(10)
-            }
-        }))
+        await api.updateItems(
+            "testBatch",
+            ...news.map((each) => {
+                return {
+                    id: each.id,
+                    sign: Util.getRandomHash(10)
+                };
+            })
+        );
     }
 
     async function updateQuestionOfMathType() {
-        const questions = await api.fetchQuestions(
-            {where: (stmt) => stmt.where('subject', '==', '社會')},
-        )
+        const questions = await api.fetchQuestions({ where: (stmt) => stmt.where("subject", "==", "社會") });
 
-        await api.updateQuestions(questions.map((question) => {
-            return {
-                id: question.id,
-                typeOfMath: -1
-            }
-        }))
+        await api.updateQuestions(
+            questions.map((question) => {
+                return {
+                    id: question.id,
+                    typeOfMath: -1
+                };
+            })
+        );
     }
 
+    async function fetchMath(year, type = "A") {
+        const questions = await api.fetchQuestions({ where: (stmt) => stmt.where("year", "==", year) }, { where: (stmt) => stmt.where(`subject`, "==", `數學${type}`) });
 
-    async function fetchMath(year, type = 'A') {
-        const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)},
-            {where: (stmt) => stmt.where(`subject`, '==', `數學${type}`)});
-
-        console.log(questions.map((question) => {
-            return {typeOfMath: question.typeOfMath, year: question.year, id: question.id, uid: question.uid}
-        }));
+        console.log(
+            questions.map((question) => {
+                return { typeOfMath: question.typeOfMath, year: question.year, id: question.id, uid: question.uid };
+            })
+        );
     }
 
     async function updateMathQuestionAttr(year, type) {
-        const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)},
-            {where: (stmt) => stmt.where(`subject`, '==', `數學${type}`)});
+        const questions = await api.fetchQuestions({ where: (stmt) => stmt.where("year", "==", year) }, { where: (stmt) => stmt.where(`subject`, "==", `數學${type}`) });
 
-        await api.updateQuestions(questions.map(question => {
-            return {subject: '數學', id: question.id, typeOfMath: _.isEqual(type, 'A') ? 1 : 2}
-        }));
+        await api.updateQuestions(
+            questions.map((question) => {
+                return { subject: "數學", id: question.id, typeOfMath: _.isEqual(type, "A") ? 1 : 2 };
+            })
+        );
 
         console.log(`updateMathQuestionAttr(${year}, 數學${type}) succeed`);
     }
@@ -410,10 +408,10 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             delete project._doc;
             delete project.id;
             return project;
-        })
+        });
 
-        Util.appendFile('./stringOfProject.json',JSON.stringify(commit),true,true);
-        await Util.prettier('./stringOfProject.json',120);
+        Util.appendFile("./stringOfProject.json", JSON.stringify(commit), true, true);
+        await Util.prettier("./stringOfProject.json", 120);
     }
 
     async function updateCPRT() {
@@ -421,7 +419,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             fb: `https://www.facebook.com/david.tu.587`,
             ig: `https://www.instagram.com/david.tu.guitar`,
             line: `davidtu0725`
-        })
+        });
     }
 
     async function updateCPRTContent() {
@@ -430,72 +428,63 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             ig: `https://www.instagram.com/david.tu.guitar`,
             line: `davidtu0725`,
             phone: `+886982763479`,
-            email: `freshingmoon0725@gmail.com`,
-        })
+            email: `freshingmoon0725@gmail.com`
+        });
     }
 
     async function updateCPRTProjects() {
         await api.deleteProjects(true);
         await api.submitProjects([
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7832.jpg?alt=media&token=5bf27574-f678-462d-8b3a-ea4077c4910e",
-                    "route": "https://kh-high.web.app/",
-                    "indexOfSequence": 0,
-                    "trait": "線上答題 | 高中學測",
-                    "title": "悅考",
-                    "descriptions": [{ "statement": "一目暸然的答題方式(單選、多選)" }, { "statement": "錯誤回顧、線上協助" }]
-                },
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7833.jpg?alt=media&token=4998b3fa-5571-415a-b0d1-0dd4d5d81486",
-                    "route": "https://yueh-voice.web.app/",
-                    "indexOfSequence": 2,
-                    "trait": "線上播放器 ｜客製化",
-                    "title": "悅耳",
-                    "descriptions": [{ "statement": "建立自己的線上專輯" }, { "statement": "聲音的故事（PODCASTS、街聲）" }]
-                },
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7838.jpg?alt=media&token=8c1aa03d-5aff-4e93-9745-7bd3bd92e5ed",
-                    "route": "empty",
-                    "indexOfSequence": 4,
-                    "trait": "施工中 | 知識變現 | 技能販售",
-                    "title": "悅薪",
-                    "descriptions": [
-                        { "statement": "施工中" },
-                        { "statement": "時薪制販售技能（科目教學、美編、美髮、美睫）" },
-                        { "statement": "線上付款（降低人工筆記、保障權益）" }
-                    ]
-                },
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FS__3342348.jpg?alt=media&token=dfdc178e-aa97-4e3c-95d8-7029cbeef62f",
-                    "route": "https://yueh-pu.web.app/",
-                    "indexOfSequence": 1,
-                    "trait": "音樂｜和弦譜",
-                    "title": "悅譜",
-                    "descriptions": [
-                        { "statement": "和弦即時轉調（原調、男女建議調性）" },
-                        { "statement": "字體調整（手機、平板、電腦）" }
-                    ]
-                },
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7834.jpg?alt=media&token=9a973889-89a8-4c41-ae34-509b4182646f",
-                    "route": "empty",
-                    "indexOfSequence": 5,
-                    "trait": "施工中 | 線上預約 | 申請",
-                    "title": "悅曆",
-                    "descriptions": [{ "statement": "施工中" }, { "statement": "場地預約、資格審核、違規計點紀錄" }]
-                },
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7840.jpg?alt=media&token=0634dc18-6bff-450b-950a-2493898dcc66",
-                    "route": "empty",
-                    "indexOfSequence": 7,
-                    "trait": "施工中 | 線上小説 ｜黑底白字",
-                    "title": "悅讀",
-                    "descriptions": [{ "statement": "線上閱讀，使用案底色鮮少眼睛壓力" }, { "statement": "閱讀紀錄，全文檢索" }]
-                }
-            ]
-        );
+            {
+                image: "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7832.jpg?alt=media&token=5bf27574-f678-462d-8b3a-ea4077c4910e",
+                route: "https://kh-high.web.app/",
+                indexOfSequence: 0,
+                trait: "線上答題 | 高中學測",
+                title: "悅考",
+                descriptions: [{ statement: "一目暸然的答題方式(單選、多選)" }, { statement: "錯誤回顧、線上協助" }]
+            },
+            {
+                image: "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7833.jpg?alt=media&token=4998b3fa-5571-415a-b0d1-0dd4d5d81486",
+                route: "https://yueh-voice.web.app/",
+                indexOfSequence: 2,
+                trait: "線上播放器 ｜客製化",
+                title: "悅耳",
+                descriptions: [{ statement: "建立自己的線上專輯" }, { statement: "聲音的故事（PODCASTS、街聲）" }]
+            },
+            {
+                image: "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7838.jpg?alt=media&token=8c1aa03d-5aff-4e93-9745-7bd3bd92e5ed",
+                route: "empty",
+                indexOfSequence: 4,
+                trait: "施工中 | 知識變現 | 技能販售",
+                title: "悅薪",
+                descriptions: [{ statement: "施工中" }, { statement: "時薪制販售技能（科目教學、美編、美髮、美睫）" }, { statement: "線上付款（降低人工筆記、保障權益）" }]
+            },
+            {
+                image: "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FS__3342348.jpg?alt=media&token=dfdc178e-aa97-4e3c-95d8-7029cbeef62f",
+                route: "https://yueh-pu.web.app/",
+                indexOfSequence: 1,
+                trait: "音樂｜和弦譜",
+                title: "悅譜",
+                descriptions: [{ statement: "和弦即時轉調（原調、男女建議調性）" }, { statement: "字體調整（手機、平板、電腦）" }]
+            },
+            {
+                image: "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7834.jpg?alt=media&token=9a973889-89a8-4c41-ae34-509b4182646f",
+                route: "empty",
+                indexOfSequence: 5,
+                trait: "施工中 | 線上預約 | 申請",
+                title: "悅曆",
+                descriptions: [{ statement: "施工中" }, { statement: "場地預約、資格審核、違規計點紀錄" }]
+            },
+            {
+                image: "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7840.jpg?alt=media&token=0634dc18-6bff-450b-950a-2493898dcc66",
+                route: "empty",
+                indexOfSequence: 7,
+                trait: "施工中 | 線上小説 ｜黑底白字",
+                title: "悅讀",
+                descriptions: [{ statement: "線上閱讀，使用案底色鮮少眼睛壓力" }, { statement: "閱讀紀錄，全文檢索" }]
+            }
+        ]);
     }
-
 
     // await expiredOrderBehavior();
     // await updateCPRT();
@@ -504,7 +493,6 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
 
     // await api.updateQuestions((questions.map(question => {
     //     return {subject: `數學`, id: question.id}})))
-
 
     // await updateMathQuestionAttr(113, 'B');
     // await fetchMath(113, 'B');
@@ -515,15 +503,13 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     // await api.deleteQuestions(true);
     // await api.deleteConfuses(true);
     // await api.deleteAnswers(true);
-    // await beforeStartService();
+    await beforeStartService();
     // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);
     // console.log((await sampleFetch()).length)
 
-    await submitSubjectMap()
-
+    await submitSubjectMap();
 })();
-
 
 // line-pay request result initialBehaviorOfMathOptionalQuestion
 // {

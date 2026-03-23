@@ -132,9 +132,8 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     setCompleted(param) {
         super.setCompleted(param);
         this.validateAlertImage();
-        if (this.getParentNode() !== undefined) {
-            this.getComponent().exeAsyncT(this.getParentNode().submitQuestionRecord(this));
-        }
+        if (this.getParentNode() !== undefined)
+            this.getParentNode().getComponent().exeAsyncT(this.getParentNode().submitQuestionRecord(this));
     }
 
     validateAlertImage = () => {

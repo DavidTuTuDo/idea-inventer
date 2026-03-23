@@ -1,19 +1,13 @@
 const edit = true;
+
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import Cookie from "../../cookie";
-import { observer } from "mobx-react";
-import { inject } from "mobx-react";
 import BaseExamFilterComponent from "./BaseExamFilterComponent";
 import Router from "../../router";
 
-@inject("examFilter")
-@observer
 class ExamFilterComponent extends BaseExamFilterComponent {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
         this.subjectName = "";
@@ -47,12 +41,13 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         return Util.getVisibleOrNone(!_.isEqual(this.getTitle(), "綜合題目"));
     }
 
-    gotoExamPageWithCookie = (obj) => {
+    gotoExamPageWithCookie = async (obj) => {
+        const { Application } = require("../../");
+
+        Cookie.setExamFilter(obj);
+        await Util.syncDelay(10);
+        Router.gotoExamPage(Application.getLatestComponent());
         this.dismiss();
-        Util.syncDelay(50).then((result) => {
-            Cookie.setExamFilter(obj);
-            Router.gotoExamPage(this.getComponentInstance());
-        });
     };
 
     getInjectPropsOfExamFilterRandomTestRangeOfYearSlider(randomTest) {
@@ -70,14 +65,14 @@ class ExamFilterComponent extends BaseExamFilterComponent {
             type: "history",
             subject: this.getSubjectName()
         };
-        this.gotoExamPageWithCookie(result);
+        this.exeAsyncT(this.gotoExamPageWithCookie(result));
     };
 
     onExamFilterRandomTestBtnOfStartExamButtonClicked = (param) => {
         const range = this.getStore().getRandomTest().getRangeOfYear();
         const countsOfExam = this.getStore().getRandomTest().getSelectedCountsOfExam();
         const result = { range, countsOfExam, type: "random", subject: this.getSubjectName() };
-        this.gotoExamPageWithCookie(result);
+        this.exeAsyncT(this.gotoExamPageWithCookie(result));
     };
 
     onExamFilterRandomTestFastRangeButtonClicked(value, param) {
@@ -90,8 +85,6 @@ class ExamFilterComponent extends BaseExamFilterComponent {
             .getRandomTest()
             .setRangeOfYear([max - value, max]);
     }
-
-    /** -------------------- async api -------------------- **/
 }
 
 export default ExamFilterComponent;

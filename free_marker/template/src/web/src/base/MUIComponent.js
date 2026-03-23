@@ -3,6 +3,7 @@ const edit = true;
 import React from "react";
 import { observer } from "mobx-react";
 import FiberManualRecord from "@mui/icons-material/FiberManualRecord";
+import Typography from "@mui/material/Typography";
 import _ from "lodash";
 import { Parser } from "html-to-react";
 import { utiller as Util } from "utiller";

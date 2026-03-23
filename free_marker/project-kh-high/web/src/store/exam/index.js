@@ -124,6 +124,7 @@ class ExamStore extends BaseExamStore {
             if (!_.isEqual("綜合題目", subject)) conditions.push({ type: "where", params: ["subject", "==", _.trim(subject)] });
             conditions.push({ type: "where", params: ["year", ">=", _.toNumber(range.shift())] });
             conditions.push({ type: "where", params: ["year", "<=", _.toNumber(range.shift())] });
+            conditions.push({ type: "orderBy", disabled: true });
             handleConditionsBySubjectName(conditions);
             return conditions;
         }

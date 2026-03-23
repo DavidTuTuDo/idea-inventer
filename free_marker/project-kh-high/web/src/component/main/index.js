@@ -1,20 +1,18 @@
+const edit = true;
+
 /** this code are generated, modify is no sense.
  author:David Tu,
  email:freshingmoon0725@gmail.com
  updateTime:2021-04-23-17-02-38
  */
-import { observer, inject } from "mobx-react";
+
 import BaseMainComponent from "./BaseMainComponent";
-import { Redirect } from "react-router-dom";
 import React from "react";
 
-@inject("main")
-@observer
 class MainComponent extends BaseMainComponent {
-    /** -------------------- fields -------------------- **/
+
     constructor(prop) {
         super(prop);
-        this.props.main.setState("stable");
         setInterval(this.tick, 100);
     }
 
@@ -45,8 +43,6 @@ class MainComponent extends BaseMainComponent {
         self.isOdd = !self.isOdd;
     };
 
-    /** -------------------- functions -------------------- **/
-    /** -------------------- async api -------------------- **/
 }
 
 export default MainComponent;
