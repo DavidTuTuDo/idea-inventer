@@ -154,7 +154,7 @@ class ExamStore extends BaseExamStore {
             case "random":
                 /** 隨機測驗 */
                 const subjectID = new ExamSubjectIdStore();
-                const idMaps = await subjectID.fetchSubjectIds(this.getComponent(), ...getRandomCondition());
+                const idMaps = await subjectID.fetchPureSubjectIds(this.getComponent(), ...getRandomCondition());
                 const ids = _.sampleSize(idMaps, countsOfExam).map((each) => each.quid);
                 this.pushNextQuestionIDs(...ids);
                 break;
