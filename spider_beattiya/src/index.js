@@ -73,8 +73,9 @@ class beattiya_spider extends Spider {
                 id: 'data-id',
                 belonging: 'data-list'
             };
-            const selector = '#template #collection .products_content > *';
+            const selector = '#template #collection #collection-content > .collection-container > div > div > *';
             const rows = await page.$$(selector);
+            console.log(`${cat.name} ==> `,_.size(rows),' 個商品');
             return await Promise.all(rows.map(async (row) => {
                 const bean = await this.fetchAttributesOfEl(row, '.productClick', attrMap);
                 return { ...bean, category: cat.category };
