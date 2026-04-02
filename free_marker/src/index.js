@@ -2659,7 +2659,6 @@ class CodegenNode {
         this.path = path;
     }
 
-
     getPathOfRouterString() {
         if (!this.hasPath()) return '';
         return this.getStringOfRouter(this.getPath());
