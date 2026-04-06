@@ -10240,6 +10240,9 @@ if (configerer.DEBUG_MODE) {
         /** 紀錄最近一次回答的內容，不然每次都要打字再Enter好懶 */
         const currents = [
             {
+                name:'明悅',
+                path:'./project-davidtu-dev'
+            }, {
                 name:'悅耳',
                 path:'./project-yueh-voice'
             },{
