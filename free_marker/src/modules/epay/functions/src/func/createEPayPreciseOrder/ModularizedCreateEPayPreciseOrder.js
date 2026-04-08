@@ -44,7 +44,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
      * BookedSlots: 一個 Map 或 Array，儲存使用者所有已預訂的時間區間。
      * */
     checkConflictAgainst2MainTrunk = async (variant, transaction, globalPerspective) => {
-        const timesOfOccupied = this._firebase.transactionGet({
+        const timesOfOccupied = await this._firebase().transactionGet({
             transaction,
             path: `/users/${variant.idOfAuthor}/hera`,
             conditions: [
@@ -57,7 +57,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         Util.appendInfo("main trunk裡的項目 itemsOfHera => ", timesOfOccupied);
         const itemsOfHera = Util.getFilteredHeraPeriods(timesOfOccupied, variant.idOfVariant);
         Util.appendInfo("篩選過後的 itemsOfHera => ", itemsOfHera);
-        return Util.checkPeriodConflict(variant, itemsOfHera, globalPerspective.numOfWorker).conflict;
+        return Util.checkPeriodConflict(variant, itemsOfHera, globalPerspective.numOfWorker);
     };
 
     /** (done) todo:當useMainTrunk為true時，要增加一筆hera通知行事曆 */
@@ -288,10 +288,23 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
     processInventoryAndSchedules = async (itemsOfClientOrdering, transaction, globalPerspective) => {
         Util.appendInfo(`processInventoryAndSchedules() coming!`);
+
+        // Phase 1: Reads (Conflict Checks) - MUST happen before any writes in the transaction
+        for (const itemOfClientOrdering of itemsOfClientOrdering) {
+            const variant = itemOfClientOrdering.variant;
+            if (variant.isTaskJob && variant.useMainTrunk) {
+                const result = await this.checkConflictAgainst2MainTrunk(variant, transaction, globalPerspective);
+                if (result.conflict) {
+                    this.appendErrorLog(9999, `112454565412312321 ${variant.nameOfBooze}的時段(${variant.content})衝突`);
+                }
+            }
+        }
+
+        // Phase 2: Writes (Inventory and Schedules)
         for (const itemOfClientOrdering of itemsOfClientOrdering) {
             const { idOfBooze, idOfVariant, quantity } = itemOfClientOrdering;
             const variant = itemOfClientOrdering.variant; //{quantity:商品總量}
-            Util.appendInfo(`processInventoryAndSchedules() coming! => ${_.indexOf(itemsOfClientOrdering, itemOfClientOrdering)} idB='${idOfBooze}', idV='${idOfVariant}'`);
+            Util.appendInfo(`processInventoryAndSchedules() writing! => ${_.indexOf(itemsOfClientOrdering, itemOfClientOrdering)} idB='${idOfBooze}', idV='${idOfVariant}'`);
             const variantRef = Api.getVariantItemDocRef(idOfVariant, idOfBooze);
             const quantityOfBalance = (variant.quantity || 0) - quantity;
             if (quantityOfBalance < 0) this.appendErrorLog(9999, `123213453213 ${variant.nameOfBooze}|${variant.content}|數量不足`);
@@ -299,10 +312,6 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             transaction.update(variantRef, { quantity: quantityOfBalance });
 
             if (variant.isTaskJob) {
-                if (variant.useMainTrunk) {
-                    const result = await this.checkConflictAgainst2MainTrunk(variant, transaction, globalPerspective);
-                    if (result.conflict) this.appendErrorLog(9999, `112454565412312321 ${variant.nameOfBooze}的時段(${variant.content})衝突`);
-                }
                 itemOfClientOrdering.infoOfHera = JSON.stringify({ id: await this.submitHeraSchedule(variant, transaction), idOfAuthor: variant.idOfAuthor });
             } else itemOfClientOrdering.infoOfHera = "";
         }

@@ -99,7 +99,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
     }
 
     async handleHttpOnCall(data, session) {
-        this.appendLog(`CheckoutByByECPay帶進來的資訊:`, data);
+        this.appendLog(`CheckoutByByLinepay帶進來的資訊:`, data);
         /** 訂單編號 */
         const idOfPreciseOrder = data.idOfPreciseOrder;
         await this.validateIdOfDocumentQualify(idOfPreciseOrder);

@@ -45,6 +45,7 @@ class BaseFunction extends ClientRemoteApi {
         if (Util.isUndefinedNullEmpty(idOfAuthor)) this.appendErrorLog(9999, `98211512-${this.getName()} 沒有賣家資訊，無法完成交易`);
         const secret = await Api.fetchCupidSecret(idOfAuthor);
         const credential = LINEPAY_CREDENTIAL({ channelId: _.nth(secret.linepaySet, 0), channelSecret: _.nth(secret.linepaySet, 1) });
+        this.appendLog('line credential: ', credential)
         return new LinePay(credential);
     };
 
@@ -53,6 +54,7 @@ class BaseFunction extends ClientRemoteApi {
         if (Util.isUndefinedNullEmpty(idOfAuthor)) this.appendErrorLog(9999, `98211519-${this.getName()} 沒有賣家資訊，無法完成交易`);
         const secret = await Api.fetchCupidSecret(idOfAuthor);
         const credential = ECPAY_CREDENTIAL({ MerchantID: _.nth(secret?.ECPaySet, 0), HashKey: _.nth(secret?.ECPaySet, 1), HashIV: _.nth(secret?.ECPaySet, 2) });
+        this.appendLog('ecpay credential: ', credential)
         const instance = new ECPay(credential);
         instance.HashKeyXGetter = () => credential.MercProfile.HashKey;
         instance.HashIVXGetter = () => credential.MercProfile.HashIV;
