@@ -96,7 +96,7 @@ class EpisodeComponent extends BaseEpisodeComponent {
         const singer = super.getVoiceSinger(voice);
         if (voice.getCovered()) {
             {
-                return `covered by ${singer}`;
+                return `covered by ${singer} 2022/06`;
             }
         }
         return `original by ${singer}`;

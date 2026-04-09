@@ -17,7 +17,7 @@ class CelestialComponent extends BaseCelestialComponent {
         const singer = super.getPieceSinger(piece);
         if (piece.getCovered()) {
             {
-                return `covered by ${singer}`;
+                return `covered by ${singer} 2022/06`;
             }
         }
         return `original by ${singer}`;
