@@ -685,8 +685,7 @@ class BaseComponent extends MuiComponent {
     };
 
     dismiss() {
-        if (this.isDialogComponent())
-            this.propsOfMobX?.dialog?.dismiss?.();
+        if (this.isDialogComponent()) this.propsOfMobX?.dialog?.dismiss?.();
     }
 
     getLoginDialogRef = () => {

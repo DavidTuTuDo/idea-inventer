@@ -233,7 +233,6 @@ class ImpComponent extends BaseComponent {
     openImageDialog = (imgUrl) => {
         this.getImageDialogRef().current?.activate({ href: imgUrl });
     };
-
 }
 
 export default ImpComponent;

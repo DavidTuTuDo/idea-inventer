@@ -342,12 +342,18 @@
 /** following for account  component used  */
 
 .AccountPaper:extend(.CenterInParentColumn) {
-    gap: 4px;
+    gap: 2px;
     margin: auto;
     min-height: 50vh;
-    padding: 15px;
-    padding-bottom: 30px;
-    border-radius: 20px;
+    padding: 20px 10px;
+    padding-bottom: 50px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 80px -10px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    animation: fadeInMove 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow: hidden;
     @media @mobile {
         /** empty style */
     }
@@ -356,12 +362,15 @@
     }
     @media @desktop {
         width: 90%;
+        max-width: 800px;
     }
 }
 .AccountDivWrap {
     gap: 10px;
     margin: auto;
-    width: 90vw;
+    width: 95vw;
+    padding-top: 20px;
+    padding-bottom: 40px;
     @media @mobile {
         /** empty style */
     }
@@ -373,8 +382,11 @@
     }
 }
 .AccountInfoDiv:extend(.CenterInParentColumn) {
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
     @media @mobile {
-        /** empty style */
+        margin-bottom: 10px;
     }
     @media @tablet {
         /** empty style */
@@ -384,12 +396,20 @@
     }
 }
 .AccountInfoUrlOfHeadPhotoAvatar {
-    width: 60px;
-    height: 60px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    width: 85px;
+    height: 85px;
+    margin-top: 5px;
+    border: 4px solid #ffffff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s ease;
+    animation: floatAvatar 6s ease-in-out infinite;
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
     @media @mobile {
-        /** empty style */
+        width: 110px;
+        height: 110px;
     }
     @media @tablet {
         /** empty style */
@@ -399,8 +419,15 @@
     }
 }
 .AccountInfoValueOfNameTypography {
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+    color: #1a1a1a;
+    background: linear-gradient(45deg, #1a1a1a, #4a4a4a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     @media @mobile {
-        /** empty style */
+        font-size: 1.1rem;
     }
     @media @tablet {
         /** empty style */
@@ -410,14 +437,21 @@
     }
 }
 .AccountInfoValueOfEmailTypography {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    background: #f5f5f7;
+    padding: 4px 12px;
+    border-radius: 15px;
     @media @mobile {
-        font-size: 0.7rem;
+        /** empty style */
     }
     @media @tablet {
-        font-size: 0.7rem;
+        /** empty style */
     }
     @media @desktop {
-        font-size: 0.8rem;
+        font-size: 1rem;
     }
 }
 .AccountBasicDiv:extend(.CenterInParentRow) {
@@ -2425,8 +2459,62 @@
         max-width: 880px;
     }
 }
+.DionysusBacchusDetailContentBanDiv {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusBacchusDetailContentBanDivList:extend(.CenterInParentColumn) {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusBacchusDetailContentBanHrefImg {
+    width: 100%;
+    aspect-ratio: 21 / 11;
+    object-fit: cover;
+    object-position: center;
+    border: 1px solid #d1d1d1;
+    border-top: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    box-sizing: border-box;
+    @media @mobile {
+        height: auto;
+    }
+    @media @tablet {
+        border-width: 1px;
+    }
+    @media @desktop {
+        border-width: 1.5px;
+    }
+}
 .DionysusBacchusDetailContentStatementTypography:extend(.BeautyContent) {
     padding: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusBacchusDetailContentStatementDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -2472,7 +2560,7 @@
         /** empty style */
     }
     @media @desktop {
-        width: 350px;
+        width: 435px;
     }
 }
 .DionysusBacchusFuncDiv:extend(.CenterInParentRow) {
@@ -5400,12 +5488,10 @@
         gap: 10px;
     }
 }
-.DionysusGaiaAreaOfPhotoUploadBriefPhotoHrefImg {
+.DionysusGaiaAreaOfPhotoUploadBriefPhotoHrefImg:extend(.SquareRatioImg) {
     width: 80px;
     height: 80px;
-    object-fit: cover;
-    object-position: center;
-    display: block;
+    border-radius: 0;
     @media @mobile {
         /** empty style */
     }
@@ -5443,6 +5529,114 @@
     }
 }
 .DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconHighlightOffRounded {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaBanDiv:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaBanRowDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaBanRowLabelOfUploadBanTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaBanRowJoinBanChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaBanBriefBanDiv:extend(.DionysusGaiaAreaOfPhotoUploadBriefPhotoDiv) {
+    width: 151px;
+    height: 85px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 222px;
+        height: 125px;
+    }
+}
+.DionysusGaiaBanBriefBanDivList:extend(.DionysusGaiaAreaOfPhotoUploadBriefPhotoDivList) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaBanBriefBanHrefImg {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        border-radius: 0;
+    }
+}
+.DionysusGaiaBanBriefBanDeleteIconButton:extend(.DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaBanBriefBanDeleteIconHighlightOffRounded {
     @media @mobile {
         /** empty style */
     }
@@ -11138,10 +11332,10 @@
     margin: auto;
     width: 100%;
     @media @mobile {
-        width: 98vw;
+        /** empty style */
     }
     @media @tablet {
-        width: 98vw;
+        /** empty style */
     }
     @media @desktop {
         width: 760px;
@@ -11162,7 +11356,7 @@
 .EpayFootprintOrderDivList:extend(.CenterInParentColumn) {
     gap: 10px;
     width: 100%;
-    min-height: 65vh;
+    min-height: 50vh;
     justify-content: flex-start;
     @media @mobile {
         /** empty style */
@@ -11187,7 +11381,6 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfHeadDiv:extend(.CenterInParentRow) {
-    gap: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -11376,7 +11569,7 @@
 }
 .EpayFootprintOrderBriefDiv:extend(.CenterInParentRow) {
     justify-content: flex-start;
-    gap: 5px;
+    gap: 2px;
     width: 100%;
     padding-right: 1px;
     border-bottom: 1px solid #bbb;
@@ -11435,7 +11628,7 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderBriefSectionOfDescriptionNameOfProductTypography {
+.EpayFootprintOrderBriefSectionOfDescriptionNameOfProductTypography:extend(.BeautyTitle) {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -11462,7 +11655,7 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderBriefSectionOfDescriptionSpecificOfProductTypography {
+.EpayFootprintOrderBriefSectionOfDescriptionSpecificOfProductTypography:extend(.BeautyContent) {
     margin-top: 8px;
     @media @mobile {
         /** empty style */
@@ -11474,7 +11667,7 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderBriefSectionOfDescriptionQuantityTypography {
+.EpayFootprintOrderBriefSectionOfDescriptionQuantityTypography:extend(.BeautyContent) {
     @media @mobile {
         /** empty style */
     }
@@ -11485,7 +11678,7 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderBriefSectionOfDescriptionPriceTypography {
+.EpayFootprintOrderBriefSectionOfDescriptionPriceTypography:extend(.BeautyContent) {
     @media @mobile {
         /** empty style */
     }
@@ -11665,6 +11858,94 @@
         /** empty style */
     }
 }
+.EpayFootprintOrderAoiDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoiNameTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoiNameDivWrap:extend(.EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoiNameLabelOfNameTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAopDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAopPhoneNumberTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAopPhoneNumberDivWrap:extend(.EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAopPhoneNumberLabelOfPhoneNumberTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
 .EpayFootprintOrderAreaOfPaymentRuleDiv {
     @media @mobile {
         /** empty style */
@@ -11691,6 +11972,11 @@
     justify-content: space-between;
     align-items: flex-end;
     width: 100%;
+    padding-right: 1px;
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.8;
+    color: #333;
+    letter-spacing: 0.2px;
     @media @mobile {
         /** empty style */
     }
@@ -11702,6 +11988,50 @@
     }
 }
 .EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoaDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoaAddressTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoaAddressDivWrap:extend(.EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAoaAddressLabelOfAddressTypography {
     @media @mobile {
         /** empty style */
     }
@@ -12192,6 +12522,93 @@
         /** empty style */
     }
 }
+/** following for anonymousXDeal  component used  */
+
+.EpayAnonymousXDealDiv:extend(.CenterInParentColumn) {
+    margin-top: 50px;
+    width: 100%;
+    margin-bottom: 20px;
+    gap: 30px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayAnonymousXDealDivWrap {
+    margin: auto;
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        min-height: 600px;
+        max-width: 880px;
+    }
+}
+.EpayAnonymousXDealFuncDiv:extend(.CenterInParentRow) {
+    gap: 20px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayAnonymousXDealFuncToMainChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayAnonymousXDealFuncCopyLinkChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayAnonymousXDealPayNowDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayAnonymousXDealPayNowReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
 /** following for hades  component used  */
 
 .HadesDiv {
@@ -12271,6 +12688,8 @@
     }
 }
 .InfoOfCopyRightUpperGroupRightAreaDiv:extend(.CenterInParentRow) {
+    flex-wrap: wrap;
+    min-height: 20px;
     @media @mobile {
         /** empty style */
     }
@@ -12282,6 +12701,39 @@
     }
 }
 .InfoOfCopyRightUpperGroupRightAreaPrivilegeDiv:extend(.CenterInParentRow) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeRefundNTurnPolicyButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeRefundNTurnPolicyReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeSeparator00Typography {
     @media @mobile {
         /** empty style */
     }
@@ -12402,7 +12854,8 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightGroupOfSocialMediaDiv {
+.InfoOfCopyRightGroupOfSocialMediaDiv:extend(.CenterInParentRow) {
+    gap: 3px;
     margin-right: 5px;
     @media @mobile {
         /** empty style */
@@ -12490,6 +12943,8 @@
     width: 100%;
     align-items: flex-start;
     padding-left: 8px;
+    margin-top: 5px;
+    margin-bottom: 12px;
     @media @mobile {
         /** empty style */
     }
@@ -12679,6 +13134,74 @@
     }
 }
 .InfoOfCopyRightPrivacyMainContentTypography:extend(.BeautyContent) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+/** following for infoOfRefundNTurnPolicy  component used  */
+
+.InfoOfRefundNTurnPolicyDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfRefundNTurnPolicyPaperWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfRefundNTurnPolicyMainDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfRefundNTurnPolicyMainTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfRefundNTurnPolicyMainSeparatorDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfRefundNTurnPolicyMainContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -13437,6 +13960,7 @@
     height: 100%;
     border-radius: 10px;
     min-height: 60vh;
+    min-width: 90vw;
     @media @mobile {
         /** empty style */
     }
@@ -13449,6 +13973,7 @@
     }
 }
 .IreneQrcodeMainDiv:extend(.CenterInParentColumn) {
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -13512,7 +14037,8 @@
 }
 .IreneQrcodeMainScanDiv:extend(.CenterInParentColumn) {
     background: white;
-    padding: 13px;
+    padding: 15px;
+    width: 100%;
     border-radius: 8px;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -13553,6 +14079,88 @@
 }
 .IreneQrcodeMainScanHrefDivWrap {
     border-radius: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlDiv:extend(.CenterInParentColumn) {
+    align-items: flex-start;
+    width: 100%;
+    gap: 15px;
+    min-height: 250px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitBankTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitBankDivWrap:extend(.CenterInParentRow) {
+    font-size: 1.2rem;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitBankLabelOfRemitBankTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitSerialTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitSerialDivWrap:extend(.IreneQrcodeMainScanOwlRemitBankDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanOwlRemitSerialLabelOfRemitSerialTypography {
     @media @mobile {
         /** empty style */
     }
@@ -14177,12 +14785,12 @@
         /** empty style */
     }
     @media @desktop {
-        width: 500px;
+        /** empty style */
     }
 }
 .IreneNumberSetterDivWrap {
     margin: auto;
-    width: 100%;
+    width: 90vw;
     @media @mobile {
         /** empty style */
     }
@@ -14190,7 +14798,7 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        width: 500px;
     }
 }
 .IreneNumberSetterRowDiv:extend(.CenterInParentRow) {
@@ -14277,6 +14885,96 @@
     }
 }
 .IreneNumberSetterFuncConfirmChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+/** following for login  component used  */
+
+.LoginPageDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.LoginPageLogoImg {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.LoginPageLoginTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.LoginPageSocialLoginContainerDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.LoginPageSocialLoginContainerLineLoginButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.LoginPageSocialLoginContainerFacebookLoginButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.LoginPageSocialLoginContainerGoogleLoginButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.LoginPageHintTypography {
     @media @mobile {
         /** empty style */
     }
@@ -14449,6 +15147,28 @@
 }
 .NavigatorToolBarTipOfLoadingCircularProgress {
     margin-right: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.NavigatorToolBarSearchIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.NavigatorToolBarSearchIconSearchRounded {
     @media @mobile {
         /** empty style */
     }

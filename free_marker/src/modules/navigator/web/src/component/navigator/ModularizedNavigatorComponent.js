@@ -167,16 +167,24 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         return Util.getVisibleOrNone(UserInfo.isLoginWithSucceed(), true);
     }
 
+    getInjectStyleOfNavigatorSearchIconButton(navigator) {
+        return Util.getVisibleOrNone(!navigator.getWhetherKeywordWasFetching() && !navigator.getWhetherSearchMode());
+    }
+
     getInjectStyleOfNavigatorLoginIconButton(navigator) {
         return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed() && !UserInfo.isAuthProcessing(), true);
     }
 
     getInjectStyleOfNavigatorCompleteAutocomplete(navigator) {
-        return Util.getVisibleOrHidden(!navigator.getWhetherKeywordWasFetching());
+        return Util.getVisibleOrHidden(!navigator.getWhetherKeywordWasFetching() && navigator.getWhetherSearchMode());
     }
 
     getInjectStyleOfNavigatorTipOfLoadingCircularProgress(navigator) {
         return Util.getVisibleOrNone(navigator.getWhetherKeywordWasFetching() || UserInfo.isAuthProcessing(), true);
+    }
+
+    onNavigatorSearchIconButtonClicked(param) {
+        this.getStore().setWhetherSearchMode(true);
     }
 
     onNavigatorCartieIconButtonClicked(param) {

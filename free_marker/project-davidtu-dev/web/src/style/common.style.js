@@ -117,6 +117,10 @@ class CommonStyle {
 
     NavigatorToolBarLoginIconButton = {};
 
+    NavigatorToolBarSearchIconSearchRounded = {};
+
+    NavigatorToolBarSearchIconButton = {};
+
     NavigatorToolBarTipOfLoadingCircularProgress = {};
 
     NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
@@ -144,6 +148,24 @@ class CommonStyle {
     NavigatorToolBarToolbar = {};
 
     NavigatorDiv = {};
+
+    /** => following for login  component  */
+
+    LoginPageHintTypography = {};
+
+    LoginPageSocialLoginContainerGoogleLoginButton = {};
+
+    LoginPageSocialLoginContainerFacebookLoginButton = {};
+
+    LoginPageSocialLoginContainerLineLoginButton = {};
+
+    LoginPageSocialLoginContainerDiv = {};
+
+    LoginPageLoginTitleTypography = {};
+
+    LoginPageLogoImg = {};
+
+    LoginPageDiv = {};
 
     /** => following for numberSetter  component  */
 
@@ -274,6 +296,20 @@ class CommonStyle {
     IreneQrcodeMainContentTypography = {};
 
     IreneQrcodeMainScanTitleTypography = {};
+
+    IreneQrcodeMainScanOwlRemitSerialLabelOfRemitSerialTypography = {};
+
+    IreneQrcodeMainScanOwlRemitSerialDivWrap = {};
+
+    IreneQrcodeMainScanOwlRemitSerialTypography = {};
+
+    IreneQrcodeMainScanOwlRemitBankLabelOfRemitBankTypography = {};
+
+    IreneQrcodeMainScanOwlRemitBankDivWrap = {};
+
+    IreneQrcodeMainScanOwlRemitBankTypography = {};
+
+    IreneQrcodeMainScanOwlDiv = {};
 
     IreneQrcodeMainScanHrefDivWrap = {};
 
@@ -423,6 +459,20 @@ class CommonStyle {
 
     InfoOfCopyRightUsagesDiv = {};
 
+    /** => following for infoOfRefundNTurnPolicy  component  */
+
+    InfoOfRefundNTurnPolicyMainContentTypography = {};
+
+    InfoOfRefundNTurnPolicyMainSeparatorDiv = {};
+
+    InfoOfRefundNTurnPolicyMainTitleTypography = {};
+
+    InfoOfRefundNTurnPolicyMainDiv = {};
+
+    InfoOfRefundNTurnPolicyPaperWrap = {};
+
+    InfoOfRefundNTurnPolicyDiv = {};
+
     /** => following for infoOfCopyRightPrivacy  component  */
 
     InfoOfCopyRightPrivacyMainContentTypography = {};
@@ -495,6 +545,12 @@ class CommonStyle {
 
     InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesButton = {};
 
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeSeparator00Typography = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeRefundNTurnPolicyReactFragmentWrap = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeRefundNTurnPolicyButton = {};
+
     InfoOfCopyRightUpperGroupRightAreaPrivilegeDiv = {};
 
     InfoOfCopyRightUpperGroupRightAreaDiv = {};
@@ -512,6 +568,22 @@ class CommonStyle {
     /** => following for hades  component  */
 
     HadesDiv = {};
+
+    /** => following for anonymousXDeal  component  */
+
+    EpayAnonymousXDealPayNowReactFragmentWrap = {};
+
+    EpayAnonymousXDealPayNowDiv = {};
+
+    EpayAnonymousXDealFuncCopyLinkChip = {};
+
+    EpayAnonymousXDealFuncToMainChip = {};
+
+    EpayAnonymousXDealFuncDiv = {};
+
+    EpayAnonymousXDealDivWrap = {};
+
+    EpayAnonymousXDealDiv = {};
 
     /** => following for epayFootprint  component  */
 
@@ -599,6 +671,14 @@ class CommonStyle {
 
     EpayFootprintOrderAreaOfTransportDiv = {};
 
+    EpayFootprintOrderAoaAddressLabelOfAddressTypography = {};
+
+    EpayFootprintOrderAoaAddressDivWrap = {};
+
+    EpayFootprintOrderAoaAddressTypography = {};
+
+    EpayFootprintOrderAoaDiv = {};
+
     EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography = {};
 
     EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap = {};
@@ -606,6 +686,22 @@ class CommonStyle {
     EpayFootprintOrderAreaOfPaymentRuleRuleTypography = {};
 
     EpayFootprintOrderAreaOfPaymentRuleDiv = {};
+
+    EpayFootprintOrderAopPhoneNumberLabelOfPhoneNumberTypography = {};
+
+    EpayFootprintOrderAopPhoneNumberDivWrap = {};
+
+    EpayFootprintOrderAopPhoneNumberTypography = {};
+
+    EpayFootprintOrderAopDiv = {};
+
+    EpayFootprintOrderAoiNameLabelOfNameTypography = {};
+
+    EpayFootprintOrderAoiNameDivWrap = {};
+
+    EpayFootprintOrderAoiNameTypography = {};
+
+    EpayFootprintOrderAoiDiv = {};
 
     EpayFootprintOrderRemarkLabelOfRemarkTypography = {};
 
@@ -1721,6 +1817,24 @@ class CommonStyle {
 
     DionysusGaiaAreaOfNameDiv = {};
 
+    DionysusGaiaBanBriefBanDeleteIconHighlightOffRounded = {};
+
+    DionysusGaiaBanBriefBanDeleteIconButton = {};
+
+    DionysusGaiaBanBriefBanHrefImg = {};
+
+    DionysusGaiaBanBriefBanDivList = {};
+
+    DionysusGaiaBanBriefBanDiv = {};
+
+    DionysusGaiaBanRowJoinBanChip = {};
+
+    DionysusGaiaBanRowLabelOfUploadBanTypography = {};
+
+    DionysusGaiaBanRowDiv = {};
+
+    DionysusGaiaBanDiv = {};
+
     DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconHighlightOffRounded = {};
 
     DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconButton = {};
@@ -2231,7 +2345,15 @@ class CommonStyle {
 
     DionysusBacchusDetailContentPhotoDiv = {};
 
+    DionysusBacchusDetailContentStatementDivWrap = {};
+
     DionysusBacchusDetailContentStatementTypography = {};
+
+    DionysusBacchusDetailContentBanHrefImg = {};
+
+    DionysusBacchusDetailContentBanDivList = {};
+
+    DionysusBacchusDetailContentBanDiv = {};
 
     DionysusBacchusDetailContentDiv = {};
 

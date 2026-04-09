@@ -164,7 +164,7 @@ class MuiComponent extends React.Component {
         const report = {};
         const cssHeader = "background: #222; color: #00ff00; padding: 4px 8px; font-weight: bold; border-radius: 4px;";
 
-        targetClasses.forEach(className => {
+        targetClasses.forEach((className) => {
             const elements = document.getElementsByClassName(className);
 
             if (elements.length === 0) {
@@ -175,7 +175,7 @@ class MuiComponent extends React.Component {
             // 如果該 class 有多個元素（像你的 Typography 每一行都是同個 class）
             // 我們取其中「最寬」的一個作為指標數值
             let maxWidth = 0;
-            Array.from(elements).forEach(el => {
+            Array.from(elements).forEach((el) => {
                 const w = el.scrollWidth;
                 if (w > maxWidth) maxWidth = w;
             });

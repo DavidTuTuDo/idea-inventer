@@ -52,7 +52,7 @@ const RulesSnack = observer(({ componentX }) => {
 
     // 攔截渲染：Splash 還在畫面上時，絕對不顯示
     if (isSplashVisible) return null;
-    const stmtOfEPay = Config.useCartie ? `、 《${Config.nameOfBrand} 退換貨政策》` : '';
+    const stmtOfEPay = Config.useCartie ? `、 《${Config.nameOfBrand} 退換貨政策》` : "";
     return (
         <Snackbar
             anchorOrigin={{
@@ -65,7 +65,7 @@ const RulesSnack = observer(({ componentX }) => {
             ContentProps={{
                 style: {
                     backgroundColor: "#181818", // 💡 1. 改為深色背景 (Threads 深色模式常用的碳黑色)
-                    color: "#FFFFFF",           // 💡 2. 改為純白文字
+                    color: "#FFFFFF", // 💡 2. 改為純白文字
                     borderRadius: "16px",
                     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.8)", // 💡 3. 陰影加深，讓黑底組件在畫面上更有層次
                     padding: "12px 20px",
@@ -85,8 +85,7 @@ const RulesSnack = observer(({ componentX }) => {
                             fontSize: "20px",
                             color: "#888888", // 💡 4. X 按鈕改為淺灰色，在黑底上較為協調
                             padding: "4px"
-                        }}
-                    >
+                        }}>
                         ✕
                     </span>
                     <span style={{ lineHeight: "1.5" }}>

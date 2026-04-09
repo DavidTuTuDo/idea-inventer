@@ -117,6 +117,10 @@ class AppStyle {
 
     NavigatorToolBarLoginIconButton = {};
 
+    NavigatorToolBarSearchIconSearchRounded = {};
+
+    NavigatorToolBarSearchIconButton = {};
+
     NavigatorToolBarTipOfLoadingCircularProgress = {};
 
     NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
@@ -144,6 +148,24 @@ class AppStyle {
     NavigatorToolBarToolbar = {};
 
     NavigatorDiv = {};
+
+    /** => following for login  component  */
+
+    LoginPageHintTypography = {};
+
+    LoginPageSocialLoginContainerGoogleLoginButton = {};
+
+    LoginPageSocialLoginContainerFacebookLoginButton = {};
+
+    LoginPageSocialLoginContainerLineLoginButton = {};
+
+    LoginPageSocialLoginContainerDiv = {};
+
+    LoginPageLoginTitleTypography = {};
+
+    LoginPageLogoImg = {};
+
+    LoginPageDiv = {};
 
     /** => following for numberSetter  component  */
 
@@ -274,6 +296,20 @@ class AppStyle {
     IreneQrcodeMainContentTypography = {};
 
     IreneQrcodeMainScanTitleTypography = {};
+
+    IreneQrcodeMainScanOwlRemitSerialLabelOfRemitSerialTypography = {};
+
+    IreneQrcodeMainScanOwlRemitSerialDivWrap = {};
+
+    IreneQrcodeMainScanOwlRemitSerialTypography = {};
+
+    IreneQrcodeMainScanOwlRemitBankLabelOfRemitBankTypography = {};
+
+    IreneQrcodeMainScanOwlRemitBankDivWrap = {};
+
+    IreneQrcodeMainScanOwlRemitBankTypography = {};
+
+    IreneQrcodeMainScanOwlDiv = {};
 
     IreneQrcodeMainScanHrefDivWrap = {};
 
@@ -423,6 +459,20 @@ class AppStyle {
 
     InfoOfCopyRightUsagesDiv = {};
 
+    /** => following for infoOfRefundNTurnPolicy  component  */
+
+    InfoOfRefundNTurnPolicyMainContentTypography = {};
+
+    InfoOfRefundNTurnPolicyMainSeparatorDiv = {};
+
+    InfoOfRefundNTurnPolicyMainTitleTypography = {};
+
+    InfoOfRefundNTurnPolicyMainDiv = {};
+
+    InfoOfRefundNTurnPolicyPaperWrap = {};
+
+    InfoOfRefundNTurnPolicyDiv = {};
+
     /** => following for infoOfCopyRightPrivacy  component  */
 
     InfoOfCopyRightPrivacyMainContentTypography = {};
@@ -495,6 +545,12 @@ class AppStyle {
 
     InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesButton = {};
 
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeSeparator00Typography = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeRefundNTurnPolicyReactFragmentWrap = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeRefundNTurnPolicyButton = {};
+
     InfoOfCopyRightUpperGroupRightAreaPrivilegeDiv = {};
 
     InfoOfCopyRightUpperGroupRightAreaDiv = {};
@@ -512,6 +568,22 @@ class AppStyle {
     /** => following for hades  component  */
 
     HadesDiv = {};
+
+    /** => following for anonymousXDeal  component  */
+
+    EpayAnonymousXDealPayNowReactFragmentWrap = {};
+
+    EpayAnonymousXDealPayNowDiv = {};
+
+    EpayAnonymousXDealFuncCopyLinkChip = {};
+
+    EpayAnonymousXDealFuncToMainChip = {};
+
+    EpayAnonymousXDealFuncDiv = {};
+
+    EpayAnonymousXDealDivWrap = {};
+
+    EpayAnonymousXDealDiv = {};
 
     /** => following for epayFootprint  component  */
 
@@ -599,6 +671,14 @@ class AppStyle {
 
     EpayFootprintOrderAreaOfTransportDiv = {};
 
+    EpayFootprintOrderAoaAddressLabelOfAddressTypography = {};
+
+    EpayFootprintOrderAoaAddressDivWrap = {};
+
+    EpayFootprintOrderAoaAddressTypography = {};
+
+    EpayFootprintOrderAoaDiv = {};
+
     EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography = {};
 
     EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap = {};
@@ -606,6 +686,22 @@ class AppStyle {
     EpayFootprintOrderAreaOfPaymentRuleRuleTypography = {};
 
     EpayFootprintOrderAreaOfPaymentRuleDiv = {};
+
+    EpayFootprintOrderAopPhoneNumberLabelOfPhoneNumberTypography = {};
+
+    EpayFootprintOrderAopPhoneNumberDivWrap = {};
+
+    EpayFootprintOrderAopPhoneNumberTypography = {};
+
+    EpayFootprintOrderAopDiv = {};
+
+    EpayFootprintOrderAoiNameLabelOfNameTypography = {};
+
+    EpayFootprintOrderAoiNameDivWrap = {};
+
+    EpayFootprintOrderAoiNameTypography = {};
+
+    EpayFootprintOrderAoiDiv = {};
 
     EpayFootprintOrderRemarkLabelOfRemarkTypography = {};
 
@@ -1721,6 +1817,24 @@ class AppStyle {
 
     DionysusGaiaAreaOfNameDiv = {};
 
+    DionysusGaiaBanBriefBanDeleteIconHighlightOffRounded = {};
+
+    DionysusGaiaBanBriefBanDeleteIconButton = {};
+
+    DionysusGaiaBanBriefBanHrefImg = {};
+
+    DionysusGaiaBanBriefBanDivList = {};
+
+    DionysusGaiaBanBriefBanDiv = {};
+
+    DionysusGaiaBanRowJoinBanChip = {};
+
+    DionysusGaiaBanRowLabelOfUploadBanTypography = {};
+
+    DionysusGaiaBanRowDiv = {};
+
+    DionysusGaiaBanDiv = {};
+
     DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconHighlightOffRounded = {};
 
     DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconButton = {};
@@ -2231,7 +2345,15 @@ class AppStyle {
 
     DionysusBacchusDetailContentPhotoDiv = {};
 
+    DionysusBacchusDetailContentStatementDivWrap = {};
+
     DionysusBacchusDetailContentStatementTypography = {};
+
+    DionysusBacchusDetailContentBanHrefImg = {};
+
+    DionysusBacchusDetailContentBanDivList = {};
+
+    DionysusBacchusDetailContentBanDiv = {};
 
     DionysusBacchusDetailContentDiv = {};
 

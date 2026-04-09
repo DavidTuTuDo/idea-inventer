@@ -564,7 +564,6 @@ class FirebaseHelper extends BaseFirebase {
         let totalFetched = 0;
         const all = [];
 
-
         while (true) {
             let queryConstraints = [...finalConditions];
 
