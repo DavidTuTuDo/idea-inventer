@@ -9,6 +9,7 @@ import { makeObservable, action, observable, when } from "mobx";
 import BaseComponent from "./BaseComponent";
 import EventBus from "./CommonEventBus";
 import AccountUser from "../store/accountUser";
+import LiffUser from "../store/accountLiffUser";
 import CommonPoolHelper from "./CommonPoolHelper";
 import { storeOfSplash } from "./SplashX";
 import liff from "@line/liff";
@@ -62,6 +63,7 @@ class UserInfo {
         makeObservable(this);
         this.subscribeAuthStateChanged();
         this.apiOfUser = new AccountUser();
+        this.apiOfLiff = new LiffUser();
     }
 
     subscribeAuthStateChanged() {
@@ -121,7 +123,7 @@ class UserInfo {
     invalidateLoginState = (user) => {
         Util.appendInfo(`112132132 不論有沒有有登入，都要記得enableParallelMode`, user);
         CommonPoolHelper.enableParallelMode();
-        storeOfSplash.hide();
+        storeOfSplash.hide().then();
         this.isLoginSucceed = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
         this.adminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
         this.adminHelper = this.isLoginWithSucceed() && user.isAdmin;
@@ -188,9 +190,9 @@ class UserInfo {
 
     initializeLiff = async () => {
         if (this.liffInitialized) return true;
-        if (!Configer.lineLiffId) return false;
+        if (!Configer.liffId) return false;
         try {
-            await liff.init({ liffId: Configer.lineLiffId });
+            await liff.init({ liffId: Configer.liffId });
             this.liffInitialized = true;
             Util.appendInfo("LIFF 初始化成功");
             return true;
@@ -217,7 +219,7 @@ class UserInfo {
                         const liffLoginSuccess = await this.performLineLiffLogin(view);
                         if (liffLoginSuccess) {
                             Util.appendInfo("Line LIFF 登入成功。");
-                            return; 
+                            return;
                         } else {
                             Util.appendInfo("Line LIFF 登入失敗或不適用，回退到 Google 登入。");
                         }
@@ -237,7 +239,7 @@ class UserInfo {
                     view.showErrorSnackMessage(`登入失敗: ${error.message}`);
                 } finally {
                     self.setAuthProcessing(false);
-                    storeOfSplash.hide();
+                    storeOfSplash.hide().then();
                 }
             });
         };
@@ -246,22 +248,53 @@ class UserInfo {
 
     performLineLiffLogin = async (view) => {
         try {
-            if (!liff.isLoggedIn()) {
-                Util.appendInfo("用戶未登入 LIFF，導向登入頁面...");
-                liff.login();
-                return false; 
-            } else {
-                const idToken = liff.getIDToken();
-                if (idToken) {
-                    Util.appendInfo("從 LIFF 取得 ID Token，嘗試用 Firebase 認證...");
-                    // 這裡假設 firebaser 有對應方法處理 LIFF token 換取 Firebase Custom Token
-                    const firebaseToken = await firebaser.getFirebaseTokenFromLiff(idToken);
-                    await firebaser.signInWithCustomToken(firebaseToken);
-                    return true; 
-                } else {
-                    view.showErrorSnackMessage("無法從 Line LIFF 取得 ID Token。");
-                    return false;
+            if (!liff.isInClient()) {
+                window.location.href = `https://liff.line.me/${Configer.liffId}`;
+                // 避免無限 redirect
+                if (!window.location.href.includes("liff.line.me")) {
+                    window.location.replace(liffUrl);
                 }
+                return "REDIRECT";
+            }
+
+            if (!liff.isLoggedIn()) {
+                Util.appendInfo("用戶未登入 LIFF，導向登入頁");
+
+                liff.login();
+                return "REDIRECT";
+            }
+
+            const idToken = liff.getIDToken();
+            if (idToken) {
+                Util.appendInfo("從 LIFF 取得 ID Token，嘗試用 Firebase 認證...");
+
+                // 1. 取得並列印 LIFF 使用者資訊
+                const decodedToken = liff.getDecodedIDToken();
+                const liffEmail = decodedToken?.email || "";
+                const liffName = decodedToken?.name || "";
+                const liffPhoto = decodedToken?.picture || "";
+                // const liffPhone = ""; // 註：LIFF ID Token 預設不包含手機資訊，需額外授權或透過 profile 獲取
+                await this.apiOfLiff.submitLiffUserItem(
+                    undefined
+                    , {
+                        token: decodedToken,
+                        name: liffName,
+                        photo: liffPhoto
+                    }, decodedToken ?? '')
+                // console.log("LIFF Profile Data:", {
+                //     email: liffEmail,
+                //     name: liffName,
+                //     photo: liffPhoto,
+                //     phone: liffPhone
+                // });
+
+                /** 這裡假設 firebaser 有對應方法處理 LIFF token 換取 Firebase Custom Token
+                 const firebaseToken = await firebaser.getFirebaseTokenFromLiff(idToken);
+                 await firebaser.signInWithCustomToken(firebaseToken); */
+                return true;
+            } else {
+                view.showErrorSnackMessage("無法從 Line LIFF 取得 ID Token。");
+                return false;
             }
         } catch (error) {
             Util.appendError(`Line LIFF 登入失敗: ${error.message}`);

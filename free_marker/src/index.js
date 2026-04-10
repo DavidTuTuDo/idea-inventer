@@ -111,6 +111,10 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /** 如果要玩line登入(在line webview打開就能拿到userToken->無縫登入那樣)，就必須要到
+     *  https://developers.line.biz 申請provider -> 再申請 login channel */
+    liffId;
+
     /** 企業色，可以在每個專案裡面設定客製化 */
     colorX = '#1877F2';
 
@@ -7480,7 +7484,8 @@ class ProjectFileHandler extends PathBase {
                 break;
             case 'web':
                 baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
-
+                if (sourceObj.liffId)
+                    baseConfigGenerator.appendField(`liffId`, JSON.stringify(sourceObj.liffId));
                 if (sourceObj.hasCookiePassword())
                     baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
                 const trueOrFalse = sourceObj.navigation && sourceObj.navigation.isScrollingHide
