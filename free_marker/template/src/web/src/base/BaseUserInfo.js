@@ -97,16 +97,29 @@ class UserInfo {
 
     /** 拿cookie的token去換到登入資訊然後呼叫emitAuthStateChanged之後的行為 */
     async specificBehaviorOfLoginStateChange(user) {
+        const { Application } = require("../");
+        const view = Application.getLatestComponent();
+
+        // [新增項目]：若在 LINE App 內開啟，優先執行 LIFF 行為
+        if (liff.isInClient()) {
+            Util.appendInfo("偵測到 LINE 環境，執行 liffBehavior...");
+            await this.liffBehavior(view);
+        }
+
         let current = "";
         if (this.isValidUser(user)) {
             Util.appendInfo(`firebase-auth取得authorized user(${user.uid})，執行enableParallelMode，讓firebase api依據權限拿資料`);
             Util.appendInfo(`7381271928 => 會員在firebase-authentication存在裡了`, user);
-            const { Application } = require("../");
-            current = await this.apiOfUser.fetchUserItem(Application.getLatestComponent(), user.uid);
 
-            //TODO:改成MergeSubmit
-            if (!current.exists) Util.exeAsyncT(this.apiOfUser.submitUserItem(Application.getLatestComponent(), { ...user, id: user.uid }, user.uid));
-            else Util.exeAsyncT(this.apiOfUser.updateUserItem(Application.getLatestComponent(), user, user.uid)); //不要讓main thread卡住
+            // 這裡已經有引入 Application，可以直接使用
+            current = await this.apiOfUser.fetchUserItem(view, user.uid);
+
+            if (!current.exists) {
+                Util.exeAsyncT(this.apiOfUser.submitUserItem(view, { ...user, id: user.uid }, user.uid));
+            } else {
+                Util.exeAsyncT(this.apiOfUser.updateUserItem(view, user, user.uid));
+            }
+
             Cookie.setUser(user);
             Util.appendInfo("登入成功, 所以寫入資料");
             Util.appendInfo("user info:", user);
@@ -115,6 +128,7 @@ class UserInfo {
             Cookie.removeUser();
             await firebaser.logout();
         }
+
         this.invalidateLoginState(current?.exists ? current : user);
         Util.appendInfo(`Navigator收到登入狀態改變的事件,login狀態:${this.isLoginWithSucceed()} `);
     }
@@ -202,6 +216,21 @@ class UserInfo {
         }
     };
 
+    async liffBehavior(view) {
+        // 嘗試 Line LIFF 登入 (僅在設定了 liffId 且初始化成功時)
+        const isLiffEnabled = await this.initializeLiff();
+        if (isLiffEnabled) {
+            Util.appendInfo("嘗試使用 Line LIFF 登入...");
+            const liffLoginSuccess = await this.performLineLiffLogin(view);
+            if (liffLoginSuccess) {
+                Util.appendInfo("Line LIFF 登入成功。");
+                return;
+            } else {
+                Util.appendInfo("Line LIFF 登入失敗或不適用，回退到 Google 登入。");
+            }
+        }
+    }
+
     performLoginBehavior = async (view) => {
         const self = this;
         if (this.isAuthProcessing()) {
@@ -212,19 +241,6 @@ class UserInfo {
         const func = async () => {
             await this.executeAsyncTask(async () => {
                 try {
-                    // 優先嘗試 Line LIFF 登入 (僅在設定了 liffId 且初始化成功時)
-                    const isLiffEnabled = await this.initializeLiff();
-                    if (isLiffEnabled) {
-                        Util.appendInfo("嘗試使用 Line LIFF 登入...");
-                        const liffLoginSuccess = await this.performLineLiffLogin(view);
-                        if (liffLoginSuccess) {
-                            Util.appendInfo("Line LIFF 登入成功。");
-                            return;
-                        } else {
-                            Util.appendInfo("Line LIFF 登入失敗或不適用，回退到 Google 登入。");
-                        }
-                    }
-
                     // Google 登入作為 Fallback 或預設
                     Util.appendInfo("嘗試使用 Google 登入...");
                     await firebaser.signInWithGoogle(async (authResult) => {
@@ -252,7 +268,7 @@ class UserInfo {
                 window.location.href = `https://liff.line.me/${Configer.liffId}`;
                 // 避免無限 redirect
                 if (!window.location.href.includes("liff.line.me")) {
-                    window.location.replace(liffUrl);
+                    window.location.replace(`https://liff.line.me/${Configer.liffId}`);
                 }
                 return "REDIRECT";
             }
@@ -275,12 +291,14 @@ class UserInfo {
                 const liffPhoto = decodedToken?.picture || "";
                 // const liffPhone = ""; // 註：LIFF ID Token 預設不包含手機資訊，需額外授權或透過 profile 獲取
                 await this.apiOfLiff.submitLiffUserItem(
-                    undefined
-                    , {
+                    undefined,
+                    {
                         token: decodedToken,
                         name: liffName,
                         photo: liffPhoto
-                    }, decodedToken ?? '')
+                    },
+                    decodedToken ?? ""
+                );
                 // console.log("LIFF Profile Data:", {
                 //     email: liffEmail,
                 //     name: liffName,
