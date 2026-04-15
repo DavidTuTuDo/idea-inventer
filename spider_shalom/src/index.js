@@ -240,7 +240,7 @@ class spider_shalom extends Spider {
                     else {
                         const waitTime = 10 * 1000; // 20 秒
                         console.log(`[Error] 處理 ${idStr} 發生非 403 錯誤: ${errorMsg}`);
-                        console.log(`[Info] 等待 20 秒後嘗試重新處理同一個 ID...`);
+                        console.log(`[Info] 等待 10 秒後嘗試重新處理同一個 ID...`);
                         await Util.syncDelay(waitTime);
 
                         await this.getCurrentBrowser().close().catch(() => {});
