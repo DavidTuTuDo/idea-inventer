@@ -227,8 +227,8 @@ class spider_shalom extends Spider {
 
                     // 1. 如果遇到 403 Forbidden (CloudFront 攔截)
                     if (errorMsg.includes('403') || errorMsg.toLowerCase().includes('forbidden')) {
-                        const waitTime = 2.5 * 60 * 1000; // 2.5 分鐘
-                        console.log(`[Warning] 觸發 CloudFront 403 防護，將靜置 2.5 分鐘後自動重試... (ID: ${idStr})`);
+                        const waitTime = 3 * 60 * 1000; // 3 分鐘
+                        console.log(`[Warning] 觸發 CloudFront 403 防護，將靜置 3 分鐘後自動重試... (ID: ${idStr})`);
                         await Util.syncDelay(waitTime);
 
                         // 嘗試關閉舊環境，重新初始化 (配合 extractBehavior 中的 verificationByCookie 會換新 User-Agent)
