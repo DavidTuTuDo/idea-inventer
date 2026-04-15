@@ -159,7 +159,7 @@ class spider_shalom extends Spider {
             await Promise.all([
                 page.waitForResponse(res =>
                         res.url().includes('mainorder/list/') && res.status() === 200,
-                    { timeout: 8000 }
+                    { timeout: 5000 }
                 ),
                 page.click('::-p-text(開始搜尋)')
             ]);
@@ -227,8 +227,8 @@ class spider_shalom extends Spider {
 
                     // 1. 如果遇到 403 Forbidden (CloudFront 攔截)
                     if (errorMsg.includes('403') || errorMsg.toLowerCase().includes('forbidden')) {
-                        const waitTime = 2.5 * 60 * 1000; // 2.5 分鐘
-                        console.log(`[Warning] 觸發 CloudFront 403 防護，將靜置 2.5 分鐘後自動重試... (ID: ${idStr})`);
+                        const waitTime = 2 * 60 * 1000; // 2 分鐘
+                        console.log(`[Warning] 觸發 CloudFront 403 防護，將靜置 2 分鐘後自動重試... (ID: ${idStr})`);
                         await Util.syncDelay(waitTime);
 
                         // 嘗試關閉舊環境，重新初始化 (配合 extractBehavior 中的 verificationByCookie 會換新 User-Agent)
@@ -254,7 +254,7 @@ class spider_shalom extends Spider {
     /** 歷史紀錄 */
     async extractTab4(page) {
         await page.click('a[href="#tab-4"]');
-        await Util.syncDelay(300)
+        await Util.syncDelay(250)
         let allData = [];
 
         const [initialResponse] = await Promise.all([
@@ -297,7 +297,7 @@ class spider_shalom extends Spider {
     /** 訂房資訊 */
     async extractTab1(page) {
         await page.click('a[href="#tab-1"]');
-        await Util.syncDelay(500)
+        await Util.syncDelay(250)
         const prefix = `#tab-1`;
         const name = await page.$eval(`${prefix} input[data-name="name"]`, el => el.value);
         const identityNo = await page.$eval(`${prefix} input[data-name="identity_no"]`, el => el.value);
@@ -323,7 +323,7 @@ class spider_shalom extends Spider {
     /** 消費明細 */
     async extractTab2(page) {
         await page.click('a[href="#tab-2"]');
-        await Util.syncDelay(500)
+        await Util.syncDelay(250)
         const prefix = `#tab-2`;
         const bookingData = await page.evaluate(() => {
             const container = document.querySelector('#overview');
@@ -342,7 +342,7 @@ class spider_shalom extends Spider {
         const rows = await page.$$(`${prefix} .render_target[data-mode="single"] > div`);
         const rooms = [];
         for (const row of rows) {
-            await Util.syncDelay(500);
+            await Util.syncDelay(250);
             const [response] = await Promise.all([
                 page.waitForResponse(res =>
                         res.url().includes('list/?roomorder_id=') && res.status() === 200,
