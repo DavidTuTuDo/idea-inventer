@@ -86,7 +86,7 @@ class spider_igllm extends Spider {
         await this.activatePage4Load({ href, cookies: cookies4MetaAuth })
     }
 
-    fetch = async (href,useCache = true) => {
+    fetch = async (href, useCache = true) => {
         await this.verificationIGByCookie(href);
         await Util.syncDelay(500);
         const nameOfUser = Util.getTailStringSplitBy(href, '/');
