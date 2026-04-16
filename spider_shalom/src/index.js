@@ -23,7 +23,7 @@ class spider_shalom extends Spider {
         const cookies4MetaAuth = [
             {
                 name: 'sessionid',
-                value: 'duiz8o86uveck98jvrzc0vni5hwqtyv2', // 替換為實際值
+                value: 'u2lq3p1op68v4vsx9duvw7424paxfhs2', // 替換為實際值
                 domain: 'pms.shalom.com.tw',
                 path: '/',
                 secure: true,
@@ -31,7 +31,7 @@ class spider_shalom extends Spider {
             },
             {
                 name: 'csrftoken',
-                value: 'mCjaxwdVBS56cwwPxT6bXWQvOS0kELOWQNV3G0aOkdwekWDrBlsPPceqPdpFM5vN', // 替換為實際值
+                value: 'LwmtruAMlkfH7IduzwWXHtt2lHRe4GmMsRMWTAm6v3YLeRrFipVdsoWdhvnKGM92', // 替換為實際值
                 domain: 'pms.shalom.com.tw',
                 path: '/',
                 secure: true,
@@ -147,7 +147,7 @@ class spider_shalom extends Spider {
             }
             // ==========================================
 
-            await Util.syncDelay(2000);
+            await Util.syncDelay(1500);
 
             // 原本的邏輯繼續執行...
             await page.click('::-p-text(進階)');
@@ -176,11 +176,43 @@ class spider_shalom extends Spider {
                 return;
             }
 
-            const newTarget = await this.getCurrentBrowser().waitForTarget(
-                t => t.url().includes('booking/detail/')
-            );
-            const pageOfDetail = await newTarget.page();
-            await Util.syncDelay(2000);
+            let pageOfDetail;
+            try {
+                /* * 策略 1：嘗試等待新目標 (Target) 出現
+                 * 這裡設定 timeout 為 10000ms (10秒)。
+                 * 如果系統是開新分頁，waitForTarget 會成功捕獲到該 target。
+                 */
+                const newTarget = await this.getCurrentBrowser().waitForTarget(
+                    t => t.url().includes('booking/detail/'),
+                    { timeout: 10000 }
+                );
+                pageOfDetail = await newTarget.page();
+
+            } catch (e) {
+                /* * 策略 2：超時備案 (Fallback)
+                 * 當 10 秒過去仍等不到新 Target 時，代表可能是在「原分頁跳轉」或反應過慢。
+                 * 我們直接從目前瀏覽器所有的 Pages 裡面去撈取。
+                 * 這裡使用 try-catch 包覆，確保 Exception 不會傳遞到外層導致爬蟲崩潰。
+                 */
+                console.warn(`[Target Timeout] 等待詳情頁新目標超時，改為掃描現有分頁...`);
+
+                const pages = await this.getCurrentBrowser().pages();
+
+                // 從現有的所有分頁中，找出 URL 包含 'booking/detail/' 的那一個
+                pageOfDetail = pages.find(p => p.url().includes('booking/detail/'));
+
+                // 如果連 URL 匹配的分頁都找不到，則保險起見拿取「最後一個分頁」(通常是當前焦點分頁)
+                if (!pageOfDetail) {
+                    pageOfDetail = pages[pages.length - 1];
+                }
+
+                console.log(`[Fallback Success] 已成功切換至目標分頁，繼續執行抓取任務。`);
+            }
+
+            // 確認拿到 pageOfDetail 後再繼續後續動作
+            if (!pageOfDetail) throw new Error("無法取得詳情頁 Page 實例");
+
+            await Util.syncDelay(1500);
 
             const order = {
                 basic: await this.extractTab1(pageOfDetail),
@@ -194,6 +226,13 @@ class spider_shalom extends Spider {
             console.log(`[Success] 已存入 ${filePath}`);
 
         } catch (error) {
+            if (error.message.includes('Tab-2-Timeout')) {
+                console.error(`[Skip] 單號 ${id} 因消費明細抓取超時，放棄該筆單號並記錄。`);
+                await this.recordException(id); // 執行記錄動作
+                // 直接結束這個 method，不讓它進到最後的 updateMonitor(currentId)
+                return;
+            }
+
             console.error(`[Error] 處理 ${id} 時發生錯誤:`, error.message);
             throw error; // 將錯誤往上拋給 fetch 處理
         } finally {
@@ -289,8 +328,7 @@ class spider_shalom extends Spider {
                 allData.push(...apiResult.data);
             }
         }
-
-        console.log(`[History] 抓取完成，共 ${allData.length} 筆`);
+        console.log(`tab-4 history抓取完成，共 ${allData.length} 筆`);
         return allData;
     }
 
@@ -313,7 +351,6 @@ class spider_shalom extends Spider {
         const nationality = await page.$eval(`${prefix} input[data-name="nationality"]`, el => el.value);
         const carNo = await page.$eval(`${prefix} input[data-name="car_no"]`, el => el.value);
         const comment = await page.$eval(`${prefix} textarea[data-name="comment"]`, el => el.value);
-
         return {
             name, identityNo, gender, phone1, phone2, email,
             address, affiliation, nationality, carNo, comment
@@ -323,10 +360,13 @@ class spider_shalom extends Spider {
     /** 消費明細 */
     async extractTab2(page) {
         await page.click('a[href="#tab-2"]');
-        await Util.syncDelay(250)
+        await Util.syncDelay(250); // 稍微增加 Tab 切換等待時間
         const prefix = `#tab-2`;
+
+        // 抓取基本訂房概況
         const bookingData = await page.evaluate(() => {
             const container = document.querySelector('#overview');
+            if (!container) return null;
             const serial = container.querySelector('[data-name="booking_sn"]')?.innerText.trim();
             const host = container.querySelector('[data-name="name"]')?.innerText.trim();
             const state = container.querySelector('[data-name="status_style"] .font-bold')?.innerText.trim();
@@ -341,37 +381,72 @@ class spider_shalom extends Spider {
 
         const rows = await page.$$(`${prefix} .render_target[data-mode="single"] > div`);
         const rooms = [];
+
         for (const row of rows) {
-            await Util.syncDelay(250);
-            const [response] = await Promise.all([
-                page.waitForResponse(res =>
-                        res.url().includes('list/?roomorder_id=') && res.status() === 200,
-                    { timeout: 5000 }
-                ),
-                row.evaluate(el => {
-                    const btn = el.querySelector('#edit_stay_contact');
-                    if (btn) btn.click();
-                })
-            ]);
+            try {
+                await Util.syncDelay(250);
 
-            const apiResult = await response.json();
-            const guestData = apiResult.data;
-            const roomInfo = await row.$eval(`button[data-target="#editRoomOrderModal"]`, el => el.innerText);
-            const roomId = await row.$eval(`.arrange_room_btn [data-name="room_id"]`, el => el.innerText.trim());
-            const projectInfo = await row.$eval('.edit_project_btn', el => el.innerText.trim());
-            const bookingType = await row.$eval('.project-label [data-name="booking_type"]', el => el.innerText.trim());
-            const priceText = await row.$eval('.edit_price_btn', el => el.innerText.trim());
-            const checkin = await row.$eval('[data-name="checkin_date"]', el => el.innerText.trim());
-            const checkout = await row.$eval('[data-name="checkout_date"]', el => el.innerText.trim());
+                // 這裡是原本容易卡住的地方，加入 Promise.all 監控
+                const [response] = await Promise.all([
+                    page.waitForResponse(res =>
+                            res.url().includes('list/?roomorder_id=') && res.status() === 200,
+                        { timeout: 8000 } // 設定為 8 秒超時
+                    ),
+                    row.evaluate(el => {
+                        const btn = el.querySelector('#edit_stay_contact');
+                        if (btn) btn.click();
+                    })
+                ]);
 
-            rooms.push({
-                guest: guestData, info: roomInfo, id: `#${roomId}`,
-                bookingType, projectInfo, price: priceText, checkin, checkout
-            })
+                const apiResult = await response.json();
+                const guestData = apiResult.data;
+
+                // 抓取其他欄位
+                const roomInfo = await row.$eval(`button[data-target="#editRoomOrderModal"]`, el => el.innerText).catch(()=>'');
+                const roomId = await row.$eval(`.arrange_room_btn [data-name="room_id"]`, el => el.innerText.trim()).catch(()=>'');
+                const projectInfo = await row.$eval('.edit_project_btn', el => el.innerText.trim()).catch(()=>'');
+                const priceText = await row.$eval('.edit_price_btn', el => el.innerText.trim()).catch(()=>'');
+
+                rooms.push({
+                    guest: guestData, info: roomInfo, id: `#${roomId}`,
+                    projectInfo, price: priceText
+                });
+
+            } catch (err) {
+                // 如果這筆消費明細內的任何一個 room 點不開或 API 超時，直接拋出錯誤讓外層放棄整張單
+                throw new Error(`Tab-2-Timeout: 內部 room 資料抓取超時`);
+            }
         }
-
-        return { ...bookingData, rooms }
+        return { ...bookingData, rooms };
     }
+
+    /** 記錄處理失敗的單號至 monitor.json */
+    recordException = async (id) => {
+        try {
+            await fs.mkdir(BASE_DIR, { recursive: true });
+            let data = { exceptionNo: [] };
+
+            try {
+                const content = await fs.readFile(MONITOR_PATH, 'utf-8');
+                data = JSON.parse(content);
+                // 確保 exceptionNo 欄位存在且為陣列
+                if (!Array.isArray(data.exceptionNo)) {
+                    data.exceptionNo = [];
+                }
+            } catch (e) {
+                // 檔案不存在則使用預設結構
+            }
+
+            // 如果單號不在裡面，才記錄進去
+            if (!data.exceptionNo.includes(id)) {
+                data.exceptionNo.push(id);
+                await fs.writeFile(MONITOR_PATH, JSON.stringify(data, null, 2));
+                console.log(`[Monitor] 已將異常單號 ${id} 存入 exceptionNo 清單`);
+            }
+        } catch (error) {
+            console.error(`[Monitor Error] 寫入異常清單失敗: ${error.message}`);
+        }
+    };
 
     /** 檢查是否有搜尋結果 */
     hasSearchResults = async (page) => {
@@ -386,18 +461,41 @@ class spider_shalom extends Spider {
             return false;
         }
     }
+
+    /** * 針對單一單號進行測試或補抓
+     * @param {string} href - 起始網址
+     * @param {string|number} targetId - 指定的單號 (如: 100321)
+     */
+    fetchSingle = async (href, targetId) => {
+        const idStr = _.toString(targetId);
+        console.log(`[Single Fetch] 啟動單筆測試模式，目標單號: ${idStr}`);
+
+        try {
+            // 直接呼叫核心行為邏輯
+            await this.extractBehavior(href, idStr);
+            console.log(`[Single Fetch] 單號 ${idStr} 測試處理完成。`);
+        } catch (error) {
+            console.error(`[Single Fetch] 測試單號 ${idStr} 時發生異常: ${error.message}`);
+            // 在單筆測試模式下，通常我們會希望看到更詳細的錯誤資訊
+            if (configerer.DEBUG_MODE) console.error(error);
+        }
+    };
 }
 
 export { spider_shalom as spider_shalom }
 
 const ENABLE_OF_OPEN_BROWSER = true;
-const SPIDER_USER = `https://pms.shalom.com.tw/web/booking/list/#advance-filter`;
+const SPIDER_USER = `https://pms.shalom.com.tw/web/booking/list/`;
 
 if (configerer.DEBUG_MODE) {
     (async () => {
             const handler = new spider_shalom(puppeteer, { visible: ENABLE_OF_OPEN_BROWSER, host: 'https://www.instagram.com/' });
             await handler.initial();
             const result = await Util.measureExecutionTime(handler.fetch.bind(handler), SPIDER_USER);
+            /**
+             * 測試單一筆的執行方法
+             * const result = await Util.measureExecutionTime(handler.fetchSingle.bind(handler), SPIDER_USER, 176102);
+             */
             console.log(result.zh_TW);
             await handler.terminate();
         }
