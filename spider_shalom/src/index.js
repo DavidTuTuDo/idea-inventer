@@ -20,35 +20,24 @@ class spider_shalom extends Spider {
     }
 
     verificationByCookie = async (href) => {
-        const cookies4MetaAuth = [
-            {
-                name: 'sessionid',
-                value: 'u2lq3p1op68v4vsx9duvw7424paxfhs2', // 替換為實際值
-                domain: 'pms.shalom.com.tw',
-                path: '/',
-                secure: true,
-                httpOnly: true
-            },
-            {
-                name: 'csrftoken',
-                value: 'LwmtruAMlkfH7IduzwWXHtt2lHRe4GmMsRMWTAm6v3YLeRrFipVdsoWdhvnKGM92', // 替換為實際值
-                domain: 'pms.shalom.com.tw',
-                path: '/',
-                secure: true,
-                httpOnly: false
-            },
-            { name: '_gid', value: 'GA1.3.258081327.1775808518', domain: '.shalom.com.tw', path: '/', secure: true, httpOnly: true },
-            { name: '_gcl_au', value: '1.1.1936469463.1775561336', domain: '.shalom.com.tw', path: '/', secure: true, httpOnly: true },
-            { name: '_ga_YMC77L3KTD', value: 'GS2.1.s1775561335$o1$g0$t1775561337$j58$l0$h1191434673', domain: '.shalom.com.tw', path: '/', secure: true, httpOnly: true },
-            { name: '_ga_C54MDKFL8E', value: 'GS2.1.s1776178021$o20$g1$t1776178021$j60$l0$h0', domain: '.shalom.com.tw', path: '/', secure: true, httpOnly: true },
-            { name: '_ga', value: 'GA1.1.2146716185.1772026668', domain: '.shalom.com.tw', path: '/', secure: true, httpOnly: true },
-            { name: '_fbp', value: 'fb.2.1775561336035.739211692746777395', domain: '.shalom.com.tw', path: '/', secure: true, httpOnly: true }
-        ];
+        let cookies4MetaAuth = [];
 
-        // 1. 取得 Page 實例
+        // 1. 從外部檔案讀取 Cookie 資訊
+        try {
+            const cookiePath = path.join(process.cwd(), 'cookie.json'); // 取得當前執行目錄下的 cookie.json
+            const cookieRaw = await fs.readFile(cookiePath, 'utf-8');
+            cookies4MetaAuth = JSON.parse(cookieRaw);
+            console.log(`[Config] 成功載入 ${cookies4MetaAuth.length} 組 Cookie`);
+        } catch (error) {
+            console.error(`[Error] 無法讀取 cookie.json，請檢查檔案路徑與格式: ${error.message}`);
+            // 視需求決定是否要拋出錯誤
+            throw new Error("Missing cookie.json configuration");
+        }
+
+        // 2. 取得 Page 實例 (動態傳入讀取到的 cookies 陣列)
         const page = await this.activatePage4Load({ href, cookies: cookies4MetaAuth });
 
-        // 2. 隨機 User-Agent 池 (皆為現代常見瀏覽器)
+        // 3. 隨機 User-Agent 池
         const userAgents = [
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
@@ -69,7 +58,7 @@ class spider_shalom extends Spider {
             'Sec-Fetch-Site': 'same-origin'
         });
 
-        console.log(`[Anti-Bot] 已套用隨機 User-Agent 與真實 Headers`);
+        console.log(`[Anti-Bot] 已套用隨機 User-Agent 並從外部檔案載入 Cookie`);
         return page;
     }
 
@@ -266,14 +255,24 @@ class spider_shalom extends Spider {
 
                     // 1. 如果遇到 403 Forbidden (CloudFront 攔截)
                     if (errorMsg.includes('403') || errorMsg.toLowerCase().includes('forbidden')) {
-                        const waitTime = 3 * 60 * 1000; // 3 分鐘
-                        console.log(`[Warning] 觸發 CloudFront 403 防護，將靜置 3 分鐘後自動重試... (ID: ${idStr})`);
-                        await Util.syncDelay(waitTime);
+                        const totalWaitSeconds = 3 * 60; // 總共 180 秒
+                        const intervalSeconds = 10;      // 每 10 秒提醒一次
 
-                        // 嘗試關閉舊環境，重新初始化 (配合 extractBehavior 中的 verificationByCookie 會換新 User-Agent)
+                        console.log(`[Warning] 觸發 CloudFront 403 防護，進入冷卻模式 (ID: ${idStr})`);
+
+                        // 使用迴圈進行拆解等待
+                        for (let remaining = totalWaitSeconds; remaining > 0; remaining -= intervalSeconds) {
+                            console.log(`[Cooldown] 403 防護中，剩餘 ${remaining} 秒後重試...`);
+
+                            // 每次等待 10 秒
+                            await Util.syncDelay(intervalSeconds * 1000);
+                        }
+
+                        console.log(`[Action] 冷卻結束，正在重新初始化瀏覽器環境...`);
+
+                        // 嘗試關閉舊環境，重新初始化
                         await this.getCurrentBrowser().close().catch(() => {});
                         await this.initial();
-
                     }
                     // 2. 如果是其他錯誤 (Timeout, Selector 等)
                     else {
@@ -484,7 +483,7 @@ class spider_shalom extends Spider {
 
 export { spider_shalom as spider_shalom }
 
-const ENABLE_OF_OPEN_BROWSER = true;
+const ENABLE_OF_OPEN_BROWSER = false;
 const SPIDER_USER = `https://pms.shalom.com.tw/web/booking/list/`;
 
 if (configerer.DEBUG_MODE) {

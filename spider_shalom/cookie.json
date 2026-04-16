@@ -1,0 +1,66 @@
+[
+  {
+    "name": "sessionid",
+    "value": "u2lq3p1op68v4vsx9duvw7424paxfhs2",
+    "domain": "pms.shalom.com.tw",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true
+  },
+  {
+    "name": "csrftoken",
+    "value": "LwmtruAMlkfH7IduzwWXHtt2lHRe4GmMsRMWTAm6v3YLeRrFipVdsoWdhvnKGM92",
+    "domain": "pms.shalom.com.tw",
+    "path": "/",
+    "secure": true,
+    "httpOnly": false
+  },
+  {
+    "name": "_gid",
+    "value": "GA1.3.258081327.1775808518",
+    "domain": ".shalom.com.tw",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true
+  },
+  {
+    "name": "_gcl_au",
+    "value": "1.1.1936469463.1775561336",
+    "domain": ".shalom.com.tw",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true
+  },
+  {
+    "name": "_ga_YMC77L3KTD",
+    "value": "GS2.1.s1775561335$o1$g0$t1775561337$j58$l0$h1191434673",
+    "domain": ".shalom.com.tw",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true
+  },
+  {
+    "name": "_ga_C54MDKFL8E",
+    "value": "GS2.1.s1776178021$o20$g1$t1776178021$j60$l0$h0",
+    "domain": ".shalom.com.tw",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true
+  },
+  {
+    "name": "_ga",
+    "value": "GA1.1.2146716185.1772026668",
+    "domain": ".shalom.com.tw",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true
+  },
+  {
+    "name": "_fbp",
+    "value": "fb.2.1775561336035.739211692746777395",
+    "domain": ".shalom.com.tw",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true
+  }
+]
