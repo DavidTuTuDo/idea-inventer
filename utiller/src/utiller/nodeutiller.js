@@ -1112,50 +1112,78 @@ class NodeUtiller extends Utiller {
      *             },
      *         ]
      */
-    interactionByTerminalQ = async (projects) => {
-        // 1. 檢查重複性 (使用 Set 進行高效比對)
+     interactionByTerminalQ = async (projects) => {
+        const MONITOR_PATH = './temp/monitor.json';
+
+        // 1. 檢查重複性
         const names = projects.map(p => p.name);
         const paths = projects.map(p => p.path);
 
-        const hasDuplicateName = new Set(names).size !== names.length;
-        const hasDuplicatePath = new Set(paths).size !== paths.length;
-
-        if (hasDuplicateName || hasDuplicatePath) {
-            const errorMsg = hasDuplicateName ? '專案「陣列裡」名稱 (name)' : '專案「陣列裡」路徑 (path)';
-            console.error(`\x1b[31m錯誤: 偵測到重複的 ${errorMsg}，請檢查資料來源。\x1b[0m`);
-            process.exit(1); // 終止後續行為
+        if (new Set(names).size !== names.length || new Set(paths).size !== paths.length) {
+            console.error(`\x1b[31m錯誤: 偵測到重複的名稱或路徑，請檢查資料來源。\x1b[0m`);
+            process.exit(1);
         }
 
-        // 2. 建立選單選項 (將物件轉為 inquirer 格式)
+        // 讀取快取資料
+        let cachedData = null;
+        try {
+            const fileContent = await fsp.readFile(MONITOR_PATH, 'utf-8');
+            cachedData = JSON.parse(fileContent);
+        } catch (err) {
+            // 檔案不存在或讀取失敗則忽略
+        }
+
         const choices = projects.map(p => ({
-            name: `${p.name} (${p.path})`, // 顯示給使用者看的文字
-            value: p                       // 選中後回傳的原始物件內容
+            name: `${p.name} (${p.path})`,
+            value: p
         }));
 
-        try {
+        // 定義 Inquirer 任務
+        const promptTask = async () => {
             const answers = await inquirer.prompt([
                 {
                     type: 'checkbox',
                     name: 'selectedProjects',
-                    message: '請選擇要執行的子項 (空白鍵勾選，"a" 鍵全選，Enter 確認):',
+                    message: '請選擇要執行的子項 (15秒內未操作將使用上次紀錄):',
                     choices: choices,
-                    // ES11 Optional Chaining 範例 (確保 choices 存在)
-                    validate: (answer) => {
-                        if (answer?.length < 1) {
-                            return '請至少選擇一個子項！';
-                        }
-                        return true;
-                    }
+                    validate: (answer) => answer.length >= 1 || '請至少選擇一個子項！'
                 }
             ]);
-            // 4. 回傳勾選的陣列
             return answers.selectedProjects;
+        };
 
+        // 定義超時任務
+        const timeoutTask = () => new Promise((resolve, reject) => {
+            setTimeout(() => {
+                if (cachedData && cachedData.selectedProjects) {
+                    console.log('\n\x1b[33m[Timeout] 15秒未操作，自動載入上一次的選擇項目...\x1b[0m');
+                    resolve(cachedData.selectedProjects);
+                } else {
+                    reject(new Error('Timeout: 沒有上次紀錄可供載入'));
+                }
+            }, 15000);
+        });
+
+        try {
+            // 使用 Promise.race 競爭，誰快選誰
+            // 注意：Inquirer 若被超時覆蓋，終端機可能會殘留 UI，但在 CLI 自動化流程中通常可接受
+            const finalSelection = await Promise.race([promptTask(), timeoutTask()]);
+
+            // 5. 儲存結果到 ./temp/monitor.json
+            const saveData = {
+                updateTime: Date.now(),
+                selectedProjects: finalSelection
+            };
+
+            const dir = libpath.dirname(MONITOR_PATH);
+            await fsp.mkdir(dir, { recursive: true }); // 確保資料夾存在
+            await fsp.writeFile(MONITOR_PATH, JSON.stringify(saveData, null, 2));
+            return finalSelection;
         } catch (error) {
-            console.error('執行選單時發生錯誤:', error?.message ?? '未知錯誤');
+            console.error('\x1b[31m執行失敗:\x1b[0m', error?.message ?? '未知錯誤');
             return [];
         }
-    }
+    };
 
     /** 產出一個/temp,然後把/src 複製過去, 再把裡面每一個file的 if(DEBUG)給去除掉,再加上prettier */
     /** 找出if (configerer) 當作start */

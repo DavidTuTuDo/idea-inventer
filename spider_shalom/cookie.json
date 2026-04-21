@@ -1,7 +1,7 @@
 [
   {
     "name": "sessionid",
-    "value": "u2lq3p1op68v4vsx9duvw7424paxfhs2",
+    "value": "157men58fradnam73j0o9qkvtu3hnbkf",
     "domain": "pms.shalom.com.tw",
     "path": "/",
     "secure": true,
@@ -9,7 +9,7 @@
   },
   {
     "name": "csrftoken",
-    "value": "LwmtruAMlkfH7IduzwWXHtt2lHRe4GmMsRMWTAm6v3YLeRrFipVdsoWdhvnKGM92",
+    "value": "AelQzV4pkMqbenZgQ5vIfbPWQ01qpbRZ3siEy8P7CtQbGpbH3MuwuoH7FSbmto8L",
     "domain": "pms.shalom.com.tw",
     "path": "/",
     "secure": true,
@@ -17,7 +17,7 @@
   },
   {
     "name": "_gid",
-    "value": "GA1.3.258081327.1775808518",
+    "value": "GA1.3.1063191301.1776515046",
     "domain": ".shalom.com.tw",
     "path": "/",
     "secure": true,
@@ -25,7 +25,7 @@
   },
   {
     "name": "_gcl_au",
-    "value": "1.1.1936469463.1775561336",
+    "value": "1.1.154188371.1776592053",
     "domain": ".shalom.com.tw",
     "path": "/",
     "secure": true,
@@ -33,7 +33,7 @@
   },
   {
     "name": "_ga_YMC77L3KTD",
-    "value": "GS2.1.s1775561335$o1$g0$t1775561337$j58$l0$h1191434673",
+    "value": "GS2.1.s1776592053$o1$g0$t1776592055$j58$l0$h2119187113",
     "domain": ".shalom.com.tw",
     "path": "/",
     "secure": true,
@@ -41,7 +41,7 @@
   },
   {
     "name": "_ga_C54MDKFL8E",
-    "value": "GS2.1.s1776178021$o20$g1$t1776178021$j60$l0$h0",
+    "value": "GS2.1.s1776710310$o8$g1$t1776710627$j53$l0$h0",
     "domain": ".shalom.com.tw",
     "path": "/",
     "secure": true,
@@ -49,7 +49,7 @@
   },
   {
     "name": "_ga",
-    "value": "GA1.1.2146716185.1772026668",
+    "value": "GA1.1.1028186131.1776515046",
     "domain": ".shalom.com.tw",
     "path": "/",
     "secure": true,
@@ -57,7 +57,7 @@
   },
   {
     "name": "_fbp",
-    "value": "fb.2.1775561336035.739211692746777395",
+    "value": "fb.2.1776592053951.904740536813918721",
     "domain": ".shalom.com.tw",
     "path": "/",
     "secure": true,

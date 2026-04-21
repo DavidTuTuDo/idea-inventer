@@ -16,6 +16,12 @@
     {{#verification}}
       <meta name="google-site-verification" content="{{{verification}}}" />
     {{/verification}}
+    <% if (process.env.self_debug) { %>
+    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+    <script>
+    const vConsole = new window.VConsole();
+    </script>
+  <% } %>
 </head>
 <body>
 <div id="app"></div>
