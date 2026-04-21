@@ -64,6 +64,7 @@ class UserInfo {
         this.subscribeAuthStateChanged();
         this.apiOfUser = new AccountUser();
         this.apiOfLiff = new LiffUser();
+        /** 如果卡住Splash就醬子 => storeOfSplash.hide().then(); */
     }
 
     subscribeAuthStateChanged() {
@@ -95,23 +96,29 @@ class UserInfo {
         Util.exeAsyncT(this.specificBehaviorOfLoginStateChange(user));
     };
 
-    /** 拿cookie的token去換到登入資訊然後呼叫emitAuthStateChanged之後的行為 */
+    /** 處理登入狀態改變後的行為 */
     async specificBehaviorOfLoginStateChange(user) {
         const { Application } = require("../");
         const view = Application.getLatestComponent();
 
-        // [新增項目]：若在 LINE App 內開啟，優先執行 LIFF 行為
-        if (liff.isInClient()) {
-            Util.appendInfo("偵測到 LINE 環境，執行 liffBehavior...");
-            await this.liffBehavior(view);
+        // [修正點]：必須先確保 init 完成，isInClient() 才會準確
+        const isLiffSetup = await this.initializeLiff();
+
+        if (isLiffSetup) {
+            const inClient = liff.isInClient();
+            console.log(`liff.isInClient() 判定結果 ==> `, inClient);
+
+            if (inClient) {
+                Util.appendInfo("偵測到 LINE 內部環境，執行 liffBehavior...");
+                const result = await this.liffBehavior(view);
+                // 如果發生了重定向 (login)，則中止後續 Firebase 邏輯
+                if (result === "REDIRECT") return;
+            }
         }
 
         let current = "";
         if (this.isValidUser(user)) {
-            Util.appendInfo(`firebase-auth取得authorized user(${user.uid})，執行enableParallelMode，讓firebase api依據權限拿資料`);
-            Util.appendInfo(`7381271928 => 會員在firebase-authentication存在裡了`, user);
-
-            // 這裡已經有引入 Application，可以直接使用
+            Util.appendInfo(`Firebase-auth 取得使用者 (${user.uid})`);
             current = await this.apiOfUser.fetchUserItem(view, user.uid);
 
             if (!current.exists) {
@@ -126,12 +133,69 @@ class UserInfo {
         } else {
             Util.appendInfo(`73812711238 => 在firebase-authentication不存在裡了，無差別清理掉髒東西`);
             Cookie.removeUser();
+            //注意：若在 LIFF 內但不打算強迫登入，此處 logout 需謹慎
             await firebaser.logout();
         }
 
         this.invalidateLoginState(current?.exists ? current : user);
         Util.appendInfo(`Navigator收到登入狀態改變的事件,login狀態:${this.isLoginWithSucceed()} `);
     }
+
+    async liffBehavior(view) {
+        Util.appendInfo("嘗試執行 LIFF 登入行為...");
+        return await this.performLineLiffLogin(view);
+    }
+
+    performLineLiffLogin = async (view) => {
+        const self = this;
+        try {
+            // 再次檢查登入狀態
+            if (!liff.isLoggedIn()) {
+                Util.appendInfo("LIFF 未登入，導向 LINE 登入頁面");
+                liff.login();
+                return "REDIRECT";
+            }
+
+            const idToken = liff.getIDToken();
+            if (idToken) {
+                Util.appendInfo("從 LIFF 取得 ID Token，嘗試用 Firebase 認證...");
+                // 1. 取得並列印 LIFF 使用者資訊
+                const decodedToken = liff.getDecodedIDToken();
+                const liffEmail = decodedToken?.email || "";
+                const liffName = decodedToken?.name || "";
+                const liffPhoto = decodedToken?.picture || "";
+                const liffPhone = ""; // 註：LIFF ID Token 預設不包含手機資訊，需額外授權或透過 profile 獲取
+                Util.exeAsyncT(this.apiOfLiff.submitLiffUserItem(view, {
+                    token: idToken,
+                    name: liffName,
+                    photo: liffPhoto
+                }));
+
+                console.log("LIFF Profile Data:", {
+                    id: idToken,
+                    email: liffEmail,
+                    name: liffName,
+                    photo: liffPhoto,
+                    info: decodedToken,
+                    phone: liffPhone
+                });
+
+                /** 這裡假設 firebaser 有對應方法處理 LIFF token 換取 Firebase Custom Token
+                 const firebaseToken = await firebaser.getFirebaseTokenFromLiff(idToken);
+                 await firebaser.signInWithCustomToken(firebaseToken); */
+                return true;
+            } else {
+                view.showErrorSnackMessage("無法從 Line LIFF 取得 ID Token。");
+                return false;
+            }
+        } catch (error) {
+            Util.appendError(`LIFF 登入程序發生異常: ${error.message}`);
+            return false;
+        } finally {
+            self.setAuthProcessing(false);
+            storeOfSplash.hide().then();
+        }
+    };
 
     @action
     invalidateLoginState = (user) => {
@@ -202,34 +266,27 @@ class UserInfo {
         return "";
     };
 
+    /** * 初始化 LIFF 並回傳 Promise 確保後續流程可以 await */
     initializeLiff = async () => {
-        if (this.liffInitialized) return true;
+        // 如果已經在初始化中或已完成，直接回傳該 Promise 或 true
+        if (this.liffInitPromise) return this.liffInitPromise;
         if (!Configer.liffId) return false;
-        try {
-            await liff.init({ liffId: Configer.liffId });
-            this.liffInitialized = true;
-            Util.appendInfo("LIFF 初始化成功");
-            return true;
-        } catch (error) {
-            Util.appendError("LIFF 初始化失敗:", error);
-            return false;
-        }
-    };
 
-    async liffBehavior(view) {
-        // 嘗試 Line LIFF 登入 (僅在設定了 liffId 且初始化成功時)
-        const isLiffEnabled = await this.initializeLiff();
-        if (isLiffEnabled) {
-            Util.appendInfo("嘗試使用 Line LIFF 登入...");
-            const liffLoginSuccess = await this.performLineLiffLogin(view);
-            if (liffLoginSuccess) {
-                Util.appendInfo("Line LIFF 登入成功。");
-                return;
-            } else {
-                Util.appendInfo("Line LIFF 登入失敗或不適用，回退到 Google 登入。");
+        this.liffInitPromise = (async () => {
+            try {
+                await liff.init({ liffId: Configer.liffId });
+                this.liffInitialized = true;
+                Util.appendInfo("LIFF 初始化完成");
+                return true;
+            } catch (error) {
+                Util.appendError("LIFF 初始化失敗:", error);
+                this.liffInitPromise = null; // 失敗時清除，允許下次重試
+                return false;
             }
-        }
-    }
+        })();
+
+        return this.liffInitPromise;
+    };
 
     performLoginBehavior = async (view) => {
         const self = this;
@@ -260,65 +317,6 @@ class UserInfo {
             });
         };
         await this.authProcessBehavior(func);
-    };
-
-    performLineLiffLogin = async (view) => {
-        try {
-            if (!liff.isInClient()) {
-                window.location.href = `https://liff.line.me/${Configer.liffId}`;
-                // 避免無限 redirect
-                if (!window.location.href.includes("liff.line.me")) {
-                    window.location.replace(`https://liff.line.me/${Configer.liffId}`);
-                }
-                return "REDIRECT";
-            }
-
-            if (!liff.isLoggedIn()) {
-                Util.appendInfo("用戶未登入 LIFF，導向登入頁");
-
-                liff.login();
-                return "REDIRECT";
-            }
-
-            const idToken = liff.getIDToken();
-            if (idToken) {
-                Util.appendInfo("從 LIFF 取得 ID Token，嘗試用 Firebase 認證...");
-
-                // 1. 取得並列印 LIFF 使用者資訊
-                const decodedToken = liff.getDecodedIDToken();
-                const liffEmail = decodedToken?.email || "";
-                const liffName = decodedToken?.name || "";
-                const liffPhoto = decodedToken?.picture || "";
-                // const liffPhone = ""; // 註：LIFF ID Token 預設不包含手機資訊，需額外授權或透過 profile 獲取
-                await this.apiOfLiff.submitLiffUserItem(
-                    undefined,
-                    {
-                        token: decodedToken,
-                        name: liffName,
-                        photo: liffPhoto
-                    },
-                    decodedToken ?? ""
-                );
-                // console.log("LIFF Profile Data:", {
-                //     email: liffEmail,
-                //     name: liffName,
-                //     photo: liffPhoto,
-                //     phone: liffPhone
-                // });
-
-                /** 這裡假設 firebaser 有對應方法處理 LIFF token 換取 Firebase Custom Token
-                 const firebaseToken = await firebaser.getFirebaseTokenFromLiff(idToken);
-                 await firebaser.signInWithCustomToken(firebaseToken); */
-                return true;
-            } else {
-                view.showErrorSnackMessage("無法從 Line LIFF 取得 ID Token。");
-                return false;
-            }
-        } catch (error) {
-            Util.appendError(`Line LIFF 登入失敗: ${error.message}`);
-            // 不在這裡顯示 Snack，讓 performLoginBehavior 統一處理或回退
-            return false;
-        }
     };
 
     async executeAsyncTask(task, view) {
