@@ -115,6 +115,9 @@ class CodegenNode {
      *  https://developers.line.biz 申請provider -> 再申請 login channel */
     liffId;
 
+    /** 用來拿user idToken用的agent id */
+    liffChannelId;
+
     /** 企業色，可以在每個專案裡面設定客製化 */
     colorX = '#1877F2';
 
@@ -7455,6 +7458,8 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`locateOfStorage`, JSON.stringify(sourceObj.locationOfStorage));
         baseConfigGenerator.appendField(`nameOfBrand`, JSON.stringify(sourceObj.title), [], []);
         baseConfigGenerator.appendField(`colorX`, JSON.stringify(sourceObj.colorX), [], []);
+        if (sourceObj.liffId) baseConfigGenerator.appendField(`liffId`, JSON.stringify(sourceObj.liffId));
+        if (sourceObj.liffChannelId) baseConfigGenerator.appendField(`liffChannelId`, JSON.stringify(sourceObj.liffChannelId));
 
         const enums = this.getAllEnums();
         for (const key in enums) {
@@ -7484,8 +7489,6 @@ class ProjectFileHandler extends PathBase {
                 break;
             case 'web':
                 baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
-                if (sourceObj.liffId)
-                    baseConfigGenerator.appendField(`liffId`, JSON.stringify(sourceObj.liffId));
                 if (sourceObj.hasCookiePassword())
                     baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
                 const trueOrFalse = sourceObj.navigation && sourceObj.navigation.isScrollingHide
