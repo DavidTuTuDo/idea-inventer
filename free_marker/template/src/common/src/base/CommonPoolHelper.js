@@ -18,7 +18,7 @@ class CommonPoolHelper {
         // p-queue 內建 timeout 機制，時間到會拋出 TimeoutError
         this.queues[`functions`] = new PQueue({
             concurrency: 1,
-            autoStart: false,
+            autoStart: true,
             timeout: 60000,
             throwOnTimeout: true
         });

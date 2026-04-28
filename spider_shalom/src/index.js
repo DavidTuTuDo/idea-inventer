@@ -483,7 +483,7 @@ class spider_shalom extends Spider {
 
 export { spider_shalom as spider_shalom }
 
-const ENABLE_OF_OPEN_BROWSER = false;
+const ENABLE_OF_OPEN_BROWSER = true;
 const SPIDER_USER = `https://pms.shalom.com.tw/web/booking/list/`;
 
 if (configerer.DEBUG_MODE) {

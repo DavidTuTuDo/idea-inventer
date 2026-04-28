@@ -4,7 +4,7 @@ import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
 import BaseFirebase from "./BaseFirebase";
 import Config from "../config";
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, signInWithCustomToken } from "firebase/auth";
 import {
     getCountFromServer,
     getAggregateFromServer,
@@ -63,6 +63,11 @@ const RemoteDo = {
 class FirebaseHelper extends BaseFirebase {
     /** web端當前的user */
     user;
+
+    /** * 檢查當前是否有 User 物件 (同步判斷) */
+    isLoggedIn() {
+        return !!this.auth.currentUser;
+    }
 
     constructor() {
         super();
@@ -155,6 +160,27 @@ class FirebaseHelper extends BaseFirebase {
         }
     };
 
+    /**
+     * 使用後端產生的 Custom Token 進行登入
+     * @param {string} token - 從後端取得的 Firebase Custom Token
+     * @param {function} asyncTask - 登入成功後執行的非同步任務
+     */
+    signInWithCustomToken = async (token, asyncTask = async (result) => result) => {
+        try {
+            if (!token) {
+                throw new Error("signInWithCustomToken => Token is empty");
+            }
+            // 執行 Firebase 登入
+            const result = await signInWithCustomToken(this.auth(), token);
+            // 登入成功後，執行傳入的 asyncTask
+            await asyncTask(result);
+            return result;
+        } catch (error) {
+            Util.appendInfo(`signInWithCustomToken Error: ${error.code} => ${error.message}`);
+            throw new ERROR(9999, `LINE 認證登入失敗`);
+        }
+    };
+
     logout = async () => {
         try {
             if (!Util.isUndefinedNullEmpty(this.user)) {
@@ -183,6 +209,45 @@ class FirebaseHelper extends BaseFirebase {
     async httpOnCall(functionName, data) {
         const functions = httpsCallable(this.functions(), functionName);
         return await functions(data);
+    }
+
+    async httpOnCall(functionName, data) {
+        const isDev = _.isEqual(Config.env, "dev") && _.isEqual(Config.platform, "web");
+        if (isDev) {
+            // 這是你剛剛產生的 Cloudflare 網址
+            const CF_BASE = "https://nwxwilfgnj.loclx.io";
+            const projectId = "davidtu-dev";
+            const region = "us-central1";
+            const url = `${CF_BASE}/${projectId}/${region}/${functionName}`;
+
+            console.log(`[Dev Cache] 正在透過隧道呼叫: ${url}`);
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                        // Cloudflare Quick Tunnel 不需要額外標頭，會直接穿透
+                    },
+                    body: JSON.stringify({ data: data }) // 符合 Firebase OnCall 協定
+                });
+
+                if (!response.ok) {
+                    const errorLog = await response.text();
+                    throw new Error(`雲端函式錯誤: ${response.status} - ${errorLog}`);
+                }
+
+                const json = await response.json();
+                return { data: json.result }; // 回傳格式需符合 SDK 預期
+            } catch (error) {
+                console.error(`[Cloudflare Dev] ${functionName} 失敗:`, error);
+                throw error;
+            }
+        } else {
+            // 正式環境依然使用官方 SDK
+            const functions = httpsCallable(this.functions(), functionName);
+            return await functions(data);
+        }
     }
 
     /**

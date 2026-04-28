@@ -13,6 +13,7 @@ import LiffUser from "../store/accountLiffUser";
 import CommonPoolHelper from "./CommonPoolHelper";
 import { storeOfSplash } from "./SplashX";
 import liff from "@line/liff";
+import Functions from "../functions";
 
 class UserInfo {
     @observable
@@ -58,6 +59,7 @@ class UserInfo {
     globalPerspective = {};
 
     liffInitialized = false;
+    liffLoginAttempted = false;
 
     constructor(props) {
         makeObservable(this);
@@ -96,121 +98,144 @@ class UserInfo {
         Util.exeAsyncT(this.specificBehaviorOfLoginStateChange(user));
     };
 
-    /** 處理登入狀態改變後的行為 */
-    async specificBehaviorOfLoginStateChange(user) {
-        const { Application } = require("../");
-        const view = Application.getLatestComponent();
-
-        // [修正點]：必須先確保 init 完成，isInClient() 才會準確
+    /** * 1. 判斷是否在 LINE Webview 環境
+     * 封裝初始化與環境檢查邏輯
+     */
+    async checkIsInLineBrowser() {
         const isLiffSetup = await this.initializeLiff();
+        if (!isLiffSetup) return false;
 
-        if (isLiffSetup) {
-            const inClient = liff.isInClient();
-            console.log(`liff.isInClient() 判定結果 ==> `, inClient);
-
-            if (inClient) {
-                Util.appendInfo("偵測到 LINE 內部環境，執行 liffBehavior...");
-                const result = await this.liffBehavior(view);
-                // 如果發生了重定向 (login)，則中止後續 Firebase 邏輯
-                if (result === "REDIRECT") return;
-            }
-        }
-
-        let current = "";
-        if (this.isValidUser(user)) {
-            Util.appendInfo(`Firebase-auth 取得使用者 (${user.uid})`);
-            current = await this.apiOfUser.fetchUserItem(view, user.uid);
-
-            if (!current.exists) {
-                Util.exeAsyncT(this.apiOfUser.submitUserItem(view, { ...user, id: user.uid }, user.uid));
-            } else {
-                Util.exeAsyncT(this.apiOfUser.updateUserItem(view, user, user.uid));
-            }
-
-            Cookie.setUser(user);
-            Util.appendInfo("登入成功, 所以寫入資料");
-            Util.appendInfo("user info:", user);
-        } else {
-            Util.appendInfo(`73812711238 => 在firebase-authentication不存在裡了，無差別清理掉髒東西`);
-            Cookie.removeUser();
-            //注意：若在 LIFF 內但不打算強迫登入，此處 logout 需謹慎
-            await firebaser.logout();
-        }
-
-        this.invalidateLoginState(current?.exists ? current : user);
-        Util.appendInfo(`Navigator收到登入狀態改變的事件,login狀態:${this.isLoginWithSucceed()} `);
+        const inClient = liff.isInClient();
+        console.log(`[Environment Check] Is in LINE Client: ${inClient}`);
+        return inClient;
     }
 
-    async liffBehavior(view) {
-        Util.appendInfo("嘗試執行 LIFF 登入行為...");
-        return await this.performLineLiffLogin(view);
-    }
-
-    performLineLiffLogin = async (view) => {
-        const self = this;
+    /** * 2. 封裝 LINE/LIFF 登入完整邏輯
+     */
+    async handleLineAutoLoginFlow(view) {
         try {
-            // 再次檢查登入狀態
+            Util.appendInfo("執行 LINE 自動登入流程...");
+            this.liffLoginAttempted = true;
+
+            // 檢查 LIFF 層級是否登入
             if (!liff.isLoggedIn()) {
-                Util.appendInfo("LIFF 未登入，導向 LINE 登入頁面");
+                Util.appendInfo("LIFF 未登入，重新導向 LINE Login...");
                 liff.login();
                 return "REDIRECT";
             }
 
             const idToken = liff.getIDToken();
-            if (idToken) {
-                Util.appendInfo("從 LIFF 取得 ID Token，嘗試用 Firebase 認證...");
-                // 1. 取得並列印 LIFF 使用者資訊
-                const decodedToken = liff.getDecodedIDToken();
-                const liffEmail = decodedToken?.email || "";
-                const liffName = decodedToken?.name || "";
-                const liffPhoto = decodedToken?.picture || "";
-                const liffPhone = ""; // 註：LIFF ID Token 預設不包含手機資訊，需額外授權或透過 profile 獲取
-                Util.exeAsyncT(this.apiOfLiff.submitLiffUserItem(view, {
-                    token: idToken,
-                    name: liffName,
-                    photo: liffPhoto
-                }));
-
-                console.log("LIFF Profile Data:", {
-                    id: idToken,
-                    email: liffEmail,
-                    name: liffName,
-                    photo: liffPhoto,
-                    info: decodedToken,
-                    phone: liffPhone
-                });
-
-                /** 這裡假設 firebaser 有對應方法處理 LIFF token 換取 Firebase Custom Token
-                 const firebaseToken = await firebaser.getFirebaseTokenFromLiff(idToken);
-                 await firebaser.signInWithCustomToken(firebaseToken); */
-                return true;
-            } else {
-                view.showErrorSnackMessage("無法從 Line LIFF 取得 ID Token。");
+            if (!idToken) {
+                view?.showErrorSnackMessage("無法從 LINE 取得 ID Token");
                 return false;
             }
+
+            // 處理後端驗證與 Firebase Custom Token 登入
+            const decodedToken = liff.getDecodedIDToken();
+            Util.exeAsyncT(
+                this.apiOfLiff.submitLiffUserItem(view, {
+                    token: idToken,
+                    name: decodedToken?.name || "",
+                    photo: decodedToken?.picture || ""
+                })
+            );
+
+            const result = await Functions.httpOnCallVerifyByLiffIdToken(view, { idToken });
+            await firebaser.signInWithCustomToken(
+                result.firebaseToken,
+                (authResult) => {
+                    if (authResult) Util.appendInfo("LINE Custom Token 登入成功");
+                },
+                view
+            );
+
+            return true;
         } catch (error) {
-            Util.appendError(`LIFF 登入程序發生異常: ${error.message}`);
+            Util.appendError("LINE 登入程序失敗", error);
             return false;
-        } finally {
-            self.setAuthProcessing(false);
+        }
+    }
+
+    /** * 3. 重構後的主入口
+     * 只負責「分流」與「同步使用者資料」
+     */
+    async specificBehaviorOfLoginStateChange(user) {
+        try {
+            const { Application } = require("../");
+            const view = Application.getLatestComponent();
+            const isInLine = await this.checkIsInLineBrowser();
+
+            // --- 階段 A: 處理 LINE 環境的自動登入 (分流) ---
+            if (isInLine) {
+                const isFirebaseAuthed = this.isValidUser(user);
+                const isLineIdentity = user?.uid?.startsWith("line:");
+
+                // 如果還沒登入過 LINE 帳號，且沒嘗試過，就執行自動登入
+                if (!isFirebaseAuthed && !this.liffLoginAttempted) {
+                    const liffResult = await this.handleLineAutoLoginFlow(view);
+                    if (liffResult === "REDIRECT") return; // 終止流程，等待重定向回頁面
+                }
+            }
+
+            // --- 階段 B: 處理 Firebase 使用者資料同步 (主邏輯) ---
+            let currentData = null;
+
+            if (this.isValidUser(user)) {
+                Util.appendInfo(`Firebase 登入成功: ${user.uid}`);
+                console.log(`user:`, user)
+                console.log(`firebase檢查auth是否有currentUser：`,firebaser.isLoggedIn())
+                currentData = await this.apiOfUser.fetchUserItem(view, user.uid);
+
+                if (!currentData.exists) {
+                    await this.apiOfUser.submitUserItem(view, { ...user, id: user.uid }, user.uid);
+                } else {
+                    await this.apiOfUser.updateUserItem(view, user, user.uid);
+                }
+
+                Cookie.setUser(user);
+            } else {
+                // 如果已經登出，避免重複清理
+                if (this.isLoginSucceed === false) {
+                    this.setAuthProcessing(false);
+                    return;
+                }
+                this.handleLogoutCleanup();
+            }
+
+            this.invalidateLoginState(currentData?.exists ? currentData : user);
+        } catch (error) {
+            Util.appendError("登入狀態處理異常", error);
+            this.setAuthProcessing(false);
             storeOfSplash.hide().then();
         }
-    };
+    }
+
+    /** 登出清理邏輯 */
+    async handleLogoutCleanup() {
+        Util.appendInfo("執行登出清理...");
+        Cookie.removeUser();
+        await firebaser.logout();
+    }
 
     @action
-    invalidateLoginState = (user) => {
+    invalidateLoginState = (user = {}) => {
         Util.appendInfo(`112132132 不論有沒有有登入，都要記得enableParallelMode`, user);
         CommonPoolHelper.enableParallelMode();
         storeOfSplash.hide().then();
-        this.isLoginSucceed = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
-        this.adminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
-        this.adminHelper = this.isLoginWithSucceed() && user.isAdmin;
-        this.authorUser = this.isLoginWithSucceed() && user.isAuthor;
-        this.displayName = this.isLoginWithSucceed() && user.displayName;
-        this.email = this.isLoginWithSucceed() && user.email;
-        this.phone = this.isLoginWithSucceed() && user.phone;
-        this.photoURL = this.isLoginWithSucceed() && user.photoURL;
-        this.uid = this.isLoginWithSucceed() && user.url;
+
+        const loggedIn = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
+        this.isLoginSucceed = loggedIn;
+
+        // 修正：確保型別正確，避免 boolean 值導致 startsWith 等字串方法噴錯
+        this.adminUser = loggedIn && _.isEqual(this.getUid(true), Configer.superUserUid);
+        this.adminHelper = (loggedIn && user.isAdmin) || false;
+        this.authorUser = (loggedIn && user.isAuthor) || false;
+        this.displayName = (loggedIn && user.displayName) || "";
+        this.email = (loggedIn && user.email) || "";
+        this.phone = (loggedIn && user.phone) || "";
+        this.photoURL = (loggedIn && user.photoURL) || "";
+        this.uid = (loggedIn && (user.uid || user.url)) || "";
+
         this.setAuthProcessing(false);
         this.invalidateCartie();
     };
@@ -334,6 +359,7 @@ class UserInfo {
         const func = async () => {
             await this.executeAsyncTask(async () => {
                 Util.appendInfo("45d4741, logout executed");
+                this.liffLoginAttempted = false; // 登出時重設嘗試標記
                 await firebaser.logout();
                 // 如果是 LIFF 環境且已登入，同步登出
                 if (this.liffInitialized && liff.isLoggedIn()) {
