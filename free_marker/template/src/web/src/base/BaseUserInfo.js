@@ -110,8 +110,7 @@ class UserInfo {
         return inClient;
     }
 
-    /** * 2. 封裝 LINE/LIFF 登入完整邏輯
-     */
+    /** 2. 封裝 LINE/LIFF 登入完整邏輯 */
     async handleLineAutoLoginFlow(view) {
         try {
             Util.appendInfo("執行 LINE 自動登入流程...");
