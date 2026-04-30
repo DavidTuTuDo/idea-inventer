@@ -179,19 +179,14 @@ class UserInfo {
 
             // --- 階段 B: 處理 Firebase 使用者資料同步 (主邏輯) ---
             let currentData = null;
-
+            CommonPoolHelper.enableParallelMode();
             if (this.isValidUser(user)) {
                 Util.appendInfo(`Firebase 登入成功: ${user.uid}`);
-                console.log(`user:`, user)
-                console.log(`firebase檢查auth是否有currentUser：`,firebaser.isLoggedIn())
+                console.log(`user:`, user);
+                console.log(`firebase檢查auth是否有currentUser：`, firebaser.isLoggedIn());
                 currentData = await this.apiOfUser.fetchUserItem(view, user.uid);
-
-                if (!currentData.exists) {
-                    await this.apiOfUser.submitUserItem(view, { ...user, id: user.uid }, user.uid);
-                } else {
-                    await this.apiOfUser.updateUserItem(view, user, user.uid);
-                }
-
+                if (!currentData.exists) Util.exeAsyncT(this.apiOfUser.submitUserItem(view, { ...user, id: user.uid }, user.uid));
+                else Util.exeAsyncT(this.apiOfUser.updateUserItem(view, user, user.uid));
                 Cookie.setUser(user);
             } else {
                 // 如果已經登出，避免重複清理
@@ -219,8 +214,6 @@ class UserInfo {
 
     @action
     invalidateLoginState = (user = {}) => {
-        Util.appendInfo(`112132132 不論有沒有有登入，都要記得enableParallelMode`, user);
-        CommonPoolHelper.enableParallelMode();
         storeOfSplash.hide().then();
 
         const loggedIn = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
@@ -506,7 +499,6 @@ class UserInfo {
             }
         });
     };
-    
 }
 
 export default new UserInfo();
