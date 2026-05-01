@@ -6810,6 +6810,7 @@ class AppBuilder extends ComponentBuilder {
             `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
             `root.render(this.getRenderView())`,
             `FirebaseHelper.startAuthListener()`,
+            `LiffHelper.activate().then()`,
             `I18n.startApplicationReactions()`)
 
         appGenerator.appendField(`store`, `new Store()`);

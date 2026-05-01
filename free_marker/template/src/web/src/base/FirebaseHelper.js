@@ -66,7 +66,7 @@ class FirebaseHelper extends BaseFirebase {
 
     /** * 檢查當前是否有 User 物件 (同步判斷) */
     isLoggedIn() {
-        return !!this.auth.currentUser;
+        return !!this.auth().currentUser;
     }
 
     constructor() {
@@ -206,16 +206,16 @@ class FirebaseHelper extends BaseFirebase {
         return documentId();
     }
 
-    async httpOnCall(functionName, data) {
-        const functions = httpsCallable(this.functions(), functionName);
-        return await functions(data);
-    }
+    // async httpOnCall(functionName, data) {
+    //     const functions = httpsCallable(this.functions(), functionName);
+    //     return await functions(data);
+    // }
 
     async httpOnCall(functionName, data) {
         const isDev = _.isEqual(Config.env, "dev") && _.isEqual(Config.platform, "web");
         if (isDev) {
             // 這是你剛剛產生的 Cloudflare 網址
-            const CF_BASE = "https://nwxwilfgnj.loclx.io";
+            const CF_BASE = "https://vwuahrly0k.loclx.io";
             const projectId = "davidtu-dev";
             const region = "us-central1";
             const url = `${CF_BASE}/${projectId}/${region}/${functionName}`;

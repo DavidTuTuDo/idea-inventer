@@ -1114,6 +1114,7 @@ class NodeUtiller extends Utiller {
      */
      interactionByTerminalQ = async (projects) => {
         const MONITOR_PATH = './temp/monitor.json';
+        let timeoutId = null; // 用來存放計時器 ID
 
         // 1. 檢查重複性
         const names = projects.map(p => p.name);
@@ -1154,9 +1155,11 @@ class NodeUtiller extends Utiller {
 
         // 定義超時任務
         const timeoutTask = () => new Promise((resolve, reject) => {
-            setTimeout(() => {
+            timeoutId = setTimeout(() => {
                 if (cachedData && cachedData.selectedProjects) {
                     console.log('\n\x1b[33m[Timeout] 15秒未操作，自動載入上一次的選擇項目...\x1b[0m');
+                    // 注意：在 Timeout 時，若 Inquirer 還在跑，可能需要強制關閉介面
+                    // 但 Node.js 中 Promise.race 無法直接殺掉 inquirer，通常建議讓使用者知道已自動跳轉
                     resolve(cachedData.selectedProjects);
                 } else {
                     reject(new Error('Timeout: 沒有上次紀錄可供載入'));
@@ -1165,11 +1168,14 @@ class NodeUtiller extends Utiller {
         });
 
         try {
-            // 使用 Promise.race 競爭，誰快選誰
-            // 注意：Inquirer 若被超時覆蓋，終端機可能會殘留 UI，但在 CLI 自動化流程中通常可接受
             const finalSelection = await Promise.race([promptTask(), timeoutTask()]);
 
-            // 5. 儲存結果到 ./temp/monitor.json
+            // 【關鍵修復】: 只要 race 有結果了，就清除計時器
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+
+            // 儲存結果並回傳
             const saveData = {
                 updateTime: Date.now(),
                 selectedProjects: finalSelection
@@ -1178,8 +1184,11 @@ class NodeUtiller extends Utiller {
             const dir = libpath.dirname(MONITOR_PATH);
             await fsp.mkdir(dir, { recursive: true }); // 確保資料夾存在
             await fsp.writeFile(MONITOR_PATH, JSON.stringify(saveData, null, 2));
+
             return finalSelection;
         } catch (error) {
+            // 出錯也要記得清除，避免遺留 log
+            if (timeoutId) clearTimeout(timeoutId);
             console.error('\x1b[31m執行失敗:\x1b[0m', error?.message ?? '未知錯誤');
             return [];
         }

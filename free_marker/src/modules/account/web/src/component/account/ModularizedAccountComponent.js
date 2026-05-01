@@ -22,7 +22,9 @@ class ModularizedAccountComponent extends BaseAccountComponent {
             .catch((error) => self.showErrorSnackMessage(error.message))
             .finally(() => {
                 self.dismiss();
-                Router.gotoHomePage(self);
+                const { Application } = require("../../");
+                const view = Application.getLatestComponent();
+                Router.gotoHomePage(view);
             });
     }
 
