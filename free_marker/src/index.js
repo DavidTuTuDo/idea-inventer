@@ -6797,42 +6797,13 @@ class AppBuilder extends ComponentBuilder {
         const appGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `BaseApp.js`), this.nodeOfAncestor);
         appGenerator.appendImport(`{StyledEngineProvider}`, '@mui/material/styles');
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
-        appGenerator.appendImport(`React`, `react`);
         appGenerator.appendImport(`Store`, `./store`);
         appGenerator.appendImport(`Config`, `./config`);
         appGenerator.appendImport(`ImpComponent`, `./base/ImpComponent`);
         appGenerator.appendImport(`{inject,observer}`, `mobx-react`);
+        appGenerator.appendImport(`React`, `react`);
         appGenerator.appendImport(`{Route, Routes, BrowserRouter, useNavigate, useLocation, useParams, Navigate}`, `react-router-dom`);
-        appGenerator.appendImport(``, `./less`);
-        appGenerator.appendImport(`FirebaseHelper`, `./base/FirebaseHelper`);
-        appGenerator.appendImport(`LiffHelper`, `./base/LiffHelper`);
-        appGenerator.appendImport(`I18n`, `./i18n`);
-        appGenerator.appendClass(`BaseApp`);
-        appGenerator.appendImport(`{createRoot}`, `react-dom/client`);
-        appGenerator.appendFunction(`mount`, [], [], [],
-            `const container = document.getElementById('app');`,
-            `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
-            `root.render(this.getRenderView())`,
-            `FirebaseHelper.startAuthListener()`,
-            `LiffHelper.activate().then()`,
-            `I18n.startApplicationReactions()`)
-
-        appGenerator.appendField(`store`, `new Store()`);
-        // appGenerator.appendField(`history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())`);
-        appGenerator.appendField(`extraPages`, '[]');
-
-        appGenerator.appendFunction(`pushPage`, [`page`], [], [], `this.extraPages.push(page)`)
-        appGenerator.appendFunction(`getExtraPages`, [], [], [],
-            `/** --- push <Route /> in to pages */`, `return this.extraPages`);
-        appGenerator.appendField(`latestComponent`);
-        appGenerator.appendFunction(Util.camel('get', 'latestComponent'), [], [], [],
-            `return this.latestComponent;`
-        )
-
-        appGenerator.appendFunction(Util.camel('set', 'latestComponent'), ['component'], [], [],
-            `if(component?.isNotNavigatorNComponentNCprtView?.() && !component?.isDialogComponent?.())`,
-            `this.latestComponent = component.getComponentInstance()`
-        )
+        appGenerator.appendClass(`BaseApp`,{name: 'CoreApp', from: './base/CoreApp'});
         for (const component of this.getGenComponent()) {
             appGenerator.appendInClassHead(`import ${_.upperFirst(component)} from './component/${component}'`);
         }
@@ -6946,25 +6917,6 @@ class AppBuilder extends ComponentBuilder {
 
         appGenerator.appendFunction({ name: `getRenderView`, arrow:true }, [],
           [], [], 'console.log(`🛑🛑🛑🛑 注意！root re-render()`)','const self = this;',...stmtsOfRenderView,`return (${entire.join("")})`);
-
-        appGenerator.appendField(`observedCache`, `new WeakMap()`);
-        appGenerator.appendFunction({ name: `safeObserver`, arrow:true }, ['component'],
-          [], [], `
-            // 若已經被包裝過（不管是 class 還是已包裝結果），直接回傳記憶的版本
-        if (this.observedCache.has(component)) 
-            return this.observedCache.get(component);
-        try {
-            // 嘗試包裝
-            const Observed = observer(component);
-            // 成功包裝後，記憶「原始 component」與「包裝後的 component」
-            this.observedCache.set(component, Observed);
-            this.observedCache.set(Observed, Observed); // 避免未來傳進來的是已包裝的也會識別
-            return Observed;
-        } catch (err) {
-            // 嘗試 fallback：如果是已經包裝過的元件，直接回傳它自己
-            this.observedCache.set(component, component);
-            return component;
-        }`);
 
         await appGenerator.needIndexFile('App', [], false, [
                 `const self = new App()`,
