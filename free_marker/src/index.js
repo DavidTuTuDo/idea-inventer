@@ -111,6 +111,12 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /**
+     * 開發期間，line dapp時，需要一個tunnel跳轉回0.0.0.0:8080 或者 0.0.0.0:5001(網頁)，節省functions一直部署到遠端做測試
+     * 目前是用localXPose去起一個限時的tunnel。或者就要開另一台電腦用免費的ngrok
+     * */
+    useXTunnelDev = false;
+
     /** 如果要玩line登入(在line webview打開就能拿到userToken->無縫登入那樣)，就必須要到
      *  https://developers.line.biz 申請provider -> 再申請 login channel */
     liffId;
@@ -6791,17 +6797,15 @@ class AppBuilder extends ComponentBuilder {
         const appGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `BaseApp.js`), this.nodeOfAncestor);
         appGenerator.appendImport(`{StyledEngineProvider}`, '@mui/material/styles');
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
-        // appGenerator.appendImport(`{RouterStore, syncHistoryWithStore}`, `mobx-react-router`);
-        // appGenerator.appendImport(`{createBrowserHistory}`, `history`);
         appGenerator.appendImport(`React`, `react`);
         appGenerator.appendImport(`Store`, `./store`);
         appGenerator.appendImport(`Config`, `./config`);
         appGenerator.appendImport(`ImpComponent`, `./base/ImpComponent`);
         appGenerator.appendImport(`{inject,observer}`, `mobx-react`);
         appGenerator.appendImport(`{Route, Routes, BrowserRouter, useNavigate, useLocation, useParams, Navigate}`, `react-router-dom`);
-        // appGenerator.appendImport(`{Route, Routes}`, `react-router`);
         appGenerator.appendImport(``, `./less`);
         appGenerator.appendImport(`FirebaseHelper`, `./base/FirebaseHelper`);
+        appGenerator.appendImport(`LiffHelper`, `./base/LiffHelper`);
         appGenerator.appendImport(`I18n`, `./i18n`);
         appGenerator.appendClass(`BaseApp`);
         appGenerator.appendImport(`{createRoot}`, `react-dom/client`);
@@ -7489,6 +7493,7 @@ class ProjectFileHandler extends PathBase {
                 baseConfigGenerator.appendField(`server`, JSON.stringify(sourceObj.server));
                 break;
             case 'web':
+                baseConfigGenerator.appendField(`useXTunnelDev`, sourceObj.useXTunnelDev);
                 baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
                 if (sourceObj.hasCookiePassword())
                     baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));

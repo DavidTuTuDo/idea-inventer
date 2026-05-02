@@ -206,13 +206,8 @@ class FirebaseHelper extends BaseFirebase {
         return documentId();
     }
 
-    // async httpOnCall(functionName, data) {
-    //     const functions = httpsCallable(this.functions(), functionName);
-    //     return await functions(data);
-    // }
-
     async httpOnCall(functionName, data) {
-        const isDev = _.isEqual(Config.env, "dev") && _.isEqual(Config.platform, "web");
+        const isDev = _.isEqual(Config.env, "dev") && _.isEqual(Config.platform, "web") && Config.useXTunnelDev;
         if (isDev) {
             // 這是你剛剛產生的 Cloudflare 網址
             const CF_BASE = "https://vwuahrly0k.loclx.io";
