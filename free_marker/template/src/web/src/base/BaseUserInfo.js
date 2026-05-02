@@ -11,7 +11,7 @@ import EventBus from "./CommonEventBus";
 import AccountUser from "../store/accountUser";
 import CommonPoolHelper from "./CommonPoolHelper";
 import { storeOfSplash } from "./SplashX";
-import liff from './LiffHelper';
+import liff from "./LiffHelper";
 
 class UserInfo {
     @observable
@@ -65,7 +65,7 @@ class UserInfo {
 
     /** 登出後刪掉關於個人的區域變數 */
     @action
-    cleanPerspectiveVariable(){
+    cleanPerspectiveVariable() {
         this.isLoginSucceed = false;
         this.uid = false;
         this.displayName = false;
@@ -120,7 +120,7 @@ class UserInfo {
                 Util.appendInfo(`Firebase 登入成功: ${user.uid}`);
                 console.log(`user:`, user);
                 console.log(`firebase檢查auth是否有currentUser：`, firebaser.isLoggedIn());
-                console.log(`2026.05.01 ***Oooops***`)
+                console.log(`2026.05.01 ***Oooops***`);
                 const idToken = await firebaser.auth().currentUser.getIdToken(true);
                 console.log(`getIdToken succeed ==> `, idToken);
                 await Util.syncDelay(1);
@@ -147,7 +147,7 @@ class UserInfo {
         await Application.getAccountStore().clean();
         this.cleanPerspectiveVariable();
         const component = Application.getLatestComponent();
-        console.log(`當前的登出頁面className:`,component.getComponentName());
+        console.log(`當前的登出頁面className:`, component.getComponentName());
         component.showWarningSnackMessage(`已完成登出`);
         console.log(`已完成登出`);
     }
@@ -156,7 +156,7 @@ class UserInfo {
     invalidateLoginState = (user = {}) => {
         storeOfSplash.hide().then();
         CommonPoolHelper.enableParallelMode();
-        console.warn('不知道爲什麼就進來了', user);
+        console.warn("不知道爲什麼就進來了", user);
         const loggedIn = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
         this.isLoginSucceed = loggedIn;
 

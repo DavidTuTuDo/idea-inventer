@@ -24,7 +24,11 @@ class ModularizedAccountComponent extends BaseAccountComponent {
                 self.dismiss();
                 const { Application } = require("../../");
                 const view = Application.getLatestComponent();
-                Router.gotoHomePage(view);
+                Application.enqueueTask(async (app) => {
+                    Router.gotoHomePage(app);
+                    await Util.syncDelay(100);
+                    app.showWarningSnackMessage(`已完成登出`);
+                });
             });
     }
 

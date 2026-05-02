@@ -10,6 +10,7 @@ class LiffHelper {
 
     liffInitialized = false;
     liffLoginAttempted = false;
+
     /**
      * 判斷是否在 LINE Webview 環境
      * 封裝初始化與環境檢查邏輯
@@ -30,7 +31,7 @@ class LiffHelper {
             this.liffLoginAttempted = false; // 登出時重設嘗試標記
             this.liffInitialized = false;
         }
-    }
+    };
 
     /** 初始化 LIFF 並回傳 Promise 確保後續流程可以 await */
     initializeLiff = async () => {
@@ -57,8 +58,8 @@ class LiffHelper {
     async handleLineAutoLoginFlow() {
         const { Application } = require("../");
         const view = Application.getLatestComponent();
+        const cancel = view.enableAppLastingLoading();
         try {
-            console.log(view.getComponentName());
             view.enableAppLoading();
             Util.appendInfo("執行 LINE 自動登入流程...");
             this.liffLoginAttempted = true;
@@ -85,7 +86,7 @@ class LiffHelper {
             Util.appendError("LINE 登入程序失敗", error);
             return false;
         } finally {
-            view.enableAppLoading(false);
+            cancel();
         }
     }
 
@@ -98,7 +99,7 @@ class LiffHelper {
             }
             return true;
         }
-    }
+    };
 }
 
 export default new LiffHelper();

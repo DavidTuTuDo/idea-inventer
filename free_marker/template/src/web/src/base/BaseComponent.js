@@ -367,6 +367,15 @@ class BaseComponent extends MuiComponent {
         storeOfAppLoading.setVisible(enable);
     }
 
+    /** 會計算 呼叫數 和 取消數 一致才能消失的 loading機制 */
+    enableAppLastingLoading(enable = true) {
+        return storeOfAppLoading.enableLasting();
+    }
+
+    isAppStillLoading() {
+        return storeOfAppLoading.visible;
+    }
+
     async executeAsyncTaskWithLoading(task) {
         try {
             this.enableAppLoading();

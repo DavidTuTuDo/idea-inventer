@@ -255,7 +255,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     isAppLoading() {
-        return _.isEqual(this.state, "loading");
+        return this.getComponent()?.isAppStillLoading();
     }
 
     @action
