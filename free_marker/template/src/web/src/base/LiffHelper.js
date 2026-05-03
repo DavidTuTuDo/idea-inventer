@@ -7,7 +7,6 @@ import Configer from "../config";
 import { utiller as Util } from "utiller";
 
 class LiffHelper {
-
     liffInitialized = false;
     liffLoginAttempted = false;
 
@@ -75,12 +74,9 @@ class LiffHelper {
                 return false;
             }
             const result = await Functions.httpOnCallVerifyByLiffIdToken(view, { idToken });
-            await firebaser.signInWithCustomToken(
-                result.firebaseToken,
-                async (resultOfTokenAuth) => {
-                    if (resultOfTokenAuth)
-                        Util.appendInfo("LINE Custom Token 登入成功")
-                });
+            await firebaser.signInWithCustomToken(result.firebaseToken, async (resultOfTokenAuth) => {
+                if (resultOfTokenAuth) Util.appendInfo("LINE Custom Token 登入成功");
+            });
             return true;
         } catch (error) {
             Util.appendError("LINE 登入程序失敗", error);

@@ -36,7 +36,6 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
 
     onInitialFetchCompleted = async (collection) => {
         await super.onInitialFetchCompleted(collection);
-        this.getComponent().exeAsyncT(this.fetchKeywordInBackgroundBehavior(this));
         const nameOfBrand = this.getGlobalPerspective().getNameOfBrand();
         if (!_.isEmpty(nameOfBrand)) UserInfo.setNameOfBrand(nameOfBrand);
         UserInfo.setGlobalPerspective(this.getGlobalPerspective().columnData());
@@ -54,19 +53,19 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         cprt.setTiktok(this.getGlobalPerspective().getTiktokO());
     };
 
-    fetchKeywordInBackgroundBehavior = async (self) => {
+    fetchKeywordInBackgroundBehavior = async () => {
         try {
-            const result = await self.apiOfKeyword.fetchKeywords();
-            if (_.isArray(self.getKeywords())) self.initialCompleteSuggestBehavior(_.uniqBy(result, "label"));
+            await Util.syncDelay(1);
+            const result = await this.apiOfKeyword.fetchKeywords();
+            if (_.isArray(this.getKeywords())) this.initialCompleteSuggestBehavior(_.uniqBy(result, "label"));
             Util.appendInfo(`已拿取完關鍵字！`);
         } catch (error) {
             Util.appendError(`fetchKeywordInBackgroundBehavior => ${error.message}`);
         } finally {
-            self.setWhetherKeywordWasFetching(false);
+            this.setWhetherKeywordWasFetching(false);
+            this.setWhetherSearchMode(true);
         }
     };
-
-    /** -------------------- functions -------------------- **/
 
     constructor(props) {
         super(props);

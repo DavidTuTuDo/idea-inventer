@@ -10,7 +10,6 @@ import { utiller as Util } from "utiller";
 
 /** Application的概念，如果有客製化的邏輯就寫在這裡，會用到source.js裡面的資源就必續進到 freemarker裡面執行。 */
 class CoreApp {
-
     observedCache = new WeakMap();
 
     latestComponent = undefined;
@@ -30,7 +29,7 @@ class CoreApp {
 
     constructor() {
         // 註冊自訂事件監聽：當有任務加入時，觸發 task_added 事件來處理佇列
-        this.taskEventTarget.addEventListener('task_added', this.processTaskQueue);
+        this.taskEventTarget.addEventListener("task_added", this.processTaskQueue);
     }
 
     getExtraPages() {
@@ -74,7 +73,7 @@ class CoreApp {
     enqueueTask = (task) => {
         this.taskQueue.push(task);
         // 發送事件，通知系統有新任務加入，觸發處理流程
-        this.taskEventTarget.dispatchEvent(new Event('task_added'));
+        this.taskEventTarget.dispatchEvent(new Event("task_added"));
     };
 
     /**
@@ -108,7 +107,7 @@ class CoreApp {
 
         // 如果在非同步執行過程中，又有新任務被加入佇列，再次派發事件以確保所有任務都能被處理
         if (this.taskQueue.length > 0) {
-            this.taskEventTarget.dispatchEvent(new Event('task_added'));
+            this.taskEventTarget.dispatchEvent(new Event("task_added"));
         }
     };
 

@@ -184,7 +184,8 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     onNavigatorSearchIconButtonClicked(param) {
-        this.getStore().setWhetherSearchMode(true);
+        this.getStore().setWhetherKeywordWasFetching(true);
+        Util.exeAsyncT(this.getStore().fetchKeywordInBackgroundBehavior());
     }
 
     onNavigatorCartieIconButtonClicked(param) {

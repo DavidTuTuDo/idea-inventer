@@ -6,7 +6,6 @@ import { observer } from "mobx-react";
 import LinearProgress from "@mui/material/LinearProgress";
 
 class AppLoadingStore {
-
     // 1. 原本的單純開關機制狀態
     @observable
     basicVisible = false;
@@ -42,18 +41,18 @@ class AppLoadingStore {
     /**
      * 啟動一個具備超時防呆的 Loading 任務。
      * 呼叫後會回傳一個「專屬的結束函式」，你不需要苦惱如何命名 taskName。
-     * 
+     *
      * 範例：
      * // 1. 開啟 Loading，並取得關閉該任務的鑰匙
      * const finishLoading = storeOfAppLoading.enableLasting({ seconds: 15000 });
-     * 
+     *
      * try {
      *     await doSomething();
      * } finally {
      *     // 2. 結束時直接呼叫這把鑰匙即可！
      *     finishLoading();
      * }
-     * 
+     *
      * @param {object} [options]
      * @param {number} [options.seconds=30000] - 預設 30 秒後自動防呆結束
      * @returns {Function} 呼叫此函式可手動結束該次 Loading
@@ -83,7 +82,7 @@ class AppLoadingStore {
             clearTimeout(this.activeTasks.get(taskId));
             this.activeTasks.delete(taskId);
         }
-    }
+    };
 }
 
 export const storeOfAppLoading = new AppLoadingStore();
