@@ -3,6 +3,7 @@ const edit = true;
 import { utiller as Util } from "utiller";
 import Router from "../../router";
 import BaseDionysusComponent from "./BaseDionysusComponent";
+import UserInfo from "../../base/BaseUserInfo";
 
 class ModularizedDionysusComponent extends BaseDionysusComponent {
     constructor(props) {
@@ -17,6 +18,7 @@ class ModularizedDionysusComponent extends BaseDionysusComponent {
 
     onDionysusBoozeDivClicked(param) {
         const booze = param.object;
+        if (UserInfo.isEditMode) return booze.toggleChecked();
         Router.gotoBacchusDetailPage(this.getComponentInstance(), booze.getId(), booze.columnData());
     }
 
@@ -38,6 +40,10 @@ class ModularizedDionysusComponent extends BaseDionysusComponent {
 
     isValidOfParamOfKeyword(keyword) {
         return true;
+    }
+
+    getInjectStyleOfDionysusBoozeCheckedCheckbox(booze) {
+        return Util.getVisibleOrNone(UserInfo.isEditMode, true);
     }
 }
 

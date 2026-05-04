@@ -14,6 +14,10 @@ import { storeOfSplash } from "./SplashX";
 import liff from "./LiffHelper";
 
 class UserInfo {
+
+    @observable
+    isEditMode = false
+
     @observable
     nameOfBrand = Configer.nameOfBrand;
 
@@ -74,11 +78,13 @@ class UserInfo {
         this.adminHelper = false;
         this.isPurchaseUser = false;
         this.isAuthProcessingState = false;
+        this.isEditMode = false;
         this.email = "";
         this.phone = "";
         this.displayName = "";
         this.uid = "";
         this.photoURL = "";
+
     }
 
     subscribeAuthStateChanged() {
@@ -185,6 +191,15 @@ class UserInfo {
     isSuperAdmin = () => {
         return this.adminUser;
     };
+
+    @action
+    modifyEditMode = (enable = true) => {
+        this.isEditMode = enable;
+    }
+
+    get isEditMode() {
+        return this.isEditMode
+    }
 
     @action
     setNameOfBrand = (name) => {

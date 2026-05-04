@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -117,6 +119,10 @@ class MobileStyle {
 
     NavigatorToolBarLoginIconButton = {};
 
+    NavigatorToolBarEditIconEditSharp = {};
+
+    NavigatorToolBarEditIconButton = {};
+
     NavigatorToolBarSearchIconSearchRounded = {};
 
     NavigatorToolBarSearchIconButton = {};
@@ -148,24 +154,6 @@ class MobileStyle {
     NavigatorToolBarToolbar = {};
 
     NavigatorDiv = {};
-
-    /** => following for login  component  */
-
-    LoginPageHintTypography = {};
-
-    LoginPageSocialLoginContainerGoogleLoginButton = {};
-
-    LoginPageSocialLoginContainerFacebookLoginButton = {};
-
-    LoginPageSocialLoginContainerLineLoginButton = {};
-
-    LoginPageSocialLoginContainerDiv = {};
-
-    LoginPageLoginTitleTypography = {};
-
-    LoginPageLogoImg = {};
-
-    LoginPageDiv = {};
 
     /** => following for numberSetter  component  */
 
@@ -2446,6 +2434,8 @@ class MobileStyle {
     DionysusBoozeNameTypography = {};
 
     DionysusBoozePhotoOfDemoImg = {};
+
+    DionysusBoozeCheckedCheckbox = {};
 
     DionysusBoozeDivSkeleton = {};
 

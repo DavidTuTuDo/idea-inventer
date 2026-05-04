@@ -37,6 +37,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
 
     onNavigatorTitleTypographyClicked(param) {
         Router.gotoHomePage(this);
+        UserInfo.modifyEditMode(false);
     }
 
     onNavigatorLoginIconButtonClicked(param) {
@@ -194,6 +195,14 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
 
     getInjectStyleOfNavigatorCartieIconButton(navigator) {
         return Util.getVisibleOrNone(Config.useCartie && navigator.getBadgeOfCartie() > 0, true);
+    }
+
+    getInjectStyleOfNavigatorEditIconButton(navigator) {
+        return Util.getVisibleOrNone(!UserInfo.isEditMode, true);
+    }
+
+    onNavigatorEditIconButtonClicked(param) {
+        UserInfo.modifyEditMode();
     }
 }
 
