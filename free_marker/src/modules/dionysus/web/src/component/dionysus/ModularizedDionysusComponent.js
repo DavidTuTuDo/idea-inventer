@@ -45,6 +45,23 @@ class ModularizedDionysusComponent extends BaseDionysusComponent {
     getInjectStyleOfDionysusBoozeCheckedCheckbox(booze) {
         return Util.getVisibleOrNone(UserInfo.isEditMode, true);
     }
+
+    getWrapInjectStyleOfDionysusBatchDiv(dionysus) {
+        return Util.getVisibleOrNone(UserInfo.isEditMode, true);
+    }
+
+    onDionysusBatchDismissChipClicked(param) {
+        UserInfo.modifyEditMode(false);
+    }
+
+    onDionysusBatchMv2HeadChipClicked(param) {
+        this.exeAsyncT(this.getStore().mvChecked2Head());
+    }
+
+    /** 商品下架 */
+    onDionysusBatchDownChipClicked(param) {
+        this.exeAsyncT(this.getStore().mvChecked2Down());
+    }
 }
 
 export default ModularizedDionysusComponent;

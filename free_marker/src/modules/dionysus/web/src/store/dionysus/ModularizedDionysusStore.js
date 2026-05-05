@@ -4,12 +4,14 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import BaseDionysusStore from "./BaseDionysusStore";
 import UserInfo from "../../base/BaseUserInfo";
+import Booze from "../dionysusBooze";
 
 const INDEX_VALUE_OF_SEARCH = 8591;
 
 class ModularizedDionysusStore extends BaseDionysusStore {
     constructor(props) {
         super(props);
+        this.apiOfBooze = new Booze();
     }
 
     async onInitialFetchBeginning() {
@@ -48,6 +50,32 @@ class ModularizedDionysusStore extends BaseDionysusStore {
         await Util.syncDelay(20);
         const boozes = this.enrichBoozes(await this.fetchBoozes(this.getComponent(), { type: "where", params: ["visibility", "==", true] }));
         this.setBoozes(...boozes);
+    };
+
+    getCheckedItems = () => {
+        return _.filter(this.getBoozes(), (each) => each.getChecked());
+    };
+
+    mvChecked2Head = async () => {
+        const items = this.getCheckedItems();
+        await this.apiOfBooze.updateBoozes(this.getComponent(), this.getCheckedItems());
+        _.each(items, (item) => item.moveSelfToAside(false));
+        await this.vanishEdit();
+    };
+
+    mvChecked2Down = async () => {
+        const items = this.getCheckedItems();
+        await this.apiOfBooze.updateBoozes(
+            this.getComponent(),
+            items.map((each) => ({ id: each.id, visibility: false }))
+        );
+        _.each(items, (item) => item.remove());
+        await this.vanishEdit();
+    };
+
+    vanishEdit = async () => {
+        await Util.syncDelay(1);
+        UserInfo.modifyEditMode(false);
     };
 }
 
