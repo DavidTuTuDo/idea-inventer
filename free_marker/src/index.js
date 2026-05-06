@@ -7000,15 +7000,15 @@ class AppBuilder extends ComponentBuilder {
      * }
      */
     getObjectOfExistedLessAttribute(path = this.projectPlatformSourcePath) {
-        
-        /** 
+
+        /**
          * 將原始 CSS 區塊字串拆解並分類到對應的裝置屬性中
          * @param {string} raw - 原始 CSS 區塊字串，例如: "color: red; @media @mobile { padding: 10px; }"
          * @returns {Object} 範例: { default: 'color: red;', mobile: 'padding: 10px;' }
          */
         function rawToAttributeObj(raw) {
             const object = {}
-            
+
             // 先以 '@media' 切割字串，並把換行等格式壓平為單行字串
             // 例如變成: ["color: red;", "@mobile { padding: 10px; }"]
             const platformStrings = raw.split('@media').map(each => each.trim())
@@ -7027,7 +7027,7 @@ class AppBuilder extends ComponentBuilder {
                     object[platform[0]] = statement[0].trim();
                 }
             }
-            
+
             // 陣列的第一個元素通常是遇到 @media 之前的預設樣式 (default)
             object['default'] = platformStrings.shift();
             return object;
@@ -7050,23 +7050,23 @@ class AppBuilder extends ComponentBuilder {
         }
 
         const lessAttributeObj = {};
-        
+
         // 判斷傳入的路徑是目錄還是已指定副檔名的 .less 檔案，若是目錄則預設找 less/styles.less
         const srcLessPath = _.isEqual('less', Util.getExtensionFromPath(path)) ? path : Util.joinRespectingDot(path, `less`, `styles.less`)
-        
+
         if (Util.isEmptyFile(srcLessPath)) {
             Util.appendInfo(`4842454 ${srcLessPath} is not exist!!!`);
             return undefined; // 檔案不存在或為空直接返回 undefined
         }
-        
+
         // 將系統支援的所有裝置轉為 Regex 用的字串，例如 "(mobile|tablet|desktop)"
         const stringOfPlatforms = _.map(LESS_MODULES, 'name').map((each) => `(${each})`).join("|");
-        
+
         if (fs.existsSync(srcLessPath)) {
             const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
-            
-            /** 
-             * 過濾掉不需處理的行數 (注意!! _.remove 會直接 mutate 原本的 array) 
+
+            /**
+             * 過濾掉不需處理的行數 (注意!! _.remove 會直接 mutate 原本的 array)
              * 移除：註解 (/**)、空白行、import (@import)、以及頂層的裝置變數宣告 (@mobile: ~'...';)
              */
             _.remove(stub, (each) => (
@@ -7078,18 +7078,18 @@ class AppBuilder extends ComponentBuilder {
 
             // 將過濾後純淨的 LESS 陣列接合回字串
             const pureLessStringFile = stub.join('\n');
-            
+
             // 找出所有開頭為 `.ClassName {` 或 `.ClassName:extend(...) {` 的定義
             const regexOfClassName = new RegExp(`^\\..+\\s{`, `gm`)
-            
-            /**  
+
+            /**
              * 從擷取到的符合字串中，拆解出 precise (純 className) 與 complete (完整包含 pseudo/extend 的字串)
              * 例如：拿到 ".ExamFilterSlider:extend(.CenterInParent) {"
              */
             const classNames = pureLessStringFile.match(regexOfClassName).map((each) => {
                 // 去除開頭的 '.' 以及結尾的 '{'，剩下 "ExamFilterSlider:extend(.CenterInParent)"
                 const normalize = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(each, '.'), '{').trim()
-                
+
                 // 以冒號切割，取得最精確的 class 名稱 "ExamFilterSlider"
                 const precise = normalize.split(':')[0];
                 return {
@@ -7110,19 +7110,19 @@ class AppBuilder extends ComponentBuilder {
             for (const style of styles) {
                 const attributeObj = rawToAttributeObj(style.raw);
                 /** 產出類似 { default:'color: red;', mobile:'', desktop:''} 的結構 */
-                
+
                 // 判斷是否為「編輯器」(Editor) 專用的 ClassName
                 const isEditorClassName = Util.has(style.precise, 'Editor');
-                
+
                 lessAttributeObj[style.precise] = {
                     ...style,
                     attributeObj,
-                    /**  
+                    /**
                      * isModified 代表這個 className 區塊「是否曾被開發者實質編輯過」。
                      * - 若是 Editor className：只要裡面屬性不是全空的 (isEmptyAttribute === false) 就視為修改過。
                      * - 若是一般 className：除了屬性不能全空外，如果 complete 與 precise 不同 (表示開發者加上了 :hover 等偽類或繼承)，也算被修改過。
                      */
-                    isModified: isEditorClassName ? !isEmptyAttribute(attributeObj) 
+                    isModified: isEditorClassName ? !isEmptyAttribute(attributeObj)
                         : (!isEmptyAttribute(attributeObj) || !_.isEqual(style.complete, style.precise)),
                 }
             }
@@ -7155,7 +7155,7 @@ class AppBuilder extends ComponentBuilder {
     async buildAllNewBrandLessFiles(classNameInfos) {
         const self = this;
         const classNames = [];
-        
+
         // 1. 取得 free_marker/less/libs 底下的所有 .less 共用函式庫（如 reset, variables）
         function getLessLibs() {
             return Util.findFilePathBy(Util.joinRespectingDot(self.freeMarkerRootPath, 'less', 'libs'),
@@ -7165,18 +7165,18 @@ class AppBuilder extends ComponentBuilder {
 
         // 2. 準備產生一個新的 styles.less
         const generator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'less', `styles.less`), this.nodeOfAncestor);
-        
+
         // 將第三方 less libs 寫入檔案標頭 (@import "./libs/xxx.less";)
         for (const nameExtension of getLessLibs()) {
             generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
         }
-        
+
         // 寫入 RWD 等裝置變數宣告 (@mobile: ~'...'; @tablet: ~'...';)
         generator.appendInClassHead(this.getAnnouncementsOfLessDevice().join('\n'))
-        
+
         // 3. 收集所有的既有 less 檔案來源（包含專案主路徑以及各個 Module Component 中的 less）
         const filesOfLess = [this.projectPlatformSourcePath, ...this.nodeOfAncestor.getLessFilesOfModuleComponent().map((file) => file.absolute)];
-        
+
         // 解析並合併所有「已經存在的 LESS 屬性設定」（例如開發者手動在 LESS 寫好的 CSS rules），回傳成一個物件對照表
         const existedLessAttributeObj = Util.merO(...filesOfLess.map((each) => this.getObjectOfExistedLessAttribute(each)));
 
@@ -7194,11 +7194,11 @@ class AppBuilder extends ComponentBuilder {
 
                 // 取得這個 node 確切的 class name (如：.LoginContainer)
                 const preciselyClazzName = node.getClassNameOfLessUsage(className.type);
-                
+
                 // 從剛才解析的歷史資料中，找出舊檔案是否已經有這個 class name 的設定，如果有就帶過來避免遺失開發者的手工樣式
                 const existObj = existedLessAttributeObj[preciselyClazzName]; /** 從file裡面找出定義過的屬性敘述*/
                 classNames.push(_.upperFirst(preciselyClazzName));
-                
+
                 if (isEditPage) {
                     // 如果是編輯頁面元件，使用 LESS 的 :extend() 繼承原本的基礎樣式，再加上自己的裝置屬性
                     const original = node.getOriginalClassNameOfLessUsage(type);
@@ -7210,7 +7210,7 @@ class AppBuilder extends ComponentBuilder {
                     // 若有舊有設定 (existObj) 就使用舊有的完整 class 名稱 (如包含 pseudo class)，否則就使用 preciselyClazzName
                     generator.appendInClassTail(`.${existObj ? existObj.complete : preciselyClazzName} \n                        {${this.getVarietyDeviceStmts(existObj)}}`);
                 }
-                
+
                 // 處理完畢後，從暫存的舊資料物件中移除。等跑完迴圈，剩下的就會是已經不再屬於任何元件的 "homeless" 屬性
                 delete existedLessAttributeObj[preciselyClazzName];
             }
@@ -7232,10 +7232,10 @@ class AppBuilder extends ComponentBuilder {
         generator.needSignature(false);
         generator.disableDefaultImports(); // 因為是 LESS 檔，不需要 JS 的 default imports
         await generator.persist();
-        
+
         // 將這一次用到的所有 className 寫出成一份 classNameMap.json (可能是給其他工具查表用的)
         await Util.persistJsonFilePrettier(Util.joinRespectingDot(this.genRootPath, 'classNameMap.json'), Util.generateUniqueCodeMap(classNames));
-        
+
         // 重新透過 Mustache 樣板建立 less/index.js，用來當作所有 LESS 的 entry 進入點
         await Util.deleteFileOrFolder(Util.joinRespectingDot(this.projectPlatformSourcePath, 'less', 'index.js'));
         await this.appendMustacheFile('less.index.mustache', Util.persistByPath(Util.joinRespectingDot(this.genSourcePath, 'less', 'index.js')));
@@ -7610,7 +7610,7 @@ class ProjectFileHandler extends PathBase {
                 persist(module, 'component', (file) => `${module}/web/src/component/${file.dirName}/${file.fileNameExtension}`);
                 persist(module, 'store', (file) => `${module}/web/src/store/${file.dirName}/${file.fileNameExtension}`);
             }
-            
+
             // 確保這個模組有對應的普通(非編輯用)元件實體，若無則跳過 (可能是純資料設定)
             const componentOfModule = _.find(this.getComponents(), (each) => !each.isPreciselyEditableComponent() && _.isEqual(module, each.getName()));
             if (Util.isUndefinedNullEmpty(componentOfModule)) continue;
@@ -7619,36 +7619,36 @@ class ProjectFileHandler extends PathBase {
             if (this.isFunctionsPlatform())
                 persist(module, 'func', (file) => `${module}/functions/src/func/${file.dirName}/${file.fileNameExtension}`);
 
-            /** 
-             * 獨立處理該模組專屬的 LESS 樣式檔 
+            /**
+             * 獨立處理該模組專屬的 LESS 樣式檔
              * 會自動找出開頭為該模組名稱的 css class (例如 .AccountContainer)，
              * 抽取出來寫進各模組內部的 less/styles.less。
              */
             const instance = new AppBuilder(this.getAppBuildParam());
             const attrs = instance.getObjectOfExistedLessAttribute(this.genSourcePath);
             if (attrs) {
+                Util.persistJsonFilePrettier('./temp/getObjectOfExistedLessAttribute.json', attrs).then();
                 // 篩選出 classname 開頭與該 module 名稱相符的樣式
                 const lessees = _.filter(attrs, (value, key, collection) => _.startsWith(key, _.upperFirst(module)))
-                
                 // 刪除模組中舊的 less 目錄
                 await Util.deleteSelfByPath(Util.joinRespectingDot(PATH_OF_COMPONENT_MODULE, `${module}/web/src/less`));
-                
+
                 // 建立產生器來製作此模組的專屬 styles.less
                 const generator = new ClassGenerator(Util.joinRespectingDot(PATH_OF_COMPONENT_MODULE, `${module}/web/src/less/styles.less`), this.nodeOfAncestor);
-                
+
                 // 加入 RWD 裝置變數宣告 (@mobile, @tablet)
                 for (const model of LESS_MODULES) {
                     generator.appendInClassHead(`@${model.name}: ~'${model.rule}';`);
                 }
                 generator.needSignature(false);
                 generator.disableDefaultImports();
-                
+
                 // 將篩選出來的 class 屬性寫入模組 less 中
                 for (const less of lessees) {
                     generator.appendInClassTail(`.${less.complete} 
                         {${instance.getVarietyDeviceStmts(less)}}`);
                 }
-                
+
                 // 寫檔儲存
                 await generator.persist();
             }
@@ -8025,7 +8025,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         await apiGenerator.persist();
         await this.generateStorageRules(this.deployRemoteRules);
         await this.generateFireStoreRules(this.deployRemoteRules);
-        /** 2021.12.14 indexes 有點麻煩, 還要照query順序 例如where(subject) where(year) orderBy(qid) 欄位的順序就必須 qeusetions ==> subject,year,qid */
         await this.generateFireIndexRules(this.deployRemoteRules);
     }
 
@@ -10249,6 +10248,10 @@ class ScheduleManager {
             case 'adminOnly':
                 await builder.deployAdmin();
                 break;
+            case 'persistentBuildAdmin':
+                await builder.persistent('admin');
+                await builder.deployAdmin(false);
+                break;
             case 'webOnly':
                 await builder.buildWeb();
                 break;
@@ -10268,10 +10271,6 @@ class ScheduleManager {
             case 'BuildFunctionsThanRefresh':
                 await builder.buildCloudFunctions(false);
                 await builder.refreshFunctionsFolder();
-                break;
-            case 'persistentBuildAdmin':
-                await builder.persistent('admin');
-                await builder.deployAdmin();
                 break;
             case 'BuildQuickAdmin':
                 await builder.persistent('admin');
