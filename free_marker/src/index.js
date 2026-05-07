@@ -22,7 +22,7 @@ const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
 const KEYWORD_OF_MODULARIZED = 'Modularized';
-const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template';
+const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/legacy/idea-inventer/free_marker/template';
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
@@ -9841,8 +9841,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
         // 3. 預定義路徑，方便維護
         const rootPath = '/Users/davidtu';
-        const projectPath = `${rootPath}/cross-achieve/high/${projectSlug}`;
-        const webGenPath = `${rootPath}/cross-achieve/high/gen/${projectSlug}/web`;
+        const projectPath = `${rootPath}/cross-achieve/legacy/${projectSlug}`;
+        const webGenPath = `${rootPath}/cross-achieve/legacy/idea-inventer/gen/${projectSlug}/web`;
 
         // 4. 組合 Script 內容 (保持整潔的縮排)
         // 注意：在 Alias 中，路徑建議用引號包覆以防萬一
