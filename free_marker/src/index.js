@@ -9829,6 +9829,38 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         }
     }
 
+    /** 增加「全端工程師」快捷好用的alias */
+    generateShellScript = async () => {
+        // 1. 基礎參數整理
+        const projectSlug = this.nodeOfAncestor.idOfProject; // e.g., 'yueh-pu'
+        // 2. 格式化變數名稱：將 'yueh-pu' 轉為 'YuehPu'，確保 Alias 名稱合法
+        const variable = _.upperFirst(_.camelCase(projectSlug));
+        const dirOfAliasFile = `/Users/davidtu/shell-script/temp`
+        Util.persistByPath(dirOfAliasFile)
+        const filePath = `${dirOfAliasFile}/commandOf${variable}.sh`;
+
+        // 3. 預定義路徑，方便維護
+        const rootPath = '/Users/davidtu';
+        const projectPath = `${rootPath}/cross-achieve/high/${projectSlug}`;
+        const webGenPath = `${rootPath}/cross-achieve/high/gen/${projectSlug}/web`;
+
+        // 4. 組合 Script 內容 (保持整潔的縮排)
+        // 注意：在 Alias 中，路徑建議用引號包覆以防萬一
+        const scriptContent = [
+            `#!/bin/sh`,
+            `# --- Generated for ${projectSlug} ---`,
+            `alias cd${variable}='cd "${projectPath}"'`,
+            `alias deploy${variable}Functions='cd "${projectPath}" && firebase deploy --only functions'`,
+            `alias simulate${variable}Web='cd "${webGenPath}" && ns'`,
+            `alias emulator${variable}Functions='cd "${projectPath}" && firebase emulators:start --only functions'`,
+            `# ------------------------------`
+        ].join('\n');
+
+        Util.appendFile(filePath, scriptContent, false, true);
+
+        console.log(`✅ Alias updated: ${filePath}`);
+    }
+
     async execute() {
 
         function isRapidModeCleanFileAllowRule(file) {
@@ -9913,6 +9945,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
         if (this.isWebPlatform()) {
             await new AppBuilder(this.getProps()).overrideLessFile();
+            Util.exeAsyncT(this.generateShellScript());
         }
 
         await this.runInstallIfNeed();
