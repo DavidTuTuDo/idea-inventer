@@ -21,6 +21,7 @@ import ProcessingGuardView, { storeOfProcessingGuard } from "./BaseProcessingGua
 import AppLoadingView, { storeOfAppLoading } from "./AppLoadingView";
 import SplashX from "./SplashX";
 import RulesSnack from "./RulesSnack";
+import AppMessageQueueView, { storeOfAppMessageQueue } from "./AppMessageQueueView";
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -185,6 +186,7 @@ class BaseComponent extends MuiComponent {
     }
 
     componentDidMount() {
+        const self = this;
         if (!this.isDialogComponent() && !this.isComponentView()) {
             const { Application } = require("../");
             Router.setCurrentComponent(this);
@@ -197,6 +199,9 @@ class BaseComponent extends MuiComponent {
             window.addEventListener("scroll", this.onScrollToBottomListener, true);
         }
         Util.appendInfo(`✅️  ${this.getComponentName()} goto componentDidMount()`);
+        Util.syncDelay(5000).then(() => {
+            self.runMessageQueueTest()
+        })
     }
 
     /**
@@ -265,7 +270,7 @@ class BaseComponent extends MuiComponent {
         let currentScroll = Math.ceil(window.scrollY + window.innerHeight);
         let isScrollDown = window.scrollY > 0;
         /** 應該要記錄scrollY, 然後判斷偏移量 */
-        // [修改] 使用設定的 Threshold 取代寫死的 modifier = 1
+            // [修改] 使用設定的 Threshold 取代寫死的 modifier = 1
         let modifier = this.getThresholdOfScrollToBottom() || 100;
         // [修改] 改為 >= 確保在設定的 Threshold 範圍內都能精準觸發
         let isScrollToEnd = currentScroll + modifier >= documentHeight;
@@ -385,6 +390,17 @@ class BaseComponent extends MuiComponent {
         }
     }
 
+    /**
+     * 微透明的訊息佇列
+     * @param {string} content 訊息內容
+     * @param {string} type 顏色類型: info(時尚灰), warn(警告橘), error(錯誤紅), super(驚喜金)
+     * @param {Function} onClick 點擊事件 (如導頁)
+     * @param {number} duration 持續時間 (ms)
+     */
+    showAppMessageQueue(content, type = "info", onClick = null, duration = 5000) {
+        storeOfAppMessageQueue.addMessage({ content, type, onClick, duration });
+    }
+
     isNavigationView() {
         return false;
     }
@@ -466,6 +482,8 @@ class BaseComponent extends MuiComponent {
                 <SplashX componentX={self} />
 
                 <RulesSnack componentX={self} />
+
+                <AppMessageQueueView componentX={self} />
 
                 <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
                     {self.renderViewByStatus()}
@@ -734,6 +752,64 @@ class BaseComponent extends MuiComponent {
     propsMobX() {
         return this.propsOfMobX;
     }
+
+    /**
+     * 測試：製造 20 個範例，每個 message 隨機間隔 2~5 秒
+     */
+    runMessageQueueTest = () => {
+        const examples = [
+            { type: "info", text: "系統已完成背景同步作業" },
+            { type: "warn", text: "⚠️ 警告：目前連線可能不穩定" },
+            { type: "error", text: "❌ 發生嚴重錯誤：找不到指定資源" },
+            { type: "super", text: "✨ 太棒了！您獲得了專屬白金會員資格" },
+            { type: "info", text: "提示：您可以點擊此處前往設定頁面" },
+            { type: "warn", text: "請注意！即將在 5 分鐘後進行系統維護" },
+            { type: "error", text: "網路請求失敗，API 回傳 Timeout" },
+            { type: "super", text: "🎉 恭喜發財！獲得隱藏版新年紅包" },
+            { type: "warn", text: "目前記憶體使用量過高，請關閉部分應用" },
+            { type: "error", text: "無法讀取使用者設定檔 (Error 500)" },
+            { type: "super", text: "🎁 驚喜掉落！限時免費領取" },
+            { type: "info", text: "您的密碼即將在 3 天後過期，請盡快修改" },
+            { type: "info", text: "已為您自動儲存草稿" },
+            { type: "error", text: "拒絕存取：您沒有權限執行此操作" },
+            { type: "super", text: "🏆 達成目標：連續登入 30 天" },
+            { type: "warn", text: "有 3 筆未處理的訂單，請前往後台確認" },
+            { type: "error", text: "偵測到異常的登入活動，已自動鎖定" },
+            { type: "warn", text: "API 呼叫頻率已達上限，請稍後再試" },
+            { type: "super", text: "🌟 恭喜抽中 SSR 級珍貴道具！" },
+            { type: "info", text: "最後一則訊息：提醒您今天還有未完成的待辦事項" }
+        ];
+
+        let count = 0;
+
+        const sendNext = () => {
+            if (count >= 20) {
+                console.log("✅ 20 個測試訊息已全數發送完畢！");
+                return;
+            }
+
+            const currentMsg = examples[count];
+
+            // 隨機附上可點擊的事件來測試 Pointer Event 與 Hover 效果
+            const onClick = Math.random() > 0.5
+                ? () => console.log(`👉 你點擊了第 ${count + 1} 則訊息: ${currentMsg.text}`)
+                : null;
+
+            // 呼叫我們剛剛建立在 BaseComponent 的函式
+            this.showAppMessageQueue(currentMsg.text, currentMsg.type, onClick);
+
+            count++;
+
+            // 隨機產生 2000ms ~ 5000ms 的間隔時間 (2~5秒)
+            const nextDelay = Math.floor(Math.random() * 3001) + 2000;
+
+            // 排程下一個訊息
+            setTimeout(sendNext, nextDelay);
+        };
+
+        // 立刻啟動第一則測試
+        sendNext();
+    };
 }
 
 export default BaseComponent;

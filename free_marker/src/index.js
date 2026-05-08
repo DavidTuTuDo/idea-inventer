@@ -1615,20 +1615,14 @@ class CodegenNode {
     getOriginalName() { return this.isPreciselyEditableComponent() ? this.originalName : this.name; }
 
     getDescription() {
-        const self = this;
+        if (this.description) return this.description;
 
-        function getDescriptionStringByName(name) {
-            switch (_.toLower(name)) {
-                case 'value':
-                    return `${self.getName()}邏輯處理的值`;
-                case 'label':
-                    return `${self.getName()}顯示的標籤`;
-                default:
-                    return `${self.getName()}沒有解釋`;
-            }
+        const name = this.getName();
+        switch (_.toLower(name)) {
+            case 'value': return `${name}邏輯處理的值`;
+            case 'label': return `${name}顯示的標籤`;
+            default: return `${name}沒有解釋`;
         }
-
-        return this.description ? this.description : getDescriptionStringByName(this.getName());
     }
 
     /** 這些屬性不可以enrich */
@@ -1691,7 +1685,7 @@ class CodegenNode {
 
     hasPermission() { return !!this.permission && !_.isEmpty(this.permission); }
 
-    getListContents() { return this.listContents ? this.listContents : []; }
+    getListContents() { return this.listContents || []; }
 
     setListWrapContents(contents) {
         this.listWrapContents = contents;
@@ -1701,7 +1695,7 @@ class CodegenNode {
         this.listWrapContents.push(...contents);
     }
 
-    getListWrapContents() { return this.listWrapContents ? this.listWrapContents : []; }
+    getListWrapContents() { return this.listWrapContents || []; }
 
     setWrapContents(contents) {
         this.wrapContents = contents;
@@ -1847,7 +1841,7 @@ class CodegenNode {
 
     getCustomizePackages() { return _.isEmpty(this.customizes) ? [] : this.customizes; }
 
-    getEventParams() { return this.params ? this.params : []; }
+    getEventParams() { return this.params || []; }
 
     hasInputFieldDialog() { return this.getAlertDialog().textInput.enable; }
 
@@ -1896,11 +1890,7 @@ class CodegenNode {
     }
 
     getWrapView(needDefault = true) {
-        if (!needDefault) {
-            return this.wrapView;
-        } else {
-            return this.wrapView ?? 'div';
-        }
+        return needDefault ? (this.wrapView ?? 'div') : this.wrapView;
     }
 
     setWrapView(view) {
@@ -1914,10 +1904,7 @@ class CodegenNode {
     withoutWrapView() { return Util.isUndefinedNullEmpty(this.getWrapView(false)); }
 
     getListView() {
-        if (this.listView) {
-            return this.listView;
-        }
-        return 'div';
+        return this.listView ?? 'div';
     }
 
     disableSelectedArray() {
@@ -1925,10 +1912,7 @@ class CodegenNode {
     }
 
     getListWrapView() {
-        if (this.listWrapView) {
-            return this.listWrapView;
-        }
-        return 'div';
+        return this.listWrapView ?? 'div';
     }
 
     setListView(view) {
@@ -1947,7 +1931,7 @@ class CodegenNode {
         return raw ? this.view : _.replace(this.view, '.', ''); /** 處理React.Fragment*/
     }
 
-    getEvents() { return this.events ? this.events : []; }
+    getEvents() { return this.events || []; }
 
     setEvents(events) {
         this.events = events;
@@ -1960,15 +1944,12 @@ class CodegenNode {
             create: 'isAdmin()',
             read: 'isAdmin()',
             list: `(request.query.limit is int && request.query.limit <= ${MAXIMUM_DOCUMENTS_PER_FETCH})`
-        }
-        const customize = this.permission ? this.permission : {};
-        return {...defaultPermission, ...customize};
+        };
+        return { ...defaultPermission, ...(this.permission || {}) };
     }
 
     getStoragePermission() {
-        const customize = this.permission ? this.permission : {};
-        const result = {...this.getDefaultStoragePermission(), ...customize};
-        return result
+        return { ...this.getDefaultStoragePermission(), ...(this.permission || {}) };
     }
 
     getDefaultStoragePermission() { return {
@@ -2485,17 +2466,9 @@ class CodegenNode {
     /** 表示這會在store裡面產生邏輯 */
     isAttribute() { return !!this.type; }
 
-    getWrapProps() {
-        if (!!this.wrapProps)
-            return this.wrapProps;
-        return {};
-    }
+    getWrapProps() { return this.wrapProps || {}; }
 
-    getListProps() {
-        if (!!this.listProps)
-            return this.listProps;
-        return {};
-    }
+    getListProps() { return this.listProps || {}; }
 
     setListProps(props = {}) {
         this.listProps = props;
@@ -2518,11 +2491,7 @@ class CodegenNode {
     }
 
 
-    getListWrapProps() {
-        if (!!this.listWrapProps)
-            return this.listWrapProps;
-        return {};
-    }
+    getListWrapProps() { return this.listWrapProps || {}; }
 
     setListWrapProps(props = {}) {
         this.listWrapProps = props;
@@ -2538,11 +2507,7 @@ class CodegenNode {
         this.props = props;
     }
 
-    getViewProps() {
-        if (!!this.props)
-            return this.props;
-        return {};
-    }
+    getViewProps() { return this.props || {}; }
 
     appendViewProps(...props) {
         for (const prop of props) {
@@ -2572,7 +2537,7 @@ class CodegenNode {
     }
 
     /** web page 顯示在橫槓上的字樣 */
-    getTitle() { return this.title ? this.title : ''; }
+    getTitle() { return this.title || ''; }
 
     pure() { return this.node; }
 
@@ -3118,10 +3083,7 @@ class CodegenNode {
     }
 
     getComponents() {
-        if (this.components && _.isArray(this.components))
-            return this.components
-        else
-            return [];
+        return (_.isArray(this.components) ? this.components : []);
     }
 
     getCloudFunctions() { return this.cloudFunctions ?? []; }
@@ -8536,18 +8498,16 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     enrichTextFieldBehavior(node, typeOfView = 'default') {
         const self = this;
 
-        function getContentsOfClickBehavior(node, functionNameOfCustom) {
-            const stmts = []
+        const getContentsOfClickBehavior = (node, functionNameOfCustom) => {
+            const stmts = [];
             if (node.hasAlertDialog()) {
                 stmts.push(`objectOfParam.view = event;`);
-                stmts.push(...self.stmtsOfClickCaution)
-                stmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
-                stmts.push(`self.${functionNameOfCustom ?? node.getFunctionNameOfClicked(typeOfView)}(objectOfParam);`)
-            } else {
-                stmts.push(`self.${functionNameOfCustom ?? node.getFunctionNameOfClicked(typeOfView)}(objectOfParam);`)
+                stmts.push(...self.stmtsOfClickCaution);
+                stmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`);
             }
+            stmts.push(`self.${functionNameOfCustom ?? node.getFunctionNameOfClicked(typeOfView)}(objectOfParam);`);
             return stmts.join(`\n`);
-        }
+        };
 
         const arrayOfProps = [];
         if (!node.isBelong2AutoComplete() && node.hasLabel()) {
@@ -8586,12 +8546,13 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         }
 
         if (node.hasHelperVisual()) {
-            function appendContentOfObjectOfProps(view, position, array) {
+            const appendContentOfObjectOfProps = (view, position) => {
                 if (_.isUndefined(view)) return;
                 const hasAlertMenu = !Util.isUndefinedNullEmpty(view.alertMenu);
                 const hasClick = _.isEqual(view.click, true);
                 let contentOfVisual;
                 let contentOfClicked;
+
                 switch (view.type) {
                     case 'icon':
                         self.appendMuiIconImport(node, view.content);
@@ -8604,7 +8565,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                         throw new ERROR(9999, `78751564165156 un support type of ${view.type}`);
                 }
 
-
                 if (hasAlertMenu) {
                     contentOfClicked = self.getStmtsOfAlertMenu(node).join('\n');
                 } else if (hasClick) {
@@ -8613,81 +8573,45 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                         functionName: functionNameOfVisualIconClick,
                         params: ['param'],
                         comments: ['AlertMenu點擊事件 => 必須 return async () => {instance = param.object}']
-                    })
-                    contentOfClicked = getContentsOfClickBehavior(node, functionNameOfVisualIconClick)
+                    });
+                    contentOfClicked = getContentsOfClickBehavior(node, functionNameOfVisualIconClick);
                 }
 
                 if (hasAlertMenu || hasClick) {
                     node.appendImportStmt({part: 'IconButton', from: '@mui/material/IconButton'});
-                    contentOfVisual = `<IconButton onClick={(event, value) => {${contentOfClicked}}} 
-                                edge="${position}">${contentOfVisual}</IconButton>`;
+                    contentOfVisual = `<IconButton onClick={(event, value) => {${contentOfClicked}}} edge="${position}">${contentOfVisual}</IconButton>`;
                 }
-                // _stmt.push(`${position}Adornment: `)
-                const adornment = Util.getObject(`${position}Adornment`,`###(<InputAdornment position="${position}">${contentOfVisual}${hasAlertMenu ? self.getContentOfAlertMenu(node, view.alertMenu, Util.camel(`helperVisual`, position)) : ''}</InputAdornment>)`)
-                array.push({ slotProps:{input:adornment}});
-            }
-
+                
+                const adornment = Util.getObject(`${position}Adornment`,`###(<InputAdornment position="${position}">${contentOfVisual}${hasAlertMenu ? self.getContentOfAlertMenu(node, view.alertMenu, Util.camel(`helperVisual`, position)) : ''}</InputAdornment>)`);
+                arrayOfProps.push({ slotProps: { input: adornment } });
+            };
 
             const visual = node.getHelperVisual();
-            node.appendImportStmt({part: 'InputAdornment', from: '@mui/material/InputAdornment'})
-            appendContentOfObjectOfProps(visual.start, 'start', arrayOfProps);
-            appendContentOfObjectOfProps(visual.end, 'end', arrayOfProps);
+            node.appendImportStmt({part: 'InputAdornment', from: '@mui/material/InputAdornment'});
+            appendContentOfObjectOfProps(visual.start, 'start');
+            appendContentOfObjectOfProps(visual.end, 'end');
         }
 
-        switch (node.getTypeOfTextField()) {
-            case 'email':
-                /** 電子郵件欄位 - 用於填寫使用者的電子郵件地址，瀏覽器會記住並建議之前輸入過的 email */
-                arrayOfProps.push({id:'email-address'})
-                arrayOfProps.push({name:'email'})
-                arrayOfProps.push({type:'email'})
-                arrayOfProps.push({ slotProps: { input: { autoComplete: "email", inputProps: { autoComplete: "email" } } } });
-                break;
-            case 'name':
-                /** 姓名欄位 - 用於填寫使用者的真實姓名，瀏覽器會記住並建議之前輸入過的姓名 */
-                arrayOfProps.push({id:'full-name'})
-                arrayOfProps.push({name:'name'})
-                arrayOfProps.push({type:'text'})
-                arrayOfProps.push({ slotProps: { input: { autoComplete: "name", inputProps: { autoComplete: "name" } } } });
-                break;
-            case 'tel':
-                /** 電話欄位 - 用於填寫使用者的手機或電話號碼，瀏覽器會記住並建議之前輸入過的電話號碼 */
-                arrayOfProps.push({id:'phone-number'})
-                arrayOfProps.push({name:'phone'})
-                arrayOfProps.push({type:'tel'})
-                arrayOfProps.push({ slotProps: { input: { autoComplete: "tel", inputProps: { autoComplete: "tel" } } } });
-                break;
-            case 'address':
-                /** 地址欄位 - 用於填寫使用者的街道地址，瀏覽器會記住並建議之前輸入過的地址 */
-                arrayOfProps.push({id:'address'})
-                arrayOfProps.push({name:'address'})
-                arrayOfProps.push({type:'text'})
-                arrayOfProps.push({ slotProps: { input: { autoComplete: "address-line1", inputProps: { autoComplete: "address-line1" } } } });
-                break;
-            case 'postal-code':
-                /** 郵遞區號欄位 - 用於填寫使用者的郵遞區號或郵編，瀏覽器會記住並建議之前輸入過的郵遞區號 */
-                arrayOfProps.push({id:'postal-code'})
-                arrayOfProps.push({name:'postalCode'})
-                arrayOfProps.push({type:'text'})
-                arrayOfProps.push({ slotProps: { input: { autoComplete: "postal-code", inputProps: { autoComplete: "postal-code" } } } });
-                break;
-            case 'username':
-                /** 帳號名稱欄位 - 用於填寫使用者的登入帳號，瀏覽器會記住並建議之前輸入過的帳號名稱 */
-                arrayOfProps.push({id:'username'})
-                arrayOfProps.push({name:'username'})
-                arrayOfProps.push({type:'text'})
-                arrayOfProps.push({ slotProps: { input: { autoComplete: "username", inputProps: { autoComplete: "username" } } } });
-                break;
-            case 'password':
-                /** 密碼欄位 - 用於填寫使用者的登入密碼，使用 "current-password" 讓瀏覽器能安全地建議已儲存的密碼 */
-                arrayOfProps.push({id:'password'})
-                arrayOfProps.push({name:'password'})
-                arrayOfProps.push({type:'password'})
-                arrayOfProps.push({ slotProps: { input: { autoComplete: "current-password", inputProps: { autoComplete: "current-password" } } } });
-                break;
-            default:
-                /** 預設文字欄位 - 當沒有特定類型時使用 */
-                arrayOfProps.push({type:'text'})
-                break;
+        const typeMaps = {
+            'email': { id: 'email-address', name: 'email', type: 'email', autoComplete: 'email' },
+            'name': { id: 'full-name', name: 'name', type: 'text', autoComplete: 'name' },
+            'tel': { id: 'phone-number', name: 'phone', type: 'tel', autoComplete: 'tel' },
+            'address': { id: 'address', name: 'address', type: 'text', autoComplete: 'address-line1' },
+            'postal-code': { id: 'postal-code', name: 'postalCode', type: 'text', autoComplete: 'postal-code' },
+            'username': { id: 'username', name: 'username', type: 'text', autoComplete: 'username' },
+            'password': { id: 'password', name: 'password', type: 'password', autoComplete: 'current-password' }
+        };
+
+        const config = typeMaps[node.getTypeOfTextField()];
+        if (config) {
+            arrayOfProps.push(
+                { id: config.id },
+                { name: config.name },
+                { type: config.type },
+                { slotProps: { input: { autoComplete: config.autoComplete, inputProps: { autoComplete: config.autoComplete } } } }
+            );
+        } else {
+            arrayOfProps.push({ type: 'text' });
         }
 
         Util.mergeArrayByKey(arrayOfProps);
@@ -8697,7 +8621,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 name: nameOfDisabled,
                 type: 'boolean',
                 editIgnore: true,
-                defaultValue: !!(_.isEqual(node.computed, true) || _.isEqual(node.disabled, true)),
+                defaultValue: !!(node.computed === true || node.disabled === true),
                 incest: node.incest,
             }
         )
@@ -8862,47 +8786,227 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         }
 
         function injectStyleBehavior(node) {
-            let clazzNameOFDefault = node.getClassNameOfLessUsage();
-            const params = [node.getObservableName(true)];
-            _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
+            const clazzNameOFDefault = node.getClassNameOfLessUsage();
+            const params = [node.getObservableName(true)].filter(each => !Util.isUndefinedNullEmpty(each));
+
             if (node.needInjectStyle()) {
                 const injectFunctionName = node.getFunctionNameOfInjectStyle();
-                node.appendMethods({
-                    functionName: injectFunctionName,
-                    params,
-                })
-                node.appendViewProps({style: `###{...self.${injectFunctionName}(${params.join(',')}),...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`})
+                node.appendMethods({ functionName: injectFunctionName, params });
+                node.appendViewProps({style: `###{...self.${injectFunctionName}(${params.join(',')}),...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`});
             } else {
-                node.appendViewProps({style: `###{...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`})
+                node.appendViewProps({style: `###{...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`});
             }
 
             /** 這個做法有點危險, 如果裏面是指標, 那之前所有的內容都會被更改 */
             const clazzNameOfWrap = node.getClassNameOfLessUsage('wrap');
             if (node.needInjectWrapStyle()) {
                 const injectFunctionName = node.getFunctionNameOfInjectStyle('Wrap');
-                node.appendMethods({
-                    functionName: injectFunctionName,
-                    params,
-                })
-                node.appendWrapProps({style: `###{...self.${injectFunctionName}(${params.join(',')}),...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
+                node.appendMethods({ functionName: injectFunctionName, params });
+                node.appendWrapProps({style: `###{...self.${injectFunctionName}(${params.join(',')}),...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`});
             } else {
-                node.appendWrapProps({style: `###{...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
+                node.appendWrapProps({style: `###{...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`});
             }
 
             if (node.needInjectListStyle()) {
                 node.appendMethods({
                     functionName: node.getFunctionNameOfInjectStyle('List'),
                     params: [node.getPreciseAttributeParentName()]
-                })
+                });
             }
 
             if (node.needInjectListWrapStyle()) {
                 node.appendMethods({
                     functionName: node.getFunctionNameOfInjectStyle('ListWrap'),
-                    param: [node.getPreciseAttributeParentName()]
-                })
+                    params: [node.getPreciseAttributeParentName()]
+                });
             }
         }
+
+        function applyInjectBehavior(node) {
+            const params = [node.getObservableName(true)].filter(each => !Util.isUndefinedNullEmpty(each));
+
+            if (node.needInjectView()) {
+                const nameOfInjectView = node.getFunctionNameOfInjectView();
+                node.appendMethods({ functionName: nameOfInjectView, params });
+                node.appendContents(`{this.${nameOfInjectView}(${params.join(',')})}`);
+            }
+
+            if (node.needInjectWrapView()) {
+                const nameOfInjectWrapView = node.getFunctionNameOfInjectWrapView();
+                node.appendMethods({ functionName: nameOfInjectWrapView, params });
+                node.appendWrapContents(`{this.${nameOfInjectWrapView}(${params.join(',')})}`);
+            }
+
+            if (node.needInjectProps()) {
+                const functionNameOfInjectProps = node.getFunctionNameOfInjectProps();
+                node.appendSimpleProps(`...self.${functionNameOfInjectProps}(${params.join(',')})`);
+                node.appendMethods({ functionName: functionNameOfInjectProps, params });
+            }
+        }
+
+        function applyValueProps(node) {
+            if (node.isSimpleSelected()) {
+                node.appendListProps({value: `###_.toString(${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}())`});
+                node.appendViewProps({value: `###${node.getName()}.value`});
+                node.appendContents(`{${node.getName()}.label}`);
+            } else if (node.isChipView()) {
+                node.appendViewProps({label: `###${node.getName()}`});
+            } else if (node.isQRCodeView() || node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
+                node.appendViewProps({value: `###${node.getName()}`});
+            } else if (node.isSwitchView() || node.isCheckboxView()) {
+                node.appendViewProps({checked: `###${node.getName()}`});
+            } else if (node.isAudioPlayer() || node.isImageView() || node.isAvatarView()) {
+                node.appendViewProps({src: `###${node.getName()}`});
+            } else if (node.isTabItemView()) {
+                node.appendViewProps({label: `###${node.getName()}.getLabel()`}, {value: `###${node.getName()}.getValue()`});
+            } else if (node.isBadgeView()) {
+                node.appendViewProps({badgeContent: `###${node.getName()}`});
+            } else if (node.isTimeDatePickerView() || node.isTimeDateRangePickerView() || node.isAutoCompleteView() || node.isIconButton()) {
+                /** 不要出現 self.handleTextString() */
+            } else if (node.isStringOrNumberAttribute()) {
+                node.appendContents(`{self.handleTextString(${node.getFieldName()})}`);
+            }
+        }
+
+        const applyAudioPlayerBehavior = (node) => {
+            if (!node.isAudioPlayer()) return;
+            const params = ['param'];
+            const endMethod = node.getFunctionNameOfPlayEnd();
+            const errMethod = node.getFunctionNameOfPlayError();
+            const playMethod = node.getFunctionNameOfOnPlay();
+
+            [endMethod, errMethod, playMethod].forEach(functionName => 
+                node.appendMethods({ functionName, params })
+            );
+
+            node.appendViewProps(
+                { onError: `###(param) => self.${errMethod}(param)` },
+                { onEnded: `###(param) => self.${endMethod}(param)` },
+                { onPlay: `###(param) => self.${playMethod}(param)` }
+            );
+        };
+
+        const applyButtonBehavior = (node) => {
+            if (!(node.isChipView() || node.isButton() || node.isIconButton())) return;
+
+            node.setClick(true);
+            if (!Util.isUndefinedNullEmpty(node.getDefaultValue())) node.l10n = true;
+            
+            if (node.hasIcon()) {
+                this.appendMuiIconImport(node, node.getIcon());
+                switch (node.getView()) {
+                    case 'Button':
+                        const obj = {};
+                        obj[`${Util.camel(node.getAnchorOfButton(), 'icon')}`] = `###<${_.upperFirst(node.getIcon())} />`;
+                        node.appendViewProps(obj);
+                        break;
+                    case 'IconButton':
+                        if (node.needBadge()) {
+                            node.needParam = true;
+                            node.appendChildrenWithJsons({
+                                name: `${Util.camel('badge', 'of', node.getName())}`,
+                                incest: {view: false, attribute: true},
+                                needParam: true,
+                                defaultValue: 0,
+                                props: node.propsOfBadge,
+                                view: 'Badge',
+                                type: 'number',
+                                children: [{ name: 'icon', needParam: true, props: node.propsOfIcon, view: node.getIcon() }]
+                            });
+                        } else {
+                            node.appendChildrenWithJsons({ name: 'icon', props: node.propsOfIcon, view: node.getIcon() });
+                        }
+                        break;
+                }
+            }
+        };
+
+        const applyAutoCompleteBehavior = (node) => {
+            if (!node.isAutoCompleteView()) return;
+            const name = node.getFieldNameOfSuggest();
+            const plural = 's';
+            const fieldName = `${name}s`;
+            const label = node.getFieldNameOfLabel();
+            node.getParentNode().appendChildrenWithJsons({
+                    name,
+                    type: `array`,
+                    plural,
+                    incest: node.incest,
+                    path: node.path,
+                    permission: node.permission,
+                    disableOfColumn: node.isDisableOfColumn(),
+                    autoFuse: node.useAutoFuse(),
+                    cheap: true,
+                    column: false,
+                    children: [
+                        { type: 'string', name: 'value', column: true, description: '本質內容' },
+                        { type: 'string', name: 'label', column: true, description: '顯示在屏幕上' },
+                        { type: 'number', name: 'type', column: true, description: '用來當作額router' },
+                        { name: 'popularLevel', type: 'number', column: true, defaultValue: 1, description: 'order時候,會desc,讓最熱門的項目留在最上方' },
+                        { type: 'string', name: 'uid', column: true, description: '用來放document id,由type 判斷路由' },
+                        { type: 'string', name: 'extra', column: true, description: '用來放解釋|額外資訊, 也許type很快就忘了起初的定義' }
+                    ]
+                },
+                {
+                    name: Util.camel(`key`, 'of', node.getName()),
+                    type: 'boolean',
+                    incest: node.incest,
+                    description: `用來force ${node.getName()} re-render`
+                }
+            );
+
+            node.getParentNode().appendChildrenWithJson({
+                name: node.getFieldNameOfSelected(),
+                type: `number`,
+                column: true,
+                incest: node.incest,
+            });
+
+            node.column = false;
+            node.appendChildrenWithJsons({
+                name: Util.camel(`input`, 'of', node.getName()),
+                incest: {view: false, attribute: true},
+                view: 'TextField',
+                type: 'string',
+                column: true,
+                size: node.getSize(),
+                search: node.search,
+                description: node.label,
+                belong2AutoComplete: true,
+                injectViewProp: { name: 'renderInput', functionalized: true },
+                helperVisual: node.helperVisual,
+                helpText: node.helpText,
+            });
+
+            const stmtOfSuggestGetter = `${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`;
+            node.appendViewProps(
+                { freeSolo: true },
+                { options: `###${stmtOfSuggestGetter}` },
+                { filterOptions: `###(options, state) => options` },
+                { isOptionEqualToValue: `###(option, value) => true` },
+                { key: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, `key`, 'of', node.getName())}()` },
+                { getOptionLabel: `###(option) => option.label?? ''` },
+                { value: `###self.getSelectedSuggest(${node.getPreciseAttributeParentName()}.${Util.camel(`get`, node.getFieldNameOfSelected())}(), ${stmtOfSuggestGetter})` }
+            );
+
+            if (node.hasSize()) {
+                node.appendViewProps({size: node.getSize()});
+            }
+
+            if (!node.hasLabelView()) {
+                node.getParentNode().appendChildrenWithJsons({
+                    name: label,
+                    type: `string`,
+                    incest: node.incest,
+                    l10n: true,
+                    description: node.label,
+                });
+
+                node.appendViewProps({
+                    noOptionsText: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, label)}()`
+                });
+            }
+        };
 
         for (const node of nodes) {
 
@@ -9057,51 +9161,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 node.appendWrapProps({position: 'static'})
             }
 
-            if (node.isChipView() || node.isButton() || node.isIconButton()) {
-                node.setClick(true);
-                if (!Util.isUndefinedNullEmpty(node.getDefaultValue())) node.l10n = true;
-                if (node.hasIcon()) {
-                    this.appendMuiIconImport(node, node.getIcon());
-                    switch (node.getView()) {
-                        case 'Button':
-                            const obj = {};
-                            obj[`${Util.camel(node.getAnchorOfButton(), 'icon')}`] = `###<${_.upperFirst(node.getIcon())} />`
-                            node.appendViewProps(obj);
-                            break;
-                        case 'IconButton':
-                            const needBadge = node.needBadge();
-                            if (needBadge) {
-                                node.needParam = true;
-                                node.appendChildrenWithJsons(
-                                    {
-                                        name: `${Util.camel('badge', 'of', node.getName())}`,
-                                        incest: {view: false, attribute: true},
-                                        needParam: true,
-                                        defaultValue: 0,
-                                        props: node.propsOfBadge,
-                                        view: 'Badge',
-                                        type: 'number',
-                                        children: [{
-                                            name: 'icon',
-                                            needParam: true,
-                                            props: node.propsOfIcon,
-                                            view: node.getIcon()
-                                        }]
-                                    },
-                                )
-                            } else {
-                                node.appendChildrenWithJsons({
-                                    name: 'icon',
-                                    props: node.propsOfIcon,
-                                    view: node.getIcon()
-                                })
-                            }
-                            break;
-                        default:
-                            break
-                    }
-                }
-            }
+            applyButtonBehavior(node);
 
             if (node.isRestfulBean()) {
                 node.appendChildrenWithJsons({
@@ -9135,28 +9195,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     {onOpen: `###() => ${node.getPreciseAttributeParentName()}.${Util.camel('set', nameOfHook)}(true)`}
                 )
             }
-            if (node.isSimpleSelected()) {
-                node.appendListProps({value: `###_.toString(${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}())`})
-                node.appendViewProps({value: `###${node.getName()}.value`})
-                node.appendContents(`{${node.getName()}.label}`)
-            } else if (node.isChipView()) {
-                node.appendViewProps({label: `###${node.getName()}`})
-            } else if (node.isQRCodeView() || node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
-                node.appendViewProps({value: `###${node.getName()}`})
-            } else if (node.isSwitchView() || node.isCheckboxView()) {
-                node.appendViewProps({checked: `###${node.getName()}`});
-            } else if (node.isAudioPlayer() || node.isImageView() || node.isAvatarView()) {
-                node.appendViewProps({src: `###${node.getName()}`})
-            } else if (node.isTabItemView()) {
-                node.appendViewProps({label: `###${node.getName()}.getLabel()`}, {value: `###${node.getName()}.getValue()`})
-            } else if (node.isBadgeView()) {
-                node.appendViewProps({badgeContent: `###${node.getName()}`})
-            } else if (node.isTimeDatePickerView() || node.isTimeDateRangePickerView() || node.isAutoCompleteView() || node.isIconButton()) {
-                /** 不要出現 self.handleTextString() */
-            } else if (node.isStringOrNumberAttribute()) {
-                /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
-                node.appendContents(`{self.handleTextString(${node.getFieldName()})}`)
-            }
+            applyValueProps(node);
 
             if (node.needWatermark) {
                 node.getParentNode().appendChildrenWithJsons({
@@ -9188,138 +9227,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 })
             }
 
-            if (node.isAutoCompleteView()) {
-                const name = node.getFieldNameOfSuggest();
-                const plural = 's';
-                const fieldName = `${name}s`;
-                const label = node.getFieldNameOfLabel();
-                node.getParentNode().appendChildrenWithJsons({
-                        name,
-                        type: `array`,
-                        plural,
-                        incest: node.incest,
-                        path: node.path,
-                        permission: node.permission,
-                        disableOfColumn: node.isDisableOfColumn(),
-                        autoFuse: node.useAutoFuse(),
-                        cheap: true,
-                        column: false,
-                        children: [
-                            {
-                                type: 'string',
-                                name: 'value',
-                                column: true,
-                                description: '本質內容',
-                            }, {
-                                type: 'string',
-                                name: 'label',
-                                column: true,
-                                description: '顯示在屏幕上',
-                            },
-                            {
-                                type: 'number',
-                                name: 'type',
-                                column: true,
-                                description: '用來當作額router'
-                            },
-                            {
-                                name: 'popularLevel',
-                                type: 'number',
-                                column: true,
-                                defaultValue: 1,
-                                description: 'order時候,會desc,讓最熱門的項目留在最上方'
-                            },
-                            {
-                                type: 'string',
-                                name: 'uid',
-                                column: true,
-                                description: '用來放document id,由type 判斷路由'
-                            },
-                            {
-                                type: 'string',
-                                name: 'extra',
-                                column: true,
-                                description: '用來放解釋|額外資訊, 也許type很快就忘了起初的定義'
-                            }
-                        ]
-                    },
-                    {
-                        name: Util.camel(`key`, 'of', node.getName()),
-                        type: 'boolean',
-                        incest: node.incest,
-                        description: `用來force ${node.getName()} re-render`
-                    },
-                )
-
-                node.getParentNode().appendChildrenWithJson({
-                    name: node.getFieldNameOfSelected(),
-                    type: `number`,
-                    column: true,
-                    incest: node.incest,
-                })
-
-                node.column = false;
-                node.appendChildrenWithJsons({
-                    name: Util.camel(`input`, 'of', node.getName()),
-                    incest: {view: false, attribute: true},
-                    view: 'TextField',
-                    type: 'string',
-                    column: true,
-                    size: node.getSize(),
-                    search: node.search,
-                    description: node.label,
-                    belong2AutoComplete: true,
-                    injectViewProp: {
-                        name: 'renderInput',
-                        functionalized: true,
-                    },
-                    helperVisual: node.helperVisual,
-                    helpText: node.helpText,
-                })
-                const stmtOfSuggestGetter = `${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
-                node.appendViewProps(
-                    {
-                        freeSolo: true
-                    },
-                    {
-                        options: `###${stmtOfSuggestGetter}`
-                    },
-                    {
-                        filterOptions: `###(options, state) => options`
-                    },
-                    {
-                        isOptionEqualToValue: `###(option, value) => true`
-                    },
-                    {
-                        key: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, `key`, 'of', node.getName())}()`
-                    },
-                    {
-                        getOptionLabel: `###(option) => option.label?? ''`
-                    },
-                    {
-                        value: `###self.getSelectedSuggest(${node.getPreciseAttributeParentName()}.${Util.camel(`get`, node.getFieldNameOfSelected())}(), ${stmtOfSuggestGetter})`
-                    }
-                )
-
-                if (node.hasSize()) {
-                    node.appendViewProps({size: node.getSize()});
-
-                }
-
-                if (!node.hasLabelView()) {
-                    node.getParentNode().appendChildrenWithJsons({
-                        name: label,
-                        type: `string`,
-                        incest: node.incest,
-                        l10n: true,
-                        description: node.label,
-                    })
-
-                    node.appendViewProps({
-                        noOptionsText: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, label)}()`
-                    })
-                }
-            }
+            applyAutoCompleteBehavior(node);
 
             const funcName = node.isSimpleSelected() ? node.getFunctionNameOfOnSelectedChange() : node.getFunctionNameOfOnChanged();
             appendPropsOfNode(node, node.needOnChangeBehavior,
@@ -9347,31 +9255,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 ]
             )
 
-            if (node.isAudioPlayer()) {
-                node.appendMethods({
-                    functionName: node.getFunctionNameOfPlayEnd(),
-                    params: ['param'],
-                })
-                node.appendMethods({
-                    functionName: node.getFunctionNameOfPlayError(),
-                    params: ['param'],
-                })
-                node.appendMethods({
-                    functionName: node.getFunctionNameOfOnPlay(),
-                    params: ['param'],
-                })
-                node.appendViewProps(
-                    {
-                        onError: `###(param) => self.${node.getFunctionNameOfPlayError()}(param)`
-                    },
-                    {
-                        onEnded: `###(param) => self.${node.getFunctionNameOfPlayEnd()}(param)`
-                    },
-                    {
-                        onPlay: `###(param) => self.${node.getFunctionNameOfOnPlay()}(param)`
-                    }
-                )
-            }
+            applyAudioPlayerBehavior(node);
 
             if (node.isClickView()) this.onClickBehavior(node);
             if (node.hasWrapClick()) this.onClickBehavior(node, 'wrap');
@@ -9380,39 +9264,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 node.disableListEmptyTip()
             }
             injectStyleBehavior(node);
-            if (node.needInjectView()) {
-                const params = [node.getObservableName(true)];
-                _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
-                const nameOfInjectView = node.getFunctionNameOfInjectView();
-                node.appendMethods({
-                    functionName: nameOfInjectView,
-                    params
-                })
-                node.appendContents(`{this.${nameOfInjectView}(${params.join(',')})}`)
-            }
-
-            if (node.needInjectWrapView()) {
-                const params = [node.getObservableName(true)];
-                _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
-                const nameOfInjectWrapView = node.getFunctionNameOfInjectWrapView();
-                node.appendMethods({
-                    functionName: nameOfInjectWrapView,
-                    params
-                })
-                node.appendWrapContents(`{this.${nameOfInjectWrapView}(${params.join(',')})}`)
-            }
-
-            if (node.needInjectProps()) {
-                const params = [node.getObservableName(true)];
-                _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
-
-                const functionNameOfInjectProps = node.getFunctionNameOfInjectProps();
-                node.appendSimpleProps(`...self.${functionNameOfInjectProps}(${params.join(',')})`)
-                node.appendMethods({
-                    functionName: functionNameOfInjectProps,
-                    params,
-                })
-            }
+            applyInjectBehavior(node);
             if (node.hasVariant())
                 node.appendViewProps({variant: node.getVariant()})
 
