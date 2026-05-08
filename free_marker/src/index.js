@@ -8581,7 +8581,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     node.appendImportStmt({part: 'IconButton', from: '@mui/material/IconButton'});
                     contentOfVisual = `<IconButton onClick={(event, value) => {${contentOfClicked}}} edge="${position}">${contentOfVisual}</IconButton>`;
                 }
-                
+
                 const adornment = Util.getObject(`${position}Adornment`,`###(<InputAdornment position="${position}">${contentOfVisual}${hasAlertMenu ? self.getContentOfAlertMenu(node, view.alertMenu, Util.camel(`helperVisual`, position)) : ''}</InputAdornment>)`);
                 arrayOfProps.push({ slotProps: { input: adornment } });
             };
@@ -8875,7 +8875,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             const errMethod = node.getFunctionNameOfPlayError();
             const playMethod = node.getFunctionNameOfOnPlay();
 
-            [endMethod, errMethod, playMethod].forEach(functionName => 
+            [endMethod, errMethod, playMethod].forEach(functionName =>
                 node.appendMethods({ functionName, params })
             );
 
@@ -8891,7 +8891,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
             node.setClick(true);
             if (!Util.isUndefinedNullEmpty(node.getDefaultValue())) node.l10n = true;
-            
+
             if (node.hasIcon()) {
                 this.appendMuiIconImport(node, node.getIcon());
                 switch (node.getView()) {
@@ -10217,40 +10217,12 @@ class ScheduleManager {
 if (configerer.DEBUG_MODE) {
     (async () => {
         /** 紀錄最近一次回答的內容，不然每次都要打字再Enter好懶 */
-        const currents = [
-            {
-                name:'明悅',
-                path:'./project-davidtu-dev'
-            }, {
-                name:'悅耳',
-                path:'./project-yueh-voice'
-            },{
-                name:'悅考',
-                path:'./project-kh-high'
-            },{
-                name:'悅譜',
-                path:'./project-yueh-pu'
-            },{
-                name:'悅遊',
-                path:'./project-dading'
-            },{
-                name:'康新生技',
-                path:'./project-kx-bio'
-            },{
-                name:'芄食品',
-                path:'./project-wan-hui'
-            },{
-                name:'莎夏',
-                path:'./project-sashanailgel'
-            }
-        ]
-
+        const currents = Util.getFileContextInJSON('./projects.json');
         const projects = await Util.interactionByTerminalQ(currents);
         console.log(`需要執行的專案有：`,projects);
         const behavior = Util.getNodeEnvVariable('type');
         const worker = new ScheduleManager(behavior, ...projects.map(p => p.path));
         const msg = await worker.resume();
         Util.appendInfo(msg);
-
     })();
 }
