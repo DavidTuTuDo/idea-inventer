@@ -1018,7 +1018,21 @@ class CodegenNode {
 
     getNameOfReference() { return this.ref; }
 
-    /** 找到當前project的reference node, 這不包括common modules*/
+    /**
+     * 在整個專案的 structs 中，遞迴搜尋符合指定 ref 名稱的原始節點（非 ref 節點）。
+     * 若找到多個同名節點會發出警告，找不到則拋出異常。
+     * 注意：這不包括 common modules。
+     *
+     * @param {string} [nameOfRef=this.getNameOfReference()] - 要搜尋的 ref 名稱
+     * @returns {CodegenNode} 找到的原始節點
+     * @throws {ERROR} 當找不到指定的 ref 節點時
+     *
+     * @example
+     * // 從當前 ref 節點找到原始定義
+     * const original = refNode.getNodeOfReference();
+     * // 指定名稱搜尋
+     * const node = someNode.getNodeOfReference('paymentForm');
+     */
     getNodeOfReference(nameOfRef = this.getNameOfReference()) {
 
         function findNodeOfSpecificRef(...nodes) {
@@ -1103,6 +1117,18 @@ class CodegenNode {
 
     getCustomTextOfI18n() { return this.getNodeOfStruct().textsOfI18n ?? {}; }
 
+    /**
+     * 根據 Cloud Function 的類型與 source 節點的伺服器設定，組裝出完整的 Cloud Function URL。
+     * 內部會將 Firebase Functions 的 location 對應到縮寫碼（例如 asia-east1 → de），
+     * 並搭配 randomHashOfFunc 產生 gen2 格式的 URL。
+     *
+     * @param {{ name: string, type: string }} cloud - Cloud Function 的設定物件
+     * @returns {string} 完整的 Cloud Function URL
+     *
+     * @example
+     * const url = node.getHostOfCloudFunction({ name: 'checkoutByECPay', type: 'httpOnCall' });
+     * // => 'https://checkoutbyecpay-abcdefghijk-de.a.run.app'
+     */
     getHostOfCloudFunction(cloud) {
         /** 內部對照表 */
         function getRegionShortenByLocation(location) {
@@ -1262,6 +1288,22 @@ class CodegenNode {
      *
      * 因為我把needOnChangeBehavior這個method當作參參數傳遞, 會產生裏面呼叫的this 和 node 是不一樣的指標(例如this.view !== node.view),
      * 可能還不懂call by reference的實作, 只好把物件(node)傳遞進來     * */
+    /**
+     * 判斷當前節點是否需要 onChange 行為。
+     * 涵蓋 Slider、Switch、TextField、Autocomplete、TabList、TimeDatePicker、
+     * TimeDateRangePicker、Checkbox、RadioGroup、ButtonGroup 等元件。
+     *
+     * @param {string} [type='default'] - view 的類型 ('default'|'wrap'|'list'|'listWrap')
+     * @param {CodegenNode} [node=this] - 要檢查的節點（支援外部傳入，避免 this 指標問題）
+     * @returns {boolean} 是否需要 onChange 行為
+     *
+     * @example
+     * if (node.needOnChangeBehavior()) {
+     *   generator.appendFunction(node.getFunctionNameOfOnChanged(), ['event', 'value'], ...);
+     * }
+     * // 指定 wrap 類型檢查
+     * if (node.needOnChangeBehavior('wrap', parentNode)) { ... }
+     */
     needOnChangeBehavior(type = 'default', node = this) {
         return Util.or(
           node.isSliderView(type),
@@ -1713,6 +1755,21 @@ class CodegenNode {
         return  Util.camel('get', 'presetObj', 'Of', name)
     }
 
+    /**
+     * 將 AlertDialog 相關的 JSX 語句附加到 stmt 陣列中，並將對應的 import、field、function 註冊到 generator。
+     * 涵蓋 ConfirmDialog（確認型）與 CustomViewDialog（客製化畫面型），
+     * 同時處理 ref、textInput、strict mode、fullWidth、callback、disposable 等屬性的語句產生。
+     *
+     * @param {string[]} stmt - 要附加 JSX 語句的目標陣列
+     * @param {ClassGenerator} generator - 用來註冊 import / field / function 的 ClassGenerator 實例
+     * @returns {void}
+     *
+     * @example
+     * // 在 getContents 或 getWrapContents 中呼叫：
+     * const stmts = [];
+     * node.appendAlertDialogStmts(stmts, generator);
+     * // stmts 會包含 <AlertDialog ref={...} component={self} ... /> 的 JSX 語句
+     */
     appendAlertDialogStmts(stmt, generator) {
         const self = this;
 
@@ -1742,7 +1799,7 @@ class CodegenNode {
         }
 
         function getStmtCallBack() {
-            if (self.hasCallbackOfDialog() && self.hasCallbackOfDialog()) {
+            if (self.hasCallbackOfDialog()) {
                 return `callback={self.${self.getFuncNameOfDialogCallback(self.getAlertDialog().customView)}}`;
             }
         }
@@ -1835,7 +1892,7 @@ class CodegenNode {
         }
     }
 
-    needEditPage() { return this.editor && !!this.editor; }
+    needEditPage() { return !!this.editor; }
 
     isFetchOnlyLogin() { return this.initFetchOnlyLogin ? this.initFetchOnlyLogin : false; }
 
@@ -1873,7 +1930,7 @@ class CodegenNode {
     hasAlertDialog() { return this.hasConfirmDialog() || this.hasCustomViewDialog(); }
 
     setContents(contents = []) {
-        this.contents = [];
+        this.contents = contents;
     }
 
     clearContents() {
@@ -1980,6 +2037,21 @@ class CodegenNode {
     isWrapByAppBarView() { return _.isEqual(this.getWrapView(), 'AppBar'); }
 
     /** isView 就是指 gen 出 view class，不然就是 component */
+    /**
+     * 產生 renderView 內部所需的 self 變數宣告語句。
+     * 包含 AlertDialog ref、AlertMenu ref、objectOfParam、ScrollingHideWrap、
+     * AutoComplete forceUpdate key、子 view 變數、以及 attribute param 的宣告。
+     *
+     * @returns {string[]} 一組 JavaScript 宣告語句字串
+     *
+     * @example
+     * const stmts = node.getSelfVariableStmts();
+     * // stmts => [
+     * //   'const alertDialogRef = React.createRef()',
+     * //   'const objectOfParam = { object: item }',
+     * //   'const ItemDivView = self.ItemDivView',
+     * // ]
+     */
     getSelfVariableStmts() {
         const self = this;
         const stmts = [];
@@ -2074,20 +2146,20 @@ class CodegenNode {
         return _.isArray(node.cookies) ? node.cookies : [];
     }
 
-    needInjectStyle() { return !!this.injectStyle && this.injectStyle; }
+    needInjectStyle() { return !!this.injectStyle; }
 
-    needInjectWrapStyle() { return !!this.injectWrapStyle && this.injectWrapStyle; }
+    needInjectWrapStyle() { return !!this.injectWrapStyle; }
 
-    needInjectListStyle() { return !!this.injectListStyle && this.injectListStyle; }
+    needInjectListStyle() { return !!this.injectListStyle; }
 
-    needInjectListWrapStyle() { return !!this.injectListWrapStyle && this.injectListWrapStyle; }
+    needInjectListWrapStyle() { return !!this.injectListWrapStyle; }
 
-    needInjectView() { return !!this.injectView && this.injectView; }
+    needInjectView() { return !!this.injectView; }
 
-    needInjectWrapView() { return !!this.injectWrapView && this.injectWrapView; }
+    needInjectWrapView() { return !!this.injectWrapView; }
 
 
-    needInjectProps() { return !!this.injectProps && this.injectProps; }
+    needInjectProps() { return !!this.injectProps; }
 
     hasPath() { return !!this.path && !_.isEmpty(this.path); }
 
@@ -2420,10 +2492,29 @@ class CodegenNode {
     }
 
     /**
-     *  '當前node'底下的children ：
-     *  第一層符合ruleOfNode就是child
-     *  第二層之後，符合(ruleOfNode && ruleOfIncest) 且 getPreciseParent（ruleOfParent,ruleOfParentIncest）=== 是'當前node' 就是 child
-     * */
+     * 以遞迴方式尋找當前節點底下符合條件的子節點。
+     * 第一層：符合 ruleOfNode 且不符合 ruleOfIncest 的節點。
+     * 第二層以後：符合 ruleOfNode 且符合 ruleOfIncest，並且其 getPreciseParent 對應到原始節點。
+     *
+     * @param {Function} ruleOfNode - 判斷節點是否符合條件的函式
+     * @param {Function} ruleOfIncest - 判斷節點是否為 incest 的函式
+     * @param {Function} ruleOfParent - 判斷父類規則的函式
+     * @param {Function} ruleOfParentIncest - 父類 incest 規則的函式
+     * @param {CodegenNode[]} [children=[]] - 結果累積器（遞迴用）
+     * @param {number} [layer=1] - 當前遞迴層數
+     * @param {CodegenNode} [node=this] - 當前處理的節點
+     * @param {CodegenNode} [origin=this] - 原始的起始節點
+     * @returns {CodegenNode[]} 符合條件的子節點陣列
+     *
+     * @example
+     * // 取得所有 view 類型的子節點
+     * const viewChildren = node.getPreciseChildren(
+     *   (n) => n.isView(),
+     *   (n) => n.isIncestView(),
+     *   (n) => n.isView(),
+     *   (n) => n.isIncestView()
+     * );
+     */
     getPreciseChildren(ruleOfNode, ruleOfIncest, ruleOfParent, ruleOfParentIncest, children = [], layer = 1, node = this, origin = this) {
         const isFirstLayer = layer === 1;
         const childNodes = node.getChildren();
@@ -2474,16 +2565,19 @@ class CodegenNode {
         this.listProps = props;
     }
 
-    appendListProps(...props) {
+    /** @private 共用的 props 附加邏輯 */
+    _appendPropsTo(target, ...props) {
         for (const prop of props) {
-            this.listProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
+            target[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
         }
     }
 
+    appendListProps(...props) {
+        this._appendPropsTo(this.listProps, ...props);
+    }
+
     appendWrapProps(...props) {
-        for (const prop of props) {
-            this.wrapProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
-        }
+        this._appendPropsTo(this.wrapProps, ...props);
     }
 
     setWrapProps(props = {}) {
@@ -2498,9 +2592,7 @@ class CodegenNode {
     }
 
     appendListWrapProps(...props) {
-        for (const prop of props) {
-            this.listWrapProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
-        }
+        this._appendPropsTo(this.listWrapProps, ...props);
     }
 
     setViewProps(props = {}) {
@@ -2510,9 +2602,7 @@ class CodegenNode {
     getViewProps() { return this.props || {}; }
 
     appendViewProps(...props) {
-        for (const prop of props) {
-            this.props[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
-        }
+        this._appendPropsTo(this.props, ...props);
     }
 
     disableListEmptyTip() {
@@ -2559,7 +2649,20 @@ class CodegenNode {
 
     getFunctionNameRemoveItems() { return `remove${_.upperFirst(this.getFieldName())}`; }
 
-    /** original 就是找到hack之前的組合 */
+    /**
+     * 組裝包含父類名稱的 CSS class name，用於 Less 和 React 組件的 className。
+     * 支援 default、wrap、list、listWrap、skeleton 五種 type。
+     * original 參數可還原 edit mode hack 之前的名稱。
+     *
+     * @param {string} [type='default'] - view 的類型 ('default'|'wrap'|'list'|'listWrap'|'skeleton')
+     * @param {boolean} [original=false] - 是否使用 edit mode 前的原始名稱
+     * @returns {string} 組裝後的 class name，例如 'ExamEditorQuestionCard'
+     *
+     * @example
+     * node.organizeClassNameWithParent();            // => 'ExamQuestionTypography'
+     * node.organizeClassNameWithParent('wrap');       // => 'ExamQuestionDivWrap'
+     * node.organizeClassNameWithParent('default', true); // => edit mode 前的原始名稱
+     */
     organizeClassNameWithParent(type = 'default', original = false) {
         const nodes = _.reverse(this.getPreciseViewGenealogyNodes());
         const parentNames = original ? nodes.map((node) => node.isNameModified() ? node.getOriginalName() : node.getName()) : nodes.map((node) => node.getName())
@@ -2580,6 +2683,7 @@ class CodegenNode {
                 break;
             case 'listWrap':
                 viewName = this.getListWrapView();
+                break;
             case 'skeleton':
                 break;
             default:
@@ -2642,7 +2746,17 @@ class CodegenNode {
         return this.getStringOfRouter(this.getPath());
     }
 
-    /** 得到 /username/${username}/id/${id} 這樣的字串 */
+    /**
+     * 將含有 :param 佔位符的路徑字串轉換為 ES6 template literal 格式。
+     * 例如 '/user/:userId/post/:postId' 轉換為 '/user/${userId}/post/${postId}'。
+     *
+     * @param {string} string - 包含 :param 的原始路徑字串
+     * @returns {string} 轉換後的 template literal 路徑
+     *
+     * @example
+     * node.getStringOfRouter('/order/:orderId/item/:itemId');
+     * // => '/order/${orderId}/item/${itemId}'
+     */
     getStringOfRouter(string) {
         const params = this.getParamsOfString(string);
         /** undefined 是不要第一個param是 view */
@@ -2736,7 +2850,23 @@ class CodegenNode {
 
     getFunctionNameOfInjectProps() { return Util.camel('get', 'inject', 'props', 'of', this.getPreciseNameOfAttributeView()); }
 
-    /** 找出祖譜 */
+    /**
+     * 從當前節點向上遍歷祖譜，收集所有符合 validate 條件的祖先節點，
+     * 直到過到無效節點或 componentNode 為止。
+     *
+     * @param {Function} validate - 判斷節點是否應包含於結果中的函式
+     * @param {Function} getParent - 取得下一個父節點的函式
+     * @param {boolean} [excludeSelf=false] - 是否排除自身
+     * @returns {CodegenNode[]} 祖先節點陣列（由近到遠）
+     *
+     * @example
+     * // 取得 view 祖譜
+     * const ancestors = node.getGenealogyNodes(
+     *   (n) => n.isView(),
+     *   (n) => n.getPreciseViewParent(true),
+     *   true // 排除自身
+     * );
+     */
     getGenealogyNodes(validate, getParent, excludeSelf = false) {
         const nodes = [];
         let current = this;
@@ -2845,6 +2975,28 @@ class CodegenNode {
 
     getDefaultValue = () => this.defaultValue;
 
+    /**
+     * 根據節點的 type 和 defaultValue 產生 Store 欄位的初始化值字串。
+     * 處理 string、number、boolean、timestamp、array、object 等類型，
+     * 並支援 i18n 轉換、陣列預設值的 normalize、admin 模式以及 ### 前綴的「表遞式」字串。
+     *
+     * @param {boolean} isAdmin - 是否為 admin 平台產生（admin 不處理 i18n）
+     * @returns {string} 初始化值的程式碼字串
+     *
+     * @example
+     * node.type = 'string';
+     * node.getDefaultValueByType(false);  // => "''"
+     *
+     * node.type = 'number';
+     * node.getDefaultValueByType(false);  // => "-1"
+     *
+     * node.type = 'object';
+     * node.getDefaultValueByType(false);  // => "new Question({parentNode: this})"
+     * node.getDefaultValueByType(true);   // => "{}"
+     *
+     * node.type = 'array'; node.defaultValue = [{id:'1', title:'範例'}];
+     * node.getDefaultValueByType(false);  // => "[{id:i18n.location().xxx,...}].map(...)"
+     */
     getDefaultValueByType(isAdmin) {
 
         const self = this;
@@ -3088,6 +3240,25 @@ class CodegenNode {
 
     getCloudFunctions() { return this.cloudFunctions ?? []; }
 
+    /**
+     * 解析當前 Cloud Function 節點的資訊，包含函式名稱、類型、參數和處理方式。
+     * 支援 schedule、httpOnRequest、httpOnCall 三種 Cloud Function 類型。
+     *
+     * @returns {{ functionName: string, fieldName: string, functionNameOfHandleBy: string, typeOfFunction: string, params: string[], argumentz: string[] }}
+     * @throws {ERROR} 當 Cloud Function 類型未知時
+     *
+     * @example
+     * const cloud = { name: 'checkoutByECPay', type: 'httpOnCall', schedule: undefined };
+     * const info = cloudNode.getCloudFunctionInfo();
+     * // info => {
+     * //   functionName: 'checkoutByECPay',
+     * //   fieldName: 'CheckoutByECPay',
+     * //   functionNameOfHandleBy: 'handleHttpOnCall',
+     * //   typeOfFunction: 'onCall(',
+     * //   params: ['request'],
+     * //   argumentz: ['data', 'session']
+     * // }
+     */
     getCloudFunctionInfo() {
         const functionName = this.getName();
         const fieldName = _.upperFirst(functionName);
@@ -3288,17 +3459,31 @@ class ClassGenerator {
     }
 
     /**
-     * @param func {name:'doSomeThing',async:false}
-     * @param params string[]
-     * @param macros string[]
-     * @param comments string[]
-     * @param contents triple dot
+     * 組裝一個函式的完整程式碼內容（包含註解、裝飾器、參數、函式本體），返回字串陣列。
+     * 支援箭頭函式、async、decorator、simple 等模式。
+     *
+     * @param {{ name: string, arrow?: boolean, async?: boolean, simple?: boolean, decorator?: string|boolean }} func - 函式設定
+     * @param {string[]} [params=[]] - 參數列表
+     * @param {string[]} [macros=[]] - 裝飾器列表
+     * @param {string[]} [comments=[]] - 註解列表
+     * @param {...string} contents - 函式內容行
+     * @returns {string[]} 組裝後的程式碼字串陣列
+     *
+     * @example
+     * const stmts = generator.getFunctionContent(
+     *   { name: 'fetchData', async: true, arrow: true },
+     *   ['id', 'options'],
+     *   ['action'],
+     *   ['從遠端取得資料'],
+     *   'const result = await api.fetch(id, options);',
+     *   'return result;'
+     * );
      */
     getFunctionContent(func, params = [], macros = [], comments = [], ...contents) {
         /** 應該要檢查file 沒有class的話, 要跳出Error提示 */
         const functionName = func.name;
         const arrow = func?.arrow ?? false;
-        const async = func?.async ?? false;
+        const isAsync = func?.async ?? false;
         const simple = func?.simple ?? false;
         const decorator = func?.decorator ?? false;
         const stmt = [];
@@ -3323,9 +3508,9 @@ class ClassGenerator {
 
         if (arrow || decorator) {
             /** arrow function 不支援 super QQ 08/03 的筆記有紀錄 */
-            stmt.push(`${functionName} = ${async ? 'async' : ''}${decorator ? `${decorator} (` : ``}(${_.isEmpty(params) ? '' : params.join(' ,')}) => ${simple ? '':'{'}`);
+            stmt.push(`${functionName} = ${isAsync ? 'async' : ''}${decorator ? `${decorator} (` : ``}(${_.isEmpty(params) ? '' : params.join(' ,')}) => ${simple ? '':'{'}`);
         } else
-            stmt.push(`${async ? 'async ' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
+            stmt.push(`${isAsync ? 'async ' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
 
         if (_.isEqual(decorator, 'inject')) {
             this.appendImport(`{inject}`, `mobx-react`)
@@ -3364,7 +3549,24 @@ class ClassGenerator {
         Util.insertToArray(this.context, this.getIndexOfFunctionSign(), ...stmts)
     }
 
-    /** type : [httpOnCall,schedule,httpOnRequest] */
+    /**
+     * 產生 Cloud Function 的完整程式碼語句，包含 exports、try-catch、logger、fingerprint 驗證等。
+     * 支援 httpOnCall、httpOnRequest、schedule 三種類型。
+     *
+     * @param {CodegenNode} func - Cloud Function 節點（包含 getType()、getCloudFunctionInfo() 等方法）
+     * @param {...string} extra - 額外要附加在尾部的語句
+     * @returns {void}
+     *
+     * @example
+     * generator.appendCloudFunctionStatement(cloudFuncNode);
+     * // 產生類似：
+     * // exports.checkoutByECPay = onCall(async (request) => {
+     * //   let result = {};
+     * //   let succeed = true;
+     * //   try { ... } catch (error) { ... }
+     * //   return { succeed, data: result };
+     * // })
+     */
     appendCloudFunctionStatement(func, ...extra) {
         const self = this;
 
@@ -3442,7 +3644,24 @@ class ClassGenerator {
 
     }
 
-    /** extendz:{name,from} 如果沒有from, 就會直接 './{extendz.name}' */
+    /**
+     * 在當前檔案的 context 中加入一個 class 定義，包含 field、function、restful API 的分區標記。
+     * 若有 extendz 物件，會自動處理 import 和繼承語法。
+     * 若有 macros，會配對相應的 mobx-react import。
+     *
+     * @param {string} className - class 名稱
+     * @param {{ name: string, from?: string }|string|undefined} extendz - 繼承設定（物件或字串）
+     * @param {...string} macros - 裝飾器列表（如 'observable'、'inject("store")'）
+     * @returns {void}
+     *
+     * @example
+     * // 基本 class
+     * generator.appendClass('MyStore');
+     * // 繼承 class
+     * generator.appendClass('MyStore', { name: 'BaseStore', from: './BaseStore' });
+     * // 帶 macro 的 class
+     * generator.appendClass('MyComponent', 'BaseComponent', 'observable');
+     */
     appendClass(className, extendz, ...macros) {
         /** 應該要檢查file is not empty 的話, 要跳出Error提示 */
         const stmt = [];
@@ -3514,6 +3733,22 @@ class ClassGenerator {
         this.appendImport('{ utiller as Util, exceptioner as ERROR, pooller as InfinitePool }', 'utiller');
     }
 
+    /**
+     * 將所有組裝完成的程式碼寫入檔案，包含 import、constructor、export 和簽名。
+     * 在 FAST_DEVELOP_MODE 下會根據規則過濾檔案建立，避免全量重建。
+     * 若有設定 needCreatedIndexFile，會同時產生對應的 index.js 檔案。
+     *
+     * @returns {Promise<void>}
+     *
+     * @example
+     * const gen = new ClassGenerator('/path/to/BaseMyStore.js', node);
+     * gen.appendClass('BaseMyStore', { name: 'BaseStore' });
+     * gen.appendField('items', '[]');
+     * gen.appendFunction('fetchItems', ['id'], [], [], 'return await api.fetch(id);');
+     * gen.needIndexFile('MyStore', [], true);
+     * await gen.persist();
+     * // => 產生 BaseMyStore.js 和 index.js
+     */
 
     async persist() {
         if (ENABLE_FAST_DEVELOP_MODE) {
@@ -4062,7 +4297,23 @@ class BaseBuilder extends PathBase {
         })
     }
 
-    /** type 可以是 fetch|submit, submit,就會依據node的type去做事*/
+    /**
+     * 根據平台和操作類型（fetch/submit/delete 等）產生對應的函式參數列表。
+     * Web 平台會自動加上 view 參數和預設值，admin/functions 則使用純參數。
+     * 支援超過 30 種操作類型（fetch items、submit item、delete cheap 等）。
+     *
+     * @param {CodegenNode} node - 目標節點
+     * @param {string} [type='fetch'] - 操作類型
+     * @param {boolean} [storageUsage=false] - 是否為 Storage 操作
+     * @param {boolean} [isArgument=false] - 是否只取參數名（不帶預設值）
+     * @param {Object} [mustache] - Mustache 模板用的參數
+     * @returns {string[]} 參數字串陣列
+     *
+     * @example
+     * const params = builder.getParamsInFunctionByPlatform(node, 'fetch items');
+     * // Web: ['view = this.getComponent()', 'id = this.getId()', '...conditions']
+     * // Admin: ['id']
+     */
     getParamsInFunctionByPlatform(node, type = 'fetch', storageUsage = false, isArgument = false, mustache) {
         const self = this;
 
@@ -4235,9 +4486,18 @@ class StoreBuilder extends BaseBuilder {
         return 'StoreBuilder';
     }
 
+    /**
+     * 根據 type 從 Mustache 模板產生對應的 Store 函式字串（setter/getter/action 等）。
+     *
+     * @param {string} type - 欄位類型（string/number/boolean/array/object/timestamp 等）
+     * @param {Object} [object={}] - 傳入 Mustache 模板的變數
+     * @returns {string} 產生的函式內容字串
+     *
+     * @example
+     * const functions = builder.getFunctionsDependOnFieldType('array', { name: 'questions', fieldName: 'questions', ... });
+     */
     getFunctionsDependOnFieldType(type, object = {}) {
-        const functions = this.getStringFromMustache(`store_${type}.mustache`, object)
-        return functions;
+        return this.getStringFromMustache(`store_${type}.mustache`, object);
     }
 
     async buildStoreIndexFiles() {
@@ -4353,6 +4613,18 @@ class StoreBuilder extends BaseBuilder {
         return propsStmt;
     }
 
+    /**
+     * 過迴式產生 Store 的 Base class，包含欄位、setter/getter、fetch/submit API、
+     * AutoComplete、i18n、paginate、listener 等完整的 Store 機制。
+     * 使用 mapOfStoreBeenBuild 避免重複編譯。
+     *
+     * @param {CodegenNode} node - 要產生 Store 的節點（必須是 collection 類型）
+     * @returns {Promise<void>}
+     *
+     * @example
+     * await storeBuilder.buildBaseStore(questionNode);
+     * // => 產生 BaseQuestionStore.js 和 index.js
+     */
     buildBaseStore = async (node) => {
         const self = this;
 
@@ -4728,18 +5000,22 @@ class RemoteFunctionHandler extends BaseBuilder {
         return 'RemoteFunctionHandler';
     }
 
+    /**
+     * 根據平台決定是否在參數中加入 view。
+     * Web 平台會加入 view 參數，admin/functions 則不加。
+     *
+     * @param {boolean} [isString=false] - true 回傳字串格式，false 回傳陣列格式
+     * @returns {string|string[]}
+     *
+     * @example
+     * handler.appendParamIfPlatformEqualsWeb(true);   // Web: ',view'  Admin: ''
+     * handler.appendParamIfPlatformEqualsWeb(false);   // Web: ['view'] Admin: []
+     */
     appendParamIfPlatformEqualsWeb(isString = false) {
         if (_.isEqual(this.platform, 'web')) {
-            if (isString)
-                return ',view';
-            else
-                return ['view'];
-        } else {
-            if (isString)
-                return '';
-            else
-                return [];
+            return isString ? ',view' : ['view'];
         }
+        return isString ? '' : [];
     }
 
     buildListenerFunction(node, recursively = false) {
@@ -4784,6 +5060,19 @@ class RemoteFunctionHandler extends BaseBuilder {
         }
     }
 
+    /**
+     * 產生節點對應的所有 CRUD API 函式，包含 fetch、submit、update、delete、upsert、
+     * atomically 等操作，同時處理 cheap array、path array、object、storage 等不同情境。
+     *
+     * @param {CodegenNode} node - 要產生 API 的節點
+     * @param {boolean} [recursively=false] - 是否遞迴處理子節點
+     * @returns {void}
+     *
+     * @example
+     * const handler = new RemoteFunctionHandler(props, generator);
+     * handler.buildFetchSubmitApi(arrayNode, true);
+     * // => 產生 fetchQuestions, submitQuestionItem, deleteQuestionItem, updateQuestions 等方法
+     */
     buildFetchSubmitApi = (node, recursively = false) => {
         const self = this;
         const generator = self.generator;
@@ -5310,6 +5599,18 @@ class ComponentBuilder extends BaseBuilder {
         this.componentDetachStmt.push(...stmt);
     }
 
+    /**
+     * 產生 Component 的 Base class，包含 getStore、componentDidMount、renderView、
+     * URL 參數處理、Event 訂閱、Navigator、PageTitle 等完整的 Component 機制。
+     * 若為 moduleComponent 會額外產生 Modularized class。
+     *
+     * @param {CodegenNode} componentNode - component 節點
+     * @returns {Promise<{ classNames: Array, events: Array }>} 產生的 class 名稱與事件列表
+     *
+     * @example
+     * const result = await componentBuilder.buildBaseComponent(componentNode);
+     * // => 產生 BaseExamComponent.js、index.js、可能的 ModularizedExamComponent.js
+     */
     async buildBaseComponent(componentNode) {
 
         const baseComponentName = componentNode.getStruct().getName();
@@ -5540,6 +5841,24 @@ class ComponentBuilder extends BaseBuilder {
      </Paper>
      */
 
+    /**
+     * 將節點的 view 資訊轉換為 JSX 字串陣列。
+     * 處理 props 的值正規化（支援 ###、物件、陣列、字串、數字、布林值）、
+     * simpleProps、contents、children、VIEW_IMPORTS 的自動 import。
+     *
+     * @param {{ tag: string, props?: Object, simpleProps?: string[], contents?: string[], children?: string[], generator?: ClassGenerator, customViewNode?: CodegenNode, typeOfClass?: string }} param
+     * @returns {string[]} JSX 字串陣列
+     *
+     * @example
+     * const jsx = builder.getJSXStrings({
+     *   tag: 'Paper',
+     *   props: { style: { height: 80 }, className: 'myClass' },
+     *   contents: ['{self.getTitle()}'],
+     *   generator: gen,
+     *   typeOfClass: 'component'
+     * });
+     * // => ['<Paper', 'style={{...}}', 'className={"myClass"}>', '{self.getTitle()}', '</Paper>']
+     */
     getJSXStrings(param) {
 
         /**
@@ -5617,7 +5936,7 @@ class ComponentBuilder extends BaseBuilder {
         function appendViewsImport() {
             const generator = param.generator;
             const node = param.customViewNode;
-            if (!!!generator) return;
+            if (!generator) return;
 
             if (_.isEqual(param.typeOfClass, 'component')) {
                 for (const _import of VIEW_IMPORTS) {
@@ -6018,9 +6337,9 @@ class ComponentBuilder extends BaseBuilder {
         return origin;
     }
 
-    /** stmt:Array<String> */
+    /** @deprecated 使用 normalizeJSXString 代替，功能相同。stmt:Array<String> */
     removeJSXSign(stmt) {
-        _.remove(stmt, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
+        this.normalizeJSXString(stmt);
     }
 
     generateEditFunctionCallback(node, generator) {
@@ -6148,12 +6467,37 @@ class ComponentBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     * 移除 JSX 字串陣列中的 SIGN_OF_JSX_CONTENT 佔位符。
+     *
+     * @param {string[]} strings - 要清理的 JSX 字串陣列
+     * @returns {void} 直接修改傳入的陣列
+     *
+     * @example
+     * const stmts = ['<div>', SIGN_OF_JSX_CONTENT, '</div>'];
+     * builder.normalizeJSXString(stmts);
+     * // stmts => ['<div>', '</div>']
+     */
     normalizeJSXString(strings) {
         _.remove(strings, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
     }
 
     existedFunctions = new Set();
     existedMethods = new Set();
+
+    /**
+     * 遍歷節點樹，為每個 view 節點產生對應的 renderView 箭頭函式（包含 observer 裝飾器）。
+     * 處理 root renderView、method 註冊、import、paginate、array item view、
+     * 以及過濾重複和 reference struct 節點。
+     *
+     * @param {CodegenNode} node - 要處理的節點
+     * @param {ClassGenerator} generator - 用來附加函式的 generator
+     * @param {boolean} isEditPage - 是否為編輯頁面（會額外產生 edit callback）
+     * @returns {void}
+     *
+     * @example
+     * builder.appendRenderViewFunctions(componentNode.getStruct(), generator, false);
+     */
     appendRenderViewFunctions(node, generator, isEditPage) {
 
         const self = this;
@@ -7990,7 +8334,19 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         await this.generateFireIndexRules(this.deployRemoteRules);
     }
 
-    /** 有些專有名詞(SimpleGrid)，會重新setView(latest)，而latest對應該產生的行為會實作在 enrichNodesOfBehavior */
+    /**
+     * 結合專有名詞（如 SimpleGrid、SimpleSwitch、AccordionDetails 等）的節點重新設定 view，
+     * 並根據需要加入子節點、import、props 等。
+     * 遞迴處理所有 children，對每個有特殊 view 的節點進行行為豐富化。
+     *
+     * @param {CodegenNode[]} nodes - 要處理的節點陣列
+     * @returns {void}
+     *
+     * @example
+     * handler.enrichNodeWithCustomViewDefined(structNode.getChildren());
+     * // => 處理 AccordionDetails → 加入 Accordion wrap、Summary、icon import
+     * // => 處理 SimpleGrid → 轉換為 Paper + Grid container 配置
+     */
     enrichNodeWithCustomViewDefined(nodes) {
         function handleSizeOfTimeDatePicker(node) {
             if (node.hasSize()) {
@@ -8757,7 +9113,19 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         return stmts.join('\n');
     }
 
-    /** 針對view的種類, 增加與store互動的規則 例如TextField就要有onChange */
+    /**
+     * 針對 view 的種類，增加與 Store 互動的規則。
+     * 包含 onClick/onChange 事件、value binding、inject style/view/props、
+     * AudioPlayer、Button/IconButton、AutoComplete 等元件的行為推導。
+     *
+     * @param {CodegenNode[]} nodes - 要豐富化行為的節點陣列
+     * @returns {void}
+     *
+     * @example
+     * handler.enrichNodesOfBehavior(structNode.getChildren());
+     * // => TextField 加上 onChange、label、disabled
+     * // => Button 加上 onClick、icon import
+     */
     enrichNodesOfBehavior(nodes) {
 
         function appendPropsOfNode(node, functionOfView, props = [], methods = [], nodesOfParent = []) {
@@ -9646,6 +10014,18 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         await Util.rewriteAttributeOfSourceJs(this.pathOfSourceJS, {version: stringOfLatestVersion});
     }
 
+    /**
+     * 執行全量或快速編譯流程。
+     * 在 production 或未安裝專案時強制全量編譯，
+     * 否則根據 rapidBuild 設定只編譯指定的 component。
+     *
+     * @returns {Promise<void>}
+     *
+     * @example
+     * const handler = new ProjectFileHandler(buildObject);
+     * await handler.activate();
+     * // => 根據 source.js 的 rapidBuild 設定執行全量或快速編譯
+     */
     async activate() {
         const self = this;
         let enableOfRapid = this.isProduction() || this.isUnInstallProject() ? false : !!this.nodeOfAncestor.rapidBuild.enable;
@@ -9713,6 +10093,17 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         console.log(`✅ Alias updated: ${filePath}`);
     }
 
+    /**
+     * 執行實際的平台編譯流程，根據平台類型（web/admin/functions）分派。
+     * 包含清理 gen 目錄、執行對應的 forWeb/forAdmin/forCloudFunctions、
+     * 複製檔案、安裝依賴、清除空資料夾、轉換 Less 等。
+     *
+     * @returns {Promise<void>}
+     *
+     * @example
+     * await handler.execute();
+     * // => 清理 gen 目錄 -> forWeb() -> buildConfig() -> overrideFiles -> npm install -> format
+     */
     async execute() {
 
         function isRapidModeCleanFileAllowRule(file) {
@@ -10085,6 +10476,20 @@ class ScheduleManager {
         return `4888446 projects=>[${this.projectsOfPath}]- execute '${this.behavior}' [${ENABLE_FAST_DEVELOP_MODE ? 'RAPID' : 'FULL'}] build succeed`;
     }
 
+    /**
+     * 根據 behavior 字串執行對應的建置流程，支援 30+ 種行為包含
+     * webOnly、adminOnly、functionsOnly、deployWebToProduction 等。
+     * 執行完畢後會輸出耗時統計。
+     *
+     * @param {string} behavior - 要執行的行為名稱
+     * @param {string} pathOfProject - 專案路徑
+     * @returns {Promise<void>}
+     *
+     * @example
+     * const manager = new ScheduleManager('webOnly', '/path/to/project');
+     * await manager.handler('webOnly', '/path/to/project');
+     * // => 執行 buildWeb() 並輸出耗時
+     */
     async handler(behavior, pathOfProject) {
         const props = {
             projectRootPath: pathOfProject,
