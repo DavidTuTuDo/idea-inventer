@@ -34,7 +34,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             return -1;
         }
 
-        const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/${dbpath}`);
+        const db = new Databaser(`/Users/davidtu/cross-achieve/legacy/idea-inventer/ceec_scrape_script/${dbpath}`);
         await db.init();
 
         const qs = _.isNumber(year) && year > 0 ? await db.fetchRecords("QUESTION", new Builder().equal("year", year).stmt()) : await db.fetchRecords("QUESTION");

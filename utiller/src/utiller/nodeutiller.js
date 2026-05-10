@@ -597,7 +597,7 @@ class NodeUtiller extends Utiller {
 
                     const indexFileName = 'sample.npm.module.index.js'
                     /** 複製公版的index.js */
-                    this.copySingleFile(`/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/${indexFileName}`,
+                    this.copySingleFile(`/Users/davidtu/cross-achieve/legacy/idea-inventer/utiller/template/${indexFileName}`,
                         release, 'index.js', true);
 
                     /** 將公版的index.js也terser一波 */
@@ -787,11 +787,11 @@ class NodeUtiller extends Utiller {
     async updateVersionOfTemplate(dependency, newVersion) {
 
         const paths = [
-            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json.mustache',
-            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/web.package.json.mustache',
-            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/functions.package.json.mustache',
-            '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/sample.package.json',
-            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/package.json'
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/free_marker/template/admin.package.json.mustache',
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/free_marker/template/web.package.json.mustache',
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/free_marker/template/functions.package.json.mustache',
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/utiller/template/sample.package.json',
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/free_marker/package.json'
         ];
 
         for (const path of paths) {
@@ -820,8 +820,8 @@ class NodeUtiller extends Utiller {
         // console.log(`離開updateVersionOfTemplate()的迴圈`)
 
         await this.copyFromFolderToDestFolder(
-            '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/',
-            '/Users/davidtu/cross-achieve/high/idea-inventer/newp/template/',
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/utiller/template/',
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/newp/template/',
             true, true)
 
     }
@@ -1343,7 +1343,8 @@ class NodeUtiller extends Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const utiller = new NodeUtiller();
+            const utiller = new NodeUtiller();
+            await utiller.generatePackage('../utiller', true)
             // const answer = await utiller.getAnswerFromPromptQ()
             // console.log(`it really workkks => `,answer)
         }

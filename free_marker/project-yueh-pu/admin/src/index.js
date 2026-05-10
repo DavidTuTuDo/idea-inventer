@@ -17,8 +17,8 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 (async () => {
     const api = new Api();
     const listener = new Listener();
-    const database = new Databaser("/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/guitar_pu_from_91.db");
-    const pathOfPreludes = `/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/prelude`;
+    const database = new Databaser("/Users/davidtu/cross-achieve/legacy/idea-inventer/pu91_scrapier/guitar_pu_from_91.db");
+    const pathOfPreludes = `/Users/davidtu/cross-achieve/legacy/idea-inventer/pu91_scrapier/prelude`;
     await database.init();
     const bucket = firebase.storage().bucket();
 

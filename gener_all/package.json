@@ -14,7 +14,7 @@
     "configerer": "^1.0.11",
     "lodash": "^4.17.20",
     "@babel/runtime": "^7.28.4",
-    "utiller": "^1.0.469"
+    "utiller": "^1.0.495"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",

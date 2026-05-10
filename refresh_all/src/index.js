@@ -17,7 +17,7 @@ export {refresh_all as refresh_all}
 if (configerer.DEBUG_MODE) {
     (async () => {
             const files = Util.findFilePathBy('../', (file) => _.isEqual(file.fileNameExtension, 'package.json'), 'node_modules','release');
-            const modulePackageJson = Util.getFileContextInJSON('/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/sample.package.json');
+            const modulePackageJson = Util.getFileContextInJSON('/Users/davidtu/cross-achieve/legacy/idea-inventer/utiller/template/sample.package.json');
 
             for (const packageJson of files) {
                 const uglyPackageJson = Util.getFileContextInJSON(packageJson.absolute);

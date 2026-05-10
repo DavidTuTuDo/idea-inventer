@@ -8254,7 +8254,12 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             })))
         }
         await this.recursiveDoingOfNodeEachStruct(((node) => node.hasPath() && node.isArray()), task)
-        await this.buildDeployDocument('firestore.indexes.json', JSON.stringify({indexes,fieldOverrides}), 'firestore:indexes', deploy,true)
+        try {
+            await this.buildDeployDocument('firestore.indexes.json', JSON.stringify({indexes,fieldOverrides}), 'firestore:indexes', deploy,true)
+        } catch (error) {
+            console.log(error.message);
+        }
+
     }
 
     getFirebaseRuleOfMatchRoute(node) {
@@ -8313,7 +8318,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
         const apiGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`), this.nodeOfAncestor);
         apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
-        apiGenerator.needIndexFile('AdminRemoteApi');
+        apiGenerator.needIndexFile('AdminRemoteApi',[], true);
 
         const listenerGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `listener`, `BaseAdminListenerApi.js`), this.nodeOfAncestor);
         listenerGenerator.appendClass('BaseAdminListenerApi', {
@@ -10075,15 +10080,19 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         const rootPath = '/Users/davidtu';
         const projectPath = `${rootPath}/cross-achieve/legacy/${projectSlug}`;
         const webGenPath = `${rootPath}/cross-achieve/legacy/idea-inventer/gen/${projectSlug}/web`;
+        const adminGenPath = `${rootPath}/cross-achieve/legacy/idea-inventer/gen/${projectSlug}/admin`;
+
 
         // 4. 組合 Script 內容 (保持整潔的縮排)
         // 注意：在 Alias 中，路徑建議用引號包覆以防萬一
         const scriptContent = [
             `#!/bin/sh`,
             `# --- Generated for ${projectSlug} ---`,
+            `NODE_SYS=\"node --require @babel/register"`,
             `alias cd${variable}='cd "${projectPath}"'`,
             `alias deploy${variable}Functions='cd "${projectPath}" && firebase deploy --only functions'`,
             `alias simulate${variable}Web='cd "${webGenPath}" && ns'`,
+            `alias exe${variable}Admin='cd "${adminGenPath}" && self_debug=true is_node=true \${NODE_SYS} src/index.js'`,
             `alias emulator${variable}Functions='cd "${projectPath}" && firebase emulators:start --only functions'`,
             `# ------------------------------`
         ].join('\n');
@@ -10188,7 +10197,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
         if (this.isWebPlatform()) {
             await new AppBuilder(this.getProps()).overrideLessFile();
-            Util.exeAsyncT(this.generateShellScript());
         }
 
         await this.runInstallIfNeed();
@@ -10196,6 +10204,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         await this.buildLessToCss();
         await this.removeEmptyFolder();
         await new beauty(this.genSourcePath).formatAll();
+        Util.exeAsyncT(this.generateShellScript());
     }
 
     async functionsGenerateRelease() {
