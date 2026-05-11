@@ -280,17 +280,17 @@ class agent_diary_manager {
 
              // 條件 2: 內容行數大於 5 行
              // 利用 \n 來分割字串計算行數
-             const lines = msg.content.split('\n');
+             // const lines = msg.content.split('\n');
              // 過濾掉空行計算實際有文字的行數，或者直接計算所有換行數
              // 這裡我們直接計算所有分割出來的行數
-             const isMoreThan5Lines = lines.length > 10;
-
-             return isDateStart || isMoreThan5Lines;
+             // const isMoreThan5Lines = lines.length > 10;
+             // || isMoreThan5Lines;
+             return isDateStart
          });
     }
 
-    extractDiaries = async () => {
-        const list = Util.getFileContextInJSON('./temp/diary.json');
+    extractDiaries = async (list = this.getDiariesOfMessages()) => {
+        // const list = Util.getFileContextInJSON('./temp/diary.json');
         if (!Array.isArray(list)) return [];
 
         const latest = [];
@@ -329,13 +329,12 @@ if (configerer.DEBUG_MODE) {
         try {
             const handler = new agent_diary_manager();
             await handler.extractDiaries()
-            return;
-            const result = handler.processTempFiles();
-            const all = handler.getAllMessages(result);
-            const stories = handler.getDiariesOfMessages(all)
-            await Util.persistJsonFilePrettier('./temp/analyst/report.json', result)
-            await Util.persistJsonFilePrettier('./temp/analyst/whole.json', all)
-            await Util.persistJsonFilePrettier('./temp/analyst/diary.json', stories)
+            // const result = handler.processTempFiles();
+            // const all = handler.getAllMessages(result);
+            // const stories = handler.getDiariesOfMessages(all)
+            // await Util.persistJsonFilePrettier('./temp/analyst/report.json', result)
+            // await Util.persistJsonFilePrettier('./temp/analyst/whole.json', all)
+            // await Util.persistJsonFilePrettier('./temp/analyst/diary.json', stories)
             // console.log(result.map((each) => each.date));
             // await Util.persistJsonFilePrettier('./temp/whole.json', handler.getAllMessages(result).filter(each => _.isEqual(each.author,'')))
             // console.log('處理結果：', JSON.stringify(result, null, 2));

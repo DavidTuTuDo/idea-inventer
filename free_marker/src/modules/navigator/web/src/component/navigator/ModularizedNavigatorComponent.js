@@ -198,7 +198,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     getInjectStyleOfNavigatorEditIconButton(navigator) {
-        return Util.getVisibleOrNone(!UserInfo.isEditMode, true);
+        return Util.getVisibleOrNone(UserInfo.isAdmin() && !UserInfo.isEditMode, true);
     }
 
     onNavigatorEditIconButtonClicked(param) {

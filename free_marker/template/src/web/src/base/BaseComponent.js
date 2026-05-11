@@ -199,9 +199,9 @@ class BaseComponent extends MuiComponent {
             window.addEventListener("scroll", this.onScrollToBottomListener, true);
         }
         Util.appendInfo(`✅️  ${this.getComponentName()} goto componentDidMount()`);
-        Util.syncDelay(5000).then(() => {
-            self.runMessageQueueTest()
-        })
+        // Util.syncDelay(5000).then(() => {
+        //     self.runMessageQueueTest()
+        // })
     }
 
     /**
@@ -270,7 +270,7 @@ class BaseComponent extends MuiComponent {
         let currentScroll = Math.ceil(window.scrollY + window.innerHeight);
         let isScrollDown = window.scrollY > 0;
         /** 應該要記錄scrollY, 然後判斷偏移量 */
-            // [修改] 使用設定的 Threshold 取代寫死的 modifier = 1
+        // [修改] 使用設定的 Threshold 取代寫死的 modifier = 1
         let modifier = this.getThresholdOfScrollToBottom() || 100;
         // [修改] 改為 >= 確保在設定的 Threshold 範圍內都能精準觸發
         let isScrollToEnd = currentScroll + modifier >= documentHeight;
@@ -791,9 +791,7 @@ class BaseComponent extends MuiComponent {
             const currentMsg = examples[count];
 
             // 隨機附上可點擊的事件來測試 Pointer Event 與 Hover 效果
-            const onClick = Math.random() > 0.5
-                ? () => console.log(`👉 你點擊了第 ${count + 1} 則訊息: ${currentMsg.text}`)
-                : null;
+            const onClick = Math.random() > 0.5 ? () => console.log(`👉 你點擊了第 ${count + 1} 則訊息: ${currentMsg.text}`) : null;
 
             // 呼叫我們剛剛建立在 BaseComponent 的函式
             this.showAppMessageQueue(currentMsg.text, currentMsg.type, onClick);
