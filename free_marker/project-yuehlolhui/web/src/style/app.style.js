@@ -5,8 +5,6 @@ import libpath from "path";
 class AppStyle {
     /** -------------------- fields -------------------- **/
 
-    /** following for homeless */
-
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -597,7 +595,29 @@ class AppStyle {
 
     AccountPaper = {};
 
+    /** => following for storyteller  component  */
+
+    StorytellerActionContainerSubmitBtnButton = {};
+
+    StorytellerActionContainerBackBtnButton = {};
+
+    StorytellerActionContainerDiv = {};
+
+    StorytellerContentTextField = {};
+
+    StorytellerAuthorTextField = {};
+
+    StorytellerCreateTimeTimeDatePicker = {};
+
+    StorytellerPaperWrap = {};
+
+    StorytellerDiv = {};
+
     /** => following for diaries  component  */
+
+    DiariesMessageXReadMoreDivWrap = {};
+
+    DiariesMessageXReadMoreTypography = {};
 
     DiariesMessageXAuthorTypography = {};
 
