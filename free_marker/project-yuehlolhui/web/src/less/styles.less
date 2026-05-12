@@ -48,7 +48,6 @@
         box-shadow 0.4s ease,
         background-color 0.4s ease;
     cursor: pointer;
-
     &::after {
         content: "";
         position: absolute;
@@ -59,19 +58,16 @@
         background: rgba(183, 28, 28, 0.05);
         transform: rotate(45deg);
     }
-
     &:hover {
         transform: translateX(8px) scale(1.01);
         box-shadow: -5px 10px 25px rgba(183, 28, 28, 0.15);
         background-color: #fffefb;
         border-left: 8px solid #d32f2f;
     }
-
     &:active {
         transform: scale(0.98);
         transition: all 0.1s ease;
     }
-
     @media @mobile {
         padding: 48px 18px 32px 25px;
         margin-bottom: 18px;
@@ -125,7 +121,6 @@
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
     text-transform: uppercase;
     font-family: serif;
-
     &::before {
         content: "封";
         position: absolute;
@@ -133,7 +128,6 @@
         opacity: 0.3;
         font-size: 0.7rem;
     }
-
     @media @mobile {
         top: 12px;
         font-size: 0.85rem;
@@ -151,6 +145,19 @@
     line-height: 1.8;
     color: #2c2c2c;
     font-family: "Noto Serif TC", serif;
+    display: -webkit-box;
+    -webkit-line-clamp: 10;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.4s ease;
+
+    &.is-expanded {
+        display: block;
+        -webkit-line-clamp: unset;
+        overflow: visible;
+    }
+
     @media @mobile {
         font-size: 1.05rem;
         line-height: 1.7;
@@ -170,7 +177,6 @@
     font-weight: 700;
     color: #4a4a4a;
     font-style: italic;
-
     &::after {
         content: "";
         position: absolute;
@@ -183,11 +189,216 @@
         transform: rotate(-1deg);
         border-radius: 50%;
     }
-
     @media @mobile {
         bottom: 10px;
         right: 15px;
         font-size: 0.9rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DiariesMessageXReadMoreTypography {
+    color: #b71c1c;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 16px;
+    border-radius: 20px;
+    background-color: #ffffff;
+    box-shadow: -15px 0 20px 5px #ffffff;
+    margin-right: -20px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &::after {
+        content: "READ MORE";
+        font-size: 0.75rem;
+        font-weight: 800;
+        opacity: 0.9;
+    }
+
+    &:hover {
+        background-color: #fdfaf2;
+        color: #d32f2f;
+        transform: scale(1.05);
+        box-shadow:
+            -15px 0 25px 8px #ffffff,
+            0 4px 12px rgba(183, 28, 28, 0.1);
+    }
+
+    &:active {
+        transform: scale(0.95);
+        transition: all 0.1s ease;
+    }
+
+    &:focus {
+        background-color: transparent !important;
+        box-shadow: none !important;
+        outline: none;
+    }
+
+    @media @mobile {
+        font-size: 0.85rem;
+        padding: 3px 12px;
+        margin-right: -15px;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DiariesMessageXReadMoreDivWrap {
+    margin-top: -28px;
+    display: flex;
+    justify-content: flex-end; //測試可不可以加上註解
+    position: relative; /** 測試可不可以加上註解 */
+    z-index: 2;
+    //測試可不可以加上註解
+    &::before {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        background: linear-gradient(to bottom, transparent, #ffffff 95%);
+        pointer-events: none;
+        transition:
+            opacity 0.5s ease,
+            visibility 0.5s;
+        opacity: 1;
+        visibility: visible;
+    }
+
+    &.is-expanded {
+        margin-top: 20px;
+        &::before {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .DiariesMessageXReadMoreTypography {
+            background-color: rgba(0, 0, 0, 0.05);
+            box-shadow: none;
+            margin-right: 0;
+            color: #666;
+            &::after {
+                content: "SHOW LESS";
+            }
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+                color: #333;
+                transform: scale(1.05);
+            }
+            &:focus {
+                background-color: transparent !important;
+            }
+        }
+    }
+
+    @media @mobile {
+        margin-top: -22px;
+        &::before {
+            height: 60px;
+        }
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+/** following for storyteller  component used  */
+
+.StorytellerDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.StorytellerPaperWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.StorytellerCreateTimeTimeDatePicker {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.StorytellerAuthorTextField {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.StorytellerContentTextField {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.StorytellerActionContainerDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.StorytellerActionContainerBackBtnButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.StorytellerActionContainerSubmitBtnButton {
+    @media @mobile {
+        /** empty style */
     }
     @media @tablet {
         /** empty style */
@@ -3562,4 +3773,3 @@
         /** empty style */
     }
 }
-/** ======== following for homeless ========= */

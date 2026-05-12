@@ -7309,33 +7309,73 @@ class AppBuilder extends ComponentBuilder {
 
         /**
          * 將原始 CSS 區塊字串拆解並分類到對應的裝置屬性中
+         * 2026.05.12 修正 @media mobile{ 裡面還能有括號 -->{} }
          * @param {string} raw - 原始 CSS 區塊字串，例如: "color: red; @media @mobile { padding: 10px; }"
          * @returns {Object} 範例: { default: 'color: red;', mobile: 'padding: 10px;' }
          */
         function rawToAttributeObj(raw) {
-            const object = {}
+            const object = {};
 
-            // 先以 '@media' 切割字串，並把換行等格式壓平為單行字串
-            // 例如變成: ["color: red;", "@mobile { padding: 10px; }"]
-            const platformStrings = raw.split('@media').map(each => each.trim())
-                .map((each) => Util.toOneLineString(each));
-
-            // 處理 @media 之後的每一段 (裝置特定樣式)
-            for (const string of platformStrings) {
-                const regexOfGetPlatform = new RegExp(`(?<=\\@)\\w+`, 'g');  // 抓取 @ 後面的單字 (例如 mobile)
-                const regexGetInsideBraces = new RegExp(`(?<=\\{).+?(?=\\})`, 'g'); // 抓取 {} 裡面的樣式內容
-
-                const platform = string.match(regexOfGetPlatform);
-                const statement = string.match(regexGetInsideBraces);
-
-                // 如果有抓到對應的裝置與大括號內的設定，就放進物件中
-                if (!_.isEmpty(platform) && !_.isEmpty(statement)) {
-                    object[platform[0]] = statement[0].trim();
-                }
-            }
+            // 預處理：先過濾掉所有註解 (包含 /* ... */ 與 // ...)，避免註解內的文字與大括號干擾解析
+            const cleanRaw = raw
+                .replace(/\/\*[\s\S]*?\*\//g, '') // 移除區塊註解 /**/
+                .replace(/\/\/.*$/gm, '');        // 移除單行註解 //
 
             // 陣列的第一個元素通常是遇到 @media 之前的預設樣式 (default)
-            object['default'] = platformStrings.shift();
+            // (這裡對應原本先以 '@media' 切割的邏輯，直接擷取前半段，並把換行等格式壓平為單行字串)
+            const firstMediaIndex = cleanRaw.indexOf('@media');
+
+            if (firstMediaIndex !== -1) {
+                object['default'] = Util.toOneLineString(cleanRaw.slice(0, firstMediaIndex));
+            } else {
+                object['default'] = Util.toOneLineString(cleanRaw);
+                return object;
+            }
+
+            // 處理 @media 之後的每一段 (裝置特定樣式)
+            let currentIndex = firstMediaIndex;
+
+            while (currentIndex < cleanRaw.length) {
+                const mediaIndex = cleanRaw.indexOf('@media', currentIndex);
+                if (mediaIndex === -1) break;
+
+                const braceStartIndex = cleanRaw.indexOf('{', mediaIndex);
+                if (braceStartIndex === -1) break;
+
+                // 抓取 @ 後面的單字 (例如 mobile)
+                const mediaDeclaration = cleanRaw.slice(mediaIndex, braceStartIndex);
+                const platformMatch = mediaDeclaration.match(/@media\s+@(\w+)/);
+                const platform = platformMatch ? platformMatch[1] : null;
+
+                // 抓取 {} 裡面的樣式內容 (改用括號計數法，解決巢狀結構 Regex 會錯亂的問題)
+                let openBraces = 0;
+                let braceEndIndex = -1;
+
+                for (let i = braceStartIndex; i < cleanRaw.length; i++) {
+                    if (cleanRaw[i] === '{') openBraces++;
+                    if (cleanRaw[i] === '}') {
+                        openBraces--;
+                        if (openBraces === 0) {
+                            braceEndIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                // 如果有抓到對應的裝置與大括號內的設定
+                if (braceEndIndex !== -1) {
+                    const statement = cleanRaw.slice(braceStartIndex + 1, braceEndIndex);
+                    if (platform) {
+                        const parsedStatement = Util.toOneLineString(statement);
+                        // 加上 trim() 檢查是否為空字串，非空才放進物件中
+                        if (parsedStatement.trim() !== '') {
+                            object[platform] = parsedStatement;
+                        }
+                    }
+                    currentIndex = braceEndIndex + 1;
+                } else break;
+            }
+
             return object;
         }
 
@@ -7533,6 +7573,8 @@ class AppBuilder extends ComponentBuilder {
                 }
             }
         }
+        await new beauty(generator.filePath).formatAll();
+
 
         // 6. 收尾寫檔
         generator.needSignature(false);

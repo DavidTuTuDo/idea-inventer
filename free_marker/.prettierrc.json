@@ -8,7 +8,7 @@
     {
       "files": "*.less",
       "options": {
-        "parser": "css"
+        "parser": "less"
       }
     }
   ]
