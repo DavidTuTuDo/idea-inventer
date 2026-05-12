@@ -50,7 +50,7 @@ import { ref, getDownloadURL, uploadBytesResumable, listAll, deleteObject } from
  優化 (uploadBytesResumable)： 它會回傳一個 UploadTask 物件。這個物件有一個 .cancel() 方法。當 Timeout 發生時，你可以呼叫這個方法，真正地切斷網路連線，停止上傳行為。
  */
 
-import event from "../event";
+import { makeObservable, action, observable } from "mobx";
 
 const MAX_COUNT_OF_FIRESTORE_BATCH = 500;
 const MAX_SIZE_PER_UPLOAD = 10;
@@ -62,6 +62,7 @@ const RemoteDo = {
 
 class FirebaseHelper extends BaseFirebase {
     /** web端當前的user */
+    @observable
     user;
 
     /** * 檢查當前是否有 User 物件 (同步判斷) */
@@ -71,11 +72,17 @@ class FirebaseHelper extends BaseFirebase {
 
     constructor() {
         super();
+        makeObservable(this);
         this.unsubscribeAuth = null;
         if (this.auth() === undefined) return;
         if (_.isEqual(Config.env, "dev") && _.isEqual(Config.platform, "web")) {
             connectFunctionsEmulator(this.functions(), "localhost", 5001);
         }
+    }
+
+    @action
+    updateUser(user) {
+        this.user = user;
     }
 
     /**
@@ -89,8 +96,7 @@ class FirebaseHelper extends BaseFirebase {
             return;
         }
         this.unsubscribeAuth = onAuthStateChanged(this.auth(), (user) => {
-            this.user = user; // 直接用 this 即可
-            event.emitAuthStateChanged(user);
+            this.updateUser(user);
         });
     };
 

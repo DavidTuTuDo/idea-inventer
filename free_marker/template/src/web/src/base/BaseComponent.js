@@ -11,7 +11,6 @@ import Config from "../config";
 import Router from "../router";
 import { isMobile } from "react-device-detect";
 import ImageDialogView from "./ImageDialogView";
-import EventBus from "./CommonEventBus";
 import MuiComponent from "./MUIComponent";
 import DialogX from "./DialogX";
 import AlertMenu from "./AlertMenu";

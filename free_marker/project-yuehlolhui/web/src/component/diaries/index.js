@@ -1,16 +1,32 @@
 const edit = true;
 
 import { utiller as Util } from "utiller";
-
 import { inject } from "mobx-react";
 import BaseDiariesComponent from "./BaseDiariesComponent";
 import { observer } from "mobx-react";
+import { reaction } from "mobx";
 
 @inject("diaries")
 @observer
 class DiariesComponent extends BaseDiariesComponent {
     constructor(props) {
         super(props);
+    }
+
+    componentDidMount() {
+        super.componentDidMount();
+
+        // 使用 MobX 的 reaction 監聽 NavigatorStore 的 editTriggerSignal
+        this.subscribe(
+            reaction(
+                () => this.App().getNavigatorStore().editTriggerSignal,
+                (signal) => {
+                    if (signal > 0) {
+                        this.activateEditPage();
+                    }
+                }
+            )
+        );
     }
 
     getMessageXCreateTime(messageX) {
@@ -66,6 +82,10 @@ class DiariesComponent extends BaseDiariesComponent {
         }
 
         return {};
+    }
+
+    activateEditPage() {
+        console.log(`good job`);
     }
 }
 

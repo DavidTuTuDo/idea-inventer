@@ -5683,34 +5683,6 @@ class ComponentBuilder extends BaseBuilder {
             )
         }
 
-
-        for (const event of componentNode.getEvents()) {
-            baseGenerator.appendImport('EventBus', '../../base/CommonEventBus')
-            const eventName = event.getName();
-            const eventParams = event.getEventParams();
-
-            const functionNameOfImpl = Util.camel('on', eventName, 'receive');
-            const functionOfSubscribe = Util.camel('subscribe', eventName);
-            const functionOfUnsubscribe = Util.camel('unsubscribe', eventName);
-
-            baseGenerator.appendFunction(
-                functionNameOfImpl, [...eventParams], [], [],
-                `Util.appendInfo('${functionNameOfImpl} not implemented')`
-            )
-
-            baseGenerator.appendFunction(
-                functionOfSubscribe, [], [], [],
-                `EventBus.self().on('${eventName}', this.${functionNameOfImpl})`,
-            )
-
-            baseGenerator.appendFunction(
-                functionOfUnsubscribe, [], [], [],
-                `EventBus.self().detach('${eventName}', this.${functionNameOfImpl})`,
-            )
-            this.appendStmtIntoComponentDidMount([`this.${functionOfSubscribe}()`]);
-            this.appendStmtIntoComponentDetach([`this.${functionOfUnsubscribe}()`])
-        }
-
         this.appendRenderViewFunctions(componentNode.getStruct(), baseGenerator, componentNode.isPreciselyEditableComponent());
 
         if (componentNode.hasPageTitle()) {
@@ -6651,24 +6623,6 @@ class AppBuilder extends ComponentBuilder {
             generator.appendClass(_.upperFirst(packageName));
             await generator.persist();
         }
-    }
-
-    async buildEventFolder(events) {
-        const normalize = Util.arrayToObjWith(events, (event) => event.getName())
-        const baseEventGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `event`, `BaseComponentEvent.js`), this.nodeOfAncestor);
-        baseEventGenerator.appendImport('EventBus', '../base/CommonEventBus');
-        baseEventGenerator.appendClass('BaseComponentEvent', {name: 'BaseEvent', from: `../base/BaseEvent`});
-        for (const event in normalize) {
-            const events = normalize[event];
-            /** 用這個方式找到params數最多的 */
-            const standard = _.last(_.sortBy(events, (event) => event.getEventParams().length));
-            baseEventGenerator.appendFunction(Util.camel('emit', event),
-                [...standard.getEventParams()], [], [`event for ==> ${events.map((event) => event.getParentNode().getName()).join(' ,')}`],
-                `EventBus.emit('${standard.getName()}',${standard.getEventParams().join(' ,')})`);
-        }
-        baseEventGenerator.needIndexFile('Event', [], true)
-        await baseEventGenerator.persist();
-
     }
 
     async buildI18n() {
@@ -10015,7 +9969,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         if (!ENABLE_FAST_DEVELOP_MODE) {
             await new AppBuilder(this.getProps()).buildWebpackNPackageJson();
             await new AppBuilder(this.getProps()).buildCloudFunctionsApi();
-            await new AppBuilder(this.getProps()).buildEventFolder(totalEvents);
             await new AppBuilder(this.getProps()).buildHtmlIndexAssetsFile();
         }
         await this.buildTemplateHtml();
@@ -10270,7 +10223,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         const fileNames = [];
         switch (this.platform) {
             case 'functions':
-                fileNames.push('CommonEventBus.js')
                 break;
             case 'web':
             case 'admin':

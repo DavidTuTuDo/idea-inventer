@@ -5,9 +5,8 @@ import _ from "lodash";
 import firebaser from "./FirebaseHelper";
 import Cookie from "../cookie";
 import Configer from "../config";
-import { makeObservable, action, observable, when } from "mobx";
+import { makeObservable, action, observable, when, reaction } from "mobx";
 import BaseComponent from "./BaseComponent";
-import EventBus from "./CommonEventBus";
 import AccountUser from "../store/accountUser";
 import CommonPoolHelper from "./CommonPoolHelper";
 import { storeOfSplash } from "./SplashX";
@@ -61,7 +60,12 @@ class UserInfo {
 
     constructor(props) {
         makeObservable(this);
-        this.subscribeAuthStateChanged();
+
+        reaction(
+            () => firebaser.user,
+            (user) => this.onAuthStateChangedReceive(user)
+        );
+
         this.apiOfUser = new AccountUser();
         /** 如果卡住Splash就醬子 => storeOfSNplash.hide().then(); */
     }
@@ -83,10 +87,6 @@ class UserInfo {
         this.displayName = "";
         this.uid = "";
         this.photoURL = "";
-    }
-
-    subscribeAuthStateChanged() {
-        EventBus.self().on("authStateChanged", this.onAuthStateChangedReceive);
     }
 
     isValidUser(user) {
