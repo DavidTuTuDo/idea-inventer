@@ -627,6 +627,12 @@ class CommonStyle {
 
     DiariesPretendDiv = {};
 
+    DiariesMessageXFuncIconMoreVertSharp = {};
+
+    DiariesMessageXFuncReactFragmentWrap = {};
+
+    DiariesMessageXFuncIconButton = {};
+
     DiariesMessageXReadMoreDivWrap = {};
 
     DiariesMessageXReadMoreTypography = {};

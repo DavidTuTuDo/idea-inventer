@@ -158,3 +158,52 @@
     - 適時搭配 `ignoreI: true` 關閉不必要的索引。
 5.  **代碼產出驗證**：
     - 確保 `source.js` JSON 結構完整且所有 key 都存在於本指南中。
+
+---
+
+## 7. 元件範本 (Component Templates)
+
+### A. AlertMenu (更多操作選單)
+當需要為元件（如列表項）增加操作選單時，慣用的實作範本如下：
+```javascript
+{
+    name: "extra",
+    view: "IconButton",
+    needParam: true,
+    l10n: true,
+    icon: "MoreHoriz",
+    // 若需懸浮定位可加入 layer
+    // layer: { position: "upperRight" },
+    alertMenu: {
+        items: [
+            {
+                name: "delete",
+                label: "刪除",
+                icon: "CancelScheduleSend",
+                loginOnly: true,
+                id: 1,
+                notice: { 
+                    title: "執行遠端刪除", 
+                    content: "是否從列表中刪除，並確認檔案無法回復" 
+                }
+            }
+        ]
+    }
+}
+```
+
+### B. Dialog Trigger (觸發彈窗元件)
+當需要新增一個按鈕來觸發特定組件的 Dialog 時（例如 'pretend' 觸發 'storyteller'），實作範本如下：
+```javascript
+{
+    name: "pretend",
+    view: "div", // 或 "IconButton", "Button"
+    injectStyle: true,
+    alertDialog: {
+        customView: "storyteller", // 目標組件名稱
+        needActionButtons: false,
+        fullWidth: true,
+        globalOfRef: true // 使用全局引用開啟
+    }
+}
+```

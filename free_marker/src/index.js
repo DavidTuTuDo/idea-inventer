@@ -5776,7 +5776,12 @@ class ComponentBuilder extends BaseBuilder {
             this.importComponentDefault(moduleGenerator);
             await moduleGenerator.persist();
         } else {
-            baseGenerator.needIndexFile(className, [`inject('${componentNode.getStruct().getName()}')`, `observer`])
+            baseGenerator.needIndexFile(className)
+            /**
+             * 2026.01.15 在BaseApp裡面用observable注入，不用inject惹
+             * baseGenerator.needIndexFile(className, [`inject('${componentNode.getStruct().getName()}')`, `observer`])
+             */
+
         }
         await baseGenerator.persist();
         return {classNames: this.classNames, events: componentNode.getEvents()};
@@ -9003,7 +9008,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
     getStmtsOfAlertMenu(node) {
         const stmts = [];
-        stmts.push(...this.stmtsOfClickCaution);
         stmts.push(`objectOfParam.view = event`)
         stmts.push(`${node.getFieldNameOfAlertMenu()}.current.setAnchor(event.currentTarget);`)
         stmts.push(`${node.getFieldNameOfAlertMenu()}.current.open();`)
@@ -9017,7 +9021,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         const implementsOfClicked = []
         for (const item of alertMenu.items) {
             const functionName = node.getFunctionNameOfClicked(Util.camel(item.name, sign));
-            implementsOfClicked.push(`{"id":${item.id},"onClick":self.${functionName}(objectOfParam)}`);
+            implementsOfClicked.push(`{ "onClick":self.${functionName}(objectOfParam)}`);
             node.appendMethods({functionName, params: ['param'], comments: ['AlertMenu點擊事件 => 必須 return async () => {instance = param.object}']});
             const objectOfItem = {};
             objectOfItem.label = item.label;
@@ -9049,7 +9053,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         })
 
         const content = `{self.renderAlertMenu({ref:${node.getFieldNameOfAlertMenu()},
-                component:self,items:Util.getMergedArrayBy(${node.getPreciseAttributeParentName()}.get${_.upperFirst(fieldNameOfItems)}(), ${nameOfImpl}, 'id')})}`
+                component:self,items:${node.getPreciseAttributeParentName()}.get${_.upperFirst(fieldNameOfItems)}().map((item, index) => ({...item, ...${nameOfImpl}[index]}))})}`
         return content;
     }
 

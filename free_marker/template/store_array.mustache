@@ -91,7 +91,7 @@ return this.{{{fieldName}}};
     @action
     updateSpecific{{{functionName}}}(latest, attr = 'id') {
         const {{{name}}} = _.find(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual({{{name}}}[attr], latest[attr]));
-        {{{name}}}.initial(latest);
+        messageX ? {{{name}}}.initial(latest) : this.push{{{functionName}}}ByIndex(-1, latest)
     }
 
     push{{{fieldClass}}} = (item = {}) => {

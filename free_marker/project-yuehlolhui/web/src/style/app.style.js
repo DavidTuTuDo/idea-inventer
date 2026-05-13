@@ -627,6 +627,12 @@ class AppStyle {
 
     DiariesPretendDiv = {};
 
+    DiariesMessageXFuncIconMoreVertSharp = {};
+
+    DiariesMessageXFuncReactFragmentWrap = {};
+
+    DiariesMessageXFuncIconButton = {};
+
     DiariesMessageXReadMoreDivWrap = {};
 
     DiariesMessageXReadMoreTypography = {};

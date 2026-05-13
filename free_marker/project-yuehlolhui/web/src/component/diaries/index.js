@@ -3,15 +3,34 @@ const edit = true;
 import { utiller as Util } from "utiller";
 import { inject } from "mobx-react";
 import BaseDiariesComponent from "./BaseDiariesComponent";
-import { observer } from "mobx-react";
-import { reaction } from "mobx";
+import { reaction, observable, makeObservable, action } from "mobx";
 import Router from "../../router";
+import MessageX from "../../store/diariesMessageX";
 
-@inject("diaries")
-@observer
 class DiariesComponent extends BaseDiariesComponent {
     constructor(props) {
         super(props);
+        this.apiOfMsgX = new MessageX();
+    }
+
+    onDiariesMessageXFuncIconButtonUpdateClicked(param) {
+        const message = param.object;
+        const self = this;
+        return async () => {
+            self.getPretendDivAlertDialogRef().open();
+            Util.syncDelay(100).then(() => {
+                self.App().getStorytellerStore().initial(message);
+            });
+        };
+    }
+
+    onDiariesMessageXFuncIconButtonDeleteClicked(param) {
+        const message = param.object;
+        const self = this;
+        return async () => {
+            await this.apiOfMsgX.deleteMessageXItem(self, message.getId());
+            message.remove();
+        };
     }
 
     componentDidMount() {
@@ -81,7 +100,6 @@ class DiariesComponent extends BaseDiariesComponent {
         if (lineBreaks < 10 && content.length < 400) {
             return { display: "none" };
         }
-
         return {};
     }
 

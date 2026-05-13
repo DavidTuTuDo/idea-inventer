@@ -59,13 +59,13 @@
         transform: rotate(45deg);
     }
     &:hover {
-        transform: translateX(8px) scale(1.01);
-        box-shadow: -5px 10px 25px rgba(183, 28, 28, 0.15);
+        transform: scale(1.01);
+        box-shadow: 0 12px 30px rgba(183, 28, 28, 0.15);
         background-color: #fffefb;
         border-left: 8px solid #d32f2f;
     }
     @media @mobile {
-        padding: 48px 18px 32px 25px;
+        padding: 40px 12px 28px 15px;
         margin-bottom: 18px;
         border-left-width: 4px;
     }
@@ -294,6 +294,44 @@
         &::before {
             height: 15px;
         }
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DiariesMessageXFuncIconButton {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 5;
+    @media @mobile {
+        top: 12px;
+        right: 10px;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DiariesMessageXFuncReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DiariesMessageXFuncIconMoreVertSharp {
+    @media @mobile {
+        /** empty style */
     }
     @media @tablet {
         /** empty style */
