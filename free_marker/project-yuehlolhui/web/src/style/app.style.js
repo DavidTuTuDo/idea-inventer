@@ -597,23 +597,35 @@ class AppStyle {
 
     /** => following for storyteller  component  */
 
-    StorytellerActionContainerSubmitBtnButton = {};
-
-    StorytellerActionContainerBackBtnButton = {};
+    StorytellerActionContainerSubmitDiv = {};
 
     StorytellerActionContainerDiv = {};
 
+    StorytellerContentDivWrap = {};
+
     StorytellerContentTextField = {};
 
-    StorytellerAuthorTextField = {};
+    StorytellerUpperAuthorDivWrap = {};
 
-    StorytellerCreateTimeTimeDatePicker = {};
+    StorytellerUpperAuthorTextField = {};
+
+    StorytellerUpperCreateTimeLabelOfCreateTimeTypography = {};
+
+    StorytellerUpperCreateTimeDivWrap = {};
+
+    StorytellerUpperCreateTimeDatePicker = {};
+
+    StorytellerUpperDiv = {};
 
     StorytellerPaperWrap = {};
 
     StorytellerDiv = {};
 
     /** => following for diaries  component  */
+
+    DiariesPretendReactFragmentWrap = {};
+
+    DiariesPretendDiv = {};
 
     DiariesMessageXReadMoreDivWrap = {};
 

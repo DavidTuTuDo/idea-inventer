@@ -5,6 +5,7 @@ import { inject } from "mobx-react";
 import BaseDiariesComponent from "./BaseDiariesComponent";
 import { observer } from "mobx-react";
 import { reaction } from "mobx";
+import Router from "../../router";
 
 @inject("diaries")
 @observer
@@ -84,9 +85,9 @@ class DiariesComponent extends BaseDiariesComponent {
         return {};
     }
 
-    activateEditPage() {
-        console.log(`good job`);
-    }
+    activateEditPage = () => {
+        this.getPretendDivAlertDialogRef().open();
+    };
 }
 
 export default DiariesComponent;
