@@ -138,6 +138,20 @@ class FirebaseHelper extends BaseFirebase {
     };
 
     /**
+     * 插入或更新單一文件。如果文件不存在，會被建立。如果文件已經存在，會將提供的資料與現有文件合併。
+     * @param {string} path - Collection 路徑。
+     * @param {object} [item={}] - 要寫入的資料。
+     * @param {string} [id] - 文件 ID。若為空，將自動生成 ID (退化為 add 行為)。
+     * @returns {Promise<object>} - 包含寫入資料。
+     */
+    upsertDocument = async (path, item = {}, id) => {
+        if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, "upsertDocument 需要一個明確的 id");
+        const ref = this.reference(path, id);
+        await ref.set(item, { merge: true });
+        return { ...item, id, exists: true };
+    };
+
+    /**
      * 更新單一文件中的部分欄位。
      * @param {string} path - Collection 路徑。
      * @param {object} [item={}] - 要更新的欄位及值。
@@ -268,10 +282,18 @@ class FirebaseHelper extends BaseFirebase {
         let batchCount = 0;
         let totalProcessed = 0;
 
+        // 檢查條件中是否有使用者指定的 limit
+        const hasLimit = conditions.some((c) => (_.isPlainObject(c) && Object.keys(c).includes("limit")) || (_.isPlainObject(c) && c.type === "limit"));
+
         while (true) {
             // 這裡為了讓 startAfter 穩定工作，通常需要一個明確的 orderBy
             // 由於 firestore-admin 的特性，如果沒有 orderBy，startAfter(lastDoc) 預設會使用內部順序
-            let query = ref.orderBy(FieldPath.documentId()).limit(pageSize); // 增加 FieldPath.documentId() 排序以穩定游標
+            let query = ref.orderBy(FieldPath.documentId());
+
+            if (!hasLimit) {
+                query = query.limit(pageSize); // 如果沒有自訂 limit，才加上 pageSize 的 limit
+            }
+
             if (lastDoc) {
                 query = query.startAfter(lastDoc);
             }
@@ -295,8 +317,9 @@ class FirebaseHelper extends BaseFirebase {
             totalProcessed += documents.length;
 
             Util.appendInfo(`${uid} path:/${path} modify the ${batchCount} batch, accumulated ${totalProcessed} documents`);
-            if (snapshot.size < pageSize) {
-                // 小於 pageSize 代表已經到底
+
+            if (hasLimit || snapshot.size < pageSize) {
+                // 有自訂 limit 或者是拿到的資料少於一頁大小，就跳出
                 break;
             }
         }
@@ -348,7 +371,7 @@ class FirebaseHelper extends BaseFirebase {
                 // 如果是純函式
                 stmtFn = condition;
             } else if (_.isPlainObject(condition)) {
-                // 如果是物件，假設只含一個 key-value 配對
+                // 如果是物件，假設只含一個 key-value配對
                 const entries = Object.entries(condition);
                 if (entries.length === 0) continue;
 
@@ -450,6 +473,39 @@ class FirebaseHelper extends BaseFirebase {
             const content = await predict(document, transaction, ref);
             transaction.update(ref, content);
             Util.appendInfo(`transaction update => path:/${path}/${id}`, `content ==> `, content);
+        };
+        return await this.transaction(behavior);
+    }
+
+    /**
+     * 原子性地插入或更新文件 (在交易中執行)。
+     * @param {string} path - Collection 路徑。
+     * @param {function(document: object, transaction: Firestore.Transaction, ref: Firestore.DocumentReference): Promise<object>} predict - 讀取文件並回傳要寫入內容的非同步函式。
+     * @param {string} id - 文件 ID。不可為空。
+     * @returns {Promise<any>} - 交易的結果。
+     * @throws {ERROR} - 如果 id 為空。
+     */
+    async upsertDocumentAtomically(path, predict = async (document, transaction) => document, id) {
+        const self = this;
+        if (Util.isUndefinedNullEmpty(id)) {
+            throw new ERROR(9999, "upsertDocumentAtomically 的id 不能為空值");
+        }
+
+        const behavior = async (transaction) => {
+            const ref = self.reference(path, id);
+            const docSnap = await transaction.get(ref);
+
+            let document = {};
+            if (docSnap.exists) {
+                document = docSnap.data();
+            }
+            document.exists = docSnap.exists;
+            document.id = id;
+
+            const content = await predict(document, transaction, ref);
+            // 使用 set 搭配 merge: true 來實現 upsert
+            transaction.set(ref, content, { merge: true });
+            Util.appendInfo(`transaction upsert => path:/${path}/${id}`, `content ==> `, content);
         };
         return await this.transaction(behavior);
     }
@@ -637,9 +693,7 @@ class FirebaseHelper extends BaseFirebase {
         while (true) {
             let queryConditions = [...finalConditions];
 
-            // 1. 設置查詢限制 (Limit)
-            const limitCondition = { limit: (stmt) => stmt.limit(pageSize) };
-            queryConditions = [...queryConditions, limitCondition];
+            // 1. 如果沒有指定 limit，前面已經套用 pageSize。所以這裡不用再次覆蓋 limitCondition。
 
             // 2. 設置游標 (StartAfter)
             if (lastDoc) {
@@ -681,8 +735,8 @@ class FirebaseHelper extends BaseFirebase {
             totalFetched += documents.length;
             Util.appendInfo(`991236 path:/${path} fetched ${documents.length} documents in batch ${batchCount}. Total fetched: ${totalFetched}`);
 
-            if (snapshot.size < pageSize) {
-                // 如果獲取的數量少於 pageSize，代表已經到底
+            if (hasLimit || snapshot.size < pageSize) {
+                // 如果用戶有指定 limit，或者獲取的數量少於 pageSize，代表已經到底
                 break;
             }
         }

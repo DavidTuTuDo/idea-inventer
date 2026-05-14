@@ -4,7 +4,7 @@ import BaseStorytellerStore from "./BaseStorytellerStore";
 import { action } from "mobx";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import MsgX from "../../store/diariesMessageX";
-import UserInfo from '../../base/BaseUserInfo';
+import UserInfo from "../../base/BaseUserInfo";
 
 class StorytellerStore extends BaseStorytellerStore {
     constructor(props) {
