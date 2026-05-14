@@ -86,6 +86,7 @@ return this.{{{fieldName}}};
     const itemsOfSorted = self.ruleOfPreviouslySort(params);
     Util.insertToArray(this.{{{fieldName}}},index, ...itemsOfSorted.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
     self.invalidate();
+    if(index < 0) this.getComponent()?.scrollToTop?.();
     }
 
     @action

@@ -14,7 +14,7 @@ class admin {
     };
 
     pushDiaries = async () => {
-        const items = Util.getJsonObjByFilePath("./temp/diary.json");
+        const items = Util.getJsonObjByFilePath("./temp/formal_diary.json");
         await Api.submitMessageXes(items.map((item) => ({ ...item, isDiary: true })));
         /** should be after 20*/
     };
@@ -24,5 +24,5 @@ export default admin;
 
 (async () => {
     const handler = new admin();
-    await handler.commitDiaries();
+    await handler.pushDiaries();
 })();

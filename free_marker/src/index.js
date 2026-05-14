@@ -10071,10 +10071,11 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     generateShellScript = async () => {
         // 1. 基礎參數整理
         const projectSlug = this.nodeOfAncestor.idOfProject; // e.g., 'yueh-pu'
+
         // 2. 格式化變數名稱：將 'yueh-pu' 轉為 'YuehPu'，確保 Alias 名稱合法
         const variable = _.upperFirst(_.camelCase(projectSlug));
-        const dirOfAliasFile = `/Users/davidtu/shell-script/temp`
-        Util.persistByPath(dirOfAliasFile)
+        const dirOfAliasFile = `/Users/davidtu/shell-script/temp`;
+        Util.persistByPath(dirOfAliasFile); // 確保資料夾存在
         const filePath = `${dirOfAliasFile}/commandOf${variable}.sh`;
 
         // 3. 預定義路徑，方便維護
@@ -10082,25 +10083,32 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         const projectPath = `${rootPath}/cross-achieve/legacy/${projectSlug}`;
         const webGenPath = `${rootPath}/cross-achieve/legacy/idea-inventer/gen/${projectSlug}/web`;
         const adminGenPath = `${rootPath}/cross-achieve/legacy/idea-inventer/gen/${projectSlug}/admin`;
-
-
+        const functionsGenPath = `${rootPath}/cross-achieve/legacy/idea-inventer/gen/${projectSlug}/functions`;
+        const nodeJS = `${rootPath}/.nvm/versions/node/v20.19.5/bin/node --require @babel/register`;
         // 4. 組合 Script 內容 (保持整潔的縮排)
-        // 注意：在 Alias 中，路徑建議用引號包覆以防萬一
+        // 移除 #!/bin/sh，因為 alias 腳本需要被 source 才能生效，直接執行無效
         const scriptContent = [
-            `#!/bin/sh`,
-            `# --- Generated for ${projectSlug} ---`,
-            `NODE_SYS=\"node --require @babel/register"`,
+            `# --- Generated Aliases for ${projectSlug} ---`,
+            `# 載入方式: source ${filePath}`,
+            ``,
+            `# 快速跳轉目錄`,
             `alias cd${variable}='cd "${projectPath}"'`,
+            `alias go2_${variable}_admin='cd "${adminGenPath}"'`,
+            `alias go2_${variable}_web='cd "${webGenPath}"'`,
+            `alias go2_${variable}_functions='cd "${functionsGenPath}"'`,
+            ``,
+            `# 執行與部署指令 (使用直接 cd 路徑更為穩健)`,
             `alias deploy${variable}Functions='cd "${projectPath}" && firebase deploy --only functions'`,
-            `alias simulate${variable}Web='cd "${webGenPath}" && ns'`,
-            `alias exe${variable}Admin='cd "${adminGenPath}" && self_debug=true is_node=true \${NODE_SYS} src/index.js'`,
             `alias emulator${variable}Functions='cd "${projectPath}" && firebase emulators:start --only functions'`,
+            `alias simulate${variable}Web='cd "${webGenPath}" && ns'`,
+            `alias exe${variable}Admin='cd "${adminGenPath}" && self_debug=true is_node=true ${nodeJS} src/index.js'`,
             `# ------------------------------`
         ].join('\n');
 
         Util.appendFile(filePath, scriptContent, false, true);
 
         console.log(`✅ Alias updated: ${filePath}`);
+        console.log(`💡 請在終端機執行 \`source ${filePath}\` 以啟用快捷指令`);
     }
 
     /**
