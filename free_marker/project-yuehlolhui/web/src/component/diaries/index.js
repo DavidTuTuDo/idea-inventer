@@ -65,7 +65,7 @@ class DiariesComponent extends BaseDiariesComponent {
     }
 
     onDiariesMessageXReadMoreTypographyClicked(param) {
-        if (BaseUserInfo.isAdmin() || BaseUserInfo.isAdmin()) param.object.setIsExpended(true);
+        if (BaseUserInfo.isAdmin() || BaseUserInfo.isAuthorUser()) param.object.setIsExpended(true);
         else this.showErrorSnackMessage(`ＮＯＮＯ～不給你看！你看不起！`);
     }
 
