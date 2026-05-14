@@ -4,6 +4,7 @@ import BaseStorytellerStore from "./BaseStorytellerStore";
 import { action } from "mobx";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import MsgX from "../../store/diariesMessageX";
+import UserInfo from '../../base/BaseUserInfo';
 
 class StorytellerStore extends BaseStorytellerStore {
     constructor(props) {
@@ -18,6 +19,7 @@ class StorytellerStore extends BaseStorytellerStore {
 
     modifyDiaryMsgX = async () => {
         const obj = this.columnData();
+        obj.idOfAuthor = UserInfo.uid;
         const append = Util.isUndefinedNullEmpty(obj?.id);
         const result = await this.apiOfMsgX.submitMessageXItem(this.getComponent(), obj, obj?.id);
         this.App().getDiariesStore().updateSpecificMessageXes(result.value);

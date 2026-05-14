@@ -147,10 +147,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     transition: all 0.4s ease;
+    mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
     &.is-expanded {
         display: block;
         -webkit-line-clamp: unset;
         overflow: visible;
+        mask-image: none;
+        -webkit-mask-image: none;
     }
     @media @mobile {
         font-size: 1.05rem;
@@ -197,18 +201,21 @@
 }
 .DiariesMessageXReadMoreTypography {
     color: #b71c1c;
-    font-weight: 700;
+    font-weight: 900;
     font-size: 0.95rem;
     letter-spacing: 0.5px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 16px;
+    padding: 6px 20px;
     border-radius: 20px;
-    background-color: #ffffff;
-    box-shadow: -15px 0 20px 5px #ffffff;
-    margin-right: -20px;
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     &::after {
         font-size: 0.75rem;
@@ -216,12 +223,9 @@
         opacity: 0.9;
     }
     &:hover {
-        background-color: #fdfaf2;
+        background-color: rgba(255, 255, 255, 0.4);
         color: #d32f2f;
         transform: scale(1.05);
-        box-shadow:
-            -15px 0 25px 8px #ffffff,
-            0 4px 12px rgba(183, 28, 28, 0.1);
     }
     &:active {
         transform: scale(0.95);
@@ -234,8 +238,8 @@
     }
     @media @mobile {
         font-size: 0.85rem;
-        padding: 3px 12px;
-        margin-right: -15px;
+        padding: 4px 15px;
+        margin-right: 0;
     }
     @media @tablet {
         /** empty style */
@@ -245,34 +249,22 @@
     }
 }
 .DiariesMessageXReadMoreDivWrap {
-    margin-top: -25px;
+    margin-top: -65px;
     display: flex;
     justify-content: flex-end;
     position: relative;
-    z-index: 2;
-    &::before {
-        content: "";
-        position: absolute;
-        bottom: 100%;
-        left: 0;
-        width: 100%;
-        height: 20px;
-        background: linear-gradient(to bottom, transparent, #ffffff 95%);
-        pointer-events: none;
-        transition:
-            opacity 0.5s ease,
-            visibility 0.5s;
-        opacity: 1;
-        visibility: visible;
-    }
+    z-index: 5;
+    pointer-events: none;
+    padding-bottom: 15px;
     &.is-expanded {
         margin-top: 20px;
-        &::before {
-            opacity: 0;
-            visibility: hidden;
-        }
+        pointer-events: auto;
+        padding-bottom: 0;
         .DiariesMessageXReadMoreTypography {
             background-color: rgba(0, 0, 0, 0.05);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
             box-shadow: none;
             margin-right: 0;
             color: #666;
@@ -290,10 +282,7 @@
         }
     }
     @media @mobile {
-        margin-top: -20px;
-        &::before {
-            height: 15px;
-        }
+        margin-top: -65px;
     }
     @media @tablet {
         /** empty style */

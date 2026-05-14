@@ -6,6 +6,7 @@ import BaseDiariesComponent from "./BaseDiariesComponent";
 import { reaction, observable, makeObservable, action } from "mobx";
 import Router from "../../router";
 import MessageX from "../../store/diariesMessageX";
+import BaseUserInfo from "../../base/BaseUserInfo";
 
 class DiariesComponent extends BaseDiariesComponent {
     constructor(props) {
@@ -64,8 +65,8 @@ class DiariesComponent extends BaseDiariesComponent {
     }
 
     onDiariesMessageXReadMoreTypographyClicked(param) {
-        const messageX = param.object;
-        messageX.setIsExpended(true);
+        if (BaseUserInfo.isAdmin() || BaseUserInfo.isAdmin()) param.object.setIsExpended(true);
+        else this.showErrorSnackMessage(`ＮＯＮＯ～不給你看！你看不起！`);
     }
 
     getInjectStyleOfDiariesMessageXReadMoreTypography(messageX) {
@@ -77,7 +78,9 @@ class DiariesComponent extends BaseDiariesComponent {
             return {
                 display: "block",
                 WebkitLineClamp: "unset",
-                overflow: "visible"
+                overflow: "visible",
+                maskImage: "none",
+                WebkitMaskImage: "none"
             };
         }
         return {};
@@ -106,6 +109,33 @@ class DiariesComponent extends BaseDiariesComponent {
     activateEditPage = () => {
         this.getPretendDivAlertDialogRef().open();
     };
+
+    getInjectStyleOfDiariesMessageXCard(messageX) {
+        const store = this.getStore();
+        const allMessages = store.getMessageXes?.() || [];
+        const author = messageX.getAuthor() || "Anonymous";
+
+        // 取得目前畫面上所有不重複的作者清單
+        const uniqueAuthors = [];
+        allMessages.forEach((m) => {
+            const a = m.getAuthor() || "Anonymous";
+            if (!uniqueAuthors.includes(a)) uniqueAuthors.push(a);
+        });
+
+        const authorIndex = uniqueAuthors.indexOf(author);
+        const colors = [
+            "transparent", // 第一位作者固定透明
+            "rgba(183, 28, 28, 0.2)", // 企業紅
+            "rgba(26, 26, 26, 0.2)" // 企業黑
+        ];
+
+        // 根據作者在清單中的順序分配顏色，確保至少有一位（第一位）是透明
+        const colorIndex = authorIndex >= 0 ? authorIndex % colors.length : 0;
+
+        return {
+            backgroundColor: colors[colorIndex]
+        };
+    }
 }
 
 export default DiariesComponent;
