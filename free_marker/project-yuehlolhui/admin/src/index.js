@@ -2,6 +2,8 @@ const edit = true;
 
 import Api from "./api";
 import { utiller as Util } from "utiller";
+import Diary from "./diary";
+import dayjs from "dayjs";
 import _ from "lodash";
 
 class admin {
@@ -37,12 +39,37 @@ class admin {
         // 3. 呼叫 API
         await Api.upsertStatistic({ latestDate: latest });
     };
+
+    /** 1.把ios手機 line彙整的XXX.txt放置到 ./temp
+     *  2.執行submitLastestDiaries
+     * */
+    submitLastestDiaries = async () => {
+        const handler = new Diary();
+        const diaries = await handler.getDiariesOfNormalized();
+        const statistic = await Api.fetchStatistic();
+
+        const latestDate = statistic?.latestDate ? Api.normalizeAsDayjs(statistic.latestDate) : dayjs("1970-01-01");
+        console.log(latestDate);
+        // 篩選出 createTime 大於 latestDate 的 diaries
+        const diariesShouldSubmit = diaries.filter((diary) => {
+            // 把 YYYY/MM/DD 或是 YYYY.MM.DD 統一轉成 Day.js 可以解析的格式
+            const diaryDate = dayjs(diary.createTime.replace(/\./g, "/"));
+            return diaryDate.isAfter(latestDate);
+        });
+
+        console.log(`過濾後找到 ${diariesShouldSubmit.length} 筆新的日記準備新增`);
+        if (diariesShouldSubmit.length > 0) {
+            await Api.submitMessageXes(diariesShouldSubmit.map((item) => ({ ...item, isDiary: true })));
+            await this.updateLastestDate();
+        }
+    };
 }
 
 export default admin;
 
 (async () => {
     const handler = new admin();
+    await handler.submitLastestDiaries();
     // await handler.updateLastestDate();
     // await handler.updateAuthorNameOfDiaries('Ivyyy','Hui C');
 })();
