@@ -112,6 +112,13 @@ const VIEW_IMPORTS =
 class CodegenNode {
 
     /**
+     * 很多TextField都需要存在cache，或是遠端保存。
+     * 1.TextField在onChange時，把直設定進去專屬的cookie位置。
+     * 2.在componentDidMount時將cookie的值寫進去。（需注意override的store有沒有覆蓋再覆蓋）
+     */
+    useCache = false;
+
+    /**
      * 開發期間，line dapp時，需要一個tunnel跳轉回0.0.0.0:8080 或者 0.0.0.0:5001(網頁)，節省functions一直部署到遠端做測試
      * 目前是用localXPose去起一個限時的tunnel。或者就要開另一台電腦用免費的ngrok
      * */
@@ -1080,6 +1087,32 @@ class CodegenNode {
             self[key] = node[key];
         }
     }
+
+    /**
+     * 遞迴搜尋樹狀結構中的節點
+     * @param {Object|Array} node - 當前節點或節點陣列
+     * @param {Function} predicate - 判斷條件的 callback (node) => boolean
+     * @returns {Array} 符合條件的節點陣列
+     */
+    getNodesBy = (predicate,node = this.getStruct()) => {
+        // 防呆：如果節點為空或不是物件/陣列，直接回傳空陣列
+        if (!node || typeof node !== "object") return [];
+
+        // 如果傳入的是陣列 (例如處理 children 時)，則對每個元素遞迴並攤平結果
+        if (Array.isArray(node)) {
+            return node.flatMap(child => getNodesBy(predicate, child));
+        }
+
+        // 1. 檢查當前節點是否符合條件
+        const isMatch = predicate(node) ? [node] : [];
+
+        // 2. 使用可選串連 (?.) 安全地讀取 children
+        // 3. 遞迴搜尋子節點，並使用 ?? 確保若沒有 children 時回傳空陣列 []
+        const childrenMatches = node.children?.flatMap(child => this.getNodesBy(predicate, child)) ?? [];
+
+        // 4. 合併並回傳結果
+        return [...isMatch, ...childrenMatches];
+    };
 
     isSelected() { return _.isObject(this.select) && _.isArray(this.select.values); }
 
@@ -2697,6 +2730,15 @@ class CodegenNode {
         return this.organizeClassNameWithParent(type, false)
     }
 
+    /** 依據曹狀結構得到unique name,例如： ExamEditorQuestionCard*/
+    getNameOfHierarchical() {
+        return this.organizeClassNameWithParent(`default`, false)
+    }
+
+    getNameOfHierarchicalOfCookieUsage() {
+        return `input4${this.getNameOfHierarchical()}`;
+    }
+
     /** 當edit mode的時候, 為了要讓editMode下的元件屬性在less可以繼承 mainMode */
     getOriginalClassNameOfLessUsage(type = 'default') {
         if (this.isViewModified() && _.isEmpty(this.getOriginalView())) {
@@ -3413,12 +3455,11 @@ class ClassGenerator {
 
     appendField(fieldName, defaultValue, macros = [], comments = [], type = '') {
         const stmt = [];
-
         for (const comment of comments) {
+            if (Util.isUndefinedNullEmpty(comment)) continue;
             stmt.push(`\n`);
             stmt.push(`/** ${comment} */`);
         }
-
         for (const m of macros) {
             stmt.push(`\n`);
             stmt.push(`@${m}`);
@@ -3920,7 +3961,7 @@ class PathBase {
     genComponentRootPath; // gen/app/src/component
     genStoreRootPath; // gen/app/src/store
     props;
-
+    nodesUseCache;
 
     getProps = () => {
         return {
@@ -5693,6 +5734,10 @@ class ComponentBuilder extends BaseBuilder {
             {name: `invalidatePageTitle`, arrow: true}, ['title'], [], [],
             `this.setPageFullTitle(title ?? this.getStore().${this.getFunctionNameOfSimpleGetter(componentNode.getStruct().getFieldNameOfPageTitle(), false)})`
         )
+        const nodesUseCache = componentNode.getNodesBy(node => node.useCache);
+        const cookieCaller = (node) => Util.camel(`get`, node.getNameOfHierarchicalOfCookieUsage());
+        const setterCaller = node => `set${_.upperFirst(node.getName())}`
+        this.appendStmtIntoComponentDidMount(...nodesUseCache.map((node) => `this.getStore().${setterCaller(node)}(Cookie.${cookieCaller(node)}())`));
 
         baseGenerator.appendFunction({name: `isEnableInitFetch`, arrow: true}, [], [], [],
             `return this.enableInitFetch`);
@@ -6562,6 +6607,8 @@ class ComponentBuilder extends BaseBuilder {
             generator.appendConstructor(
                 `this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfFetch()})`
             );
+
+
         }
 
         function handleArrayChild(child, generator) {
@@ -6849,20 +6896,42 @@ class AppBuilder extends ComponentBuilder {
             return cookies;
         }
 
+        function getNodesOfUseCache() {
+            const nodes = [];
+            for (const component of self.getComponents())
+                nodes.push(...component.getNodesBy((node) => node.useCache))
+            return nodes;
+        }
+
         const cookies = getCookiesOfModules();
-        if (_.size(cookies) > 1) {
+
+        const extra = getNodesOfUseCache().map((node) => {
+            const clone = _.clone(node);/** 因為只有改field，這不會影響到*/
+            clone.name = node.getNameOfHierarchicalOfCookieUsage();
+            clone.type = "string";
+            clone.description = '因為useCache&&TextField，所以 autogen 的 cookie';
+            return clone;
+        })
+
+        for (const node of extra) console.log(`${node.name} is node ==>`, CodegenNode.isCodegenNode(node))
+        console.log('size ==>', _.size(extra));
+        console.log('names ==>', extra.map(each => each.name));
+
+        if (_.size(cookies) > 0 || _.size(extra) > 0) {
             const baseCookieGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `cookie`, `BaseCookie.js`), this.nodeOfAncestor);
             baseCookieGenerator.appendClass('BaseCookie', {name: 'Cookie', from: `../base/BaseCookie`});
             baseCookieGenerator.appendImport(`Cookies`, `universal-cookie`);
             baseCookieGenerator.appendImport(`Config`, `../config`);
             baseCookieGenerator.appendField(`cookie`, ` new Cookies(null, { path: '/' })`);
             baseCookieGenerator.appendField('password', 'Config.password');
-            for (const cookie of cookies) {
+
+            for (const cookie of [...cookies, ...extra]) {
                 baseCookieGenerator.appendField(cookie.name, JSON.stringify({
                         key: cookie.name,
                         defaultValue: cookie.defaultValue
-                    })
+                    }), [], [cookie.description ?? '']
                 )
+
                 baseCookieGenerator.appendFunction(Util.camel(`set`, cookie.name), [`${cookie.name}`, `options`], [], [`options相關設定值參考https://www.npmjs.com/package/universal-cookie`],
                     `if(${cookie.name} === undefined) { this.${Util.camel(`remove`, cookie.name)}(); return }`,
                     cookie.isObject() ? `${cookie.name} = JSON.stringify(${cookie.name})` : ``,
@@ -9076,6 +9145,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             }else if (node.isTextFieldView()) {
                 const latest = () => node.hasInputRegEx() ? `self.getLatestValueByEvent(event).replace(${node.getInputRegEx()},'')` : 'self.getLatestValueByEvent(event)';
                 stmts.push(`const latestValue = ${node.isNumber() ? `self.handleNumber(event, ${node.getFieldName()})` : `${latest()}`}`);
+                if (node.useCache) stmts.push(`Cookie.${Util.camel(`set`, node.getNameOfHierarchicalOfCookieUsage())}(latestValue)`)
                 paramStmt = `latestValue`;
                 if (node.isBelong2AutoComplete())
                     stmts.push(`self.exeAsyncT(${node.getPreciseAttributeParentName()}.${node.getPreciseViewParent().getFunctionNameOfAutoCompleteInvalidate()}(latestValue))`)
@@ -9414,6 +9484,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             }
 
             if (node.isTextFieldView()) {
+
                 if (!node.hasLabel() && node.hasDescription()) {
                     node.label = node.description;
                 }
