@@ -5,7 +5,8 @@ module.exports = {
                 node: "20"  // 對應你 package.json 的 node 版本
             }
         }],
-        "@babel/preset-react"
+        "@babel/preset-react",
+        "@babel/preset-typescript"
     ],
     plugins: [
         ["@babel/plugin-proposal-decorators", { "legacy": true }],

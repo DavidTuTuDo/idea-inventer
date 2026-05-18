@@ -28,10 +28,14 @@
         "@babel/plugin-transform-runtime": "^7.28.5",
         "@babel/preset-env": "^7.28.5",
         "@babel/preset-react": "^7.28.5",
+        "@babel/preset-typescript": "^7.28.5",
         "@babel/register": "^7.25.9",
         "@babel/traverse": "^7.27.0",
+        "@types/lodash": "^4.17.24",
+        "@types/node": "^25.9.0",
         "baseline-browser-mapping": "^2.8.30",
         "configerer": "^1.0.25",
-        "glob": "^11.0.1"
+        "glob": "^11.0.1",
+        "typescript": "^6.0.3"
     }
 }
