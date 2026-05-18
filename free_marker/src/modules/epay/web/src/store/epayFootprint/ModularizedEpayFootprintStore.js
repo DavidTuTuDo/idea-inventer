@@ -62,7 +62,8 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     }
 
     conditionsOfBuyerDefault(state) {
-        const conditionOfDefault = { type: "where", params: ["idOfUser", "==", UserInfoRef.getUid()] };
+        /** admin 可以看到所有訂單 */
+        const conditionOfDefault = UserInfoRef.isAdmin() ? {} : { type: "where", params: ["idOfUser", "==", UserInfoRef.getUid()] };
         const conditions = [];
         switch (state) {
             case "pending":
@@ -128,8 +129,11 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     }
 
     conditionsOfSellerDefault(type) {
+
+
         const conditionOfDefault = { type: "where", params: ["idOfAuthor", "==", UserInfoRef.getUid()] };
         const conditions = [];
+
         switch (type) {
             case "unpaid":
                 conditions.push({ type: "where", params: ["stateOfPayment", "in", [Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting]] });
