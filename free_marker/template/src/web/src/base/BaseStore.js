@@ -54,8 +54,6 @@ class BaseStore extends ClientRemoteApi {
 
     hasNextPageBehavior = true;
 
-    selectorParams = this.getDefaultSelectorParam();
-
     // ==========================================
     // [新增] Loading Timeout 相關設定
     // ==========================================
@@ -335,10 +333,6 @@ class BaseStore extends ClientRemoteApi {
         return obj;
     }
 
-    getSelectorParam() {
-        return this.selectorParams;
-    }
-
     /**
      * 當viewDidMount時 可使用三個時態的切入介面
      * onInitialFetchBeginning()
@@ -376,24 +370,11 @@ class BaseStore extends ClientRemoteApi {
         return this.initialFetchCompleted;
     }
 
-    getDefaultSelectorParam() {
-        return {
-            type: "file",
-            accept: "file",
-            multiple: false
-        };
-    }
-
     getDefaultImageDialogParam() {
         return {
             pager: false,
             href: "url"
         };
-    }
-
-    setSelectorParam(params) {
-        const mixer = Util.merO(this.getDefaultSelectorParam(), params);
-        this.selectorParams = mixer;
     }
 
     clean() {

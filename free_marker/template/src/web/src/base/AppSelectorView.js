@@ -17,7 +17,7 @@ class AppSelectorStore {
     params = {
         type: "file",
         accept: "file",
-        multiple: false,
+        multiple: false
     };
 
     /** 檔案選取後的 callback，由 BaseComponent 在 mount 時註冊 */
@@ -59,7 +59,7 @@ class AppSelectorStore {
         return {
             type: "file",
             accept: "file",
-            multiple: false,
+            multiple: false
         };
     }
 }
@@ -86,7 +86,7 @@ const AppSelectorView = observer(() => {
                     name: file.name,
                     index: index,
                     blob: file,
-                    url: URL.createObjectURL(file),
+                    url: URL.createObjectURL(file)
                 });
             }
         }
@@ -98,16 +98,7 @@ const AppSelectorView = observer(() => {
         event.target.value = "";
     };
 
-    return (
-        <input
-            multiple={params.multiple}
-            type={params.type}
-            accept={params.accept}
-            ref={inputRef}
-            style={{ display: "none" }}
-            onChange={onFilesSelectedEventReceived}
-        />
-    );
+    return <input multiple={params.multiple} type={params.type} accept={params.accept} ref={inputRef} style={{ display: "none" }} onChange={onFilesSelectedEventReceived} />;
 });
 
 export default AppSelectorView;

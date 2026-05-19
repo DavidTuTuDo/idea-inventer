@@ -1,0 +1,14 @@
+
+
+/** irene 需要的字串 */
+pageTitleOf = "多種情境下會使用到的模組";
+
+/** ireneQrcode 需要的字串 */
+pageTitleOfIreneQrcode = "";
+ireneQrcodeColor = "掃碼單位的企業顏色，用來當背景";
+ireneQrcodeTip = "（點擊開啟應用程式）";
+ireneQrcodeRemitBank = "103（新光銀行）";
+ireneQrcodeLabelOfRemitBank = "代碼：";
+ireneQrcodeRemitSerial = "0833-50206-5505";
+ireneQrcodeLabelOfRemitSerial = "帳號：";
+ireneQrcodeLabelOfContent = "支付費用：";

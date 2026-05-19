@@ -1,0 +1,104 @@
+
+
+/** epay 需要的字串 */
+pageTitleOfEpay = "";
+epayPreciseOrderTypeOfCurrency = "TWD";
+epayPreciseOrderTitleOfOrder = "明悅科技-線上支付";
+epayPreciseOrderIdOfUser = "UserOfNotLogin";
+epayPreciseOrderName = "欄位上買家填入的欄位";
+epayPreciseOrderProcedureOfPayment = "unknown";
+
+/** epayBehaviorOfConfirmLinePay 需要的字串 */
+pageTitleOfEpayBehaviorOfConfirmLinePay = "LINEPAY支付(處理中)";
+epayBehaviorOfConfirmLinePayMessageOfFreeze = "交易執行中，請勿關閉當前頁面。";
+
+/** epayMethodOfPayment 需要的字串 */
+pageTitleOfEpayMethodOfPayment = "";
+epayMethodOfPaymentTitle = "選擇支付方式";
+epayMethodOfPaymentOptionName = "悅Pay";
+epayMethodOfPaymentOptionId = "contents";
+
+/** epayFootprint 需要的字串 */
+pageTitleOfEpayFootprint = "訂單明細一覽";
+epayFootprintOrderStringOfOrderIdentity = "HIWQEHDHJFDIIEE";
+epayFootprintOrderLabelOfStringOfOrderIdentity = "編號：";
+epayFootprintOrderStateOfOrder = "已完成";
+epayFootprintOrderBriefNameOfProduct = "最厲害的商品";
+epayFootprintOrderBriefSpecificOfProduct = "規格:藍色-XL";
+epayFootprintOrderBriefQuantity = "x1";
+epayFootprintOrderBriefPrice = "$100";
+epayFootprintOrderValueOfTotalPrice = "$100";
+epayFootprintOrderLabelOfValueOfTotalPrice = "訂單金額：";
+epayFootprintOrderLabelOfPaymentType = "選擇付費方式：";
+epayFootprintOrderLabelOfRemark = "買家備註：";
+epayFootprintOrderLabelOfName = "收件姓名：";
+epayFootprintOrderLabelOfPhoneNumber = "聯絡手機：";
+epayFootprintOrderRule = "銀行轉帳";
+epayFootprintOrderLabelOfRule = "付費方式：";
+epayFootprintOrderLabelOfAddress = "收件地址：";
+epayFootprintOrderLabelOfTransportBy = "寄送物流：";
+epayFootprintOrderLabelOfPickUpCvs = "取貨店號：";
+epayFootprintOrderLabelOfSerialOfTransport = "物流編號：";
+epayFootprintOrderDeadline = "2029/07/05 12:33";
+epayFootprintOrderLabelOfDeadline = "截止時間：";
+epayFootprintOrderDomain = "國泰世華(013)";
+epayFootprintOrderLabelOfDomain = "單位分行：";
+epayFootprintOrderCode = "AS231IJDOIA123SJDOIA";
+epayFootprintOrderLabelOfCode = "單位代碼：";
+epayFootprintOrderCheckout = "立即付款";
+epayFootprintOrderReason = "你放到過期了啦!";
+epayFootprintOrderLabelOfReason = "失效原因：";
+epayFootprintOrderLabelOfRemarkOfAuthor = "賣家備註：";
+epayFootprintOrderItemsOfOptionOfPendingLabel0 = "編輯備註內容";
+epayFootprintOrderItemsOfOptionOfPendingIcon0 = "ChangeCircle";
+epayFootprintOrderItemsOfOptionOfPendingNoticeTitle0 = "確認是否更改";
+epayFootprintOrderItemsOfOptionOfPendingNoticeContent0 = "交易完成後，就無法再更改備註內容。";
+epayFootprintOrderItemsOfOptionOfPendingLabel1 = "刪除訂單";
+epayFootprintOrderItemsOfOptionOfPendingIcon1 = "CancelScheduleSend";
+epayFootprintOrderItemsOfOptionOfPendingNoticeTitle1 = "執行刪除";
+epayFootprintOrderItemsOfOptionOfPendingNoticeContent1 = "是否確任刪除訂單？";
+epayFootprintOrderItemsOfOptionOfUnpaidLabel0 = "買家已付款";
+epayFootprintOrderItemsOfOptionOfUnpaidIcon0 = "PaidOutlined";
+epayFootprintOrderItemsOfOptionOfUnpaidNoticeTitle0 = "確認客戶已匯款";
+epayFootprintOrderItemsOfOptionOfUnpaidNoticeContent0 = "請確認此筆訂單的金額已交予（轉帳）您，完成付款的訂單無法再更改。";
+epayFootprintOrderItemsOfOptionOfUnpaidLabel1 = "取消訂單";
+epayFootprintOrderItemsOfOptionOfUnpaidIcon1 = "CancelOutlined";
+epayFootprintOrderItemsOfOptionOfUnpaidNoticeTitle1 = "取消此筆訂單";
+epayFootprintOrderItemsOfOptionOfUnpaidNoticeContent1 = "請確認將此筆訂單取消，取消後訂單將無法回復。";
+epayFootprintOrderItemsOfOptionOfTransportLabel0 = "商品已出貨";
+epayFootprintOrderItemsOfOptionOfTransportIcon0 = "RocketLaunchOutlined";
+epayFootprintOrderLabelOfRemarkSticky = "買家可以填寫的備註事項/聯絡方式";
+epayFootprintOrderLabelOfRemarkOfAuthorSticky = "備註事項(課程/出貨)";
+epayFootprintTabLabel0 = "全部";
+epayFootprintTabType0 = "all";
+epayFootprintTabDescription0 = "(買家)所有idOfUser=self的表單";
+epayFootprintTabLabel1 = "待付款";
+epayFootprintTabType1 = "pending";
+epayFootprintTabDescription1 = "(買家)所有idOfUser=self && stateOfPayment=pending";
+epayFootprintTabLabel2 = "已完成";
+epayFootprintTabType2 = "completed";
+epayFootprintTabDescription2 = "(買家)所有idOfUser=self && stateOfPayment=completed";
+epayFootprintTabLabel3 = "已失效";
+epayFootprintTabType3 = "failure";
+epayFootprintTabDescription3 = "(買家)所有idOfUser=self && stateOfPayment=failure";
+epayFootprintTabLabel4 = "待出貨";
+epayFootprintTabType4 = "processing";
+epayFootprintTabLabel5 = "一覽表";
+epayFootprintTabType5 = "status";
+epayFootprintTabDescription5 = "(賣家)所有idOfAuthor的表單";
+epayFootprintTabLabel6 = "未付款";
+epayFootprintTabType6 = "unpaid";
+epayFootprintTabDescription6 = "(賣家)沒有完成付款的訂單(idOfAuthor=self && stateOfPayment=pending)  備註：賣家可用...設為已付款 及 取消單號";
+epayFootprintTabLabel7 = "未出貨";
+epayFootprintTabType7 = "unshipped";
+epayFootprintTabDescription7 = "(賣家)訂單內包含商品類 且 已完成付款(idOfAuthor=self && stateOfPayment=completed && stateOfTransport=pending)，未出貨：未付款就不會出現在未出貨";
+epayFootprintTabLabel8 = "已成立";
+epayFootprintTabType8 = "succeed";
+epayFootprintTabDescription8 = "(賣家)課程類已完成付款 | 包含商品的訂單已完成出貨(idOfAuthor=self && stateOfPayment=completed && stateOfTransport=completed || needless) 已完成就不能取消，還沒做退款功能";
+epayFootprintTabLabel9 = "已作廢";
+epayFootprintTabType9 = "cancelled";
+epayFootprintTabDescription9 = "(賣家)課程類已完成付款 | 包含商品的訂單已完成出貨(idOfAuthor=self && stateOfPayment=failure)";
+dialogContentOfEpayFootprintTransNotify = "";
+dialogTitleOfEpayFootprintTransNotify = "貨品寄出後，請輸入物流編號，方便後續追蹤";
+dialogInputValueOfEpayFootprintTransNotify = "";
+dialogInputLabelOfEpayFootprintTransNotify = "包裹或收據上的物流編號";

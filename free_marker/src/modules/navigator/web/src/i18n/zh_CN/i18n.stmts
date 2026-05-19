@@ -1,0 +1,8 @@
+
+
+/** navigator 需要的字串 */
+pageTitleOfNavigator = "";
+navigatorTitle = "明悅科技";
+navigatorKeywordId = "contents";
+navigatorCustomSample = "範例";
+navigatorCustomExample = "超級範例";

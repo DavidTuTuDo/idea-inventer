@@ -1,0 +1,5 @@
+
+
+/** demeter 需要的字串 */
+pageTitleOfDemeter = "";
+demeterCourseColor = "default";

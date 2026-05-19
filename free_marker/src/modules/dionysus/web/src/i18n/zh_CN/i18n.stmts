@@ -1,0 +1,12 @@
+
+
+/** dionysus 需要的字串 */
+pageTitleOfDionysus = "精選商品列表";
+dionysusBoozeRangeOfPrice = "$0";
+dionysusBoozeDollars = "＄";
+dionysusSelectBoundId = "contents";
+dionysusBatchMv2Head = "置頂";
+dionysusBatchDown = "下架";
+dialogContentOfDionysusBatchDown = "是否確認將勾選的商品下架？";
+dialogTitleOfDionysusBatchDown = "商品下架";
+dionysusBatchDismiss = "結束編輯";
