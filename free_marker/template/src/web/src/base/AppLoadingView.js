@@ -91,9 +91,12 @@ export const storeOfAppLoading = new AppLoadingStore();
  * 獨立的 Loading View
  * 使用 observer 確保只有這裡會因為 visible 改變而 re-render
  */
-const AppLoadingView = observer(({ componentX }) => {
+const AppLoadingView = observer(({ componentX } = {}) => {
     const { visible } = storeOfAppLoading;
-    if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
+    /** 提升到 CoreApp 後不再需要 componentX 判斷，此 View 永遠在 Route 外層 */
+    if (componentX && typeof componentX.isNotNavigatorNComponentNCprtView === "function") {
+        if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
+    }
     if (!visible) return null;
 
     return (

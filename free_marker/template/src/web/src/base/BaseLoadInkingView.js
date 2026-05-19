@@ -100,10 +100,13 @@ function CircularProgressWithLabel(props) {
 }
 
 // 改為 Function Component 並使用 observer
-const BaseLoadInkingView = observer(({ componentX }) => {
+const BaseLoadInkingView = observer(({ componentX } = {}) => {
     // 必須在 function 內解構屬性，MobX 才能監控到變化
     const { processedCount, totalCount, progressPercent, shouldShow } = storeOfloadInking;
-    if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
+    /** 提升到 CoreApp 後不再需要 componentX 判斷，此 View 永遠在 Route 外層 */
+    if (componentX && typeof componentX.isNotNavigatorNComponentNCprtView === "function") {
+        if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
+    }
     if (!shouldShow) return null;
 
     const titleText = processedCount === totalCount ? "檔案上傳中" : `檔案上傳中，已完成 ${processedCount}/${totalCount} 個`;

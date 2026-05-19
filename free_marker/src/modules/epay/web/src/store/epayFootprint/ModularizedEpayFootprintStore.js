@@ -129,8 +129,6 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     }
 
     conditionsOfSellerDefault(type) {
-
-
         const conditionOfDefault = { type: "where", params: ["idOfAuthor", "==", UserInfoRef.getUid()] };
         const conditions = [];
 

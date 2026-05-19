@@ -12,15 +12,14 @@ import Router from "../router";
 import { isMobile } from "react-device-detect";
 import ImageDialogView from "./ImageDialogView";
 import MuiComponent from "./MUIComponent";
+import { storeOfAppSelector } from "./AppSelectorView";
 import DialogX from "./DialogX";
 import AlertMenu from "./AlertMenu";
-import SnackBView, { storeOfSnackB } from "./BaseSnackView";
-import LoadInkingView, { storeOfloadInking } from "./BaseLoadInkingView";
-import ProcessingGuardView, { storeOfProcessingGuard } from "./BaseProcessingGuardView";
-import AppLoadingView, { storeOfAppLoading } from "./AppLoadingView";
-import SplashX from "./SplashX";
-import RulesSnack from "./RulesSnack";
-import AppMessageQueueView, { storeOfAppMessageQueue } from "./AppMessageQueueView";
+import { storeOfSnackB } from "./BaseSnackView";
+import { storeOfloadInking } from "./BaseLoadInkingView";
+import { storeOfProcessingGuard } from "./BaseProcessingGuardView";
+import { storeOfAppLoading } from "./AppLoadingView";
+import { storeOfAppMessageQueue } from "./AppMessageQueueView";
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -39,7 +38,6 @@ class BaseComponent extends MuiComponent {
         this.propsOfMobX = props;
         this.imgDialogRef = React.createRef();
         this.generalDialogRef = React.createRef();
-        this.fileChooserInputRef = React.createRef();
     }
 
     /** 瘋掉，不知道為什麼task.then()會讓函式執行到一半，然後異常死掉後(沒執行到最後一行)，導致loading bar跑不完，只好正規的做好以下任務
@@ -152,6 +150,9 @@ class BaseComponent extends MuiComponent {
             window.removeEventListener("scroll", this.onScrollToBottomListener, true);
         }
 
+        /** 清除檔案選取 callback */
+        storeOfAppSelector.unregisterCallback();
+
         this.getStore()?.onComponentUnmount();
 
         Util.appendInfo(`❌ ${this.getComponentName()} goto componentWillUnmount()`);
@@ -197,6 +198,10 @@ class BaseComponent extends MuiComponent {
             window.removeEventListener("scroll", this.onScrollToBottomListener, true);
             window.addEventListener("scroll", this.onScrollToBottomListener, true);
         }
+
+        /** 註冊檔案選取 callback 至全域 AppSelectorView */
+        storeOfAppSelector.registerCallback((files) => this.onFilesSelected(files));
+
         Util.appendInfo(`✅️  ${this.getComponentName()} goto componentDidMount()`);
         // Util.syncDelay(5000).then(() => {
         //     self.runMessageQueueTest()
@@ -478,25 +483,9 @@ class BaseComponent extends MuiComponent {
         console.log(`⚠️⚠️⚠️ 事發地：【${this.getComponentName()}】 注意！APP 全域 re-render()。`);
         return (
             <div className={"RootViewDiv"} style={{ ...this.style, paddingTop: (self.getStore().hasAppBar() ? 8 : 0) + self.getStore().getAppBarHeight() }}>
-                <SplashX componentX={self} />
-
-                <RulesSnack componentX={self} />
-
-                <AppMessageQueueView componentX={self} />
-
                 <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
                     {self.renderViewByStatus()}
                 </div>
-
-                <AppLoadingView componentX={self} />
-
-                {self.renderSelectorView()}
-
-                <SnackBView componentX={self} />
-
-                <LoadInkingView componentX={self} />
-
-                <ProcessingGuardView componentX={self} />
 
                 <DialogX ref={this.imgDialogRef} viewX={"ImageDialogView"} customView={ImageDialogView} needActionButtons={false} componentX={self} />
 
@@ -523,52 +512,13 @@ class BaseComponent extends MuiComponent {
 
     App = () => require("../").Application;
 
-    renderSelectorView = () => {
-        const self = this;
-        const params = this.getStore().getSelectorParam();
-        return (
-            <input
-                multiple={params.multiple}
-                type={params.type}
-                accept={params.accept}
-                ref={self.fileChooserInputRef}
-                style={{ display: "none" }}
-                onChange={this.onFilesSelectedEventReceived.bind(self)}
-            />
-        );
-    };
-
-    onFilesSelectedEventReceived = (event) => {
-        const self = this;
-        event.stopPropagation();
-        event.preventDefault();
-        const files = event.target.files;
-        const array = [];
-        for (const index in files) {
-            const file = files[index];
-            if (file instanceof File)
-                /** 因為files 是 fileList 物件, 是一個object object object,可能遇到不是file的值*/
-                array.push({
-                    name: file.name,
-                    index: index,
-                    blob: file,
-                    url: URL.createObjectURL(file)
-                });
-        }
-        if (_.size(array) > 0) this.onFilesSelected(array);
-
-        /** 將事件內選到檔案清空，不然選到同一個檔案將無法觸發onChange */
-        event.target.value = "";
-    };
-
     /** 給子類別繼承用的 */
     onFilesSelected(files) {
         Util.appendError(`onFileSelected() is not implemented()`);
     }
 
     enableFileSelectView = (accept = "*.*", multiple = false, type = "file") => {
-        this.getStore().setSelectorParam({ accept, multiple, type });
-        Util.syncDelay("10").then(() => this.fileChooserInputRef.current.click());
+        storeOfAppSelector.setParamsAndOpen({ accept, multiple, type });
     };
 
     /** file chooser選擇完會呼叫 onFilesSelected */

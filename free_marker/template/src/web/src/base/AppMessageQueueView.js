@@ -149,11 +149,13 @@ const getMuiBoxShadow = (type) => {
  *    並在子元件 (message item) 單獨開啟 `pointerEvents: "auto"` 以恢復點擊。
  * 3. 樣式參數已高度對齊 Material-UI (MUI) 的標準 (包含字體、間距、圓角與動畫)。
  */
-const AppMessageQueueView = observer(({ componentX }) => {
+const AppMessageQueueView = observer(({ componentX } = {}) => {
     const { messages, removeMessage } = storeOfAppMessageQueue;
 
-    // 與 BaseComponent 的防禦邏輯一致：若不在允許的渲染範圍，則不顯示
-    if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
+    /** 提升到 CoreApp 後不再需要 componentX 判斷，此 View 永遠在 Route 外層 */
+    if (componentX && typeof componentX.isNotNavigatorNComponentNCprtView === "function") {
+        if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
+    }
     if (messages.length === 0) return null;
 
     return (

@@ -82,10 +82,13 @@ class SnackStore {
 // 在檔案內部直接實例化，比照 LoadInkingStore
 export const storeOfSnackB = new SnackStore();
 
-const BaseSnackView = observer(({ componentX }) => {
+const BaseSnackView = observer(({ componentX } = {}) => {
     // 從單一實例化的 snackStore 讀取數據
     const { visible, duration, type, message, taskOfTouched, hasSnackBomb } = storeOfSnackB;
-    if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
+    /** 提升到 CoreApp 後不再需要 componentX 判斷，此 View 永遠在 Route 外層 */
+    if (componentX && typeof componentX.isNotNavigatorNComponentNCprtView === "function") {
+        if (!componentX.isNotNavigatorNComponentNCprtView()) return null;
+    }
 
     const handleClose = (event, reason) => {
         if (reason === "clickaway") return;
@@ -102,7 +105,12 @@ const BaseSnackView = observer(({ componentX }) => {
                     label={taskOfTouched.name}
                     onClick={() => {
                         if (Util.isCallable(taskOfTouched?.task)) {
-                            componentX.exeAsyncT(taskOfTouched.task());
+                            /** 優先使用 componentX.exeAsyncT（向下相容），若無則直接執行 */
+                            if (componentX && typeof componentX.exeAsyncT === "function") {
+                                componentX.exeAsyncT(taskOfTouched.task());
+                            } else {
+                                Promise.resolve(taskOfTouched.task()).catch((e) => console.error("[SnackBView] task error:", e));
+                            }
                         } else if (typeof taskOfTouched?.task === "function") {
                             taskOfTouched.task();
                         }

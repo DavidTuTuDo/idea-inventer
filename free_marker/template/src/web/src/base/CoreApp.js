@@ -7,6 +7,15 @@ import LiffHelper from "./LiffHelper";
 import FirebaseHelper from "./FirebaseHelper";
 import Store from "../store";
 import { utiller as Util } from "utiller";
+import React from "react";
+import SplashX from "./SplashX";
+import RulesSnack from "./RulesSnack";
+import AppMessageQueueView from "./AppMessageQueueView";
+import AppLoadingView from "./AppLoadingView";
+import SnackBView from "./BaseSnackView";
+import LoadInkingView from "./BaseLoadInkingView";
+import ProcessingGuardView from "./BaseProcessingGuardView";
+import AppSelectorView from "./AppSelectorView";
 
 /** Application的概念，如果有客製化的邏輯就寫在這裡，會用到source.js裡面的資源就必續進到 freemarker裡面執行。 */
 class CoreApp {
@@ -111,10 +120,34 @@ class CoreApp {
         }
     };
 
+    /**
+     * 組合 App Shell：將全域 Overlay 元件（SplashX, RulesSnack, Loading 等）
+     * 提升到 Route 樹之外，使其成為 Singleton，在整個 App 生命週期中只 mount 一次。
+     *
+     * 效能收益：
+     * 1. 路由切換時不再 unmount/remount Overlay（省去 ~7 個 observer reaction 的建立/銷毀）
+     * 2. Overlay 狀態變更（如 loading）不再觸發業務 Component 的 re-render
+     */
+    getAppShellView() {
+        return (
+            <React.Fragment>
+                <SplashX />
+                <RulesSnack />
+                {this.getRenderView()}
+                <AppMessageQueueView />
+                <AppLoadingView />
+                <SnackBView />
+                <LoadInkingView />
+                <ProcessingGuardView />
+                <AppSelectorView />
+            </React.Fragment>
+        );
+    }
+
     mount() {
         const container = document.getElementById("app");
         const root = createRoot(container); // createRoot(container!) if you use TypeScript
-        root.render(this.getRenderView());
+        root.render(this.getAppShellView());
         FirebaseHelper.startAuthListener();
         LiffHelper.activate().then();
         I18n.startApplicationReactions();
@@ -126,6 +159,10 @@ class CoreApp {
 
     getLatestComponent() {
         return this.latestComponent;
+    }
+
+    getRenderView() {
+        /** */
     }
 }
 

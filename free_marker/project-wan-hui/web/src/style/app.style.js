@@ -81,6 +81,14 @@ class AppStyle {
 
     NavigatorToolBarLoginIconButton = {};
 
+    NavigatorToolBarEditIconEditSharp = {};
+
+    NavigatorToolBarEditIconButton = {};
+
+    NavigatorToolBarSearchIconSearchRounded = {};
+
+    NavigatorToolBarSearchIconButton = {};
+
     NavigatorToolBarTipOfLoadingCircularProgress = {};
 
     NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
@@ -2359,6 +2367,18 @@ class AppStyle {
 
     /** => following for dionysus  component  */
 
+    DionysusBatchDismissChip = {};
+
+    DionysusBatchDownReactFragmentWrap = {};
+
+    DionysusBatchDownChip = {};
+
+    DionysusBatchMv2HeadChip = {};
+
+    DionysusBatchDivWrap = {};
+
+    DionysusBatchDiv = {};
+
     DionysusSelectBoundTabSkeleton = {};
 
     DionysusSelectBoundTabsList = {};
@@ -2388,6 +2408,8 @@ class AppStyle {
     DionysusBoozeNameTypography = {};
 
     DionysusBoozePhotoOfDemoImg = {};
+
+    DionysusBoozeCheckedCheckbox = {};
 
     DionysusBoozeDivSkeleton = {};
 
