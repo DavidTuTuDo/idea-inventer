@@ -11253,7 +11253,7 @@
         /** empty style */
     }
 }
-.DionysusPaymentBriefPaymentDiv:extend(.CenterInParentRow) {
+.DionysusPaymentBriefNoteDiv:extend(.CenterInParentRow) {
     width: 100%;
     padding: 14px 28px;
     justify-content: flex-start;
@@ -11289,7 +11289,7 @@
             opacity: 1;
             width: 8px;
         }
-        .DionysusPaymentBriefPaymentImgImg {
+        .DionysusPaymentBriefNoteImgImg {
             transform: scale(1.1) rotate(2deg);
         }
     }
@@ -11307,7 +11307,7 @@
         /** empty style */
     }
 }
-.DionysusPaymentBriefPaymentDivList:extend(.CenterInHorizontalColumn) {
+.DionysusPaymentBriefNoteDivList:extend(.CenterInHorizontalColumn) {
     width: 100%;
     max-width: 650px;
     gap: 24px;
@@ -11321,7 +11321,7 @@
         /** empty style */
     }
 }
-.DionysusPaymentBriefPaymentImgImg {
+.DionysusPaymentBriefNoteImgImg {
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -11336,7 +11336,7 @@
         /** empty style */
     }
 }
-.DionysusPaymentBriefPaymentImgDivWrap {
+.DionysusPaymentBriefNoteImgDivWrap {
     width: 60px;
     height: 50px;
     margin-right: 25px;
@@ -11361,7 +11361,7 @@
         /** empty style */
     }
 }
-.DionysusPaymentBriefPaymentTitleTypography:extend(.BeautyTitle) {
+.DionysusPaymentBriefNoteTitleTypography:extend(.BeautyTitle) {
     font-size: 1.3rem;
     color: #1f2937;
     font-weight: 700;
@@ -11376,7 +11376,7 @@
         /** empty style */
     }
 }
-.DionysusPaymentBriefPaymentTitleDivWrap {
+.DionysusPaymentBriefNoteTitleDivWrap {
     flex-grow: 1;
     @media @mobile {
         font-size: 1.1rem;
@@ -15943,6 +15943,141 @@
 }
 /** ======== following for homeless ========= */
 
+.DionysusPaymentBriefPaymentDiv:extend(.CenterInParentRow) {
+    width: 100%;
+    padding: 14px 28px;
+    justify-content: flex-start;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 6px;
+        height: 100%;
+        background: linear-gradient(180deg, #ef5350, #d32f2f);
+        opacity: 0.3;
+        transition:
+            opacity 0.3s ease,
+            width 0.3s ease;
+    }
+    &:hover {
+        transform: translateY(-4px) scale(1.01);
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        border-color: rgba(244, 67, 54, 0.2);
+        &::before {
+            opacity: 1;
+            width: 8px;
+        }
+        .DionysusPaymentBriefPaymentImgImg {
+            transform: scale(1.1) rotate(2deg);
+        }
+    }
+    &:active {
+        transform: scale(0.98);
+    }
+    @media @mobile {
+        padding: 12px 20px;
+        border-radius: 20px;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPaymentBriefPaymentDivList:extend(.CenterInHorizontalColumn) {
+    width: 100%;
+    max-width: 650px;
+    gap: 24px;
+    @media @mobile {
+        gap: 16px;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPaymentBriefPaymentImgImg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    @media @mobile {
+        font-size: 1.1rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPaymentBriefPaymentImgDivWrap {
+    width: 60px;
+    height: 50px;
+    margin-right: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    @media @mobile {
+        width: 48px;
+        height: 48px;
+        margin-right: 18px;
+        border-radius: 14px;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPaymentBriefPaymentTitleTypography:extend(.BeautyTitle) {
+    font-size: 1.3rem;
+    color: #1f2937;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    @media @mobile {
+        font-size: 1.1rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPaymentBriefPaymentTitleDivWrap {
+    flex-grow: 1;
+    @media @mobile {
+        font-size: 1.1rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
 .DionysusBacchusDetailAreaOfBenefitDiv:extend(.DionysusBacchusDetailAreaOfPayDiv) {
     @media @mobile {
         /** empty style */

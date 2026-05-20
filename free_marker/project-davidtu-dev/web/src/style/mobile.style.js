@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -811,17 +813,17 @@ class MobileStyle {
 
     /** => following for paymentBrief  component  */
 
-    DionysusPaymentBriefPaymentTitleDivWrap = {};
+    DionysusPaymentBriefNoteTitleDivWrap = {};
 
-    DionysusPaymentBriefPaymentTitleTypography = {};
+    DionysusPaymentBriefNoteTitleTypography = {};
 
-    DionysusPaymentBriefPaymentImgDivWrap = {};
+    DionysusPaymentBriefNoteImgDivWrap = {};
 
-    DionysusPaymentBriefPaymentImgImg = {};
+    DionysusPaymentBriefNoteImgImg = {};
 
-    DionysusPaymentBriefPaymentDivList = {};
+    DionysusPaymentBriefNoteDivList = {};
 
-    DionysusPaymentBriefPaymentDiv = {};
+    DionysusPaymentBriefNoteDiv = {};
 
     DionysusPaymentBriefDiv = {};
 
