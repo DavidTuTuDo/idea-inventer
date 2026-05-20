@@ -402,7 +402,7 @@ class ProjectFileHandler extends PathBase {
 
                 // 加入 RWD 裝置變數宣告 (@mobile, @tablet)
                 for (const model of LESS_MODULES) {
-                    generator.appendInClassHead(`@${model.name}: ~'${model.rule}';`);
+                    generator.appendInClassHead(`@${model.name}: ~"${model.rule}";`);
                 }
                 generator.needSignature(false);
                 generator.disableDefaultImports();

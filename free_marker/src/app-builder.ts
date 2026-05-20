@@ -787,7 +787,8 @@ class AppBuilder extends ComponentBuilder {
             if (firstMediaIndex !== -1) {
                 object['default'] = Util.toOneLineString(cleanRaw.slice(0, firstMediaIndex));
             } else {
-                object['default'] = Util.toOneLineString(cleanRaw);
+                /** 如果結果如果有'}'會Ｇ掉，必須是simple string */
+                object["default"] = Util.getNormalizedStringNotEndWith(Util.toOneLineString(cleanRaw), "}");
                 return object;
             }
 
@@ -1060,7 +1061,7 @@ class AppBuilder extends ComponentBuilder {
     getAnnouncementsOfLessDevice() {
         const announcements = [];
         for (const model of LESS_MODULES) {
-            announcements.push(`@${model.name}: ~'${model.rule}';`);
+            announcements.push(`@${model.name}: ~"${model.rule}";`);
         }
         return announcements;
     }
