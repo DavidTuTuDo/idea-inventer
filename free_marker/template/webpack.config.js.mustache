@@ -167,12 +167,8 @@ const config = {
       contextRegExp: /winston|nodeutiller/,
     }),
     new webpack.DefinePlugin({
-      process: {
-        env: {
-          is_node: false,
-          self_debug: !isProd,
-        },
-      },
+       "process.env.is_node": JSON.stringify(false),
+       "process.env.self_debug": JSON.stringify(!isProd),
     }),
     new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
        resource.request = resource.request.replace(/^node:/, "");
@@ -272,6 +268,14 @@ if (isProd) {
         minRatio: 0.8,
     })
   );
+
+  config.plugins.push(
+    new BundleAnalyzerPlugin({
+    analyzerMode: "static", // 產出靜態 HTML 報告
+    reportFilename: "production-report.html",
+    openAnalyzer: false,
+  })
+);
 } else {
   config.mode = "development";
   config.devtool = enableSourceMap ? "inline-source-map" : false;
@@ -305,11 +309,10 @@ if (isProd) {
   if (enableOfBundleSize) {
     config.plugins.push(
       new BundleAnalyzerPlugin({
-        analyzerMode: "server",
-        analyzerPort: 8866,
-        openAnalyzer: true,
-        reportFilename: "report.html",
-      })
+        analyzerMode: "static", // 產出靜態 HTML 報告
+        reportFilename: "production-report.html",
+        openAnalyzer: false
+    })
     );
   }
 }
