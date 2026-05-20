@@ -1865,6 +1865,7 @@
         max-width: 880px;
     }
 }
+
 .DionysusBoozeDiv {
     position: relative;
     width: 48%;
@@ -1878,9 +1879,11 @@
         /** empty style */
     }
     @media @desktop {
+        /* 電腦版維持你要的 200px */
         width: 200px;
     }
 }
+
 .DionysusBoozeDivList:extend(.CenterInParentRow) {
     margin-top: 5px;
     flex-wrap: wrap;
@@ -1894,7 +1897,9 @@
         min-height: 66vh;
     }
     @media @desktop {
-        /** empty style */
+        display: grid;
+        grid-template-columns: repeat(auto-fit, 200px);
+        justify-content: center;
     }
 }
 .DionysusBoozeDivSkeleton {
@@ -2605,8 +2610,12 @@
         /** empty style */
     }
     @media @desktop {
-        flex-direction: row;
-        flex-wrap: wrap;
+        /* 將原先的 flex 改為 grid */
+        display: grid;
+        /* 設定每欄固定寬度 435px，並根據父容器寬度自動換行 (auto-fit) */
+        grid-template-columns: repeat(auto-fit, 435px);
+        /* 讓整個網格區塊在父容器內水平置中 */
+        justify-content: center;
     }
 }
 .DionysusBacchusDetailContentPhotoHrefImg:extend(.SquareRatioImg) {

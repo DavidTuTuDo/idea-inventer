@@ -57,7 +57,9 @@
         min-height: 66vh;
     }
     @media @desktop {
-        /** empty style */
+        display: grid;
+        grid-template-columns: repeat(auto-fit, 200px);
+        justify-content: center;
     }
 }
 .DionysusBoozeDivSkeleton {
@@ -764,8 +766,9 @@
         /** empty style */
     }
     @media @desktop {
-        flex-direction: row;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, 435px);
+        justify-content: center;
     }
 }
 .DionysusBacchusDetailContentPhotoHrefImg:extend(.SquareRatioImg) {
