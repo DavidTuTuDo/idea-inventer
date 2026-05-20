@@ -5,6 +5,7 @@ import _ from "lodash";
 import UserInfo from "../../base/BaseUserInfo";
 import BaseDionysusBacchusStore from "./BaseDionysusBacchusStore";
 import ApiOfBooze from "../dionysusBooze";
+import Api4ErosCupid from "../dionysusErosCupidPublic";
 
 class ModularizedDionysusBacchusStore extends BaseDionysusBacchusStore {
     constructor(props) {
@@ -13,8 +14,14 @@ class ModularizedDionysusBacchusStore extends BaseDionysusBacchusStore {
     }
 
     async fetch(view = this.getComponent()) {
+        const self = this;
         const result = await super.fetch(view);
         const booze = await this.apiOfBooze.fetchBoozeItem(view, view.getUidOfBacchusDetail());
+        this.getComponent().exeAsyncT(new Api4ErosCupid().fetchCupidPublic(view, booze.idOfAuthor), {
+            thenDo: async (obj) => {
+                self.setErosPublic(obj);
+            }
+        });
         return { ...result, booze };
     }
 

@@ -809,6 +809,22 @@ class CommonStyle {
 
     EpayDiv = {};
 
+    /** => following for paymentBrief  component  */
+
+    DionysusPaymentBriefPaymentTitleDivWrap = {};
+
+    DionysusPaymentBriefPaymentTitleTypography = {};
+
+    DionysusPaymentBriefPaymentImgDivWrap = {};
+
+    DionysusPaymentBriefPaymentImgImg = {};
+
+    DionysusPaymentBriefPaymentDivList = {};
+
+    DionysusPaymentBriefPaymentDiv = {};
+
+    DionysusPaymentBriefDiv = {};
+
     /** => following for variantPhotoSetter  component  */
 
     DionysusVariantPhotoSetterVariantPreviewChip = {};
@@ -2309,6 +2325,10 @@ class CommonStyle {
 
     /** => following for bacchus  component  */
 
+    DionysusBacchusPretendReactFragmentWrap = {};
+
+    DionysusBacchusPretendDiv = {};
+
     DionysusBacchusFuncEditChip = {};
 
     DionysusBacchusFuncBoughtReactFragmentWrap = {};
@@ -2342,16 +2362,6 @@ class CommonStyle {
     DionysusBacchusDetailContentBanDiv = {};
 
     DionysusBacchusDetailContentDiv = {};
-
-    DionysusBacchusDetailAreaOfBenefitArrowOfBenefitIconNavigateNext = {};
-
-    DionysusBacchusDetailAreaOfBenefitArrowOfBenefitIconButton = {};
-
-    DionysusBacchusDetailAreaOfBenefitOptionOfBenefitContentTypography = {};
-
-    DionysusBacchusDetailAreaOfBenefitOptionOfBenefitTitleTypography = {};
-
-    DionysusBacchusDetailAreaOfBenefitDiv = {};
 
     DionysusBacchusDetailAreaOfShippingArrowOfShippingIconNavigateNext = {};
 

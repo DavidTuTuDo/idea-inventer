@@ -35,6 +35,7 @@ import {
 import PathBase from "./path-base";
 import StoreBuilder from "./store-builder";
 import ComponentBuilder from "./component-builder";
+import RemoteFunctionHandler from "./remote-function-handler";
 import AppBuilder from "./app-builder";
 import ClassGenerator from "./class-generator";
 import CodegenNode from "./codegen-node";
@@ -42,6 +43,8 @@ import Lean from "./lean";
 import beauty from "./beauty";
 
 class ProjectFileHandler extends PathBase {
+    private deployRemoteRules: boolean;
+    private needDeployCloudFunctions: boolean;
 
     constructor(props) {
         super(props);

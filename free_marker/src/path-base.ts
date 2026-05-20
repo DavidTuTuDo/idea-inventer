@@ -15,7 +15,6 @@
 
 import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
-import fs from "fs";
 import libpath from "path";
 import mustache from "mustache";
 import { configerer } from "configerer";
@@ -52,7 +51,8 @@ class PathBase {
     genComponentRootPath; // gen/app/src/component
     genStoreRootPath; // gen/app/src/store
     props;
-    nodesUseCache;
+    pathOfSourceJS;
+    freeMarkerSourcePath;
 
     getProps = () => {
         return {

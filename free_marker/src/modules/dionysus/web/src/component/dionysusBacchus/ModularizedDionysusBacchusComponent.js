@@ -42,6 +42,51 @@ class ModularizedDionysusBacchusComponent extends BaseDionysusBacchusComponent {
         if (booze) Router.gotoGaiaPage(this, booze.id, booze);
         else this.showWarningSnackMessage(`發生錯誤，請稍後再試`);
     }
+
+    onDionysusBacchusAreaOfPayDivClicked(param) {
+        const self = this;
+        const eros = this.getStore().getErosPublic();
+        const ec = true; //eros.hasECPay; /** 綠界付款 */
+        const line = true; // eros.hasLinePay; /** LinePay付款 */
+        const directPay = true; // eros.hasDirectPay; /** 掃碼付款 */
+        const payments = [];
+        if (ec) {
+            payments.push({
+                img: "https://www.ecpay.com.tw/Content/themes/WebStyle20131201/images/service/ecpay_fb.png", // 使用綠界的 logo 圖片範例
+                title: "綠界金流 (信用卡/ATM/超商)"
+            });
+        }
+        if (line) {
+            payments.push({
+                img: "https://play-lh.googleusercontent.com/WNcisToVJ5ANAxuxgzDIZQQUK_8YEQLD68onD1NtiPQiCso82iLSnME8KiBex7jUTdA", // LinePay 官方圖檔網址
+                title: "LINE Pay"
+            });
+        }
+        if (directPay) {
+            payments.push({
+                img: "https://cdn-icons-png.flaticon.com/512/3233/3233814.png", // 代表掃碼或銀行轉帳的通用圖片
+                title: "掃碼 / 銀行轉帳付款"
+            });
+        }
+        console.log(payments);
+
+        this.getPretendDivAlertDialogRef().open();
+
+        /** 太早設定會被clean */
+        Util.syncDelay(1).then(() => {
+            self.App()
+                .getDionysusPaymentBriefStore()
+                .setPayments(...payments);
+        });
+    }
+
+    getInjectStyleOfDionysusBacchusAreaOfPayDiv(dionysusBacchus) {
+        return Util.getVisibleOrNone(!Util.isUndefinedNullEmpty(dionysusBacchus.getErosPublic()));
+    }
+
+    getInjectStyleOfDionysusBacchusAreaOfShippingDiv(dionysusBacchus) {
+        return Util.getVisibleOrNone(!Util.isUndefinedNullEmpty(dionysusBacchus.getErosPublic()));
+    }
 }
 
 export default ModularizedDionysusBacchusComponent;
