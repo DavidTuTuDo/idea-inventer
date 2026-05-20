@@ -29,12 +29,12 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     onEpayFootprintTabTabClicked(param) {
         const tab = param.object;
-        if (!_.isEqual(tab.getType(), this.paramOfTypeOfTab)) Router.gotoEpayFootprintPage(this, this.paramOfAuthor, tab.getType());
+        if (!Util.isEqual(tab.getType(), this.paramOfTypeOfTab)) Router.gotoEpayFootprintPage(this, this.paramOfAuthor, tab.getType());
     }
 
     /** 匿名購物者，使用同樣的UI，所以來這蹭 */
     isAnonymousXUsage = () => {
-        return _.isEqual(this.paramOfTypeOfTab, "anonymousX");
+        return Util.isEqual(this.paramOfTypeOfTab, "anonymousX");
     };
 
     componentDidMount() {
@@ -66,16 +66,16 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     /** 沒有選擇付費方式的order(下完訂單就把頁面關掉)*/
     isUnknownOrder(order) {
-        return _.isEqual(order.getTypeOfPayment(), "unknown");
+        return Util.isEqual(order.getTypeOfPayment(), "unknown");
     }
 
     /** 還沒付費的linepay order(走到Line-Pay,把付費頁面關掉) */
     isWaitingToLinePay(order) {
-        return _.isEqual(order.getTypeOfPayment(), "linepay") && _.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Waiting);
+        return Util.isEqual(order.getTypeOfPayment(), "linepay") && Util.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Waiting);
     }
 
     isWaitingPendingState(order) {
-        return _.isEqual(order.getStateOfPayment(), "pending") || _.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Waiting);
+        return Util.isEqual(order.getStateOfPayment(), "pending") || Util.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Waiting);
     }
 
     /** 賣家取消訂單 */
@@ -86,13 +86,13 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     getInjectStyleOfEpayFootprintOrderAreaOfSerialDiv(order) {
         const conditionA = Util.isOrEquals(order.getTypeOfTransport(), Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711);
-        const conditionB = _.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Completed);
+        const conditionB = Util.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Completed);
         return Util.getVisibleOrNone(conditionA && conditionB);
     }
 
     getInjectStyleOfEpayFootprintOrderAreaOfCvsDiv(order) {
         const conditionA = Util.isOrEquals(order.getTypeOfTransport(), Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711);
-        const conditionB = !_.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Failure);
+        const conditionB = !Util.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Failure);
         return Util.getVisibleOrNone(conditionA && conditionB);
     }
 
@@ -203,12 +203,12 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     getInjectStyleOfEpayFootprintOrderAreaOfChoosePaymentTypeDiv(order) {
         const condition1 = Util.isOrEquals(order.getStateOfPayment(), Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting);
         const condition2 = !Util.isOrEquals(order.getProcessOfPayment(), "atm", "cvs");
-        const condition3 = !_.isEqual(this.paramOfAuthor, "author");
+        const condition3 = !Util.isEqual(this.paramOfAuthor, "author");
         return Util.getVisibleOrNone(condition1 && condition2 && condition3, true);
     }
 
     getInjectStyleOfEpayFootprintOrderAreaOfPaymentFailureDiv(order) {
-        return Util.getVisibleOrNone(_.isEqual(Config.StateOfPayment.Failure, order.getStateOfPayment()), true);
+        return Util.getVisibleOrNone(Util.isEqual(Config.StateOfPayment.Failure, order.getStateOfPayment()), true);
     }
 
     onEpayFootprintOrderCheckoutButtonClicked(param) {

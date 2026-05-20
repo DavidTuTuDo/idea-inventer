@@ -22,7 +22,7 @@ class EstablishDesktopFinanceStore extends BaseEstablishDesktopFinanceStore {
 
     /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉 */
     getNumberOfSelectedRequest() {
-        return _.toNumber(this.getSelectedRequest());
+        return Util.toNumber(this.getSelectedRequest());
     }
 
     @computed

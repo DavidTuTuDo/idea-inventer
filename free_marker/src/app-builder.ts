@@ -52,7 +52,7 @@ class AppBuilder extends ComponentBuilder {
      */
     async buildCustomizeFiles(packages) {
         for (const _package of packages) {
-            if (!_.isEqual(_package.index, true)) continue;
+            if (!Util.isEqual(_package.index, true)) continue;
             const packageName = _package.getName();
             const generator = new ClassGenerator(Util.joinRespectingDot(this.genRootPath, _package.root, _package.getName(), 'index.js'), this.nodeOfAncestor);
             generator.appendClass(_.upperFirst(packageName));
@@ -77,27 +77,27 @@ class AppBuilder extends ComponentBuilder {
 
         /** 把type=array的 defaultValue，再透過遞迴抓出來定義出新的i18n變數名稱 */
         function recursiveOfDoingSomethingMinor(arrayOfDefaultValue, child, sign = '') {
-            if (!_.isArray(arrayOfDefaultValue)) {
+            if (!Array.isArray(arrayOfDefaultValue)) {
                 return;
             }
 
             for (const obj of arrayOfDefaultValue) {
                 for (const keyOfMajor in obj) {
                     const valueOfMajor = obj[keyOfMajor];
-                    if (_.isArray(valueOfMajor)) {
+                    if (Array.isArray(valueOfMajor)) {
                         const latest = Util.camel(sign, keyOfMajor, `${_.indexOf(arrayOfDefaultValue, obj)}`);
                         recursiveOfDoingSomethingMinor(valueOfMajor, child, latest)
                     }
 
-                    if (_.isObject(valueOfMajor)) {
+                    if (Util.isObject(valueOfMajor)) {
                         for (const keyOfMinor in valueOfMajor) {
                             const valueOfMinor = valueOfMajor[keyOfMinor];
-                            if (_.isArray(valueOfMinor)) {
+                            if (Array.isArray(valueOfMinor)) {
                                 const latest = Util.camel(sign, keyOfMinor);
                                 recursiveOfDoingSomethingMinor(valueOfMinor, child, latest);
                             }
 
-                            if (_.isString(valueOfMinor)) {
+                            if (Util.isString(valueOfMinor)) {
                                 appendMapOfKeyValue(Util.camel(
                                         child.getPreciseAttributeGenealogyName(),
                                         keyOfMajor, keyOfMinor, `${_.indexOf(arrayOfDefaultValue, obj)}`),
@@ -106,7 +106,7 @@ class AppBuilder extends ComponentBuilder {
                         }
                     }
 
-                    if (_.isString(valueOfMajor) && !_.isEqual(keyOfMajor, 'value')) {
+                    if (Util.isString(valueOfMajor) && !Util.isEqual(keyOfMajor, 'value')) {
                         appendMapOfKeyValue(Util.camel(
                             child.getPreciseAttributeGenealogyName(),
                             sign,
@@ -140,7 +140,7 @@ class AppBuilder extends ComponentBuilder {
         function recursiveOfDoingSomethingMajor(child) {
 
             function handleHelperVisual(object, position = 'start') {
-                if (object && _.isEqual(object.type, 'text'))
+                if (object && Util.isEqual(object.type, 'text'))
                     appendMapOfKeyValue(child.getFieldNameOfVisualHelper(object, position), object.content);
             }
 
@@ -233,7 +233,7 @@ class AppBuilder extends ComponentBuilder {
             base.appendClass(classNameOfBase, {name: 'BaseI18n', from: `../../base/BaseI18n`});
             const modularized = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `i18n`, lang, `${classNameOfModularized}.js`), this.nodeOfAncestor)
             modularized.appendClass(classNameOfModularized, {name: classNameOfBase, from: `./${classNameOfBase}`});
-            if (!_.isEmpty(mapOfI18nStmtsOfCommonModule[lang]))
+            if (!Util.isEmpty(mapOfI18nStmtsOfCommonModule[lang]))
                 modularized.appendBatchLinesIntoFieldSection(['\n\n', ...mapOfI18nStmtsOfCommonModule[lang].join('\n\n')]);
             const index = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `i18n`, lang, `index.js`), this.nodeOfAncestor)
             index.appendClass(classNameOfIndex, {name: classNameOfModularized, from: `./${classNameOfModularized}`});
@@ -263,7 +263,7 @@ class AppBuilder extends ComponentBuilder {
 
         /** 把專案裡的i18n/index複製到當前gen/i18n/index, 不然rapid build會有bug
          for (const sourceFile of Util.findFilePathBy(this.projectPlatformPath,
-         (each) => Util.has(LANGUAGES_OF_SUPPORT, each.folderName) && _.isEqual('index', each.fileName))) {
+         (each) => Util.has(LANGUAGES_OF_SUPPORT, each.folderName) && Util.isEqual('index', each.fileName))) {
          let ignoreThisRun = false;
          const from = sourceFile.path;
          const dest = Util.joinRespectingDot(this.genRootPath, Util.getRelativePath(sourceFile.path, this.projectPlatformPath));
@@ -342,7 +342,7 @@ class AppBuilder extends ComponentBuilder {
                 baseCookieGenerator.appendFunction(Util.camel(`get`, cookie.name), ['options = {}'], [], [],
                     `const value = this.cookie.get(`,
                     `this.getEternalEncryptStringOfCookieName(this.${cookie.name}.key, this.password), options)`,
-                    `if(_.isEmpty(value)) return ${cookie.isObject() ? '{}' : ''}`,
+                    `if(Util.isEmpty(value)) return ${cookie.isObject() ? '{}' : ''}`,
                     `const decrypt = Util.getDecryptStringV2(value, this.password)`,
                     cookie.isObject() ? `return JSON.parse(decrypt)` : `return decrypt`
                 )
@@ -416,7 +416,7 @@ class AppBuilder extends ComponentBuilder {
         )
 
         for (const _func of this.getAllCloudFunctions()) {
-            if (_.isEqual(_func.getType(), 'httpOnCall')) {
+            if (Util.isEqual(_func.getType(), 'httpOnCall')) {
                 baseFunctionGenerator.appendAsyncFunction(
                     `${_.lowerFirst(_func.getType())}${_.upperFirst(_func.getName())}`,
                     ['view', 'data'],
@@ -724,11 +724,11 @@ class AppBuilder extends ComponentBuilder {
                 generator.needSignature(false);
                 generator.setSingleton(true);
             }
-            if (!_.isEmpty(origins)) {
+            if (!Util.isEmpty(origins)) {
                 for (const name in origins) {
 
                     /** 要檢查homeless的每一個 是不是沒定義過, 沒定義過就會是一個空物件 */
-                    if (!_.isEqual(origins[name], {}))
+                    if (!Util.isEqual(origins[name], {}))
                         generator.appendField(name, JSON.stringify(origins[name]));
                 }
                 generator.appendBatchLinesIntoFieldSection(`\n\n/** following for homeless */\n\n`)
@@ -847,7 +847,7 @@ class AppBuilder extends ComponentBuilder {
         function isEmptyAttribute(attributeObj) {
             let isEmpty = true;
             for (const key in attributeObj) {
-                if (!_.isEmpty(attributeObj[key])) { // 只要有一個裝置(或 default) 裡面有寫樣式，就不算空
+                if (!Util.isEmpty(attributeObj[key])) { // 只要有一個裝置(或 default) 裡面有寫樣式，就不算空
                     isEmpty = false;
                     break;
                 }
@@ -858,7 +858,7 @@ class AppBuilder extends ComponentBuilder {
         const lessAttributeObj = {};
 
         // 判斷傳入的路徑是目錄還是已指定副檔名的 .less 檔案，若是目錄則預設找 less/styles.less
-        const srcLessPath = _.isEqual('less', Util.getExtensionFromPath(path)) ? path : Util.joinRespectingDot(path, `less`, `styles.less`)
+        const srcLessPath = Util.isEqual('less', Util.getExtensionFromPath(path)) ? path : Util.joinRespectingDot(path, `less`, `styles.less`)
 
         if (Util.isEmptyFile(srcLessPath)) {
             Util.appendInfo(`4842454 ${srcLessPath} is not exist!!!`);
@@ -877,7 +877,7 @@ class AppBuilder extends ComponentBuilder {
              */
             _.remove(stub, (each) => (
                 _.startsWith(each.trim(), '/**')
-                || _.isEqual(each.trim(), '')
+                || Util.isEqual(each.trim(), '')
                 || _.startsWith(each.trim(), '@import')
                 || Util.startWithRegex(each.trim(), `@(${stringOfPlatforms})\:`)
             ))
@@ -929,7 +929,7 @@ class AppBuilder extends ComponentBuilder {
                      * - 若是一般 className：除了屬性不能全空外，如果 complete 與 precise 不同 (表示開發者加上了 :hover 等偽類或繼承)，也算被修改過。
                      */
                     isModified: isEditorClassName ? !isEmptyAttribute(attributeObj)
-                        : (!isEmptyAttribute(attributeObj) || !_.isEqual(style.complete, style.precise)),
+                        : (!isEmptyAttribute(attributeObj) || !Util.isEqual(style.complete, style.precise)),
                 }
             }
         }
@@ -972,7 +972,7 @@ class AppBuilder extends ComponentBuilder {
         // 1. 取得 free_marker/less/libs 底下的所有 .less 共用函式庫（如 reset, variables）
         function getLessLibs() {
             return Util.findFilePathBy(Util.joinRespectingDot(self.freeMarkerRootPath, 'less', 'libs'),
-                (file) => _.isEqual(file.extension, 'less'))
+                (file) => Util.isEqual(file.extension, 'less'))
                 .map((file) => file.fileNameExtension);
         }
 
@@ -992,7 +992,7 @@ class AppBuilder extends ComponentBuilder {
 
         // 解析並合併所有「已經存在的 LESS 屬性設定」（例如開發者手動在 LESS 寫好的 CSS rules），回傳成一個物件對照表
         const existedLessAttributeObj = Util.merO(...filesOfLess.map((each) => this.getObjectOfExistedLessAttribute(each)));
-
+        console.log(existedLessAttributeObj);
         /**
          * 4. 依照每個元件傳入的 classNames，將對應的 styles 寫入 styles.less 中。
          * classNameInfos: [ {component:componentNode, classNames:[ {node, type} ,...] }...]
@@ -1085,7 +1085,7 @@ class AppBuilder extends ComponentBuilder {
     async overrideLessFile() {
         const less = Util.joinRespectingDot(this.freeMarkerRootPath, `less`);
         const files = Util.findFilePathBy(less);
-        _.forEach(_.filter(files, (file) => _.isEqual(file.extension, 'less')),
+        _.forEach(_.filter(files, (file) => Util.isEqual(file.extension, 'less')),
             (file) => this.refactorLessDeviceInfo(file)
         );
 

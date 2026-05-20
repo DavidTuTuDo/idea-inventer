@@ -3,6 +3,7 @@ import path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
 import _ from "lodash";
+import { utiller as Util } from "utiller"
 
 const execAsync = promisify(exec);
 
@@ -55,7 +56,7 @@ export default class PrettierRunner {
     async formatAll(batchSize = 500) {
         const targetFiles = this.getAllFiles(this.targetPath);
 
-        if (_.isEmpty(targetFiles)) {
+        if (Util.isEmpty(targetFiles)) {
             console.log(`📂 沒有找到可格式化的檔案於 ${this.targetPath}`);
             return;
         }

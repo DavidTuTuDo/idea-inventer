@@ -18,7 +18,7 @@ class EditorOfSubjectComponent extends BaseEditorOfSubjectComponent {
     }
 
     getInjectStyleOfExamQuestionTopicOfAssistantNameTypography(topicOfAssistant) {
-        return Util.getVisibleOrNone(!_.isEmpty(topicOfAssistant.getName()), true);
+        return Util.getVisibleOrNone(!Util.isEmpty(topicOfAssistant.getName()), true);
     }
 
     onSelectorOfMathSelectedChange(value, question) {
@@ -34,7 +34,7 @@ class EditorOfSubjectComponent extends BaseEditorOfSubjectComponent {
     getLabelByValue(value) {
         const question = new Question();
         const types = question.getSelectorOfMaths().map((each) => each.data());
-        const item = _.find(types, (type) => _.isEqual(type.value, value));
+        const item = _.find(types, (type) => Util.isEqual(type.value, value));
         return item ? item.label : "error";
     }
 

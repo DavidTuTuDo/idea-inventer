@@ -23,11 +23,11 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     /** 部署新的題目到雲端 */
     async function deployQuestions({ dbpath = "", year = 120 }) {
         function getTypeOfMathBySubjectName(subject) {
-            if (_.isEqual(subject, "數學A")) {
+            if (Util.isEqual(subject, "數學A")) {
                 return 1;
             }
 
-            if (_.isEqual(subject, "數學B")) {
+            if (Util.isEqual(subject, "數學B")) {
                 return 2;
             }
 
@@ -37,7 +37,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
         const db = new Databaser(`/Users/davidtu/cross-achieve/legacy/idea-inventer/ceec_scrape_script/${dbpath}`);
         await db.init();
 
-        const qs = _.isNumber(year) && year > 0 ? await db.fetchRecords("QUESTION", new Builder().equal("year", year).stmt()) : await db.fetchRecords("QUESTION");
+        const qs = Util.isNumber(year) && year > 0 ? await db.fetchRecords("QUESTION", new Builder().equal("year", year).stmt()) : await db.fetchRecords("QUESTION");
 
         let questions = qs.map((q) => {
             /** 把`a...b...c..` 換成 ['a...','b...','c....']*/
@@ -48,7 +48,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
                 })));
 
             q.subject = _.startsWith(q.subject, "數學") ? "數學" : q.subject;
-            q.timesOfYear = _.isEqual(q.extra, "正式") ? 1 : 2;
+            q.timesOfYear = Util.isEqual(q.extra, "正式") ? 1 : 2;
             q.typeOfMath = getTypeOfMathBySubjectName(q.subject);
             delete q.uid;
             q.type = q.nameOfExam;
@@ -322,7 +322,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             const waitForSubmits = [];
             let index = 32;
             for (const a of as) {
-                const deepClone = _.cloneDeep(item);
+                const deepClone = Util.cloneDeep(item);
                 deepClone.qid = index;
                 deepClone.topic.name = `請依照題目作答 ${index}`;
                 deepClone.answer = a;
@@ -394,7 +394,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
 
         await api.updateQuestions(
             questions.map((question) => {
-                return { subject: "數學", id: question.id, typeOfMath: _.isEqual(type, "A") ? 1 : 2 };
+                return { subject: "數學", id: question.id, typeOfMath: Util.isEqual(type, "A") ? 1 : 2 };
             })
         );
 

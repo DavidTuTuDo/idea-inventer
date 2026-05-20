@@ -51,7 +51,7 @@ class BuildApplication {
         this.freeMarkerRootPath = libpath.resolve(PATH_OF_FREE_MARKER_TEMPLATE);
 
         const context = require(Util.joinRespectingDot(this.projectRootPath, FILENAME_OF_SOURCE_JS)).default;
-        if (_.isEmpty(context.genRootPath)) {
+        if (Util.isEmpty(context.genRootPath)) {
             throw new ERROR(9999, `${this.projectRootPath}/'${FILENAME_OF_SOURCE_JS}' 裡面沒有attribute ==> genRootPath`)
         }
         this.genRootPath = libpath.resolve(context.genRootPath);

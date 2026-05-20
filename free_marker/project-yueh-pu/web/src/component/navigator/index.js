@@ -24,11 +24,11 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
 
     onSearchPressed(content) {
         const inputOfComplete = this.getStore().getInputOfComplete();
-        if (_.isObject(content) && content.type) {
+        if (Util.isObject(content) && content.type) {
             this.gotoPageByContent.call(this, content);
         } else if (!Util.isUndefinedNullEmpty(content)) {
             Router.gotoPortfolioPage(this, "search", content);
-        } else if (!_.isEmpty(inputOfComplete)) {
+        } else if (!Util.isEmpty(inputOfComplete)) {
             const keyword = _.find(this.getStore().getCompleteSuggests(), (each) => each.label.includes(inputOfComplete.trim()));
             if (keyword) this.gotoPageByContent(keyword);
             else this.showWarningSnackMessage(`「${inputOfComplete}」沒有搜尋結果`);

@@ -156,7 +156,7 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     getInjectStyleOfEstablishDesktopVisitorIdOfHotelRoomTextField(visitor) {
-        return Util.getVisibleOrNone(_.isEqual(_.toNumber(this.getStore().getDesktop().getInfo().getSelectedRoomArrange()), 2), true)
+        return Util.getVisibleOrNone(Util.isEqual(Util.toNumber(this.getStore().getDesktop().getInfo().getSelectedRoomArrange()), 2), true)
     }
 
     getInjectStyleOfEstablishDesktopTotalOfPricePartyBTextField(desktop) {
@@ -172,7 +172,7 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     getInjectStyleOfEstablishDesktopFinanceFeeOfPartyBTextField(finance) {
-        const status = _.toNumber(finance.getSelectedRequest());
+        const status = Util.toNumber(finance.getSelectedRequest());
         let color = undefined;
         switch (status) {
             case 1:
@@ -198,21 +198,21 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     isCreditCardBehavior(finance) {
-        return _.isEqual(_.toNumber(finance.getSelectedRequest()), 2);
+        return Util.isEqual(Util.toNumber(finance.getSelectedRequest()), 2);
     }
 
     isCashMoneyBehavior(finance) {
-        return _.isEqual(_.toNumber(finance.getSelectedRequest()), 1);
+        return Util.isEqual(Util.toNumber(finance.getSelectedRequest()), 1);
     }
 
     /** 支票行為 */
     isChequeBehavior(finance) {
-        return Util.isOrEquals(_.toNumber(finance.getSelectedRequest()), 9, 10);
+        return Util.isOrEquals(Util.toNumber(finance.getSelectedRequest()), 9, 10);
     }
 
     /** 代轉行為 */
     isRemittanceBehavior(finance) {
-        return _.isEqual(_.toNumber(finance.getSelectedRequest()), 11);
+        return Util.isEqual(Util.toNumber(finance.getSelectedRequest()), 11);
     }
 
     getInjectPropsOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
@@ -360,11 +360,11 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     getInjectStyleOfEstablishSubmitChip(establish) {
-        return Util.getVisibleOrNone(_.isEmpty(establish.getId()), true);
+        return Util.getVisibleOrNone(Util.isEmpty(establish.getId()), true);
     }
 
     getInjectStyleOfEstablishUpdateChip(establish) {
-        return Util.getVisibleOrNone(!_.isEmpty(establish.getId()), true);
+        return Util.getVisibleOrNone(!Util.isEmpty(establish.getId()), true);
     }
 
     getInjectStyleOfEstablishDesktopVisitorNameOfPassportTextField(visitor) {
@@ -372,15 +372,15 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     getWrapInjectStyleOfEstablishIdTypography(establish) {
-        return Util.getVisibleOrNone(!_.isEmpty(establish.getId()), true);
+        return Util.getVisibleOrNone(!Util.isEmpty(establish.getId()), true);
     }
 
     getInjectStyleOfEstablishDownloadChip(establish) {
-        return Util.getVisibleOrNone(!_.isEmpty(establish.getId()), true);
+        return Util.getVisibleOrNone(!Util.isEmpty(establish.getId()), true);
     }
 
     getInjectStyleOfEstablishLinkOfWordChip(establish) {
-        return Util.getVisibleOrNone(!_.isEmpty(establish.getId()), true);
+        return Util.getVisibleOrNone(!Util.isEmpty(establish.getId()), true);
     }
 
     onEstablishBtnOfIdIconButtonClicked(param) {
@@ -390,13 +390,13 @@ class EstablishComponent extends BaseEstablishComponent {
 
     onEstablishDesktopInfoIdTextFieldEndContentCopyRoundedClicked(param) {
         const id = param.object.getId();
-        if (!_.isEmpty(id))
+        if (!Util.isEmpty(id))
             this.copyTextToClipboard(id)
     }
 
     onEstablishDesktopInfoIdOfAgentTravelTextFieldEndContentCopyRoundedClicked(param) {
         const id = param.object.getIdOfAgentTravel();
-        if (!_.isEmpty(id))
+        if (!Util.isEmpty(id))
             this.copyTextToClipboard(id)
     }
 
@@ -449,7 +449,7 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     // getInjectStyleOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
-    //     const status = _.toNumber(finance.getSelectedStatus());
+    //     const status = Util.toNumber(finance.getSelectedStatus());
     //     let color = undefined;
     //     switch (status) {
     //         case 1:

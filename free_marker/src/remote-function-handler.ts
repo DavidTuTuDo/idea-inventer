@@ -54,7 +54,7 @@ class RemoteFunctionHandler extends BaseBuilder {
      * handler.appendParamIfPlatformEqualsWeb(false);   // Web: ['view'] Admin: []
      */
     appendParamIfPlatformEqualsWeb(isString = false) {
-        if (_.isEqual(this.platform, 'web')) {
+        if (Util.isEqual(this.platform, 'web')) {
             return isString ? ',view' : ['view'];
         }
         return isString ? '' : [];

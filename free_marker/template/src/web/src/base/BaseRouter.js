@@ -26,7 +26,7 @@ class BaseRouter {
     };
 
     isGotoSameRoute(route) {
-        return _.isEqual(this.currentRoute, route);
+        return Util.isEqual(this.currentRoute, route);
     }
 
     routeTo(component, path) {

@@ -122,7 +122,7 @@ const AlertDialog = observer(
          */
         const open = (paramObject = {}) => {
             // 1. 參數驗證
-            if (!_.isObject(paramObject)) {
+            if (!Util.isObject(paramObject)) {
                 Util.appendError(`AlertDialog: paramObject should be object, not ${typeof paramObject}`);
                 return;
             }
@@ -133,7 +133,7 @@ const AlertDialog = observer(
             }
 
             // 3. 設定 Custom View 參數
-            const finalParamObject = !_.isEmpty(paramObject) ? paramObject : props.paramObject || {};
+            const finalParamObject = !Util.isEmpty(paramObject) ? paramObject : props.paramObject || {};
             dialogStore.setPropsOfCustomView(finalParamObject);
 
             // 4. 顯示視窗
@@ -222,7 +222,7 @@ const AlertDialog = observer(
 
         const renderTitle = () => {
             const { title } = props;
-            return !_.isEmpty(title) ? <DialogTitle>{title}</DialogTitle> : null;
+            return !Util.isEmpty(title) ? <DialogTitle>{title}</DialogTitle> : null;
         };
 
         const renderTextField = () => {

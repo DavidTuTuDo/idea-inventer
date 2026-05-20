@@ -65,7 +65,7 @@ class ReimburseComponent extends BaseReimburseComponent {
   }
 
   getVisibleOfCreditArea(record) {
-    const numOfSelectedMethod = _.toNumber(record.getSelectedPayMethod());
+    const numOfSelectedMethod = Util.toNumber(record.getSelectedPayMethod());
     return Util.getVisibleOrNone(numOfSelectedMethod === 2);
   }
 

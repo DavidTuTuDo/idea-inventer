@@ -145,14 +145,14 @@ class ClassGenerator {
         stmt.push(`\n`);
 
         for (const comment of comments) {
-            if (!_.isEmpty(comment)) {
+            if (!Util.isEmpty(comment)) {
                 stmt.push(`\n`);
                 stmt.push(`/** ${comment} */`);
             }
         }
 
         for (const m of macros) {
-            if (!_.isEmpty(m)) {
+            if (!Util.isEmpty(m)) {
                 stmt.push(`\n`);
                 stmt.push(`@${m}`);
             }
@@ -163,20 +163,20 @@ class ClassGenerator {
 
         if (arrow || decorator) {
             /** arrow function 不支援 super QQ 08/03 的筆記有紀錄 */
-            stmt.push(`${functionName} = ${isAsync ? 'async' : ''}${decorator ? `${decorator} (` : ``}(${_.isEmpty(params) ? '' : params.join(' ,')}) => ${simple ? '':'{'}`);
+            stmt.push(`${functionName} = ${isAsync ? 'async' : ''}${decorator ? `${decorator} (` : ``}(${Util.isEmpty(params) ? '' : params.join(' ,')}) => ${simple ? '':'{'}`);
         } else
-            stmt.push(`${isAsync ? 'async ' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
+            stmt.push(`${isAsync ? 'async ' : ' '}${functionName}(${Util.isEmpty(params) ? '' : params.join(' ,')}) {`);
 
-        if (_.isEqual(decorator, 'inject')) {
+        if (Util.isEqual(decorator, 'inject')) {
             this.appendImport(`{inject}`, `mobx-react`)
         }
 
-        if (_.isEqual(decorator, 'observer')) {
+        if (Util.isEqual(decorator, 'observer')) {
             this.appendImport(`{observer}`, `mobx-react`);
         }
 
         for (let content of contents) {
-            if (!_.isEmpty(content)) {
+            if (!Util.isEmpty(content)) {
                 stmt.push(`\n`);
                 stmt.push(`${content}`);
             }
@@ -199,7 +199,7 @@ class ClassGenerator {
      */
     appendFunction(func, params = [], macros = [], comments = [], ...contents) {
         const stmts = this.getFunctionContent(
-            _.isString(func) ? {name: func} : func
+            Util.isString(func) ? {name: func} : func
             , params, macros, comments, ...contents);
         Util.insertToArray(this.context, this.getIndexOfFunctionSign(), ...stmts)
     }
@@ -228,7 +228,7 @@ class ClassGenerator {
         function getStringOfFunctionFinally() {
             const _stmts = [];
 
-            if (_.isEqual(func.getType(), 'httpOnRequest')) {
+            if (Util.isEqual(func.getType(), 'httpOnRequest')) {
                 if (needRegularResponse())
                     _stmts.push('response.send({succeed,data:result});');
                 else {
@@ -236,14 +236,14 @@ class ClassGenerator {
                 }
             }
 
-            if (_.isEqual(func.getType(), 'httpOnCall')) {
+            if (Util.isEqual(func.getType(), 'httpOnCall')) {
                 _stmts.push('return {succeed,data:result};');
             }
             return _stmts.join('\n');
         }
 
         function needRegularResponse() {
-            return _.isEqual(func.isRegularResponse, true);
+            return Util.isEqual(func.isRegularResponse, true);
         }
 
         function getStmtsByType(argumentz) {
@@ -253,9 +253,9 @@ class ClassGenerator {
             if (Util.isOrEquals(func.getType(), 'httpOnCall', 'httpOnRequest'))
                 _stmts.push(`logger.info('functions(${fieldName}) data from client => ', request); `);
 
-            if (_.isEqual(func.getType(), 'httpOnCall')) {
+            if (Util.isEqual(func.getType(), 'httpOnCall')) {
                 _stmts.push(`const {data, auth:session} = request; `);
-                _stmts.push(`if(_.isEmpty(data.fingerprint)) throw new Error('E0001-${fieldName} 你是壞狗，不可以玩伺服器');`);
+                _stmts.push(`if(Util.isEmpty(data.fingerprint)) throw new Error('E0001-${fieldName} 你是壞狗，不可以玩伺服器');`);
                 _stmts.push(`${fieldName}.setFingerprint(data.fingerprint); `);
             }
 
@@ -294,7 +294,7 @@ class ClassGenerator {
 
     getIndexOf(stmt) {
         return _.findIndex(this.context, (per) => {
-            return _.isEqual(per, stmt);
+            return Util.isEqual(per, stmt);
         });
 
     }
@@ -327,7 +327,7 @@ class ClassGenerator {
             stmt.push(`@${macro}`);
         }
         stmt.push('\n');
-        if (_.isObject(extendz)) {
+        if (Util.isObject(extendz)) {
             this.appendImport(extendz.name, extendz.from ? extendz.from : `.\/${extendz.name}`);
             stmt.push(`class ${className}${extendz ? ` extends ${extendz.name}` : ' '} {`);
         } else {
@@ -415,15 +415,15 @@ class ClassGenerator {
                 (_.startsWith(fileName, `${KEYWORD_OF_MODULARIZED}${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`) &&
                     Util.isEmptyFile(this.filePath)), /** 不存在的 ModularizedXXX 才建立,FAST MODE不會override files */
                 (_.startsWith(folderName, TARGET_COMPONENT_FAST_DEVELOP_MODE) &&
-                    _.isEqual(fileName, 'index') &&
+                    Util.isEqual(fileName, 'index') &&
                     Util.isEmptyFile(this.filePath)), /** 不存在的 {TARGET_COMPONENT_FAST_DEVELOP_MODE}/index.js 才建立,FAST MODE不會override files */
-                _.isEqual(folderName, 'style'),
-                _.isEqual(folderName, 'less'),
-                _.isEqual(folderName, 'src'),
-                _.isEqual(folderName, 'store'),
-                _.isEqual(fileName, 'BaseCookie'), /** rapid mode 只針對concrete file */
-                _.isEqual(fileName, 'BaseMyRouter'), /** rapid mode 只針對concrete file */
-                _.isEqual(folderName, 'config') && !_.isEqual(fileNameExtension, 'index.js'),
+                Util.isEqual(folderName, 'style'),
+                Util.isEqual(folderName, 'less'),
+                Util.isEqual(folderName, 'src'),
+                Util.isEqual(folderName, 'store'),
+                Util.isEqual(fileName, 'BaseCookie'), /** rapid mode 只針對concrete file */
+                Util.isEqual(fileName, 'BaseMyRouter'), /** rapid mode 只針對concrete file */
+                Util.isEqual(folderName, 'config') && !_.isEqual(fileNameExtension, 'index.js'),
                 (Util.isOrEquals(folderName, ...LANGUAGES_OF_SUPPORT) && !_.isEqual(fileNameExtension, 'index.js')),
             )
 
@@ -484,7 +484,7 @@ class ClassGenerator {
 
     /** import `${parts}` from `${from}`,如果parts是{name}, 記得括號內不要有空格*/
     appendImport(parts, from) {
-        if (_.isEmpty(parts)) {
+        if (Util.isEmpty(parts)) {
             this.imports.empty.push(from);
         } else {
             this.imports.all[parts] = from;

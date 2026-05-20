@@ -60,7 +60,7 @@ class examing {
         const indexes = _.keys(_.pickBy(array, (item) => _.isEqual('(', item)))
         const invalid = [];
         for (const _index of indexes) {
-            const index = _.toNumber(_index);
+            const index = Util.toNumber(_index);
             if (array[index + 2] !== ')') {
                 for (const i of _.range(index + 1, array.indexOf(')', index))) {
                     if (_.isEqual(array[i], '\n')) invalid.push(i);
@@ -121,7 +121,7 @@ class examing {
             if (_.size(answers) === _.size(questions)) {
                 _.every(questions, (question, index) => {
                     qObjArray.push({
-                        cid: _.toNumber(answers[index].match(new RegExp(`[0-9][0-9]*`))[0]),
+                        cid: Util.toNumber(answers[index].match(new RegExp(`[0-9][0-9]*`))[0]),
                         answer: answers[index].match(new RegExp(`\([A-D]\)`))[0],
                         question
                     })
@@ -163,7 +163,7 @@ class examing {
                     const cid = question.match(new RegExp(`[0-9]{1,2}`))[0];
                     qObjArray.push({
                         answer: _.head(ac[idx]).match(new RegExp(`[A-Ea-e]`,`g`))[0],
-                        cid: _.toNumber(cid),
+                        cid: Util.toNumber(cid),
                         topic: Util.getNormalizedStringNotStartWith(
                             Util.getNormalizedStringEndWith(_.trim(question.replace(cid, '')),
                                 '?')
@@ -231,7 +231,7 @@ export {examing as examing}
             for (let question of questions) {
                 await db.lazyInsertRecord('CHOOSER', {
                     ...question,
-                    year: examYear ? _.toNumber(examYear) : -1,
+                    year: examYear ? Util.toNumber(examYear) : -1,
                     type: examType ? examType : 'unknown',
                     subject: examSubject ? examSubject : 'unknown'
                 }, 'topic');

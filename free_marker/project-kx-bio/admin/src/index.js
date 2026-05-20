@@ -68,7 +68,7 @@ import _ from "lodash";
         await api.submitSelectBounds(
             _.filter(categories, (category) => category.href?.includes("collections")).map((item) => ({
                 label: item.name,
-                id: `kxBio${_.toString(item.category)}`,
+                id: `kxBio${Util.toString(item.category)}`,
                 value: item.category
             }))
         );

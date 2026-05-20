@@ -106,7 +106,7 @@ class SheetComponent extends BaseSheetComponent {
     rulesOfAllowEditFunction = () => {
         const rule1 = UserInfoRef.isAdmin();
         const rule2 = !this.isComponentView();
-        const rule3 = _.isEqual(this.getStore().getCurrentPu().getIdOfAuthor(), UserInfoRef.getUid());
+        const rule3 = Util.isEqual(this.getStore().getCurrentPu().getIdOfAuthor(), UserInfoRef.getUid());
         return rule2 && (rule3 || rule1);
     };
 
@@ -214,7 +214,7 @@ class SheetComponent extends BaseSheetComponent {
          * 顯示出來的toast會咬住最上層的touch event, 讓體驗變差勁
          * */
         const message = `完成 「${text}」`;
-        if (_.isEqual(type, "info")) this.showInfoSnackMessage(message);
+        if (Util.isEqual(type, "info")) this.showInfoSnackMessage(message);
         else this.showWarningSnackMessage(message);
     }
 

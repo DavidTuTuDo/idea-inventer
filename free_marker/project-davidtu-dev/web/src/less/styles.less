@@ -1865,7 +1865,6 @@
         max-width: 880px;
     }
 }
-
 .DionysusBoozeDiv {
     position: relative;
     width: 48%;
@@ -1879,11 +1878,9 @@
         /** empty style */
     }
     @media @desktop {
-        /* 電腦版維持你要的 200px */
         width: 200px;
     }
 }
-
 .DionysusBoozeDivList:extend(.CenterInParentRow) {
     margin-top: 5px;
     flex-wrap: wrap;
@@ -2610,11 +2607,8 @@
         /** empty style */
     }
     @media @desktop {
-        /* 將原先的 flex 改為 grid */
         display: grid;
-        /* 設定每欄固定寬度 435px，並根據父容器寬度自動換行 (auto-fit) */
         grid-template-columns: repeat(auto-fit, 435px);
-        /* 讓整個網格區塊在父容器內水平置中 */
         justify-content: center;
     }
 }

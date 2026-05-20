@@ -35,7 +35,7 @@ class GeneratePDF extends BaseGeneratePDF {
         const yearOfAD = Util.getCustomFormatOfDatePresent(momentOfStartTravel, `YYYY`);
 
         const paramsOfTemplate = {
-            nameOfTravel: !_.isEmpty(order.idOfAgentTravel) ? order.idOfAgentTravel : '未填入團號',
+            nameOfTravel: !Util.isEmpty(order.idOfAgentTravel) ? order.idOfAgentTravel : '未填入團號',
             startDateOfTravel: Util.getCustomFormatOfDatePresent(momentOfStartTravel, `MM月DD日`),
             countOfPeople: `${order.countOfPeople}`,
             priceOfCash: `${order.priceOfCash}`,
@@ -44,7 +44,7 @@ class GeneratePDF extends BaseGeneratePDF {
             nameOfAgent: config.getNameOfAgentByValue(order.selectedAgent),
             certifOfAgent: config.getCertificateOfAgentByValue(order.selectedAgent),
             yearOfAD,
-            yearOfROC: Util.getStringOfYearADConvertToMinguoYear(_.toNumber(yearOfAD)),
+            yearOfROC: Util.getStringOfYearADConvertToMinguoYear(Util.toNumber(yearOfAD)),
         }
         const fileName = `大鼎旅行社(訂單|${idOfOrder})`;
 

@@ -19,7 +19,7 @@
 @action
 set{{{functionName}}}(...items) {
 const self = this;
-if(_.isArray(items)) {
+if(Array.isArray(items)) {
 this.{{{fieldName}}}.length = 0;
 this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
 } else {
@@ -38,21 +38,21 @@ return this.{{{fieldName}}};
     {{{這裡就是放else暨不等於isSelected的邏輯}}}
 
     get{{{fieldClass}}}ByAttribute = (value, attribute = 'id') => {
-    return _.find(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual(value, {{{name}}}[attribute]));
+    return _.find(this.get{{{functionName}}}(), ({{{name}}}) => Util.isEqual(value, {{{name}}}[attribute]));
     }
 
     get{{{fieldClass}}}ByAttributes = (values = ['id', '20241213'], attributes = ['id', 'updateTime']) => {
     return _.find(this.get{{{functionName}}}(), ({{{name}}}) =>
-    Util.isAndEquals(...attributes.map((attr,idx) => _.isEqual({{{name}}}[attr], values[idx]))))
+    Util.isAndEquals(...attributes.map((attr,idx) => Util.isEqual({{{name}}}[attr], values[idx]))))
     }
 
     get{{{functionName}}}ByAttribute(value, attribute = 'id'){
-    return _.filter(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual(value, {{{name}}}[attribute]));
+    return _.filter(this.get{{{functionName}}}(), ({{{name}}}) => Util.isEqual(value, {{{name}}}[attribute]));
     }
 
     get{{{functionName}}}ByAttributes = (values = ['id', '20241213'], attributes = ['id', 'updateTime']) => {
     return _.filter(this.get{{{functionName}}}(), ({{{name}}}) =>
-    Util.isAndEquals(...attributes.map((attr,idx) => _.isEqual({{{name}}}[attr], values[idx]))))
+    Util.isAndEquals(...attributes.map((attr,idx) => Util.isEqual({{{name}}}[attr], values[idx]))))
     }
 
     get{{{fieldClass}}}OfHead = () => {
@@ -91,7 +91,7 @@ return this.{{{fieldName}}};
 
     @action
     updateSpecific{{{functionName}}}(latest, attr = 'id') {
-        const {{{name}}} = _.find(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual({{{name}}}[attr], latest[attr]));
+        const {{{name}}} = _.find(this.get{{{functionName}}}(), ({{{name}}}) => Util.isEqual({{{name}}}[attr], latest[attr]));
         messageX ? {{{name}}}.initial(latest) : this.push{{{functionName}}}ByIndex(-1, latest)
     }
 
@@ -147,7 +147,7 @@ return this.{{{fieldName}}};
         /** 這function主要是為了editor設計 */
         submit{{{functionName}}} = async ({{{stringOfParamInSubmitItems}}}) => {
         const fatefulItems = [];
-        items = _.isArray(items) ? items : [items];
+        items = Array.isArray(items) ? items : [items];
         for (const item of items) {
         const id = '';
         const result = await new {{{fieldClass}}}().submit{{{fieldClass}}}Item({{{stringOfArgumentInSubmitItem}}});
@@ -241,7 +241,7 @@ return this.{{{fieldName}}};
     const targets = _.remove(self.getNext{{{fieldClass}}}IDs(), (each, index) => {
     return index < {{{fieldClass}}}.sizeOfPerPage;
     })
-    if (!_.isEmpty(targets)) {
+    if (!Util.isEmpty(targets)) {
     return await new {{{fieldClass}}}().fetch(
     {{{stringOfArgumentInFetch}}},
     ...this.getInArrayConditions(targets),

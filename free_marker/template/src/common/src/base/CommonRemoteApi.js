@@ -47,7 +47,7 @@ class CommonRemoteApi {
         }
 
         // 判斷輸入是否為陣列，若是則使用 map 批量處理
-        return _.isArray(param) ? param.map((each) => getSpecificExpress(each)) : getSpecificExpress(param);
+        return Array.isArray(param) ? param.map((each) => getSpecificExpress(each)) : getSpecificExpress(param);
     }
 
     getFieldNameOfDocumentId() {
@@ -137,7 +137,7 @@ class CommonRemoteApi {
         const result = [];
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} start fetch items in limitation with action = ${action} | fieldName = ${fieldName} | path:${path}, size:${valuesOfComparison.length}`);
-        if (_.isEqual("id", fieldName)) {
+        if (Util.isEqual("id", fieldName)) {
             fieldName = this.getFieldNameOfDocumentId();
         }
         while (_.size(valuesOfComparison) > 0) {
@@ -291,10 +291,10 @@ class CommonRemoteApi {
         /** 1.limit() 2.orderBy(), 3.startAt() or startAfter() , 4.where */
         const raw = [];
         for (const condition of conditions) {
-            if (condition === undefined || _.isEmpty(condition)) continue;
+            if (condition === undefined || Util.isEmpty(condition)) continue;
             let priority = 99;
             let stmtOfFunction = (stmt) => stmt;
-            if (_.isObject(condition)) {
+            if (Util.isObject(condition)) {
                 /** 這種概念 {where:(stmt) => stmt.where('id','==','david')}*/
                 stmtOfFunction = Util.getObjectValue(condition);
                 switch (Util.getObjectKey(condition)) {
@@ -314,15 +314,15 @@ class CommonRemoteApi {
                     default:
                         break;
                 }
-            } else if (_.isFunction(condition)) {
+            } else if (Util.isFunction(condition)) {
                 /** 這種概念 (stmt) => stmt.where('id','==','david') */
                 stmtOfFunction = condition;
             } else {
-                throw new ERROR(9745, `condition should be object|function, but it's ${typeof condition},${_.toString(condition)}`);
+                throw new ERROR(9745, `condition should be object|function, but it's ${typeof condition},${Util.toString(condition)}`);
             }
             raw.push({ stmt: stmtOfFunction, priority });
         }
-        return _.isEmpty(raw) ? [] : _.orderBy(raw, ["priority"], ["desc"]).map((each) => each.stmt);
+        return Util.isEmpty(raw) ? [] : _.orderBy(raw, ["priority"], ["desc"]).map((each) => each.stmt);
     }
 
     async fetchItem(path, id) {
@@ -482,7 +482,7 @@ class CommonRemoteApi {
         this.showLoadingView(view);
         Util.appendInfo(`restfulListenItem path:/${path}/${id}`);
         const functionOfUnsubscribe = this.listenItem(path, id, (status, data, error) => {
-            if (_.isEqual(status, "server") && !Util.isUndefinedNullEmpty(data)) {
+            if (Util.isEqual(status, "server") && !Util.isUndefinedNullEmpty(data)) {
                 self.closeLoadingView(view);
                 handler(data);
             } else {
@@ -632,7 +632,7 @@ class CommonRemoteApi {
      Util.appendInfo(`fetch array => ${refPath}`);
      const result = await filtering(firebase.database().ref(refPath));
      const value = result.val();
-     return _.isArray(value) ? value : _.values(value);
+     return Array.isArray(value) ? value : _.values(value);
      }
      */
 }

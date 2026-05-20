@@ -153,22 +153,22 @@ class EstablishStore extends BaseEstablishStore {
     //
     // getMemberById = (id) => {
     //     return _.find(this.getMembers(),
-    //         (member) => _.isEqual(id, member.id));
+    //         (member) => Util.isEqual(id, member.id));
     // }
     //
     // getPersonById = (id) => {
     //     return _.find(this.getPersons(),
-    //         (person) => _.isEqual(id, person.id));
+    //         (person) => Util.isEqual(id, person.id));
     // }
     //
     // getRecordById = (id) => {
     //     return _.find(this.getRecords(),
-    //         (record) => _.isEqual(id, record.id));
+    //         (record) => Util.isEqual(id, record.id));
     // }
     //
     // getIncomeById = (id) => {
     //     return _.find(this.getIncomes(),
-    //         (income) => _.isEqual(id, income.id));
+    //         (income) => Util.isEqual(id, income.id));
     // }
 
 
@@ -209,7 +209,7 @@ class EstablishStore extends BaseEstablishStore {
     }
 
     sync(order) {
-        const numberOfDestination = _.toNumber(order.destination);
+        const numberOfDestination = Util.toNumber(order.destination);
         order.destination = numberOfDestination > 0 ? _.find(Config.COUNTRY_OF_TRAVEL, ['value', `${numberOfDestination}`]) : undefined;
         this.setId(order.id);
         this.getDesktop().setInfo(order);

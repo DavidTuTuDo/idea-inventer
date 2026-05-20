@@ -56,7 +56,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
         function getListOfProduct() {
             const items = itemOfPreciseOrder.items;
             const latest = items.map((item) => {
-                const specific = item.specific ? (_.isEqual(item.name, item.specific) ? "" : `(${item.specific})`) : "";
+                const specific = item.specific ? (Util.isEqual(item.name, item.specific) ? "" : `(${item.specific})`) : "";
                 return {
                     name: `${item.name}${specific}`,
                     quantity: item.quantity,
@@ -111,7 +111,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
         const info = await Api.fetchGlobalPerspective();
         const payloadOfLinePay = this.getPayloadOfLinePayRequest(itemOfPreciseOrder, info.nameOfBrand);
         const resultOfLinePayRequest = await linepay.request(payloadOfLinePay);
-        if (_.isEqual(resultOfLinePayRequest.returnCode, "0000")) {
+        if (Util.isEqual(resultOfLinePayRequest.returnCode, "0000")) {
             await Api.updatePreciseOrderItemAtomically(async (latestItem, transaction) => {
                 await this.validateOrderIsUnPaidWaiting(latestItem, true);
                 return {

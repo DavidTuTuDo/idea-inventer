@@ -125,11 +125,11 @@ import _ from "lodash";
                         idOfAuthor: "6tirrjZd2ESAPD7RA64pd2N1Bdf2",
                         allowSelfPickUp: true,
                         keywords: [...Util.generateUniversalKeywords(product.name), "莎夏", "莎夏美學"],
-                        specificAttributes: [{ key: "main", label: "", options: options.map((option) => ({ label: option.name, value: `${_.toString(option.value)}sasha` })) }],
+                        specificAttributes: [{ key: "main", label: "", options: options.map((option) => ({ label: option.name, value: `${Util.toString(option.value)}sasha` })) }],
                         priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])) //generateLabelValuePairsWithOrigin //)
                     },
                     variants: options.map((option) => ({
-                        id: `${_.toString(option.value)}sasha`,
+                        id: `${Util.toString(option.value)}sasha`,
                         content: option.name,
                         photo: option.photo,
                         nameOfBooze: product.name,
@@ -173,7 +173,7 @@ import _ from "lodash";
         const array = Util.getFileContextInJSON("./sasha_of_product_catalog.json");
         const itemsOfCatalog = groupByValueOfType(array);
         // await api.deleteSelects();
-        await api.submitSelectBounds(itemsOfCatalog.map((item) => ({ label: item.labelOfType, id: _.toString(item.valueOfType), value: item.valueOfType })));
+        await api.submitSelectBounds(itemsOfCatalog.map((item) => ({ label: item.labelOfType, id: Util.toString(item.valueOfType), value: item.valueOfType })));
     }
 
     async function uploadPaymentOptions() {

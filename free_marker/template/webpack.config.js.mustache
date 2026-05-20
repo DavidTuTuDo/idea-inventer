@@ -167,8 +167,12 @@ const config = {
       contextRegExp: /winston|nodeutiller/,
     }),
     new webpack.DefinePlugin({
-       "process.env.is_node": JSON.stringify(false),
-       "process.env.self_debug": JSON.stringify(!isProd),
+       process: {
+          env: {
+              is_node: false,
+              self_debug: !isProd,
+          },
+       }
     }),
     new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
        resource.request = resource.request.replace(/^node:/, "");

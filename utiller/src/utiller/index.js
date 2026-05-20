@@ -1,5 +1,4 @@
 
-import _ from "lodash";
 import CryptoJS from "crypto-js";
 import { configerer } from "configerer";
 import ERROR from "../exceptioner";
@@ -60,6 +59,454 @@ class Utiller {
     mapOfIdNTimeoutId = {}/**   Key : idOfSetTimout */
 
     /**
+     * upperFirst
+     * 將字串的第一個字元轉換為大寫（其餘字元保持原樣）
+     * @param {string} str
+     * @returns {string}
+     */
+    upperFirst(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    /**
+     * camelCase
+     * 將字串轉換為小駝峰式命名 (camelCase)
+     * 支援轉換空格、底線 (_) 與橫線 (-)
+     * @param {string} str
+     * @returns {string}
+     */
+    camelCase(str) {
+        if (!str) return '';
+        // 利用正規表達式拆解單字，支援駝峰、底線、橫線與連續大寫字等拆分
+        const words = str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g);
+        if (!words) return '';
+
+        return words
+            .map((word, index) => {
+                const lower = word.toLowerCase();
+                // 第一個單字全小寫，後續單字首字母大寫
+                return index === 0 ? lower : lower.charAt(0).toUpperCase() + lower.slice(1);
+            })
+            .join('');
+    }
+
+    /**
+     * dropWhile
+     * 從陣列前方開始檢查，當 predicate 回傳 true 時捨棄元素，
+     * 直到遇到第一個回傳 false 的元素，然後回傳剩下的新陣列。
+     * @param {Array} array
+     * @param {Function} predicate
+     * @returns {Array}
+     */
+    dropWhile(array, predicate) {
+        if (!Array.isArray(array)) return [];
+        let i = 0;
+        while (i < array.length && predicate(array[i], i, array)) {
+            i++;
+        }
+        return array.slice(i);
+    }
+
+    /**
+     * dropRightWhile
+     * 從陣列後方開始檢查，當 predicate 回傳 true 時捨棄元素，
+     * 直到遇到第一個回傳 false 的元素，然後回傳剩下的新陣列。
+     * @param {Array} array
+     * @param {Function} predicate
+     * @returns {Array}
+     */
+    dropRightWhile(array, predicate) {
+        if (!Array.isArray(array)) return [];
+        let i = array.length - 1;
+        while (i >= 0 && predicate(array[i], i, array)) {
+            i--;
+        }
+        return array.slice(0, i + 1);
+    }
+
+    /**
+     * removeMutate (對應 lodash 的 _.remove)
+     * 會改變原始陣列 (Mutate)！移除所有 predicate 回傳 true 的元素，
+     * 並回傳一個包含所有被移除元素的新陣列。
+     * @param {Array} array
+     * @param {Function} predicate
+     * @returns {Array} 被移除的元素陣列
+     */
+    removeMutate(array, predicate) {
+        if (!Array.isArray(array)) return [];
+
+        const removed = [];
+        const indexesToRemove = [];
+
+        // 第一步：先找出所有符合條件的元素與索引
+        array.forEach((value, index) => {
+            if (predicate(value, index, array)) {
+                removed.push(value);
+                indexesToRemove.push(index);
+            }
+        });
+
+        // 第二步：從後往前刪除，避免前面的 splice 改變了後方元素的 index
+        for (let i = indexesToRemove.length - 1; i >= 0; i--) {
+            array.splice(indexesToRemove[i], 1);
+        }
+
+        return removed;
+    }
+
+    isBoolean(value) {
+        // 1. 處理基本型別的布林值 (true 或 false)
+        if (value === true || value === false) {
+            return true;
+        }
+
+        // 2. 處理布林物件 (例如：new Boolean(false))
+        return (
+            value !== null &&
+            typeof value === 'object' &&
+            Object.prototype.toString.call(value) === '[object Boolean]'
+        );
+    }
+
+    isObject(value) {
+        // 在 JavaScript 中 typeof null 會是 'object'，所以必須先排除 null
+        if (value === null) {
+            return false;
+        }
+
+        // 只要是物件型態或是函式，在 Lodash 中都算 Object
+        const type = typeof value;
+        return type === 'object' || type === 'function';
+    }
+
+    toString(value) {
+        // 1. null 或 undefined 轉換為空字串
+        if (value == null) {
+            return '';
+        }
+
+        // 2. 如果已經是字串，直接回傳
+        if (typeof value === 'string') {
+            return value;
+        }
+
+        // 3. 處理陣列：將陣列內的值遞迴轉換，最後組合成逗號分隔的字串
+        if (Array.isArray(value)) {
+            // 注意這裡使用 this.toString 來呼叫 Class 內的 method
+            return value.map(other => this.toString(other)).join(',');
+        }
+
+        // 4. 處理 Symbol：原生的隱式轉換會報錯，必須明確呼叫 toString()
+        if (typeof value === 'symbol') {
+            return value.toString();
+        }
+
+        // 5. 轉換為字串
+        const result = `${value}`;
+
+        // 6. 處理 -0 邊界情況 (保留 '-0')
+        return (result === '0' && (1 / value) === -Infinity) ? '-0' : result;
+    }
+
+    toNumber(value) {
+        // 1. 如果已經是數字，直接回傳
+        if (typeof value === 'number') {
+            return value;
+        }
+
+        // 2. 處理 Symbol：安全回傳 NaN，避免報錯
+        if (typeof value === 'symbol') {
+            return NaN;
+        }
+
+        // 3. 處理物件：優先呼叫物件本身的 valueOf 方法取得原始值
+        if (value !== null && typeof value === 'object') {
+            const other = typeof value.valueOf === 'function' ? value.valueOf() : value;
+            value = typeof other === 'object' ? `${other}` : other;
+        }
+
+        // 4. 處理字串：去除前後空白
+        if (typeof value === 'string') {
+            value = value.trim();
+        }
+
+        // 5. 最終轉換
+        return Number(value);
+    }
+
+    isString(value) {
+        // 1. 處理基本型別的字串 (絕大多數情況)
+        if (typeof value === 'string') {
+            return true;
+        }
+
+        // 2. 處理字串物件 (例如：new String('abc'))
+        // 確保它是一個物件，且不是 null，並透過 toString 檢查內部標籤
+        return (
+            value !== null &&
+            typeof value === 'object' &&
+            Object.prototype.toString.call(value) === '[object String]'
+        );
+    }
+
+    isNumber(value) {
+        // 1. 處理基本型別的數字 (包含 NaN、Infinity)
+        if (typeof value === 'number') {
+            return true;
+        }
+
+        // 2. 處理數字物件 wrapper (例如：new Number(123))
+        // 確保它是一個物件，且不是 null，並透過 toString 檢查內部標籤
+        return (
+            value !== null &&
+            typeof value === 'object' &&
+            Object.prototype.toString.call(value) === '[object Number]'
+        );
+    }
+
+    isFunction(value) {
+        // 涵蓋一般函式、非同步函式、生成器與 Proxy 物件
+        if (!value) return false;
+        const tag = Object.prototype.toString.call(value);
+        return (
+            tag === '[object Function]' ||
+            tag === '[object AsyncFunction]' ||
+            tag === '[object GeneratorFunction]' ||
+            tag === '[object Proxy]'
+        );
+    }
+
+    isEmpty(value) {
+        // null 或 undefined 視為 empty
+        if (value == null) return true;
+
+        // 陣列、字串或類陣列物件 (帶有 length 屬性)
+        if (Array.isArray(value) || typeof value === 'string' || typeof value.splice === 'function') {
+            return value.length === 0;
+        }
+
+        // Map 或 Set
+        if (value instanceof Map || value instanceof Set) {
+            return value.size === 0;
+        }
+
+        // 物件 (判斷是否擁有可枚舉的 key)
+        if (typeof value === 'object') {
+            return Object.keys(value).length === 0;
+        }
+
+        // 數字、布林值等基本型別在 Lodash 中 isEmpty 回傳 true
+        return true;
+    }
+
+    isEqual(a, b) {
+        // 1. 處理基本型別與相同參考的物件 (包含 +0 與 -0 的精準判斷)
+        if (a === b) {
+            return a !== 0 || 1 / a === 1 / b;
+        }
+
+        // 2. 處理 NaN (在 JavaScript 中 NaN !== NaN，但在 isEqual 應為 true)
+        if (a !== a && b !== b) return true;
+
+        // 3. 如果其中一個為 null 或不是物件（且上方沒有 return），代表兩者不同
+        if (a == null || b == null || (typeof a !== 'object' && typeof b !== 'object')) {
+            return false;
+        }
+
+        // 4. 確認建構類型是否相同 (例如 Date, RegExp 等)
+        const typeA = Object.prototype.toString.call(a);
+        const typeB = Object.prototype.toString.call(b);
+        if (typeA !== typeB) return false;
+
+        // 5. 處理特殊物件類型
+        switch (typeA) {
+            case '[object Date]':
+            case '[object Boolean]':
+                return +a === +b; // 轉為數字比對時間戳或布林值
+            case '[object Number]':
+                return a === +a ? a === +b : a !== a && b !== b;
+            case '[object String]':
+            case '[object RegExp]':
+                return a === String(b);
+        }
+
+        // 6. 處理陣列 (遞迴)
+        if (Array.isArray(a)) {
+            if (a.length !== b.length) return false;
+            for (let i = 0; i < a.length; i++) {
+                if (!this.isEqual(a[i], b[i])) return false; // 注意這裡使用 this.isEqual 呼叫 Class 內的 method
+            }
+            return true;
+        }
+
+        // 7. 處理一般物件 (遞迴)
+        const keysA = Object.keys(a);
+        const keysB = Object.keys(b);
+        if (keysA.length !== keysB.length) return false;
+
+        for (let i = 0; i < keysA.length; i++) {
+            const key = keysA[i];
+            // 確保 b 也有這個 key，且對應的 value 深度相等
+            if (!Object.prototype.hasOwnProperty.call(b, key) || !this.isEqual(a[key], b[key])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Deep merge objects
+     */
+    merge(target, ...sources) {
+        if (!sources.length) return target;
+
+        // 內部遞迴函式，攜帶 WeakSet 來記錄已經訪問過的物件
+        const mergeDeep = (target, source, visited = new WeakSet()) => {
+            // 確保 source 是物件或陣列
+            if (source === null || typeof source !== 'object') return target;
+
+            // 防止循環引用 (Circular Reference) 造成的無限迴圈
+            if (visited.has(source)) return target;
+            visited.add(source);
+
+            for (const key in source) {
+                // 忽略原型鏈上的屬性
+                if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
+
+                const sourceVal = source[key];
+                const targetVal = target[key];
+
+                if (this.isPlainObject(sourceVal)) {
+                    // 來源是物件：若目標不是純物件，則初始化為空物件
+                    if (!this.isPlainObject(targetVal)) {
+                        target[key] = {};
+                    }
+                    mergeDeep(target[key], sourceVal, visited);
+
+                } else if (Array.isArray(sourceVal)) {
+                    // 來源是陣列：若目標不是陣列，則初始化為空陣列
+                    if (!Array.isArray(targetVal)) {
+                        target[key] = [];
+                    }
+                    mergeDeep(target[key], sourceVal, visited);
+
+                } else if (sourceVal !== undefined) {
+                    // Lodash 行為：不處理 undefined，但允許 null、字串、數字等直接覆寫
+                    target[key] = sourceVal;
+                }
+            }
+            return target;
+        };
+
+        // 依序將所有 source 合併進 target
+        for (const source of sources) {
+            mergeDeep(target, source);
+        }
+
+        return target;
+    }
+
+    /**
+     * Deep clone object
+     */
+    cloneDeep(value, cache = new WeakMap()) {
+        // 1. 處理基本型別 (Primitive types)、null 與 Function
+        // 注意：Lodash 對單純的 Function 預設回傳 {}，但實務上回傳原本的 Function 參考更實用。
+        if (value === null || typeof value !== 'object') {
+            return value;
+        }
+
+        // 2. 處理循環參考 (Circular references)
+        // 如果這個物件已經被複製過，直接回傳快取中的複本
+        if (cache.has(value)) {
+            return cache.get(value);
+        }
+
+        // 3. 根據物件類型進行相應的處理
+        const type = Object.prototype.toString.call(value);
+        let clone;
+
+        switch (type) {
+            case '[object Date]':
+                return new Date(value.getTime());
+
+            case '[object RegExp]':
+                clone = new RegExp(value.source, value.flags);
+                clone.lastIndex = value.lastIndex; // 保留正則的執行狀態
+                return clone;
+
+            case '[object Map]':
+                clone = new Map();
+                cache.set(value, clone); // 先放入快取，再處理內部結構，防止循環參考
+                value.forEach((val, key) => {
+                    // Lodash 會對 Map 的 key 和 value 都進行深拷貝
+                    clone.set(this.cloneDeep(key, cache), this.cloneDeep(val, cache));
+                });
+                return clone;
+
+            case '[object Set]':
+                clone = new Set();
+                cache.set(value, clone);
+                value.forEach((val) => {
+                    clone.add(this.cloneDeep(val, cache));
+                });
+                return clone;
+
+            case '[object Array]':
+                clone = new Array(value.length);
+                cache.set(value, clone);
+                value.forEach((val, index) => {
+                    clone[index] = this.cloneDeep(val, cache);
+                });
+                return clone;
+
+            case '[object Object]':
+                // Object.create(Object.getPrototypeOf(value)) 可以保留原本 Class 的原型鏈 (Prototype)
+                clone = Object.create(Object.getPrototypeOf(value));
+                cache.set(value, clone);
+
+                // Reflect.ownKeys 可以同時取得一般的字串 key 與 Symbol key
+                Reflect.ownKeys(value).forEach((key) => {
+                    clone[key] = this.cloneDeep(value[key], cache);
+                });
+                return clone;
+
+            default:
+                // 對於無法深拷貝的特殊型別 (如 WeakMap, Window, HTML元素等)，直接回傳原值或空物件
+                return value;
+        }
+    }
+
+    isPlainObject(value) {
+        // 1. 排除 null 和非物件型別
+        if (typeof value !== 'object' || value === null) {
+            return false;
+        }
+
+        // 2. 排除陣列、Map、Set、Date 等原生非純物件 (Lodash 會先做這層基本過濾)
+        if (Object.prototype.toString.call(value) !== '[object Object]') {
+            return false;
+        }
+
+        // 3. 取得物件的原型
+        const proto = Object.getPrototypeOf(value);
+
+        // 4. 支援 Object.create(null) 的情況
+        if (proto === null) {
+            return true;
+        }
+
+        // 5. 確保它的原型是最基礎的 Object 原型 (解決跨 iframe 問題)
+        let baseProto = proto;
+        while (Object.getPrototypeOf(baseProto) !== null) {
+            baseProto = Object.getPrototypeOf(baseProto);
+        }
+
+        return proto === baseProto;
+    }
+
+    /**
      * 處理連續重複字串的合併
      * @param {string[]} arr - 輸入的字串陣列
      * @returns {string[]} - 傳回合併連續重複項後的新陣列
@@ -76,16 +523,16 @@ class Utiller {
      */
     compactConsecutive = (arr) => {
         // 1. 確保傳入參數為陣列，避免程式崩潰
-        if (!_.isArray(arr)) return [];
+        if (!Array.isArray(arr)) return [];
 
-        // 2. _.sortedUniq 會移除陣列中連續且重複的元素
-        return _.sortedUniq(arr);
+        // 2. 移除陣列中連續且重複的元素
+        return arr.filter((v, i, a) => i === 0 || v !== a[i - 1]);
     };
 
     /**
      * 刪除物件裡面特別的屬性，預設是刪除value為undefined
      **/
-    removeAttributeBy(object, predicate = (value) => _.isUndefined(value)) {
+    removeAttributeBy(object, predicate = (value) => value === undefined) {
         for (const key in object) {
             if (predicate(object[key])) {
                 delete object[key];
@@ -105,10 +552,9 @@ class Utiller {
      */
     getUrlPath(...segments) {
         return segments
-            .filter(segment => segment !== null && segment !== undefined && segment !== '')
-            .map(segment => String(segment))
-            .map(segment => segment.replace(/^\/+|\/+$/g, ''))
-            .filter(segment => segment !== '')
+            .filter(segment => segment != null && segment !== '') // 排除 null/undefined/空字串
+            .map(segment => String(segment).replace(/^\/+|\/+$/g, '')) // 轉字串並去頭尾斜線
+            .filter(segment => segment !== '') // 再次過濾只剩下斜線被清空的情境
             .join('/')
             .replace(/^(https?):\/(?!\/)/, '$1://');
     }
@@ -126,22 +572,20 @@ class Utiller {
      *
      */
     getStringsOfFlatten(strings = []) {
-        return _.chain(strings)
-            .flatten()                   // 1. 攤平：將 ["通知"] 變成 "通知"
+        return strings.flat()
             .filter(item => {            // 2. 過濾：移除無意義內容
                 return item !== null &&
                     item !== undefined &&
                     item !== '';
-            })
-            .value();
+            });
     }
 
     getNumberOfNormalize(value, defaultValue = 0) {
-        if (_.isNumber(value))
+        if (typeof value === 'number' && !Number.isNaN(value))
             return value;
         try {
-            const force = _.toNumber(value)
-            return _.isNumber(force) && !isNaN(force) ? force : defaultValue;
+            const force = Number(value)
+            return (typeof force === 'number' && !Number.isNaN(force)) ? force : defaultValue;
         } catch (error) {
             this.appendError(`448561684561 ${error.message}`)
         }
@@ -149,13 +593,14 @@ class Utiller {
     }
 
     getStringOfNormalize(value, defaultValue = '', trim = false) {
-        if (_.isString(value))
-            return trim ? _.trim(value) : value;
+        if (value === null || value === undefined) return defaultValue;
+        if (typeof value === 'string') return trim ? value.trim() : value;
+
         try {
-            const force = _.toString(value);
-            return this.isOrEquals(force, '', 'undefined') ? defaultValue : trim ? _.trim(force) : force;
+            const force = String(value);
+            return force === '' ? defaultValue : (trim ? force.trim() : force);
         } catch (error) {
-            thisappendError(`448616845453 ${error.message}`)
+            this.appendError(`448616845453 ${error.message}`)
         }
         return defaultValue;
     }
@@ -167,8 +612,8 @@ class Utiller {
 
         const numbers = versionName.split('.');
         for (const number of numbers) {
-            const toNum = _.toNumber(number);
-            if (!_.isNumber(toNum) || isNaN(toNum))
+            const toNum = Number(number);
+            if (!(typeof (toNum) === "number" && !Number.isNaN(toNum)) || isNaN(toNum))
                 return false;
         }
         return true;
@@ -181,7 +626,7 @@ class Utiller {
 
     /** 1.0.1 => 1.0.2 */
     getStringOfVersionIncrement(stringOfVersion, delta = 1) {
-        const numbers = stringOfVersion.split('.').map((each) => _.toNumber(each));
+        const numbers = stringOfVersion.split('.').map((each) => Number(each));
         const last = numbers.length - 1;
         numbers[last] = numbers[last] + delta;
         return numbers.join('.');
@@ -259,7 +704,7 @@ class Utiller {
     }
 
     isProductionEnvironment = () => {
-        return _.isEqual(this.getEnvironment(), 'prod');
+        return this.isEqual(this.getEnvironment(), 'prod');
     }
 
     appendInfo(...logs) {
@@ -300,7 +745,7 @@ class Utiller {
             const symbol = randomValue;
             this.appendInfo(`before executed ===> i'm symbol of ${symbol}, ready to be executed, inner param = ${_funparam}`);
             await this.syncDelay(randomValue);
-            if (_.isFunction(errorSimulator) && errorSimulator(param)) throw Error('force to made error happen');
+            if ((typeof (errorSimulator) === "function") && errorSimulator(param)) throw Error('force to made error happen');
             this.appendInfo(`after executed ===> i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds ${param ? `i hav params ===> ${param}` : ''}`);
             return { randomValue, symbol, param };
         } catch (error) {
@@ -318,7 +763,7 @@ class Utiller {
     accumulate(target, conditions) {
         let beginning = target;
         for (const condition of conditions) {
-            if (condition !== undefined && _.isFunction(condition)) {
+            if (condition !== undefined && (typeof (condition) === "function")) {
                 beginning = condition(beginning);
             }
         }
@@ -327,7 +772,7 @@ class Utiller {
 
     isOrEquals(target, ...several) {
         for (const each of several) {
-            if (_.isEqual(target, each)) return true;
+            if (this.isEqual(target, each)) return true;
         }
         return false;
     }
@@ -349,7 +794,7 @@ class Utiller {
 
     or(...booleans) {
         for (const boo of booleans) {
-            if (_.isBoolean(boo) && boo)
+            if ((typeof (boo) === "boolean") && boo)
                 return true;
         }
         return false;
@@ -370,7 +815,14 @@ class Utiller {
      *  // => 8
      * */
     nth(array, index = -1) {
-        return _.nth(array, index % _.size(array));
+        if (array === null || array === undefined) return undefined;
+
+        // 如果是物件且非陣列，轉為 value 陣列
+        const target = (typeof array === "object" && !Array.isArray(array))
+            ? Object.values(array)
+            : array;
+
+        return target.at(index % (target.length || 1));
     }
 
     /** 選一個exist的candidate回傳, 像是firebase 可以 idToken 又可以 oauthIdToken*/
@@ -383,8 +835,12 @@ class Utiller {
 
     /** '###string' =>  'string' */
     getStringOfDropHeadSign(string, sign) {
-        return _.dropWhile(Array.from(string),
-            (each) => _.isEqual(each, sign)).join('')
+        let i = 0;
+        // 直接用字串指標比對，遇到不是 sign 的字元就停下來
+        while (i < string.length && string[i] === sign) {
+            i++;
+        }
+        return string.slice(i);
     }
 
     isAndWith(self, predicate, ...several) {
@@ -407,16 +863,16 @@ class Utiller {
      *
      *  */
     has(collection, item, precisely = false) {
-        if (_.isArray(collection)) {
+        if (Array.isArray(collection)) {
             if (precisely)
-                return _.findIndex(collection, (each) => _.isEqual(item, each)) > -1;
+                return (collection).findIndex((each) => this.isEqual(item, each)) > -1;
             else
-                return _.indexOf(collection, item) > -1;
+                return (collection).indexOf(item) > -1;
         }
-        if (_.isObject(item)) {
+        if (this.isObject(item)) {
             return collection[item];
         }
-        if (_.isString(collection)) {
+        if ((typeof (collection) === "string")) {
             return collection.indexOf(item) > -1;
         }
         return false;
@@ -424,7 +880,7 @@ class Utiller {
 
     /** 就是比較_.isEqual(isEqual的註解很重要), 不是用address去判斷 */
     containsBy(array, item) {
-        return _.findIndex(array, (each) => _.isEqual(each, item)) >= 0
+        return (array).findIndex((each) => this.isEqual(each, item)) >= 0
     }
 
     /** (Parentheses) */
@@ -467,11 +923,17 @@ class Utiller {
     /** alwaysTheSame 就是產出的encrypt value會固定(適合用在欄位的key), 不然會產生隨機偏移量, 但皆不影響解譯 */
     getEncryptString(texts, key = configerer.ENCRYPT_KEY, alwaysTheSame = false) {
         const maxLengthOfKey = 22;
-        if (key.length > maxLengthOfKey)
-            throw new ERROR(8010, _.size(key))
-        /** 帶入偏移量, keyOfkeyOfCrypto 需要是長度為22的字串, 太獵奇了*/
-        const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
-        const keyOfCrypto = alwaysTheSame ? CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`) : key;
+        const keyStr = String(key);
+
+        if (keyStr.length > maxLengthOfKey) throw new ERROR(8010, keyStr.length);
+
+        // 文字應使用 Utf8.parse
+        const ivOfCrypto = CryptoJS.enc.Utf8.parse("thisIsIVWeNeedToGenerateTheSameValue".substring(0, 16)); // AES IV 需剛好 16 bytes
+
+        // 使用 padEnd 準確補齊至 22 長度 (此處 AES key length 由 CryptoJS 處理)
+        const finalKeyStr = alwaysTheSame ? keyStr.padEnd(maxLengthOfKey, '0') : keyStr;
+        const keyOfCrypto = alwaysTheSame ? CryptoJS.enc.Utf8.parse(finalKeyStr) : finalKeyStr;
+
         return CryptoJS.AES.encrypt(texts, keyOfCrypto, { iv: ivOfCrypto }).toString();
     }
 
@@ -479,71 +941,105 @@ class Utiller {
     getEncryptStringV2(texts, key = configerer.ENCRYPT_KEY, alwaysTheSame = false) {
         const maxLengthOfKey = 22;
         if (key.length > maxLengthOfKey)
-            throw new ERROR(8010, _.size(key))
+            throw new ERROR(8010, (Array.isArray(key) ? key.length : (typeof (key) === "object" && key !== null ? Object.keys(key).length : String(key).length)))
         /** 帶入偏移量, keyOfkeyOfCrypto 需要是長度為22的字串, 太獵奇了*/
         const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
-        const keyOfCrypto = alwaysTheSame ? CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`) : key;
+        const keyOfCrypto = alwaysTheSame ? CryptoJS.enc.Base64.parse(`${key}${Array.from({ length: maxLengthOfKey - key.length }, (_, i) => i).join('')}`) : key;
         return CryptoJS.AES.encrypt(JSON.stringify({ content: texts }), keyOfCrypto, { iv: ivOfCrypto }).toString();
     }
 
     getDecryptString(ciphertext, key = configerer.ENCRYPT_KEY) {
         const maxLengthOfKey = 22;
-        if (key.length > maxLengthOfKey)
-            throw new ERROR(8010, _.size(key))
+        const stringKey = String(key);
 
-        const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
+        if (stringKey.length > maxLengthOfKey) throw new ERROR(8010, stringKey.length);
+
+        // IV 統一改用 Utf8
+        const ivOfCrypto = CryptoJS.enc.Utf8.parse("thisIsIVWeNeedToGenerateTheSameValue".substring(0, 16));
+
         try {
-            const value = CryptoJS.AES.decrypt(ciphertext, key, { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8)
-            if (!_.isEmpty(value.trim()))
-                return value;
-        } catch (e) {
-            /** 把問題給吃掉了, 也不能紀錄, 因為用了appendError*/
-        }
-        return CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`), { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8);
+            const value = CryptoJS.AES.decrypt(ciphertext, stringKey, { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8);
+            if (value && value.trim().length > 0) return value;
+        } catch (e) {}
+
+        // 使用 padEnd 補齊
+        const fallbackKeyStr = stringKey.padEnd(maxLengthOfKey, '0');
+        const fallbackKey = CryptoJS.enc.Utf8.parse(fallbackKeyStr);
+
+        return CryptoJS.AES.decrypt(ciphertext, fallbackKey, { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8);
     }
 
     getDecryptStringV2(ciphertext, key = configerer.ENCRYPT_KEY) {
         const maxLengthOfKey = 22;
-        if (key.length > maxLengthOfKey)
-            throw new ERROR(8010, _.size(key))
+
+        // 1. 安全地取得 key 的長度，避免下面重複計算
+        let currentKeyLength = 0;
+        if (Array.isArray(key)) {
+            currentKeyLength = key.length;
+        } else if (typeof key === "object" && key !== null) {
+            currentKeyLength = Object.keys(key).length;
+        } else {
+            currentKeyLength = String(key).length;
+        }
+
+        if (currentKeyLength > maxLengthOfKey) {
+            // 備註：保留你原本寫的 ERROR，若這不是你們自訂的全域類別，請改為 Error
+            throw new ERROR(8010, currentKeyLength);
+        }
 
         const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
+
         try {
-            const stringOfObj = CryptoJS.AES.decrypt(ciphertext, key, { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8)
-            if (!_.isEmpty(stringOfObj.trim())) {
+            // 嘗試第一次解密
+            const stringOfObj = CryptoJS.AES.decrypt(ciphertext, key, { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8);
+
+            // 2. 修復：因為 .toString() 出來必定是字串，直接檢查是否有實質內容即可
+            if (stringOfObj && stringOfObj.trim().length > 0) {
                 const obj = JSON.parse(stringOfObj);
                 return obj.content;
             }
         } catch (e) {
             /** 把問題給吃掉了, 也不能紀錄, 因為用了appendError*/
         }
-        const stringOfObj = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`), { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8);
-        const obj = JSON.parse(stringOfObj);
-        return obj.content;
+
+        // 3. 第一次解密失敗或結果為空，進行第二次嘗試 (使用 padding 後的 key)
+        const stringKey = String(key); // 確保轉為字串
+        const paddingLength = maxLengthOfKey - stringKey.length;
+
+        // 產生補齊用的數字字串 (例如缺 3 碼就會補上 '012')
+        const paddingString = Array.from({ length: paddingLength }, (_, i) => i).join('');
+        const fallbackKey = CryptoJS.enc.Base64.parse(`${stringKey}${paddingString}`);
+
+        const stringOfObjFallback = CryptoJS.AES.decrypt(ciphertext, fallbackKey, { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8);
+        const objFallback = JSON.parse(stringOfObjFallback);
+
+        return objFallback.content;
     }
 
     getFirebaseFormattedString(texts) {
-        return _.replace(texts, /[\.\#\$\[\]]/g, "-").trim();
+        return String(texts).replace(/[\.\#\$\[\]]/g, "-").trim();
     }
 
     formalizeNamesToArray(singerString) {
-        let normalize = singerString;
-        /** avoid this situation, 演唱：陳勢安、畢書盡 (Bii)   編曲：Jerry C */
+        let normalize = String(singerString || '');
+
+        // 移除演唱、編曲這類標籤之後的部分
         normalize = normalize.split(configerer.SEPARATE_TONE_SINGER)[0].trim();
 
-        normalize = _.replace(normalize, /[,\/#!$%\^&\*;:{}=_`、~()（）]/g, "_").trim();
-        /** avoid this situation, 陳勢安_畢書盡__Bii_ */
+        // 替換特殊字元為 _
+        normalize = normalize.replace(/[, \/#!$%\^&\*;:{}=_`、~()（）]/g, "_").trim();
+
+        // Firebase 特殊字元轉換
         normalize = this.getFirebaseFormattedString(normalize);
 
-        normalize = _.replace(normalize, /\_\_+/g, '_').trim();
+        // 取代多個連續底線為單一底線，並同時使用 replace 拔除頭尾的底線
+        normalize = normalize.replace(/_+/g, '_').replace(/^_+|_+$/g, '').trim();
 
-        while (_.endsWith(normalize, "_")) {
-            /** avoid this situation, 陳勢安_畢書盡_Bii_ */
-            normalize = normalize.slice(0, -1).trim();
-        }
-        const words = normalize.split('_');
-        /** avoid this situation, ["畢書盡 ","Bii","陳勢安 "] */
-        return _.map(words, word => _.trim(word));
+        // 拆分並過濾掉可能的空字串
+        return normalize
+            .split('_')
+            .map(word => String(word).trim())
+            .filter(word => word !== '');
     }
 
     getShuffledArrayWithLimitCountHighPerformance(arr, n) {
@@ -583,11 +1079,11 @@ class Utiller {
 
     /** http://wnj.cdji/david.mp3 => mp3 */
     getExtensionFromPath(path) {
-        const name = path.split('/').pop()
-        const segments = name.split('.');
-        return _.size(segments) > 1 ? segments.pop() : '';
+        if (!path) return '';
+        const segments = String(path).split('/').pop().split('.');
+        // 如果檔名沒有小數點（長度1），或是類似 .hiddenfile 這種開頭是點的情況
+        return segments.length > 1 ? segments.pop() : '';
     }
-
     /** ../folderName/fileName.xxx  => ./folderName */
     getFolderPathOfSpecificPath(path) {
         const split = path.split('/');
@@ -602,7 +1098,7 @@ class Utiller {
     getFolderNameOfFilePath(path) {
         if (this.isValidFilePath(path)) {
             const splits = path.split('/');
-            return _.nth(splits, -2);
+            return (splits).at(-2);
         } else {
             throw new ERROR(9999, `64255615 path is not valid '${path}'`)
         }
@@ -616,24 +1112,28 @@ class Utiller {
 
     /** 取得檔案的目錄, path => c://folderName/fileName.js to c://folderName */
     getFileDirPath(path, slash = true) {
-        return _.join(_.initial(_.split(path, '/')), '/') + (slash ? '/' : '');
+        // 1. split('/'): 將字串依 '/' 切成陣列
+        // 2. slice(0, -1): 移除陣列最後一個元素（檔名）
+        // 3. join('/'): 將陣列重新組合成字串
+        const dirPath = String(path).split('/').slice(0, -1).join('/');
+        return dirPath + (slash ? '/' : '');
     }
 
     /** path ==> /asd/cc/dfj/jei3.mp3 => */
     isPathEqualsFileType(path, type) {
         const extension = path.split('.').pop();
-        return _.isEqual(extension, type);
+        return this.isEqual(extension, type);
     }
 
     /** 是一個/a/b/c.js 的檔案路徑 */
     isValidFilePath(path) {
         const extension = this.getExtensionFromPath(path);
-        return _.size(extension) > 0;
+        return (Array.isArray(extension) ? extension.length : (typeof (extension) === "object" && extension !== null ? Object.keys(extension).length : String(extension).length)) > 0;
     }
 
     /** 拿前面n個items */
     getArrayOfSize(array, n = 1) {
-        return _.take(array, n);
+        return (array).slice(0, n);
     }
 
     getShuffledArrayWithLimitCount(arr, n) {
@@ -645,7 +1145,7 @@ class Utiller {
      */
     findLowestValue = (items, key = 'price') => {
         // 提取價格並找出最小值
-        const minPrice = _.minBy(items, key)[key];
+        const minPrice = (items).reduce((min, p) => p[key] < min[key] ? p : min, (items)[0])[key];
         // 確保回傳的最低價為 integer 型態
         return Math.floor(minPrice);
     };
@@ -655,7 +1155,7 @@ class Utiller {
      */
     findHighestValue = (items, key = 'price') => {
         // 提取價格並找出最小值
-        const maxPrice = _.maxBy(items, key)[key];
+        const maxPrice = (items).reduce((max, p) => p[key] > max[key] ? p : max, (items)[0])[key];
 
         // 確保回傳的最低價為 integer 型態
         return Math.floor(maxPrice);
@@ -668,8 +1168,8 @@ class Utiller {
      * */
     getStringOfValueRange = (items, key = 'price', sign = '$') => {
         // 找出最小值和最大值
-        const minV = _.minBy(items, key)[key];
-        const maxV = _.maxBy(items, key)[key];
+        const minV = (items).reduce((min, p) => p[key] < min[key] ? p : min, (items)[0])[key];
+        const maxV = (items).reduce((max, p) => p[key] > max[key] ? p : max, (items)[0])[key];
         // 判斷並返回字串
         return maxV === minV ? `$${minV}` : `${sign}${minV} - ${sign}${maxV}`;
     };
@@ -677,9 +1177,9 @@ class Utiller {
 
     /** ignore 就是黑名單的意思 */
     getRandomItemOfArray(array, ...ignores) {
-        if (!_.isArray(array)) throw new ERROR(9999, `why are you so stupid, typeof array should be array, not ==> ${array} `)
-        const filter = _.without(array, ...ignores);
-        const target = _.size(filter) > 0 ? filter : array;
+        if (!Array.isArray(array)) throw new ERROR(9999, `why are you so stupid, typeof array should be array, not ==> ${array} `)
+        const filter = (array).filter(v => !(ignores).includes(v));
+        const target = (Array.isArray(filter) ? filter.length : (typeof (filter) === "object" && filter !== null ? Object.keys(filter).length : String(filter).length)) > 0 ? filter : array;
         const item = this.getShuffledArrayWithLimitCount(target, 1);
         return item.length > 0 ? item[0] : undefined;
     }
@@ -741,12 +1241,12 @@ class Utiller {
     }
 
     getShuffledItemFromArray(arr) {
-        let shuffled = _.shuffle(arr);
+        let shuffled = [...(arr)].sort(() => Math.random() - 0.5);
         return shuffled[0];
     }
 
     getShuffledArray(arr) {
-        let shuffled = _.shuffle(arr);
+        let shuffled = [...(arr)].sort(() => Math.random() - 0.5);
         return shuffled;
     }
 
@@ -768,7 +1268,7 @@ class Utiller {
     }
 
     getObjectValue(obj) {
-        if (_.isObject(obj)) {
+        if (this.isObject(obj)) {
             return Object.values(obj)[0];
         }
         return '';
@@ -787,7 +1287,7 @@ class Utiller {
     }
 
     getObjectKey(obj) {
-        if (_.isObject(obj)) {
+        if (this.isObject(obj)) {
             return Object.keys(obj)[0];
         }
         return '';
@@ -798,10 +1298,10 @@ class Utiller {
     }
 
     isKeywordRule(constraint) {
-        if (_.isUndefined(constraint) || _.isEmpty(constraint))
+        if ((constraint) === undefined || ((constraint) == null || (typeof (constraint) === "object" && Object.keys(constraint).length === 0) || (typeof (constraint) === "string" && (constraint).length === 0)))
             throw new Error('PARAMS CAN NOT BE EMPTY');
 
-        if (!_.isString(constraint))
+        if (!(typeof (constraint) === "string"))
             throw new Error('PARAMS SHOULD BE STRING');
 
         if (constraint.length > 20)
@@ -812,13 +1312,10 @@ class Utiller {
         return Object.keys(object).find(key => object[key] === value);
     }
 
-    startWiths(string, key = []) {
-        for (const _key of key) {
-            if (_.startsWith(string, _key)) {
-                return true;
-            }
-        }
-        return false;
+    startsWith(string, keys = []) {
+        if (string === null || string === undefined) return false;
+        const keyArray = Array.isArray(keys) ? keys : [keys];
+        return keyArray.some(k => String(string).startsWith(k));
     }
 
     getCallersName = () => {
@@ -828,16 +1325,18 @@ class Utiller {
         } catch (e) {
             let re = /(\w+)@|at (\w+) \(/g, st = e.stack, m;
             re.exec(st), m = re.exec(st);
-            if (!_.isNull(m))
+            if (!(m) === null)
                 callerName = m[1] || m[2];
         }
 
-        if (_.startsWith('asyncGeneratorStep', callerName)) callerName = '';
+        if (String('asyncGeneratorStep').startsWith(callerName)) callerName = '';
         return (callerName);
     }
 
     replaceAll(string, patten, to) {
-        return _.replace(string, new RegExp(`${patten}`, `g`), to); /** g就是 global */
+        if (string === null || string === undefined) return '';
+        // 現代 JS 原生支援 replaceAll，不需要自己包裝 RegExp
+        return String(string).replaceAll(patten, to);
     }
 
     /** pattern => {from:'㊟',to:'注'}, {from:'\\(土\\)',to:'(土)'}*/
@@ -859,7 +1358,7 @@ class Utiller {
      * return ['a','d','c']
      * */
     replaceArrayByContentIndex(array, current, latest) {
-        const index = _.indexOf(array, current);
+        const index = (array).indexOf(current);
         array[index] = latest;
     }
 
@@ -876,12 +1375,12 @@ class Utiller {
         while (stack.length > 0) {
             const [current, prefix] = stack.pop();
 
-            if (_.isArray(current)) {
+            if (Array.isArray(current)) {
                 // 將陣列元素反向推入堆疊以保持順序
                 for (let i = current.length - 1; i >= 0; i--) {
                     stack.push([current[i], prefix]); // 陣列元素不加前綴
                 }
-            } else if (_.isObject(current)) {
+            } else if (this.isObject(current)) {
                 // 將物件鍵值對反向推入堆疊
                 const keys = Object.keys(current);
                 for (let i = keys.length - 1; i >= 0; i--) {
@@ -891,7 +1390,7 @@ class Utiller {
                 }
             } else {
                 // 基本型別，添加到結果字串
-                const valueString = _.trim(String(current)); // 確保轉為字串並去除頭尾空白
+                const valueString = String(String(current).trim()); // 確保轉為字串並去除頭尾空白
                 if (valueString.length > 0) { // 避免添加空字串或只有空白的字串
                     result += (result.length > 0 ? sign : '') + prefix + valueString;
                 } else if (prefix.length > 0 && result.length > 0) {
@@ -956,7 +1455,7 @@ class Utiller {
 
     getAttrValueInSequence(info, ...attrs) {
         for (const attr of attrs) {
-            if (!_.isEmpty(info[attr])) {
+            if (!((info[attr]) == null || (typeof (info[attr]) === "object" && Object.keys(info[attr]).length === 0) || (typeof (info[attr]) === "string" && (info[attr]).length === 0))) {
                 return info[attr];
             }
         }
@@ -1001,7 +1500,7 @@ class Utiller {
         let hasIndex = true;
         let indexOfLatest = 0;
         while (hasIndex) {
-            indexOfLatest = _.findIndex(array, predicate, indexOfLatest + 1);
+            indexOfLatest = (array).findIndex((x, i) => i >= indexOfLatest + 1 && (predicate)(x, i));
             if (indexOfLatest > -1) {
                 indexes.push(indexOfLatest);
             } else {
@@ -1018,13 +1517,13 @@ class Utiller {
      * */
     getSliceArrayOfSpecificIndexes(array, ...indexes) {
         const items = [];
-        const size = _.size(array);
+        const size = (Array.isArray(array) ? array.length : (typeof (array) === "object" && array !== null ? Object.keys(array).length : String(array).length));
         for (const index of indexes) {
-            if (!_.isNumber(index))
+            if (!(typeof (index) === "number" && !Number.isNaN(index)))
                 throw new ERROR(9999, `59941278 index should be number => ${index}, ${array}`);
             if (index > size - 1)
                 throw new ERROR(9999, `5994123 index=>${index} is not valid, exceed than array size=${size}, ${array}`);
-            items.push(_.nth(array, index));
+            items.push((array).at(index));
         }
         return items;
     }
@@ -1065,33 +1564,34 @@ class Utiller {
 
     /** 比較內文, 不是只比較 memory address */
     getIndexOfContext(context, stmt) {
-        return _.findIndex(context, (per) => {
-            return _.isEqual(per.trim(), stmt);
+        return (context).findIndex((per) => {
+            return this.isEqual(per.trim(), stmt);
         });
     }
 
     /** 去掉文字裡討厭的換行*/
     toOneLineString(string) {
-        return _.join(_.split(string, '\n'), '');
+        if (string === null || string === undefined) return '';
+        return String(string).replace(/\n/g, '');
     }
 
-    toSpaceLessString(string) {
-        /** 這樣寫也可以 string.split('').map((each) => each.trim()).join(''); */
-        return _.split(string, '').map((each) => _.trim(each)).join('')
+    ttoSpaceLessString(string) {
+        if (string === null || string === undefined) return '';
+        return String(string).replace(/\s/g, '');
     }
 
     toNewLineLessString(string) {
         /** 這樣寫也可以 string.split('').map((each) => each.trim()).join(''); */
-        return _.split(string, '\n').map((each) => _.trim(each)).join('')
+        return String(string).split('\n').map((each) => String(each).trim()).join('')
     }
 
     exist(obj) {
-        return !_.isNull(obj) && !_.isUndefined(obj);
+        return !(obj) === null && !(obj) === undefined;
     }
 
     isUndefinedNullEmpty(obj) {
         const first = obj === undefined || obj === null;
-        const second = _.isString(obj) || (_.isArray(obj) || _.isObject(obj)) ? _.isEmpty(obj) : false;
+        const second = (typeof (obj) === "string") || (Array.isArray(obj) || this.isObject(obj)) ? ((obj) == null || (typeof (obj) === "object" && Object.keys(obj).length === 0) || (typeof (obj) === "string" && (obj).length === 0)) : false;
         return first || second;
     }
 
@@ -1115,7 +1615,7 @@ class Utiller {
     getStringHandledByEachLine(string, predict = (segment, index, segments) => true, separator = '\n') {
         const segments = string.split(separator);
         for (const segment of segments) {
-            predict(segment, _.indexOf(segments, segment), segments);
+            predict(segment, (segments).indexOf(segment), segments);
         }
         return segments.join(separator);
     }
@@ -1129,22 +1629,55 @@ class Utiller {
     getNormalizedStringEndWith(string, predicate) {
         string = this.toCDB(string);
         predicate = this.toCDB(predicate);
-        const after = _.join(_.dropRightWhile(string, (each) => !_.isEqual(each, predicate)), '');
-        return _.isEmpty(after) ? string : after;
+
+        const chars = Array.from(string);
+
+        // 從右邊開始檢查，只要「不等於」predicate 就丟棄
+        const afterArray = this.dropRightWhile(chars, (char) => {
+            return char !== predicate;
+        });
+
+        const after = afterArray.join('');
+
+        // 如果結果是空字串 (代表整個字串都沒有 predicate)，就回傳原字串
+        return after === '' ? string : after;
     }
 
     /** 讓字串開頭不可以是 predicate, ex: `,, \n\t\s i'm good today?` => `i'm good today?` */
-    getNormalizedStringNotStartWith(string, ...predicate) {
+    getNormalizedStringNotStartWith(string, ...predicates) {
+        // 假設 this.toCDB 已實作
         string = this.toCDB(string);
-        const after = _.join(_.dropWhile(string, (each) => this.has(predicate, each)), '');
-        return _.isEmpty(after) ? string : after;
+
+        // 1. 將字串轉為字元陣列，這樣才能通過 dropWhile 的 Array.isArray 檢查
+        const chars = Array.from(string);
+
+        // 2. 呼叫 dropWhile，並傳入正確的 predicate callback
+        const afterArray = this.dropWhile(chars, (char) => {
+            return predicates.includes(char); // 檢查字元是否在要剔除的清單中
+        });
+
+        // 3. 將處理後的陣列轉回字串
+        const after = afterArray.join('');
+
+        // 4. 如果處理後變成空字串，就回傳空字串 (不建議回傳原 string，否則原本全都是 '.' 的字串會原封不動被退回)
+        return after;
     }
 
     /** 讓字串開頭不可以是 predicate, ex: `,, \n\t\s i'm good today?` => `\n\t\s i'm good today` */
-    getNormalizedStringNotEndWith(string, ...predicate) {
+    getNormalizedStringNotEndWith(string, ...predicates) {
+        // 假設 this.toCDB 已實作
         string = this.toCDB(string);
-        const after = _.join(_.dropRightWhile(string, (each) => this.has(predicate, each)), '');
-        return _.isEmpty(after) ? string : after;
+
+        // 1. 將字串轉為字元陣列
+        const chars = Array.from(string);
+
+        // 2. 呼叫 dropRightWhile，並傳入 predicate 判斷函式
+        const afterArray = this.dropRightWhile(chars, (char) => {
+            return predicates.includes(char);
+        });
+
+        // 3. 轉回字串
+        return afterArray.join('');
     }
 
     /**
@@ -1475,7 +2008,7 @@ class Utiller {
     }
 
     isStringContainInLines(context, key) {
-        for (let each of _.split(context, '\n')) {
+        for (let each of String(context).split('\n')) {
             if (this.has(each, key))
                 return true;
         }
@@ -1483,11 +2016,11 @@ class Utiller {
     }
 
     camel(...words) {
-        return _.camelCase(words.join('_'));
+        return this.camelCase(words.join('_'));
     }
 
     upperCamel(...words) {
-        return _.upperFirst(this.camel(...words))
+        return this.upperFirst(this.camel(...words))
     }
 
     /**
@@ -1514,7 +2047,7 @@ class Utiller {
         for (const item of array) {
             const key = predicate(item);
             const content = obj[key];
-            if (content && _.isArray(content)) {
+            if (content && Array.isArray(content)) {
                 content.push(item)
             } else {
                 obj[key] = [item];
@@ -1524,7 +2057,8 @@ class Utiller {
     }
 
     isEmptyString(string) {
-        return _.isEqual(_.trim(string), '');
+        if (string === null || string === undefined) return true;
+        return this.isEqual(String(string).trim(), '');
     }
 
     /**
@@ -1548,7 +2082,7 @@ class Utiller {
      * @returns {Object} - 一個包含合併結果的全新物件。
      */
      merO = (...objs) => {
-         return _.merge(...objs)
+         return this.merge(...objs)
     };
 
     /**
@@ -1593,11 +2127,11 @@ class Utiller {
 
          // 1. 對基礎物件進行深層複製 (Deep Clone)
          // 這是確保原始的 baseObject 及其所有巢狀屬性都不會被修改的關鍵。
-         const clonedTarget = _.cloneDeep(baseObject);
+         const clonedTarget = structuredClone(baseObject);
 
          // 2. 執行深層合併 (Deep Merge)
          // 將所有來源物件 (sources) 依序合併到這個新的複製體 (clonedTarget) 中。
-         return _.merge(clonedTarget, ...sources);
+         return this.merge(clonedTarget, ...sources);
     }
 
     syncSetTimeout(func, ms, callback = () => {
@@ -1643,8 +2177,13 @@ class Utiller {
      *  return: /src/base/AlertDialog.js
      * */
     getRelativePath(pathName, rootName) {
-        return _.dropWhile(pathName, (each, index) => {
-            return _.isEqual(each, rootName[index])
+        // 1. 將字串轉為字元陣列，讓 dropWhile 可以處理
+        const pathChars = Array.from(pathName);
+
+        return this.dropWhile(pathChars, (each, index) => {
+            // 當 index 超過 rootName 長度時，rootName[index] 是 undefined
+            // 此時 each === undefined 會是 false，就會停止丟棄，保留剩下的字元
+            return each === rootName[index];
         }).join('');
     }
 
@@ -1655,7 +2194,7 @@ class Utiller {
      this.appendInfo(arr); [ 0, 4, 5, 6, 7, 8 ]
      */
     dropItemsByIndex(array, from, end) {
-        _.remove(array, (value, index, array) => (end >= index && index >= from));
+        this.removeMutate(array, (value, index, array) => (end >= index && index >= from));
     }
 
     isEven(n) {
@@ -1687,42 +2226,6 @@ class Utiller {
 
     getVisibleOrNone(judgement, flex = false) {
         return {display: judgement ? flex ? 'flex' : 'inherit' : 'none'};
-    }
-
-    stringToInteger(string) {
-        string = _.toUpper(string);
-        switch (string) {
-            case 'A':
-                return 0;
-            case 'B':
-                return 1;
-            case 'C':
-                return 2;
-            case 'D':
-                return 3;
-            case 'E':
-                return 4;
-            case 'F':
-                return 5;
-            case 'G':
-                return 6;
-            case 'H':
-                return 7;
-            case 'I':
-                return 8;
-            case 'J':
-                return 9;
-            case 'K':
-                return 10;
-            case 'L':
-                return 11;
-            case 'M':
-                return 12;
-            case 'N':
-                return 13;
-            default:
-                return 101;
-        }
     }
 
     integerToString(integer) {
@@ -1777,7 +2280,7 @@ class Utiller {
             const object = {}
             for (const rule of rules) {
                 const func = rule.func ? rule.func : (stmt) => stmt;
-                object[rule.to] = this.isUndefinedNullEmpty(rule.from) || !_.isObject(each) ? func(each) : func(each[rule.from]);
+                object[rule.to] = this.isUndefinedNullEmpty(rule.from) || !this.isObject(each) ? func(each) : func(each[rule.from]);
             }
             newbies.push(object);
         }
@@ -1795,14 +2298,14 @@ class Utiller {
      * 把collection 裏面的物件執行一下,會mutate本身*/
     exeAll(collection, ...funcs) {
 
-        if (_.isArray(collection)) {
+        if (Array.isArray(collection)) {
             for (const each of collection) {
                 for (const func of funcs) {
                     func(each);
                 }
             }
             /** 陣列專屬邏輯 */
-        } else if (_.isObject(collection)) {
+        } else if (this.isObject(collection)) {
             for (const each in collection) {
                 for (const func of funcs) {
                     collection[each] = func(collection[each])
@@ -1867,7 +2370,7 @@ class Utiller {
 
     /** 把 /a/v/c/d => /a/v/c/ */
     getStringOfPop(string, separator) {
-        if (!_.isString(string)) {
+        if (!(typeof (string) === "string")) {
             throw new ERROR(9999, `445115,type should be string but ==> ${typeof string}`)
         }
         const segments = string.split(separator);
@@ -1877,7 +2380,7 @@ class Utiller {
 
     /** 把 /a/v/c/d => /v/c/d */
     getStringOfShift(string, separator) {
-        if (!_.isString(string)) {
+        if (!(typeof (string) === "string")) {
             throw new ERROR(9999, `445116,type should be string but ==> ${typeof string}`)
         }
         const segments = string.split(separator);
@@ -1929,23 +2432,23 @@ class Utiller {
      *  */
     constraintOfParam(collection, type, ...others) {
         let result = false;
-        const validOfOthersCondition = _.isEmpty(others) ? true : this.and(...others.map(each => each.logic));
+        const validOfOthersCondition = ((others) == null || (typeof (others) === "object" && Object.keys(others).length === 0) || (typeof (others) === "string" && (others).length === 0)) ? true : this.and(...others.map(each => each.logic));
 
         switch (type) {
             case 'array':
-                if (_.isArray(collection) && validOfOthersCondition)
+                if (Array.isArray(collection) && validOfOthersCondition)
                     result = true;
                 break;
             case 'object':
-                if (_.isObject(collection) && validOfOthersCondition)
+                if (this.isObject(collection) && validOfOthersCondition)
                     result = true;
                 break;
             case 'string':
-                if (_.isString(collection) && validOfOthersCondition)
+                if ((typeof (collection) === "string") && validOfOthersCondition)
                     result = true;
                 break;
             case 'number':
-                if (_.isNumber(collection) && validOfOthersCondition)
+                if ((typeof (collection) === "number" && !Number.isNaN(collection)) && validOfOthersCondition)
                     result = true;
                 break;
             case 'other':
@@ -1953,7 +2456,7 @@ class Utiller {
                     return true
         }
 
-        const stringOfRules = _.isEmpty(others) ? '' : `, ${others.map(each => each.message).join(' | ')}`
+        const stringOfRules = ((others) == null || (typeof (others) === "object" && Object.keys(others).length === 0) || (typeof (others) === "string" && (others).length === 0)) ? '' : `, ${others.map(each => each.message).join(' | ')}`
 
         if (result === false) {
             throw new ERROR(9999, `7474423 type should be ${type} but get '${typeof type}' ${stringOfRules} `)
@@ -1967,7 +2470,7 @@ class Utiller {
      console.log('after: ==> ', result.length, ' | ', array.length) //after: ==>  10  |  40
      */
     getSliceArrayWithMutate(array, n) {
-        const slice = _.remove(array, (each, index) => index < n);
+        const slice = this.removeMutate(array, (each, index) => index < n);
         return slice;
     }
 
@@ -2023,7 +2526,7 @@ class Utiller {
      //[ 'b', 'a', 'c', 'd' ]
      * */
     getArrayOfMoveItemToSpecificIndex(array, item, indexOfDestination) {
-        const indexOfItem = _.indexOf(array, item);
+        const indexOfItem = (array).indexOf(item);
         return this.getArrayOfMoveToSpecificIndex(array, indexOfItem, indexOfDestination);
     }
 
@@ -2034,7 +2537,7 @@ class Utiller {
      *[ 'a', 'c', 'd', 'b' ]
      */
     getArrayOfMoveSpecificItemToAside(array, item, toTail = true) {
-        const indexOfItem = _.indexOf(array, item);
+        const indexOfItem = (array).indexOf(item);
         return this.getArrayOfMoveSpecificIndexToAside(array, indexOfItem, toTail);
     }
 
@@ -2044,12 +2547,12 @@ class Utiller {
      [ 'd', 'a', 'b', 'c' ]
      **/
     getArrayOfMoveSpecificIndexToAside(array, index, toTail = true) {
-        const indexOfLast = _.size(array) - 1;
+        const indexOfLast = (Array.isArray(array) ? array.length : (typeof (array) === "object" && array !== null ? Object.keys(array).length : String(array).length)) - 1;
         return this.getArrayOfMoveToSpecificIndex(array, index, toTail ? indexOfLast : 0);
     }
 
     getECPayCheckMacValue(data, hashKey = '5294y06JbISpM5x9', hashIV = 'v77hoKGq4kWxNNIS') {
-        const clone = _.cloneDeep(data);
+        const clone = structuredClone(data);
         delete clone.CheckMacValue;
         const keys = Object.keys(clone).sort((l, r) => l > r ? 1 : -1);
         let checkValue = '';
@@ -2071,7 +2574,7 @@ class Utiller {
         /** checkValue = Crypto.createHash('sha256').update(checkValue).digest('hex');
          * 之前用crypto做出來的，後來crypto-browsify多年沒有更新，所以都要用CryptoJS處理 2024/03/12
          * */
-        return _.toUpper(CryptoJS.SHA256(checkValue).toString(CryptoJS.enc.Hex));
+        return CryptoJS.SHA256(checkValue).toString(CryptoJS.enc.Hex).toUpperCase();
     }
 
     /** 把一段html文字轉換成類似document的結構 處理後再回傳文字
@@ -2094,7 +2597,7 @@ class Utiller {
 
     /** 會有物件在比較優先權，例如option = {id:1,photo:'url'} choice = {id, photo:'url'}
      *
-     *  const selected = getSpecifyObjectBy([option.photo,choice.photo],(string) => !_.isEmpty(string))
+     *  const selected = getSpecifyObjectBy([option.photo,choice.photo],(string) => !((string) == null || (typeof (string) === "object" && Object.keys(string).length === 0) || (typeof (string) === "string" && (string).length === 0)))
      * */
     getSpecifyObjectBy(array, predicate) {
         for (const item of array) {
@@ -2114,9 +2617,9 @@ class Utiller {
      *
      *   utiller.validatePayloadObjectValid({id: 'djksaio', num: 3, items: [1, 2, 3]},
      *                 [
-     *                     {'id': (value) => _.isString(value)},
-     *                     {'num': (v) => _.isNumber(v)},
-     *                     {items: (v) => _.isArray(v)}
+     *                     {'id': (value) => (typeof (value) === "string")},
+     *                     {'num': (v) => (typeof (v) === "number" && !Number.isNaN(v))},
+     *                     {items: (v) => Array.isArray(v)}
      *                  ])
      *   // =>true
      */
@@ -2126,11 +2629,11 @@ class Utiller {
         }
 
         for (const rule of rules) {
-            if (_.isString(rule)) {
+            if ((typeof (rule) === "string")) {
                 if (this.isUndefinedNullEmpty(content[rule])) {
                     throw new ERROR(9999, `${idOfError} ATTRIBUTE:'${rule}' is not Exist`);
                 }
-            } else if (_.isObject(rule)) {
+            } else if (this.isObject(rule)) {
                 const key = this.getObjectKey(rule);
                 const predicate = this.getObjectValue(rule);
                 if (!predicate(content[key])) {
@@ -2176,11 +2679,11 @@ class Utiller {
     }
 
     getHeadStringSplitBy(string, sign = this.getSeparatorOfUnique()) {
-        return _.split(string, sign).shift();
+        return String(string).split(sign).shift();
     }
 
     getTailStringSplitBy(string, sign = this.getSeparatorOfUnique()) {
-        return _.split(string, sign).pop();
+        return String(string).split(sign).pop();
     }
 
     /** 把array根據indexes分割成slices(array)
@@ -2190,11 +2693,11 @@ class Utiller {
      * */
     getSlicesByIndexes(array = [], indexes = []) {
         const slices = [];
-        _.each(indexes, (each, index, arrayOfIndexes) => {
-            if (_.isEqual(index, indexes.length - 1))
+        indexes.forEach((each, index, arrayOfIndexes) => {
+            if (this.isEqual(index, indexes.length - 1))
                 return false;
 
-            const slice = _.slice(array, each, indexes[index + 1]);
+            const slice = (array).slice(each, indexes[index + 1]);
             slices.push(slice);
         })
         return slices;
@@ -2210,7 +2713,7 @@ class Utiller {
         let hasIndex = true;
         let indexOfLatest = 0;
         while (hasIndex) {
-            indexOfLatest = _.findIndex(array, predicate, indexOfLatest + 1);
+            indexOfLatest = (array).findIndex((x, i) => i >= indexOfLatest + 1 && (predicate)(x, i));
             if (indexOfLatest > -1) {
                 indexes.push(indexOfLatest);
             } else {
@@ -2598,16 +3101,16 @@ class Utiller {
         const firstElement = array[0];
 
         // 1. 處理物件陣列，且提供了 key
-        if (_.isObject(firstElement) && key) {
+        if (this.isObject(firstElement) && key) {
             // 使用 Map 根據 key 去重，效率 O(N)
             const uniqueMap = new Map(array.map(item => [item[key], item]));
             return Array.from(uniqueMap.values());
         }
         // 2. 處理物件陣列，但未提供 key (或 key 無效)
-        else if (_.isObject(firstElement)) {
+        else if (this.isObject(firstElement)) {
             // 回退到 lodash 的深度比較，效率較低 O(N^2)
             console.warn("getSliceArrayOfUniqueOptimized: No key provided for object array, using potentially slow deep comparison.");
-            return _.uniqWith(array, _.isEqual);
+            return array.filter((item, index) => array.findIndex(other => this.isEqual(item, other)) === index);
         }
         // 3. 處理基本型別陣列 (string, number, boolean, null, undefined, symbol)
         else {
@@ -2626,7 +3129,7 @@ class Utiller {
      * @returns {Array<any>} A deduplicated array of the extracted values.
      */
     getUniqueValuesBy(array, key = 'valueOfType') {
-      return _.uniq(array.map(item => item[key]));
+      return Array.from(new Set(array.map(item => item[key])));
         }
 
      /**
@@ -2649,7 +3152,7 @@ class Utiller {
      */
      generateCombinations(...attributes) {
         const keys = attributes.map(attr => attr.key); // 屬性順序
-        const labelMap = _.keyBy(attributes, 'key');   // 用於 content 查 label
+        const labelMap = attributes.reduce((acc, attr) => { acc[attr.key] = attr; return acc; }, {});
 
         // 把每個屬性的 options 提取成格式化陣列
         const optionArrays = attributes.map(attr =>
@@ -2661,8 +3164,8 @@ class Utiller {
         );
 
         // 計算笛卡兒積
-        const cartesianProduct = _.reduce(optionArrays, (acc, curr) =>
-            _.flatMap(acc, a => curr.map(b => [...a, b]))
+        const cartesianProduct = optionArrays.reduce((acc, curr) =>
+            acc.flatMap(a => curr.map(b => [...a, b]))
           , [[]]);
 
         // 格式化每一筆組合
@@ -2685,9 +3188,13 @@ class Utiller {
         });
 
         // 排序：依照屬性順序的 value 遞增（右邊 key 變化最快）
-        return _.sortBy(results, item =>
-          keys.map(key => item.trait[key])
-        );
+        return [...results].sort((a, b) => {
+            for (const key of keys) {
+                if (a.trait[key] > b.trait[key]) return 1;
+                if (a.trait[key] < b.trait[key]) return -1;
+            }
+            return 0;
+        });
     }
 
     /**
@@ -2732,7 +3239,7 @@ class Utiller {
      * @param {Array<string>} keysToRemove - 要刪除的 key 清單
      */
      mutateRemoveKeys(array, keysToRemove) {
-        _.forEach(array, (obj, index) => {
+        array.forEach((obj, index) => {
             const filtered = Object.fromEntries(
               Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
             );
@@ -2755,7 +3262,7 @@ class Utiller {
      * @returns {Array<Object>} - 新的 array（不改變原本的 array）
      */
     removeKeysFromArrayObjects(array, keysToRemove) {
-        return _.map(array, obj =>
+        return array.map(obj =>
           Object.fromEntries(
             Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
           )
@@ -2773,25 +3280,22 @@ class Utiller {
         const ellipsis = "......";
         const ellipsisLength = ellipsis.length;
 
-        // 若文字本身就短，無需裁切
-        if (_.size(originalText) <= maxLength) return originalText;
+        // 1. 強制轉為字串，避免 Number 或 Object 沒有 .length 和 .slice() 導致崩潰
+        const text = String(originalText);
 
-        // 若 maxLength 小於 ellipsis 自身長度，回傳空字串或提示錯誤
+        // 2. 若文字本身就短，無需裁切
+        if (text.length <= maxLength) return text;
+
+        // 3. 若 maxLength 小於 ellipsis 自身長度，回傳空字串
         if (maxLength <= ellipsisLength) return "";
 
-        // 可用來切出前後字串的總長度
+        // 4. 計算並裁切
         const remainingLength = maxLength - ellipsisLength;
-
-        // 前後平均切一半（如果是奇數則前段較短）
         const frontLength = Math.floor(remainingLength / 2);
         const backLength = remainingLength - frontLength;
 
-        const front = _.truncate(originalText, {
-            length: frontLength,
-            omission: ""
-        });
-
-        const back = _.takeRight(originalText, backLength).join("");
+        const front = text.slice(0, frontLength);
+        const back = text.slice(-backLength); // 若 backLength 為 0，這裡依然安全，因為前面邏輯確保了 remainingLength 至少為 1
 
         return `${front}${ellipsis}${back}`;
     }
@@ -2812,8 +3316,8 @@ class Utiller {
      * @returns {Object} - 符合條件的新物件
      */
     getObjectBy(obj,predict = (attr) => attr.checked !== true) {
-        return _.fromPairs(
-          _.toPairs(obj).filter(([_, value]) => predict(value))
+        return Object.fromEntries(
+          Object.entries(obj).filter(([_, value]) => predict(value))
         );
     }
 
@@ -2844,7 +3348,18 @@ class Utiller {
      * @param {Function} predict - 回傳排序 key（可以是陣列以支援多層排序）
      */
     mutateBy(array, predict = (item) => item) {
-        const sorted = _.sortBy(array, predict);
+        const sorted = [...array].sort((a, b) => {
+            const ka = predict(a);
+            const kb = predict(b);
+            if (Array.isArray(ka) && Array.isArray(kb)) {
+                for (let i = 0; i < Math.max(ka.length, kb.length); i++) {
+                    if (ka[i] > kb[i]) return 1;
+                    if (ka[i] < kb[i]) return -1;
+                }
+                return 0;
+            }
+            return ka > kb ? 1 : (ka < kb ? -1 : 0);
+        });
         array.splice(0, array.length, ...sorted);
     }
 
@@ -2858,14 +3373,13 @@ class Utiller {
      *
      **/
     findUniqueStrings(...arrays) {
-        const allStrings = _.flatten(arrays);
-        const grouped = _.countBy(allStrings);
+        const allStrings = arrays.flat();
+        const grouped = allStrings.reduce((acc, val) => { acc[val] = (acc[val] || 0) + 1; return acc; }, {});
 
-        return _.chain(grouped)
-          .pickBy(count => count === 1)
-          .keys()
-          .compact() // 移除 null、undefined、''、0、false、NaN
-          .value();
+        return Object.entries(grouped)
+          .filter(([_, count]) => count === 1)
+          .map(([key, _]) => key)
+          .filter(Boolean);
     }
 
     /**
@@ -2877,14 +3391,7 @@ class Utiller {
      * @returns {string[]} - 潛在關鍵字陣列（至少 2 個字/中文字）。
      */
     generateUniversalKeywords = (sentence, maxLength = 50, maxNgramLength = 4) => {
-        // 引入 Lodash，確保在執行環境中可用
         if (!sentence || typeof sentence !== 'string') {
-            return [];
-        }
-
-        // 假設 Lodash 已經全域引入為 '_'
-        if (typeof _ === 'undefined') {
-            console.error('Lodash is not available. Please ensure it is imported.');
             return [];
         }
 
@@ -2950,12 +3457,11 @@ class Utiller {
         }
 
         // --- 步驟 5: 標準化、去重和過濾 ---
-        const finalKeywords = _.chain(keywords)
+        const finalKeywords = keywords
             .filter(k => k.length >= 2)
             .filter(k => k.length > 2 || !/^[\u4e00-\u9fa5a-z0-9]$/.test(k))
-            .uniq()
-            .sortBy()
-            .value();
+            .filter((value, index, self) => self.indexOf(value) === index)
+            .sort();
 
         return finalKeywords;
     };
@@ -2989,14 +3495,13 @@ class Utiller {
         if (arrays.length === 0) return [];
 
         const [reference, ...rest] = arrays;
-        const allExceptRef = _.flatten(rest);
-        const counted = _.countBy(allExceptRef);
+        const allExceptRef = rest.flat();
+        const counted = allExceptRef.reduce((acc, str) => { acc[str] = (acc[str] || 0) + 1; return acc; }, {});
 
-        return _.chain(counted)
-          .pickBy((count, str) => count === 1 && !reference.includes(str))
-          .keys()
-          .compact() // 過濾掉 null, undefined, '' 等 falsy 值
-          .value();
+        return Object.entries(counted)
+          .filter(([str, count]) => count === 1 && !reference.includes(str))
+          .map(([str]) => str)
+          .filter(Boolean);
     }
 
     /**
@@ -3007,13 +3512,13 @@ class Utiller {
      * @returns {Array} 修改後的原陣列（in-place）
      */
     mutateIndexOfArrayItem = (array, object, index = 0) => {
-        if (!Array.isArray(array) || !_.isObject(object)) return array;
+        if (!Array.isArray(array) || !this.isObject(object)) return array;
 
-        const currentIndex = _.findIndex(array, item => _.isEqual(item, object));
+        const currentIndex = (array).findIndex((x, i) => i >= object && (item => this.isEqual(item)(x, i)));
         if (currentIndex === -1) return array; // 找不到物件，直接回傳
 
         array.splice(currentIndex, 1); // 先移除原位置
-        const targetIndex = _.clamp(index, 0, array.length);
+        const targetIndex = Math.min(Math.max(index, 0), array.length);
         array.splice(targetIndex, 0, object); // 插入到新位置
 
         return array;
@@ -3027,17 +3532,17 @@ class Utiller {
      * @returns {Array} 新的陣列
      */
     getArrayOfModifyObject2Index = (array, object, index = 0) => {
-        if (!Array.isArray(array) || !_.isObject(object)) return array;
+        if (!Array.isArray(array) || !this.isObject(object)) return array;
 
-        const cloned = _.cloneDeep(array); // 深拷貝以避免原陣列被 mutate
-        const currentIndex = _.findIndex(cloned, item => _.isEqual(item, object));
+        const cloned = structuredClone(array); // 深拷貝以避免原陣列被 mutate
+        const currentIndex = (cloned).findIndex((x, i) => i >= object && (item => this.isEqual(item)(x, i)));
         if (currentIndex === -1) return array; // 沒找到物件就回傳原陣列
 
         // 移除原來位置
         cloned.splice(currentIndex, 1);
 
         // 插入到指定位置（修正越界 index）
-        const targetIndex = _.clamp(index, 0, cloned.length);
+        const targetIndex = Math.min(Math.max(index, 0), cloned.length);
         cloned.splice(targetIndex, 0, object);
 
         return cloned;
@@ -3060,12 +3565,12 @@ class Utiller {
         const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
         const generateRandomValue = () =>
-          _.times(8, () => _.sample(charset)).join('');
+          Array.from({ length: 8 }, () => charset[Math.floor(Math.random() * charset.length)]).join('');
 
         const usedValues = new Set(array.map(item => item.value).filter(Boolean));
 
         return array.map(item => {
-            if (_.isEmpty(item.value)) {
+            if (((item.value) == null || (typeof (item.value) === "object" && Object.keys(item.value).length === 0) || (typeof (item.value) === "string" && (item.value).length === 0))) {
                 let newValue;
                 do {
                     newValue = generateRandomValue();
@@ -3090,7 +3595,7 @@ class Utiller {
      * isFirestoreAutoId(null);                   // ❌ false（不是字串）
      */
     isFirestoreAutoId(id) {
-        return _.isString(id) &&
+        return (typeof (id) === "string") &&
           id.length === 20 &&
           /^[A-Za-z0-9]{20}$/.test(id);
     }
@@ -3134,11 +3639,10 @@ class Utiller {
         const usedValues = new Set(origin.map(o => o.value));
 
         // 處理 latest label 清單
-        return _.chain(latest)
-          .uniq() // 1. 移除重複的 label（只保留唯一值）
+        return Array.from(new Set(latest))
           .map(label => {
               // 2. 嘗試從 origin 找出是否已存在該 label
-              const originItem = _.find(origin, { label });
+              const originItem = origin.find(o => o.label === label);
 
               if (originItem) {
                   // 3. 若存在，直接使用 origin 中的 value
@@ -3149,7 +3653,7 @@ class Utiller {
               let value;
               do {
                   // Firestore 可接受的整數範圍（可調整範圍）
-                  value = _.random(2, 999999999);
+                  value = Math.floor(Math.random() * (999999999 - 2 + 1)) + 2;
               } while (usedValues.has(value)); // 確保 value 唯一
 
               // 5. 記錄該值為已使用，避免後續重複
@@ -3157,8 +3661,7 @@ class Utiller {
 
               // 6. 回傳新的物件
               return { label, value };
-          })
-          .value(); // 7. 輸出處理完成的物件陣列
+          });
     };
 
     /**
@@ -3188,7 +3691,7 @@ class Utiller {
       flagKey = 'belong'
     ) => {
         const valuesSet = new Set(values); // 使用 Set 提高效能
-        return _.map(sourceArray, (item) => ({
+        return (sourceArray).map((item) => ({
             ...item,
             [flagKey]: valuesSet.has(item[valueKey]),
         }));
@@ -3248,9 +3751,8 @@ class Utiller {
             }));
         }
 
-        const combinations = _.reduce(
-          nonEmptyArrays,
-          (acc, curr) => _.flatMap(acc, a => curr.map(b => [...a, b])),
+        const combinations = nonEmptyArrays.reduce(
+          (acc, curr) => acc.flatMap(a => curr.map(b => [...a, b])),
           [[]]
         );
 
@@ -3287,7 +3789,7 @@ class Utiller {
     renameKeysInArray = (arr, ...keyMappings) => {
         const mapping = Object.fromEntries(keyMappings);
         return arr.map(item =>
-          _.mapKeys(item, (value, key) => mapping[key] || key)
+          Object.fromEntries(Object.entries(item).map(([key, value]) => [mapping[key] || key, value]))
         );
     };
 
@@ -3313,12 +3815,12 @@ class Utiller {
      */
     getArrayOfMergeBySpecificId = (array1, array2, idKey = "id") => {
         if (!Array.isArray(array2)) return array1;
-        const map2 = _.keyBy(array2, item => _.get(item, idKey));
+        const map2 = array2.reduce((acc, item) => { acc[item[idKey]] = item; return acc; }, {});
 
         return array1.map(item => {
-            const id = _.get(item, idKey);
+            const id = item[idKey];
             const match = map2[id];
-            return match ? _.merge({}, item, match) : item;
+            return match ? this.merge({}, item, match) : item;
         });
     };
 
@@ -3395,7 +3897,7 @@ class Utiller {
      * @returns {boolean}
      */
     isHttpsURL(url) {
-        if (!_.isString(url)) return false;
+        if (!(typeof (url) === "string")) return false;
 
         try {
             const decoded = decodeURIComponent(url.trim());
@@ -3422,58 +3924,34 @@ class Utiller {
      * @returns {number} - 轉換後的小數值，若轉換失敗則回傳 1。
      */
     toPercentageDecimal = (num) => {
-        if (_.isNil(num)) return 1;
+        if (num == null) return 1;
 
         // 若輸入為字串，先移除 "%" 符號與多餘空白
-        if (_.isString(num)) {
+        if ((typeof (num) === "string")) {
             num = num.replace(/%/g, '').trim();
         }
 
         // 轉換為數字
-        const parsed = _.toNumber(num);
+        const parsed = Number(num);
 
         // 若不是有限數字，回傳預設值 1
-        if (!_.isFinite(parsed)) return 1;
+        if (!Number.isFinite(parsed)) return 1;
 
         // 四捨五入到小數點第 10 位
-        return _.round(parsed / 100, 10);
+        return Number(Math.round(parsed / 100 + "e" + 10) + "e-" + 10);
     };
-
 
     /**
      * 🧩 產生合法變數命名的唯一亂碼代碼對照表（支援自訂長度）
      *
      * 將輸入的字串陣列轉換成：
-     * 1️⃣ 合法變數命名 key（以 _.camelCase() 處理）
+     * 1️⃣ 合法變數命名 key（以 this.camelCase() 處理）
      * 2️⃣ 對應唯一亂碼代碼（預設長度 3，第一字母必須為英文字母）
      * 3️⃣ 若 key 重複，拋出錯誤並指出是哪個 key 重複
      *
      * @param {string[]} array - 要轉換的字串陣列
      * @param {number} [length=3] - 代碼長度（預設為 3，最小為 2）
-     * @returns {Object} 回傳一個 JSON 物件，例如：
-     *                   { mainDiv: 'f2x', mainBanner: 'k9A' }
-     *
-     * 📘 範例：
-     * ```js
-     * const arr = ["MainDiv", "MainPromotedBannerSwiperSlide", "MainPromotedBannerSwiperList"];
-     *
-     * console.log(generateUniqueCodeMap(arr)); // 預設長度3
-     * // => { mainDiv: 'a9F', mainPromotedBannerSwiperSlide: 'm2q', mainPromotedBannerSwiperList: 'z5K' }
-     *
-     * console.log(generateUniqueCodeMap(arr, 4)); // 改為4字元
-     * // => { mainDiv: 'a9Fz', mainPromotedBannerSwiperSlide: 'm2qR', mainPromotedBannerSwiperList: 'z5K2' }
-     * ```
-     *
-     * // === 🧪 測試範例 ===
-     *     const arr = [
-     *         "MainDiv",
-     *         "MainPromotedBannerSwiperSlide",
-     *         "MainPromotedBannerSwiperList",
-     *     ];
-     *
-     *     console.log("3字元預設：", generateUniqueCodeMap(arr));
-     *     console.log("4字元代碼：", generateUniqueCodeMap(arr, 4));
-     *
+     * @returns {Object} 回傳一個 JSON 物件
      */
     generateUniqueCodeMap(array, length = 3) {
         if (length < 2) {
@@ -3506,13 +3984,18 @@ class Utiller {
             return code;
         };
 
-        return _.transform(array, (result, key) => {
+        return array.reduce((acc, currentString) => {
+            // 依照註解需求，呼叫 class 內部的 camelCase 方法轉換字串
+            const key = this.camelCase(currentString);
+
             if (usedKeys.has(key)) {
                 throw new Error(`23125453 Duplicate key detected: "${key}"`);
             }
 
             usedKeys.add(key);
-            result[key] = generateRandomCode();
+            acc[key] = generateRandomCode();
+
+            return acc;
         }, {});
     }
 
@@ -3551,7 +4034,7 @@ class Utiller {
     }
 
     getFeeOfDiscount(origin, percentage) {
-        return Math.round(_.multiply(origin, this.toPercentageDecimal(percentage)));
+        return Math.round((origin) * (this.toPercentageDecimal(percentage)));
     }
 
     /**
@@ -3587,12 +4070,12 @@ class Utiller {
         const resultMap = {};
 
         for (const obj of array) {
-            if (!_.isPlainObject(obj)) continue;
+            if (!(typeof obj === 'object' && obj !== null && obj.constructor === Object)) continue;
             for (const [key, value] of Object.entries(obj)) {
                 if (!resultMap[key]) {
-                    resultMap[key] = _.cloneDeep(value);
+                    resultMap[key] = structuredClone(value);
                 } else {
-                    _.merge(resultMap[key], value);
+                    this.merge(resultMap[key], value);
                 }
             }
         }
@@ -3900,7 +4383,7 @@ class Utiller {
      * 3. 回傳filter array,(反查出哪些課程重複會用到其他資訊)
      * */
     getFilteredHeraPeriods(arr, idOfCurrentBooze) {
-        return _.chain(arr)
+        return (arr)
             // 1️⃣ 刪掉 idOfBooze 等於目標值的項目
             .filter(item => item.idOfBooze !== idOfCurrentBooze)
             // 2️⃣ 根據 idOfBooze+idOfVariant 組成唯一鍵 僅保留一組
@@ -3943,7 +4426,7 @@ class Utiller {
         const end = dayjs(`${dateStr} ${endTimeStr}`, 'YYYY/MM/DD HH:mm');
 
         // 2️⃣ 篩選出時間重疊的任務
-        const conflictItems = _.filter(existingTasks, task => {
+        const conflictItems = existingTasks.filter(task => {
             const [pStartStr, pEndStr] = task.period.split('-');
 
             // 解析既有任務的時間戳字串: "202508151530"
@@ -3984,13 +4467,13 @@ class Utiller {
      */
     getArrayOfMappingRef = (current, reference) => {
         // 使用 _.map 迭代 current 陣列，為每個物件建立一個新物件
-        return _.map(current, (currentObj) => {
+        return (current).map((currentObj) => {
             // 使用 _.find 在 reference 陣列中尋找與 currentObj.value 相同的物件
-            const referenceObj = _.find(reference, { value: currentObj.value });
+            const referenceObj = reference.find(r => r.value === currentObj.value);
             // 如果找到對應的參考物件，則使用 _.merge 來合併它們
             // _.merge 會將 referenceObj 的屬性覆蓋到 currentObj 上
             // 否則，返回原始的 currentObj
-            return referenceObj ? _.merge({}, currentObj, referenceObj) : currentObj;
+            return referenceObj ? this.merge({}, currentObj, referenceObj) : currentObj;
         });
     };
 
@@ -4013,7 +4496,7 @@ class Utiller {
             const firstValue = array[0]?.[keyName];
 
             // 使用 _.every 檢查陣列中所有元素，確保其值與第一個元素的值相同
-            const isCurrentKeySame = _.every(array, (item) => {
+            const isCurrentKeySame = array.every((item) => {
                 return item[keyName] === firstValue;
             });
 
@@ -4378,6 +4861,11 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
           // const utiller = new Utiller();
+          // console.log('qqqq => ',utiller.isEqual('a','v'));
+          // console.log(utiller.getRelativePath('/free_marker/src/exam/web/src/base/AlertDialog.js','/free_marker/src/exam/web'));
+          // console.log(utiller.getNormalizedStringNotStartWith('...31231', '.'))
+          // console.log(utiller.getNormalizedStringNotEndWith('.3123111', '1'))
+          // console.log(utiller.getNormalizedStringEndWith('.31234111', '4'))
           // console.log(utiller.getUrlPath('https://a','123','/123ko/','/gfd'));
           // console.log(utiller.getUrlPath('123','/123ko/','/gfd'));
           // console.log(utiller.toPercentageDecimal(30))
@@ -4412,7 +4900,7 @@ if (configerer.DEBUG_MODE) {
             // console.log(`完成decrypt ==> `, answer);
             // const option = {id:1,photo:''}
             // const choice = {id:2, photo:'url'}
-            // console.log(utiller.getSpecifyObjectBy([option.photo,choice.photo], _.isEmpty))
+            // console.log(utiller.getSpecifyObjectBy([option.photo,choice.photo], Util.isEmpty))
             // console.log(utiller.findLowestValue([{ price: 10 }, { price: 120 }, { price: 230 }]))
             // console.log(utiller.findHighestValue([{ price: 10 }, { price: 120 }, { price: 230 }]))
             // console.log(utiller.getStringOfValueRange([{ price: 10 }, { price: 120 }, { price: 230 }]))
@@ -4447,23 +4935,23 @@ if (configerer.DEBUG_MODE) {
             // console.log(utiller.getECPayCurrentTimeFormat(utiller.getTimeStampWithConditions({days: -1})))
 
             // nsertToArray = (array, _index, ...item) => {
-            //     if (_.isEmpty(array)) {
+            //     if (((array) == null || (typeof (array) === "object" && Object.keys(array).length === 0) || (typeof (array) === "string" && (array).length === 0))) {
             //         array.push(...item)
-            //     } else if (_index > _.size(array) - 1) {
+            //     } else if (_index > (Array.isArray(array) ? array.length : (typeof (array) === "object" && array !== null ? Object.keys(array).length : String(array).length)) - 1) {
             //         throw new ERROR(9999, `4654361321 index is large than array size`)
             //     } else if (_index === 0) {
             //         /** push to head */
-            //         const entity = _.slice(array, 0, array.length);
+            //         const entity = (array).slice(0, array.length);
             //         array.length = 0
             //         array.push(...item, ...entity);
-            //     } else if (_index === _.size(array) - 1) {
+            //     } else if (_index === (Array.isArray(array) ? array.length : (typeof (array) === "object" && array !== null ? Object.keys(array).length : String(array).length)) - 1) {
             //         /** push to tail */
             //         array.push(...item);
             //     } else {
             //         _index = _index + 1;
             //         /** 植樹問題拔 我想 */
-            //         const initial = _.slice(array, 0, _index);
-            //         const end = _.slice(array, _index, array.length);
+            //         const initial = (array).slice(0, _index);
+            //         const end = (array).slice(_index, array.length);
             //         const combine = [...initial, ...item, ...end];
             //         array.length = 0;
             //         array.push(...combine);

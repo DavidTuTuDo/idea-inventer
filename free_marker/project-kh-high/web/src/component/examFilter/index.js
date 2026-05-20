@@ -29,7 +29,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
 
     getSubjectName() {
         let result = this.subjectName.trim();
-        if (_.isEqual(result, "數學(舊制)")) result = "數學";
+        if (Util.isEqual(result, "數學(舊制)")) result = "數學";
         return result;
     }
 
@@ -38,7 +38,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
     }
 
     getInjectStyleOfExamFilterHistoryTestDiv(examFilter) {
-        return Util.getVisibleOrNone(!_.isEqual(this.getTitle(), "綜合題目"));
+        return Util.getVisibleOrNone(!Util.isEqual(this.getTitle(), "綜合題目"));
     }
 
     gotoExamPageWithCookie = async (obj) => {

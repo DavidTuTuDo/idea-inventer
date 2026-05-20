@@ -34,7 +34,7 @@ class ModularizedDionysusBacchusComponent extends BaseDionysusBacchusComponent {
     }
 
     getInjectStyleOfDionysusBacchusEditChip(dionysusBacchus) {
-        return Util.getVisibleOrNone(_.isEqual(dionysusBacchus.booze.idOfAuthor, UserInfoRef.getUid()));
+        return Util.getVisibleOrNone(Util.isEqual(dionysusBacchus.booze.idOfAuthor, UserInfoRef.getUid()));
     }
 
     onDionysusBacchusEditChipClicked(param) {

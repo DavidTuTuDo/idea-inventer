@@ -70,7 +70,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
         const linepay = await this.linepayO(itemOfPreciseOrder.idOfAuthor);
         const resultOfLinePayConfirm = await linepay.confirm(payloadOfConfirmLinePay, data.idOfTransaction);
         const codeOfReturn = resultOfLinePayConfirm.returnCode;
-        if (_.isEqual(codeOfReturn, "0000")) {
+        if (Util.isEqual(codeOfReturn, "0000")) {
             await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
                 await this.validateOrderIsUnPaidWaiting(item);
                 return {

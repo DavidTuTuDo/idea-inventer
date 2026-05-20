@@ -131,11 +131,11 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     isProductSell(param) {
-        return _.isEqual(1, param.getSelectedTypeOfProp());
+        return Util.isEqual(1, param.getSelectedTypeOfProp());
     }
 
     isClassSell(param) {
-        return _.isEqual(2, param.getSelectedTypeOfProp());
+        return Util.isEqual(2, param.getSelectedTypeOfProp());
     }
 
     getInjectStyleOfDionysusGaiaAppendSubChip(dionysusGaia) {

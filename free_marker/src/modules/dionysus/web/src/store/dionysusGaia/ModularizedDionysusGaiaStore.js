@@ -55,7 +55,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         let booze = this.getBooze();
         const id = this.getParamOfPidInPath();
         if (Util.isUndefinedNullEmpty(booze) && Util.isFirestoreAutoId(id)) booze = await this.apiOfBooze.fetchBoozeItem(this.getComponent(), id);
-        if (!_.isEqual(id, BOOZE_OF_UNCREATED)) this.setIdOfBooze(id);
+        if (!Util.isEqual(id, BOOZE_OF_UNCREATED)) this.setIdOfBooze(id);
         if (booze && booze.id) this.validateBooze(booze);
         this.validateSubMainValues();
     }
@@ -97,7 +97,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     }
 
     getOptionsOfBrief = (booze, type = "main") => {
-        const attr = _.find(booze.specificAttributes, (each) => _.isEqual(each.key, type));
+        const attr = _.find(booze.specificAttributes, (each) => Util.isEqual(each.key, type));
         return attr ? attr.options : [];
     };
 
@@ -110,7 +110,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         /** 找出是否存在過specificAttribute，然後刪掉的又加回去 */
         const bunchOfLatest = this.getAttributesOfMatchLabels(
             uniques,
-            _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "main"))
+            _.find((this.getBooze() ?? {}).specificAttributes, (each) => Util.isEqual(each.key, "main"))
         );
         /** 為類別加上一個不重複的unique value */
         const latest = Util.getArrayOfFillMissingValues([...this.getBriefMains().map((each) => each.columnData()), ...bunchOfLatest]);
@@ -126,7 +126,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         /** 找出是否存在過specificAttribute，然後刪掉的又加回去 */
         const bunchOfLatest = this.getAttributesOfMatchLabels(
             uniques,
-            _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "sub"))
+            _.find((this.getBooze() ?? {}).specificAttributes, (each) => Util.isEqual(each.key, "sub"))
         );
         /** 為類別加上一個不重複的unique value */
         const latest = Util.getArrayOfFillMissingValues([...this.getBriefSubs().map((each) => each.columnData()), ...bunchOfLatest]);
@@ -177,7 +177,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     truncateString(str, length = 30) {
-        if (!_.isString(str)) return "";
+        if (!Util.isString(str)) return "";
         return _.truncate(str, {
             length,
             omission: "" // 不加 "..."，若要保留可以改為 '...'
@@ -223,7 +223,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     handleIdOfBooze = async () => {
         const id = Util.isUndefinedNullEmpty(this.getIdOfBooze()) ? this.getParamOfPidInPath() : this.getIdOfBooze();
-        if (Util.isUndefinedNullEmpty(id) || _.isEqual(BOOZE_OF_UNCREATED, id)) {
+        if (Util.isUndefinedNullEmpty(id) || Util.isEqual(BOOZE_OF_UNCREATED, id)) {
             /** 如果商品ID 還沒創建時，必須先拿到document id才能有唯一碼作為圖片路徑需求 */
             Util.appendInfo(" debug ==> ", this.getObjectOfBooze());
             const latest = await this.apiOfBooze.submitBoozeItem(this.getComponent(), this.getObjectOfBooze());
@@ -378,7 +378,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     submitTextsOfIndexSetter = async (rows) => {
         await this.handleIdOfBooze();
-        const indexesOfCategory = _.filter(rows, (row) => _.isEqual(true, row.belong)).map((each) => each.value);
+        const indexesOfCategory = _.filter(rows, (row) => Util.isEqual(true, row.belong)).map((each) => each.value);
         const tabsOfSubmit = rows.map((row) => {
             delete row.belong;
             return row;
@@ -387,7 +387,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         if (UserInfo.isAdmin())
             await this.apiOfTabs.submitSelectBounds(
                 this.getComponent(),
-                tabsOfSubmit.map((each) => ({ ...each, id: _.toString(each.value) }))
+                tabsOfSubmit.map((each) => ({ ...each, id: Util.toString(each.value) }))
             );
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), { category: indexesOfCategory }, this.getIdOfBooze());
         this.getBooze().category = indexesOfCategory;
@@ -462,7 +462,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     belong2TaskJob = () => {
-        return _.isEqual(2, this.getSelectedTypeOfProp());
+        return Util.isEqual(2, this.getSelectedTypeOfProp());
     };
 
     onVariantPriceUpdate = async (variant, variants) => {
@@ -475,7 +475,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     updatePriceOfBooze = async (variants) => {
         const lowest = _.minBy(variants, "price");
         const greatest = _.maxBy(variants, "price");
-        const isEqual = _.isEqual(lowest.price, greatest.price);
+        const isEqual = Util.isEqual(lowest.price, greatest.price);
         const rangeOfPrice = isEqual ? `$${lowest.price}` : `$${lowest.price} - $${greatest.price}`;
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), { rangeOfPrice, price: lowest.price, priceB4Discount: lowest.priceB4Discount }, this.getIdOfBooze());
     };

@@ -129,7 +129,7 @@ class ProjectFileHandler extends PathBase {
                         array[index + 1] = '?;';
                     }
                 })
-                const segments = _.remove(latest, (each) => !_.isEqual(each, '?;'));
+                const segments = _.remove(latest, (each) => !Util.isEqual(each, '?;'));
                 /** Util.appendFile('./watchdog1.txt', segments.join('\n,'), true, true); */
                 const content = _.map(segments, each => `"${Util.replaceAllWithSets(each, {
                     from: ' = ',
@@ -234,7 +234,7 @@ class ProjectFileHandler extends PathBase {
                 await Util.persistByPath(destination);
                 for (const filterOfBase of filtersOfBase) {
                     const targetWriteIntoModuleI18n = filterOfBase;
-                    const filterOfModule = _.find(filtersOfModule, (each) => _.isEqual(each.name, filterOfBase.name));
+                    const filterOfModule = _.find(filtersOfModule, (each) => Util.isEqual(each.name, filterOfBase.name));
                     if (filterOfModule)
                         targetWriteIntoModuleI18n.i18n = Util.merO(filterOfBase.i18n, filterOfModule.i18n);
                     /** Util.appendInfo(`\n語言:${lang}`, `\n模組:${nameOfComponent}`, `\ncontent:`, targetWriteIntoModuleI18n); */
@@ -305,7 +305,7 @@ class ProjectFileHandler extends PathBase {
                     baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
                 const trueOrFalse = sourceObj.navigation && sourceObj.navigation.isScrollingHide
                 baseConfigGenerator.appendField(`isScrollingHide`, JSON.stringify(trueOrFalse));
-                baseConfigGenerator.appendField(`useCartie`, JSON.stringify(_.isEqual(sourceObj.useCartie, true)));
+                baseConfigGenerator.appendField(`useCartie`, JSON.stringify(Util.isEqual(sourceObj.useCartie, true)));
                 break;
         }
 
@@ -341,7 +341,7 @@ class ProjectFileHandler extends PathBase {
             function isFunctionBelong2Module(dirName) {
                 const path = Util.joinRespectingDot('./modules', module, FILENAME_OF_SOURCE_JS);
                 const source = require(`./${path}`).default;
-                return _.isArray(source.cloudFunctions) ? Util.has(source.cloudFunctions.map(each => each.name), dirName) : false;
+                return Array.isArray(source.cloudFunctions) ? Util.has(source.cloudFunctions.map(each => each.name), dirName) : false;
             }
 
             // 尋找目標檔案條件：
@@ -376,7 +376,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             // 確保這個模組有對應的普通(非編輯用)元件實體，若無則跳過 (可能是純資料設定)
-            const componentOfModule = _.find(this.getComponents(), (each) => !each.isPreciselyEditableComponent() && _.isEqual(module, each.getName()));
+            const componentOfModule = _.find(this.getComponents(), (each) => !each.isPreciselyEditableComponent() && Util.isEqual(module, each.getName()));
             if (Util.isUndefinedNullEmpty(componentOfModule)) continue;
 
             // Functions 平台：分配 Cloud Function 相關檔案
@@ -457,7 +457,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     async persistCustomizePackages() {
-        const packages = this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform));
+        const packages = this.nodeOfAncestor.getCustomizePackages().filter((each) => Util.isEqual(each.platform, this.platform));
         for (const folder of packages) {
             const genExtraFolderPath = Util.joinRespectingDot(this.genRootPath, folder.root, folder.getName());
             if (fs.existsSync(genExtraFolderPath)) {
@@ -472,7 +472,7 @@ class ProjectFileHandler extends PathBase {
 
     /** 將less/libs/ 底下全部都back-up到 template */
     persistLessLibs() {
-        const files = Util.findFilePathBy(Util.joinRespectingDot(this.genSourcePath, 'less', 'libs'), (file) => _.isEqual('less', file.extension));
+        const files = Util.findFilePathBy(Util.joinRespectingDot(this.genSourcePath, 'less', 'libs'), (file) => Util.isEqual('less', file.extension));
         const to = Util.joinRespectingDot(this.freeMarkerRootPath, 'less', 'libs');
         for (const less of files) {
             Util.copySingleFile(less.path, to, less.fileNameExtension, true);
@@ -483,13 +483,13 @@ class ProjectFileHandler extends PathBase {
         const files = Util.findFilePathBy(this.genSourcePath,
             (each) => {
                 return (
-                    _.isEqual(each.fileNameExtension, `index.js`) ||
-                    _.isEqual(each.fileNameExtension, `test.js`) ||
-                    _.isEqual(each.extension, `less`) ||
-                    _.isEqual(each.fileNameExtension, `app.style.js`) ||
-                    _.isEqual(each.fileNameExtension, `mobile.style.js`) ||
-                    _.isEqual(each.fileNameExtension, `common.style.js`) ||
-                    (_.isEqual(each.folderName, 'i18n') && _.isEqual(each.fileNameExtension, `index.js`))
+                    Util.isEqual(each.fileNameExtension, `index.js`) ||
+                    Util.isEqual(each.fileNameExtension, `test.js`) ||
+                    Util.isEqual(each.extension, `less`) ||
+                    Util.isEqual(each.fileNameExtension, `app.style.js`) ||
+                    Util.isEqual(each.fileNameExtension, `mobile.style.js`) ||
+                    Util.isEqual(each.fileNameExtension, `common.style.js`) ||
+                    (Util.isEqual(each.folderName, 'i18n') && _.isEqual(each.fileNameExtension, `index.js`))
                 )
             },
             'node_modules');
@@ -529,7 +529,7 @@ class ProjectFileHandler extends PathBase {
      * */
     overrideEachFilesFromFolder(...excludes) {
         const normalizedExcludes = excludes.map((ex) => {
-            if (_.isString(ex)) {
+            if (Util.isString(ex)) {
                 return { type: 'fileNameExtension', keyword: ex };
             }
             return ex;
@@ -757,7 +757,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             }
             stmts.push(`match ${self.getFirebaseRuleOfMatchRoute(node)} {`, ..._stmts, '}');
         }
-        await this.recursiveDoingOfNodeEachStruct((node) => !_.isEmpty(node.getPath()) && !node.isObjectOfEmpty(), task)
+        await this.recursiveDoingOfNodeEachStruct((node) => !Util.isEmpty(node.getPath()) && !node.isObjectOfEmpty(), task)
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
         await this.buildDeployDocument('firestore.rules', base.join('\n'), 'firestore:rules', deploy)
     }
@@ -869,7 +869,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
                 if (node.hasLabel()) {
                     const labels = node.getLabel();
-                    if (!_.isArray(labels) || _.size(labels) < 2) throw new ERROR(9999, '746465574 range pick label should be an array');
+                    if (!Array.isArray(labels) || _.size(labels) < 2) throw new ERROR(9999, '746465574 range pick label should be an array');
 
                     const start = node.getFieldNameOfLabel('start');
                     const end = node.getFieldNameOfLabel('end');
@@ -943,7 +943,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             }
 
             if (node.isFloatBackgroundView()) {
-                const clone = _.cloneDeep(node.raw);
+                const clone = Util.cloneDeep(node.raw);
                 if (!node.getParentNode().hasWrap()) {
                     node.getParentNode().setWrapView('div');
                 }
@@ -1488,7 +1488,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             Util.removeAttributeBy(objectOfItem);
             /** 清除掉value為undefined,因為JSON.parse會過不了 */
             stringsOfItem.push(JSON.stringify(objectOfItem));
-            if (_.isString(item.icon)) node.getPreciseAttributeParent().appendChildrenWithJsons({
+            if (Util.isString(item.icon)) node.getPreciseAttributeParent().appendChildrenWithJsons({
                 name: `iconOf${_.upperFirst(node.getName())}4Imp${_.indexOf(alertMenu.items, item)}`,
                 type: SIGN_OF_IMPORT_MUI,
                 defaultValue: item.icon,
@@ -1677,7 +1677,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
         function applyValueProps(node) {
             if (node.isSimpleSelected()) {
-                node.appendListProps({value: `###_.toString(${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}())`});
+                node.appendListProps({value: `###Util.toString(${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}())`});
                 node.appendViewProps({value: `###${node.getName()}.value`});
                 node.appendContents(`{${node.getName()}.label}`);
             } else if (node.isChipView()) {
@@ -2292,7 +2292,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             const editorComponents = [];
             for (let component of source.getComponents()) {
                 if (component.needEditPage()) {
-                    const editorComponent = _.cloneDeep(component);
+                    const editorComponent = Util.cloneDeep(component);
                     editorComponent.setTitle(`${editorComponent.getTitle()}`);
                     editorComponent.setEvents([]);
                     editorComponent.setIsEditableComponent(true)
@@ -2354,20 +2354,20 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 if (Util.isOrEquals(node.getView(), 'SwiperSlide', 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Grid')) node.setView('div');
                 node.setWrapView('div');
                 node.appendWrapContents([`{this.renderItemEditorView(
-                   ${node.getFunctionNameOfItemEditorWithParam()} , ${_.toString(node.hasPath())}
+                   ${node.getFunctionNameOfItemEditorWithParam()} , ${Util.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
                 const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
                 node.appendWrapStyle({...style, borderColor: 'red'});
                 node.appendListStyle({...style, borderColor: 'blue'});
                 node.appendListContents([`{this.renderCollectionEditorView(
-                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())}
+                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${Util.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
             } else if (node.isObject() && node.hasPath()) {
                 node.setWrapView('div');
                 const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
                 node.appendWrapStyle({...style, borderColor: 'green'});
                 node.appendWrapContents([`{this.renderObjectEditorView(
-                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())}
+                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${Util.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
             }
 
@@ -2507,7 +2507,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             /** typeof [array] 會 return object */
             switch (typeof components) {
                 case 'object':
-                    if (_.isArray(components))
+                    if (Array.isArray(components))
                         for (const component of components) {
                             TARGET_COMPONENT_FAST_DEVELOP_MODE = component;
                             await self.execute()

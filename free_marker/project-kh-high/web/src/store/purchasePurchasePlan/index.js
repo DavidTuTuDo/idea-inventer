@@ -14,7 +14,7 @@ class PurchasePurchasePlanStore extends BasePurchasePurchasePlanStore {
     }
 
     isTitle() {
-        return _.isEqual(this.getPid(), -1);
+        return Util.isEqual(this.getPid(), -1);
     }
 
     /** -------------------- async api -------------------- **/

@@ -937,17 +937,17 @@ class CodegenNode {
 
     self = this;
 
-    useServerTime() { return this.isTimeStamp() && _.isEqual(this.forceServerTime, true); }
+    useServerTime() { return this.isTimeStamp() && Util.isEqual(this.forceServerTime, true); }
 
-    asTrim() { return _.isEqual(this.trim, true); }
+    asTrim() { return Util.isEqual(this.trim, true); }
 
-    hasVariant() { return !_.isEmpty(this.variant); }
+    hasVariant() { return !Util.isEmpty(this.variant); }
 
     isBelong2TimeStamp() { return this.belong2TimeStamp; }
 
-    disableBorder() { return _.isEqual(this.border, false); }
+    disableBorder() { return Util.isEqual(this.border, false); }
 
-    disableInput() { return _.isEqual(this.disabled, true); }
+    disableInput() { return Util.isEqual(this.disabled, true); }
 
     getVariant() {
         return this.variant ?? 'outlined'
@@ -966,7 +966,7 @@ class CodegenNode {
     getSpecificComponent(nameOfComponent) {
         const node = this.getNodeOfSource();
         return _.find(node['components'],
-          (component) => _.isEqual(component.name, nameOfComponent))
+          (component) => Util.isEqual(component.name, nameOfComponent))
     }
 
     getPresetAttributes() {
@@ -976,25 +976,25 @@ class CodegenNode {
 
     isBelong2TimeDatePicker() { return this.belong2TimeDatePicker; }
 
-    hasSize() { return this.size && !_.isEmpty(this.size); }
+    hasSize() { return this.size && !Util.isEmpty(this.size); }
 
-    hasMargin() { return this.margin && !_.isEmpty(this.margin); }
+    hasMargin() { return this.margin && !Util.isEmpty(this.margin); }
 
     isBelong2AutoComplete() { return this.belong2AutoComplete; }
 
-    hasIcon() { return !_.isEmpty(this.icon); }
+    hasIcon() { return !Util.isEmpty(this.icon); }
 
     getIcon() { return this.icon ?? ''; }
 
-    needBadge() { return _.isEqual(this.badge, true); }
+    needBadge() { return Util.isEqual(this.badge, true); }
 
-    hasIconOfDeleted() { return !_.isEmpty(this.iconOfDeleted); }
+    hasIconOfDeleted() { return !Util.isEmpty(this.iconOfDeleted); }
 
     getTypeOfTextField() { return this.typeOfTextField; }
 
-    beingScrollable() { return _.isEqual(this.scrollable, true); }
+    beingScrollable() { return Util.isEqual(this.scrollable, true); }
 
-    hasTypeOfTextField() { return !_.isEmpty(this.typeOfTextField); }
+    hasTypeOfTextField() { return !Util.isEmpty(this.typeOfTextField); }
 
     getIconOfDeleted() {
         return this.iconOfDeleted ?? 'DeleteRounded'
@@ -1004,7 +1004,7 @@ class CodegenNode {
 
     isDisableOfColumn() { return _.isEqual(true, this.disableOfColumn); }
 
-    hasCheckedIcon() { return !_.isEmpty(this.checkedIcon); }
+    hasCheckedIcon() { return !Util.isEmpty(this.checkedIcon); }
 
     getCheckedIcon() { return this.checkedIcon ?? ''; }
 
@@ -1046,7 +1046,7 @@ class CodegenNode {
             for (const node of nodes) {
                 if (_.isEqual(node.name, nameOfRef) && Util.isUndefinedNullEmpty(node.ref))
                     nodesOfRef.push(node);
-                if (_.isArray(node.children))
+                if (Array.isArray(node.children))
                     findNodeOfSpecificRef(...node.children)
             }
         }
@@ -1067,7 +1067,7 @@ class CodegenNode {
     useAutoFuse() { return _.isEqual(true, this.autoFuse); }
 
     hasInputRegEx() {
-        return !_.isEmpty(this.inputRegEx);
+        return !Util.isEmpty(this.inputRegEx);
     }
 
     getInputRegEx() {
@@ -1114,15 +1114,15 @@ class CodegenNode {
         return [...isMatch, ...childrenMatches];
     };
 
-    isSelected() { return _.isObject(this.select) && _.isArray(this.select.values); }
+    isSelected() { return Util.isObject(this.select) && Array.isArray(this.select.values); }
 
-    hasLabel() { return this.label && !_.isEmpty(this.label); }
+    hasLabel() { return this.label && !Util.isEmpty(this.label); }
 
-    hasFormat() { return this.format && !_.isEmpty(this.format); }
+    hasFormat() { return this.format && !Util.isEmpty(this.format); }
 
     getFormat() { return this.format ?? `YYYY/MM/DD hh:mm`; }
 
-    hasHelperText() { return this.helperText && !_.isEmpty(this.helperText); }
+    hasHelperText() { return this.helperText && !Util.isEmpty(this.helperText); }
 
     getHelperText() { return this.helperText ?? ''; }
 
@@ -1132,15 +1132,15 @@ class CodegenNode {
 
     hasLabelViewIcon() { return this.labelView && this.labelView.labelIcon && this.labelView.labelIcon.enable; }
 
-    hasDefaultValueOfLabelView() { return this.hasLabelView() && !_.isEmpty(this.labelView.defaultValue); }
+    hasDefaultValueOfLabelView() { return this.hasLabelView() && !Util.isEmpty(this.labelView.defaultValue); }
 
     getFunctionMethods() { return this.methods; }
 
     getStructs() { return this.getNodeOfComponent().getComponents().map(component => component.getStruct()); }
 
-    hasTitle() { return !_.isEmpty(this.title); }
+    hasTitle() { return !Util.isEmpty(this.title); }
 
-    hasColor() { return !_.isEmpty(this.color); }
+    hasColor() { return !Util.isEmpty(this.color); }
 
     getColor() { return this.color ?? 'primary'; }
 
@@ -1265,7 +1265,7 @@ class CodegenNode {
 
     isColumnArray() { return this.isArray() && this.column; }
 
-    isReferenceNode() { return !!this.ref && !_.isEmpty(this.ref); }
+    isReferenceNode() { return !!this.ref && !Util.isEmpty(this.ref); }
 
     hasCopyRightView() { return this.useCopyRightView.enable; }
 
@@ -1367,7 +1367,7 @@ class CodegenNode {
      * 2. selected{name} 也會被指定為string
      * */
     useStringAsValue() {
-        return _.isString(this.getSelectedDefaultValue())
+        return Util.isString(this.getSelectedDefaultValue())
     }
 
     getTypeOfSimpleSelected() { return this.select.type; }
@@ -1488,7 +1488,7 @@ class CodegenNode {
 
     getPaginateThreshold() { return this.paginate.threshold; }
 
-    hasPaginate() { return !!this.paginate && _.isObject(this.paginate); }
+    hasPaginate() { return !!this.paginate && Util.isObject(this.paginate); }
 
     appendWrapStyle(style) {
         this.wrapStyle = {...this.wrapStyle, ...style}
@@ -1758,7 +1758,7 @@ class CodegenNode {
 
     getStmtsOfImport() { return this.stmtsOfImport; }
 
-    hasPermission() { return !!this.permission && !_.isEmpty(this.permission); }
+    hasPermission() { return !!this.permission && !Util.isEmpty(this.permission); }
 
     getListContents() { return this.listContents || []; }
 
@@ -1846,13 +1846,13 @@ class CodegenNode {
 
         function getStmtOfDialogTitle() {
             const dialog = self.getAlertDialog();
-            return _.isEmpty(dialog.title) ? '' : `title={${self.getObservableName()}.${self.getFunctionNameOfDialogTitleGetterWithBracket()}}`;
+            return Util.isEmpty(dialog.title) ? '' : `title={${self.getObservableName()}.${self.getFunctionNameOfDialogTitleGetterWithBracket()}}`;
         }
 
 
         function getStmtOfDialogContent() {
             const dialog = self.getAlertDialog();
-            return _.isEmpty(dialog.content) ? '' : `content={${self.getObservableName()}.${self.getFunctionNameOfDialogContentGetterWithBracket()}}`;
+            return Util.isEmpty(dialog.content) ? '' : `content={${self.getObservableName()}.${self.getFunctionNameOfDialogContentGetterWithBracket()}}`;
         }
 
 
@@ -1917,7 +1917,7 @@ class CodegenNode {
             props.push(getStmtOfDialogTitle());
             props.push(getStmtOfFullWidth());
             props.push(getStmtOfCustomCancelButton());
-            _.remove(props, (each) => _.isEmpty(each))
+            _.remove(props, (each) => Util.isEmpty(each))
             stmt.push(`
             <AlertDialog
             ${props.join('\n')}
@@ -1929,7 +1929,7 @@ class CodegenNode {
 
     isFetchOnlyLogin() { return this.initFetchOnlyLogin ? this.initFetchOnlyLogin : false; }
 
-    getCustomizePackages() { return _.isEmpty(this.customizes) ? [] : this.customizes; }
+    getCustomizePackages() { return Util.isEmpty(this.customizes) ? [] : this.customizes; }
 
     getEventParams() { return this.params || []; }
 
@@ -1955,10 +1955,10 @@ class CodegenNode {
     hasLoginRequiredDialog() { return !!this.loginRequiredAlert; }
 
     /** 就是點擊要再確認的那種dialog */
-    hasConfirmDialog() { return !_.isEmpty(this.getAlertDialog().title); }
+    hasConfirmDialog() { return !Util.isEmpty(this.getAlertDialog().title); }
 
     /** 就是客製化view那種dialog */
-    hasCustomViewDialog() { return !_.isEmpty(this.getAlertDialog().customView); }
+    hasCustomViewDialog() { return !Util.isEmpty(this.getAlertDialog().customView); }
 
     hasAlertDialog() { return this.hasConfirmDialog() || this.hasCustomViewDialog(); }
 
@@ -2125,7 +2125,7 @@ class CodegenNode {
         if (this.isAutoCompleteView()) {
             stmts.push(`/** force update AutoCompleteView view usage */`);
             stmts.push(
-              `const forceUpdate = _.toString(${this.getPreciseAttributeParentName()}.${Util.camel(
+              `const forceUpdate = Util.toString(${this.getPreciseAttributeParentName()}.${Util.camel(
                 'get',
                 this.getFieldNameOfSuggest()
               )}s()) + Util.getRandomHashV2()`
@@ -2176,7 +2176,7 @@ class CodegenNode {
 
     getCookies() {
         const node = this.getNodeOfComponent();
-        return _.isArray(node.cookies) ? node.cookies : [];
+        return Array.isArray(node.cookies) ? node.cookies : [];
     }
 
     needInjectStyle() { return !!this.injectStyle; }
@@ -2194,11 +2194,11 @@ class CodegenNode {
 
     needInjectProps() { return !!this.injectProps; }
 
-    hasPath() { return !!this.path && !_.isEmpty(this.path); }
+    hasPath() { return !!this.path && !Util.isEmpty(this.path); }
 
     getContents(generator) {
         const stmts = [];
-        if (!!this.contents && _.isArray(this.contents)) {
+        if (!!this.contents && Array.isArray(this.contents)) {
             stmts.push(...this.contents)
         }
         if (this.hasAlertDialog() && !this.hasWrap())
@@ -2232,9 +2232,9 @@ class CodegenNode {
         return name;
     }
 
-    hasWrap() { return !!this.wrapView && !_.isEmpty(this.wrapView); }
+    hasWrap() { return !!this.wrapView && !Util.isEmpty(this.wrapView); }
 
-    hasListWrap() { return !!this.listWrapView && !_.isEmpty(this.listWrapView); }
+    hasListWrap() { return !!this.listWrapView && !Util.isEmpty(this.listWrapView); }
 
     hasNavigationView() {
         return !!this.navigation && !!this.navigation.view
@@ -2665,14 +2665,14 @@ class CodegenNode {
     pure() { return this.node; }
 
     hasChildren() {
-        if (this.children !== undefined && !_.isArray(this.children)) {
+        if (this.children !== undefined && !Array.isArray(this.children)) {
             throw new ERROR(9999, `${this.getName()} 宣告的 children 必須是array`);
         }
 
-        return (_.isArray(this.children) && this.children.length > 0);
+        return (Array.isArray(this.children) && this.children.length > 0);
     }
 
-    getChildren() { return _.isArray(this.children) ? this.children : []; }
+    getChildren() { return Array.isArray(this.children) ? this.children : []; }
 
     setChildren(children) {
         this.children = children;
@@ -2741,7 +2741,7 @@ class CodegenNode {
 
     /** 當edit mode的時候, 為了要讓editMode下的元件屬性在less可以繼承 mainMode */
     getOriginalClassNameOfLessUsage(type = 'default') {
-        if (this.isViewModified() && _.isEmpty(this.getOriginalView())) {
+        if (this.isViewModified() && Util.isEmpty(this.getOriginalView())) {
             /** 表示本來這個元件不是View, 不會有OriginalClassName */
             return {exists: false, value: undefined};
         }
@@ -2967,7 +2967,7 @@ class CodegenNode {
             return new CodegenNode({name: SignOfInValidNode});
         }
 
-        if (_.isArray(this.parent)) {
+        if (Array.isArray(this.parent)) {
             if (this.indexOfCollection > -1) {
                 return this.parent[this.indexOfCollection];
             }
@@ -3004,7 +3004,7 @@ class CodegenNode {
 
     getClassName() { return _.upperFirst(this.name); }
 
-    hasURL() { return !_.isEmpty(this.url); }
+    hasURL() { return !Util.isEmpty(this.url); }
 
     getURL() { return this.url; }
 
@@ -3060,13 +3060,13 @@ class CodegenNode {
             for (const obj of arrayOfDefaultValue) {
                 for (const key in obj) {
                     const value = obj[key];
-                    if (_.isArray(value)) {
+                    if (Array.isArray(value)) {
                         const latest = Util.camel(sign, key, `${_.indexOf(arrayOfDefaultValue, obj)}`);
                         refactorI18nMapOfArrayDefaultValue(value, latest)
                     }
 
                     /** icon要在 XXXStore 拿取 material-ocn/4{icon} */
-                    if (_.isString(value) && !_.isEqual(key, 'value') &&  !_.isEqual(key, 'icon')) {
+                    if (Util.isString(value) && !_.isEqual(key, 'value') &&  !_.isEqual(key, 'icon')) {
                         const valueOfI18n = Util.camel(
                           self.getPreciseAttributeGenealogyName(),
                           sign,
@@ -3089,21 +3089,21 @@ class CodegenNode {
                 const _stmts = [];
                 for (const keyOfMajor in object) {
                     const valueOfMajor = object[keyOfMajor];
-                    if (_.isArray(valueOfMajor)) {
+                    if (Array.isArray(valueOfMajor)) {
                         _stmts.push(`${keyOfMajor}:${toNormalizeArrayString(valueOfMajor)}`)
                         continue;
                     }
 
-                    if (_.isObject(valueOfMajor)) {
+                    if (Util.isObject(valueOfMajor)) {
                         const __stmts = [];
                         for (const keyOfMinor in valueOfMajor) {
                             const valueOfMinor = valueOfMajor[keyOfMinor];
-                            if (_.isArray(valueOfMinor)) {
+                            if (Array.isArray(valueOfMinor)) {
                                 __stmts.push(`${keyOfMinor}:${toNormalizeArrayString(valueOfMinor)}`);
                                 continue;
                             }
 
-                            if (_.isString(valueOfMinor)) {
+                            if (Util.isString(valueOfMinor)) {
                                 const latest = Util.camel(
                                   self.getPreciseAttributeGenealogyName(),
                                   keyOfMajor, keyOfMinor, `${_.indexOf(array, object)}`);
@@ -3114,12 +3114,12 @@ class CodegenNode {
                         continue;
                     }
 
-                    if (_.isString(valueOfMajor)) {
+                    if (Util.isString(valueOfMajor)) {
                         const latest = _.startsWith(valueOfMajor, '###') ? Util.getStringOfDropHeadSign(valueOfMajor, `#`) : `'${valueOfMajor}'`;
                         if (self.isArrayOfField() && _.isEqual(keyOfMajor, 'icon')) _stmts.push(`${keyOfMajor}: ${valueOfMajor}`); /** SIGN_OF_IMPORT_MUI */
                         else _stmts.push(`${keyOfMajor}:${latest}`);
                     } else {
-                        _stmts.push(`${keyOfMajor}:${_.toString(valueOfMajor)}`)
+                        _stmts.push(`${keyOfMajor}:${Util.toString(valueOfMajor)}`)
                     }
                 }
                 stmts.push(`{${_stmts.join(',')}}`);
@@ -3140,13 +3140,13 @@ class CodegenNode {
             }
 
             if (this.isArrayOfField()) {
-                const latest = _.cloneDeep(this.getDefaultValue());
+                const latest = Util.cloneDeep(this.getDefaultValue());
                 refactorI18nMapOfArrayDefaultValue(latest);
                 return `${toNormalizeArrayString(latest)}`;
             }
 
             if (this.isArray()) {
-                const latest = _.cloneDeep(this.getDefaultValue());
+                const latest = Util.cloneDeep(this.getDefaultValue());
                 refactorI18nMapOfArrayDefaultValue(latest);
                 return `${toNormalizeArrayString(latest)}.map(each => new ${this.getClassName()}({...each, parentNode: this}))`
             }
@@ -3277,7 +3277,7 @@ class CodegenNode {
     }
 
     getComponents() {
-        return (_.isArray(this.components) ? this.components : []);
+        return (Array.isArray(this.components) ? this.components : []);
     }
 
     getCloudFunctions() { return this.cloudFunctions ?? []; }
@@ -3351,7 +3351,7 @@ class CodegenNode {
 
     /** 在enrich node裡面的Array再加入結構*/
     static appendChildInArray(addressOfArray, rawJson) {
-        if (_.isArray(addressOfArray)) {
+        if (Array.isArray(addressOfArray)) {
             const mother = addressOfArray[0].mother;
             mother.push(rawJson);
             rawJson.parent = addressOfArray.parent
@@ -3369,7 +3369,7 @@ class CodegenNode {
 
     static enrich(nodeOfRaw, parent) {
         let involution = new CodegenNode(nodeOfRaw);
-        if (_.isArray(nodeOfRaw)) {
+        if (Array.isArray(nodeOfRaw)) {
             /** 隨便改變物件的型態,未來會出現各種bug */
             involution = [];
             involution.parent = parent;
@@ -3378,13 +3378,13 @@ class CodegenNode {
                 child.mother = nodeOfRaw;
                 involution.push(this.enrich(child, involution));
             }
-        } else if (_.isObject(nodeOfRaw)) {
+        } else if (Util.isObject(nodeOfRaw)) {
             for (const key in nodeOfRaw) {
                 if (Util.isOrEquals(key, ...this.doNotEnrichAttribute()))
                     involution[key] = nodeOfRaw[key];
-                else if (_.isObject(nodeOfRaw[key]) || _.isArray(nodeOfRaw[key])) {
+                else if (Util.isObject(nodeOfRaw[key]) || Array.isArray(nodeOfRaw[key])) {
                     const obj = nodeOfRaw[key];
-                    if (_.isArray(parent)) {
+                    if (Array.isArray(parent)) {
                         const index = _.indexOf(nodeOfRaw.mother, nodeOfRaw);
                         obj.indexOfCollection = index;
                     }
@@ -3531,14 +3531,14 @@ class ClassGenerator {
         stmt.push(`\n`);
 
         for (const comment of comments) {
-            if (!_.isEmpty(comment)) {
+            if (!Util.isEmpty(comment)) {
                 stmt.push(`\n`);
                 stmt.push(`/** ${comment} */`);
             }
         }
 
         for (const m of macros) {
-            if (!_.isEmpty(m)) {
+            if (!Util.isEmpty(m)) {
                 stmt.push(`\n`);
                 stmt.push(`@${m}`);
             }
@@ -3549,9 +3549,9 @@ class ClassGenerator {
 
         if (arrow || decorator) {
             /** arrow function 不支援 super QQ 08/03 的筆記有紀錄 */
-            stmt.push(`${functionName} = ${isAsync ? 'async' : ''}${decorator ? `${decorator} (` : ``}(${_.isEmpty(params) ? '' : params.join(' ,')}) => ${simple ? '':'{'}`);
+            stmt.push(`${functionName} = ${isAsync ? 'async' : ''}${decorator ? `${decorator} (` : ``}(${Util.isEmpty(params) ? '' : params.join(' ,')}) => ${simple ? '':'{'}`);
         } else
-            stmt.push(`${isAsync ? 'async ' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
+            stmt.push(`${isAsync ? 'async ' : ' '}${functionName}(${Util.isEmpty(params) ? '' : params.join(' ,')}) {`);
 
         if (_.isEqual(decorator, 'inject')) {
             this.appendImport(`{inject}`, `mobx-react`)
@@ -3562,7 +3562,7 @@ class ClassGenerator {
         }
 
         for (let content of contents) {
-            if (!_.isEmpty(content)) {
+            if (!Util.isEmpty(content)) {
                 stmt.push(`\n`);
                 stmt.push(`${content}`);
             }
@@ -3585,7 +3585,7 @@ class ClassGenerator {
      */
     appendFunction(func, params = [], macros = [], comments = [], ...contents) {
         const stmts = this.getFunctionContent(
-            _.isString(func) ? {name: func} : func
+            Util.isString(func) ? {name: func} : func
             , params, macros, comments, ...contents);
         Util.insertToArray(this.context, this.getIndexOfFunctionSign(), ...stmts)
     }
@@ -3641,7 +3641,7 @@ class ClassGenerator {
 
             if (_.isEqual(func.getType(), 'httpOnCall')) {
                 _stmts.push(`const {data, auth:session} = request; `);
-                _stmts.push(`if(_.isEmpty(data.fingerprint)) throw new Error('E0001-${fieldName} 你是壞狗，不可以玩伺服器');`);
+                _stmts.push(`if(Util.isEmpty(data.fingerprint)) throw new Error('E0001-${fieldName} 你是壞狗，不可以玩伺服器');`);
                 _stmts.push(`${fieldName}.setFingerprint(data.fingerprint); `);
             }
 
@@ -3713,7 +3713,7 @@ class ClassGenerator {
             stmt.push(`@${macro}`);
         }
         stmt.push('\n');
-        if (_.isObject(extendz)) {
+        if (Util.isObject(extendz)) {
             this.appendImport(extendz.name, extendz.from ? extendz.from : `.\/${extendz.name}`);
             stmt.push(`class ${className}${extendz ? ` extends ${extendz.name}` : ' '} {`);
         } else {
@@ -3870,7 +3870,7 @@ class ClassGenerator {
 
     /** import `${parts}` from `${from}`,如果parts是{name}, 記得括號內不要有空格*/
     appendImport(parts, from) {
-        if (_.isEmpty(parts)) {
+        if (Util.isEmpty(parts)) {
             this.imports.empty.push(from);
         } else {
             this.imports.all[parts] = from;
@@ -4024,11 +4024,11 @@ class PathBase {
             const nodes = _.filter(arrayOfEachNode, (each) => each.independence);
             for (const node of nodes) {
                 const nameOfReference = node.raw.ref;
-                if (_.isEmpty(nameOfReference)) throw new ERROR(9999, `8487896 node has independence(true), but forget to ref='{nameOfNode}' `)
+                if (Util.isEmpty(nameOfReference)) throw new ERROR(9999, `8487896 node has independence(true), but forget to ref='{nameOfNode}' `)
                 const nodeOfReference = mapOfIndexing[nameOfReference];
                 if (_.isUndefined(nodeOfReference))
                     throw new ERROR(9999, `8487897 node has independence(true) & ref(${nodeOfReference}), but node(${nodeOfReference}) is not exist in project`)
-                _.merge(node.raw, _.cloneDeep(nodeOfReference));
+                Util.merge(node.raw, Util.cloneDeep(nodeOfReference));
                 delete node.raw.independence;
                 delete node.raw.ref;
             }
@@ -4042,7 +4042,7 @@ class PathBase {
                     raw: node
                 })
                 if (!!node.name) mapOfIndexing[node.name] = node;
-                if (_.isArray(node.children)) mapping(...node.children);
+                if (Array.isArray(node.children)) mapping(...node.children);
             }
         }
 
@@ -4065,7 +4065,7 @@ class PathBase {
                 const module = _.clone(require(file.absolute).default);
                 if (Util.has(source.components.map((each) => each.name), module.name)) continue;
                 /** 必免重復的component 被匯入 */
-                const componentsOfExtra = _.isArray(module.componentsOfExtra) ?
+                const componentsOfExtra = Array.isArray(module.componentsOfExtra) ?
                     module.componentsOfExtra.map((component) => {
                         return {...component, isExtraComponent: true};
                     }) : [];
@@ -4085,7 +4085,7 @@ class PathBase {
 
         /** 把component props改變 */
         source.components = source.components.map((component) => {
-            const obj = _.isObject(source.setsOfComponentProp) && source.setsOfComponentProp[component.name];
+            const obj = Util.isObject(source.setsOfComponentProp) && source.setsOfComponentProp[component.name];
             return obj ? {...component, ...obj} : component;
         });
 
@@ -4139,7 +4139,7 @@ class PathBase {
         const functions = source.getCloudFunctions();
         for (const component of _.filter(source.getComponents(), (each) => !each.isPreciselyEditableComponent())) {
             const bunchOfCloudFunction = component.getCloudFunctions();
-            if (_.isArray(bunchOfCloudFunction)) {
+            if (Array.isArray(bunchOfCloudFunction)) {
                 functions.push(...bunchOfCloudFunction.map((each) => {
                     each.isCommonModule = true;
                     return each;
@@ -4511,7 +4511,7 @@ class BaseBuilder extends PathBase {
         else if (child.isNumber())
             return `Util.getNumberOfNormalize(obj.${child.getFieldName()}, ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())}),${this.getCommentDescription(child)}`;
         else if (child.isBoolean())
-            return `_.isBoolean(obj.${child.getFieldName()}) ? obj.${child.getFieldName()} : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())},${this.getCommentDescription(child)}`;
+            return `Util.isBoolean(obj.${child.getFieldName()}) ? obj.${child.getFieldName()} : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())},${this.getCommentDescription(child)}`;
         else if (child.useServerTime()) return `this._firebase().getServerTimeSymbol(),`;
         else return `obj.${child.getFieldName()} ? obj.${child.getFieldName()} : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())},${this.getCommentDescription(child)}`;
     };
@@ -4603,11 +4603,11 @@ class StoreBuilder extends BaseBuilder {
                     }));
             if (child.isBelong2TimeStamp()) continue;
 
-            if (child.isString()) propStmt.push(`if(obj && _.isString(obj.${fieldName}))`);
-            else if(child.isNumber()) propStmt.push(`if(obj && _.isNumber(obj.${fieldName}))`);
-            else if (child.isBoolean()) propStmt.push(`if(obj && _.isBoolean(obj.${fieldName}))`);
-            else if (child.isArrayOfField()) propStmt.push(`if(obj && _.isArray(obj.${fieldName}))`);
-            else if (child.isObjectOfEmpty()) propStmt.push(`if(obj && _.isObject(obj.${fieldName}))`);
+            if (child.isString()) propStmt.push(`if(obj && Util.isString(obj.${fieldName}))`);
+            else if(child.isNumber()) propStmt.push(`if(obj && Util.isNumber(obj.${fieldName}))`);
+            else if (child.isBoolean()) propStmt.push(`if(obj && Util.isBoolean(obj.${fieldName}))`);
+            else if (child.isArrayOfField()) propStmt.push(`if(obj && Array.isArray(obj.${fieldName}))`);
+            else if (child.isObjectOfEmpty()) propStmt.push(`if(obj && Util.isObject(obj.${fieldName}))`);
             else propStmt.push(`if(obj && !Util.isUndefinedNullEmpty(obj.${fieldName}))`);
             propStmt.push(`{`);
             if (child.isArray()) {
@@ -4849,7 +4849,7 @@ class StoreBuilder extends BaseBuilder {
                 const fieldName = Util.camel('conditions', 'of', child.getName());
                 baseGenerator.appendField(fieldName, '[]')
                 baseGenerator.appendFunction(Util.camel('set', child.getName(), 'conditions'), ['conditions'], [], [],
-                    `if(_.isArray(conditions))`,
+                    `if(Array.isArray(conditions))`,
                     `this.${fieldName} = conditions`)
                 baseGenerator.appendFunction(child.getFunctionNameOfClearCondition(), [], [], [],
                     `this.${fieldName}.length = 0`)
@@ -5729,7 +5729,7 @@ class ComponentBuilder extends BaseBuilder {
         if (componentNode.hasPageTitle()) {
             this.appendStmtIntoComponentDidMount(`this.invalidatePageTitle()`);
         }
-        this.appendStmtIntoComponentDidMount(`if(this instanceof ImpComponent && _.isFunction(this.exeAsyncT)) this.exeAsyncT(this.initialize())`)
+        this.appendStmtIntoComponentDidMount(`if(this instanceof ImpComponent && Util.isFunction(this.exeAsyncT)) this.exeAsyncT(this.initialize())`)
         baseGenerator.appendFunction(
             {name: `invalidatePageTitle`, arrow: true}, ['title'], [], [],
             `this.setPageFullTitle(title ?? this.getStore().${this.getFunctionNameOfSimpleGetter(componentNode.getStruct().getFieldNameOfPageTitle(), false)})`
@@ -5893,10 +5893,10 @@ class ComponentBuilder extends BaseBuilder {
             let result;
 
             // --- 1. 處理基本類型：數字 / 布林值 / 字串 ---
-            if (_.isNumber(value) || _.isBoolean(value)) {
+            if (Util.isNumber(value) || Util.isBoolean(value)) {
                 // 巢狀時不加 {}，頂層時加上 {}
                 result = isNested ? `${value}` : `{${value}}`;
-            } else if (_.isString(value)) {
+            } else if (Util.isString(value)) {
                 if (value.startsWith("###")) {
                     const cleaned = Util.getStringOfDropHeadSign(value, "#");
                     // 處理 ### 字串：巢狀時不加 {}，頂層時加上 {}
@@ -5914,7 +5914,7 @@ class ComponentBuilder extends BaseBuilder {
             }
 
             // --- 2. 處理陣列 (遞迴點 1) ---
-            if (_.isArray(value)) {
+            if (Array.isArray(value)) {
                 // 對陣列中的每個元素遞迴調用 normalize，並標記 isNested = true
                 // 陣列總是使用 [] 包圍
                 const stmts = value.map(val => normalize(val, true));
@@ -5922,12 +5922,12 @@ class ComponentBuilder extends BaseBuilder {
             }
 
             // --- 3. 處理物件 (遞迴點 2) ---
-            if (_.isObject(value)) {
+            if (Util.isObject(value)) {
                 const stmts = Object.entries(value).map(([key, val]) => {
                     let normalizedVal;
 
                     // 檢查值是否為特殊字串：物件內 ### 字串的終止條件，保持不變
-                    if (_.isString(val) && val.startsWith("###")) {
+                    if (Util.isString(val) && val.startsWith("###")) {
                         // 在物件內部，特殊字串始終不加 {} (因為父層的 {} 已經被 ' : ' 隔開)
                         normalizedVal = Util.getStringOfDropHeadSign(val, "#");
                     } else {
@@ -6376,7 +6376,7 @@ class ComponentBuilder extends BaseBuilder {
                     `/** 快速複製一個相同屬性的項目,除了id以外 */`,
                     `const parentNode = ${node.getName()}.getParentNode()`,
                     `if(parentNode !== undefined) {`,
-                    `const clonedObject = _.cloneDeep(${node.getName()}.columnData())`,
+                    `const clonedObject = Util.cloneDeep(${node.getName()}.columnData())`,
                     `delete clonedObject.id`,
                     `await parentNode.${node.getFunctionNameOfSubmit()}(self, clonedObject)`,
                     `}`,
@@ -6686,27 +6686,27 @@ class AppBuilder extends ComponentBuilder {
 
         /** 把type=array的 defaultValue，再透過遞迴抓出來定義出新的i18n變數名稱 */
         function recursiveOfDoingSomethingMinor(arrayOfDefaultValue, child, sign = '') {
-            if (!_.isArray(arrayOfDefaultValue)) {
+            if (!Array.isArray(arrayOfDefaultValue)) {
                 return;
             }
 
             for (const obj of arrayOfDefaultValue) {
                 for (const keyOfMajor in obj) {
                     const valueOfMajor = obj[keyOfMajor];
-                    if (_.isArray(valueOfMajor)) {
+                    if (Array.isArray(valueOfMajor)) {
                         const latest = Util.camel(sign, keyOfMajor, `${_.indexOf(arrayOfDefaultValue, obj)}`);
                         recursiveOfDoingSomethingMinor(valueOfMajor, child, latest)
                     }
 
-                    if (_.isObject(valueOfMajor)) {
+                    if (Util.isObject(valueOfMajor)) {
                         for (const keyOfMinor in valueOfMajor) {
                             const valueOfMinor = valueOfMajor[keyOfMinor];
-                            if (_.isArray(valueOfMinor)) {
+                            if (Array.isArray(valueOfMinor)) {
                                 const latest = Util.camel(sign, keyOfMinor);
                                 recursiveOfDoingSomethingMinor(valueOfMinor, child, latest);
                             }
 
-                            if (_.isString(valueOfMinor)) {
+                            if (Util.isString(valueOfMinor)) {
                                 appendMapOfKeyValue(Util.camel(
                                         child.getPreciseAttributeGenealogyName(),
                                         keyOfMajor, keyOfMinor, `${_.indexOf(arrayOfDefaultValue, obj)}`),
@@ -6715,7 +6715,7 @@ class AppBuilder extends ComponentBuilder {
                         }
                     }
 
-                    if (_.isString(valueOfMajor) && !_.isEqual(keyOfMajor, 'value')) {
+                    if (Util.isString(valueOfMajor) && !_.isEqual(keyOfMajor, 'value')) {
                         appendMapOfKeyValue(Util.camel(
                             child.getPreciseAttributeGenealogyName(),
                             sign,
@@ -7955,7 +7955,7 @@ class ProjectFileHandler extends PathBase {
             function isFunctionBelong2Module(dirName) {
                 const path = Util.joinRespectingDot('./modules', module, FILENAME_OF_SOURCE_JS);
                 const source = require(`./${path}`).default;
-                return _.isArray(source.cloudFunctions) ? Util.has(source.cloudFunctions.map(each => each.name), dirName) : false;
+                return Array.isArray(source.cloudFunctions) ? Util.has(source.cloudFunctions.map(each => each.name), dirName) : false;
             }
 
             // 尋找目標檔案條件：
@@ -8143,7 +8143,7 @@ class ProjectFileHandler extends PathBase {
      * */
     overrideEachFilesFromFolder(...excludes) {
         const normalizedExcludes = excludes.map((ex) => {
-            if (_.isString(ex)) {
+            if (Util.isString(ex)) {
                 return { type: 'fileNameExtension', keyword: ex };
             }
             return ex;
@@ -8483,7 +8483,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
                 if (node.hasLabel()) {
                     const labels = node.getLabel();
-                    if (!_.isArray(labels) || _.size(labels) < 2) throw new ERROR(9999, '746465574 range pick label should be an array');
+                    if (!Array.isArray(labels) || _.size(labels) < 2) throw new ERROR(9999, '746465574 range pick label should be an array');
 
                     const start = node.getFieldNameOfLabel('start');
                     const end = node.getFieldNameOfLabel('end');
@@ -8557,7 +8557,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             }
 
             if (node.isFloatBackgroundView()) {
-                const clone = _.cloneDeep(node.raw);
+                const clone = Util.cloneDeep(node.raw);
                 if (!node.getParentNode().hasWrap()) {
                     node.getParentNode().setWrapView('div');
                 }
@@ -9102,7 +9102,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             Util.removeAttributeBy(objectOfItem);
             /** 清除掉value為undefined,因為JSON.parse會過不了 */
             stringsOfItem.push(JSON.stringify(objectOfItem));
-            if (_.isString(item.icon)) node.getPreciseAttributeParent().appendChildrenWithJsons({
+            if (Util.isString(item.icon)) node.getPreciseAttributeParent().appendChildrenWithJsons({
                 name: `iconOf${_.upperFirst(node.getName())}4Imp${_.indexOf(alertMenu.items, item)}`,
                 type: SIGN_OF_IMPORT_MUI,
                 defaultValue: item.icon,
@@ -9291,7 +9291,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
         function applyValueProps(node) {
             if (node.isSimpleSelected()) {
-                node.appendListProps({value: `###_.toString(${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}())`});
+                node.appendListProps({value: `###Util.toString(${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}())`});
                 node.appendViewProps({value: `###${node.getName()}.value`});
                 node.appendContents(`{${node.getName()}.label}`);
             } else if (node.isChipView()) {
@@ -9906,7 +9906,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             const editorComponents = [];
             for (let component of source.getComponents()) {
                 if (component.needEditPage()) {
-                    const editorComponent = _.cloneDeep(component);
+                    const editorComponent = Util.cloneDeep(component);
                     editorComponent.setTitle(`${editorComponent.getTitle()}`);
                     editorComponent.setEvents([]);
                     editorComponent.setIsEditableComponent(true)
@@ -9968,20 +9968,20 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 if (Util.isOrEquals(node.getView(), 'SwiperSlide', 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Grid')) node.setView('div');
                 node.setWrapView('div');
                 node.appendWrapContents([`{this.renderItemEditorView(
-                   ${node.getFunctionNameOfItemEditorWithParam()} , ${_.toString(node.hasPath())}
+                   ${node.getFunctionNameOfItemEditorWithParam()} , ${Util.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
                 const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
                 node.appendWrapStyle({...style, borderColor: 'red'});
                 node.appendListStyle({...style, borderColor: 'blue'});
                 node.appendListContents([`{this.renderCollectionEditorView(
-                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())}
+                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${Util.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
             } else if (node.isObject() && node.hasPath()) {
                 node.setWrapView('div');
                 const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
                 node.appendWrapStyle({...style, borderColor: 'green'});
                 node.appendWrapContents([`{this.renderObjectEditorView(
-                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())}
+                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${Util.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
             }
 
@@ -10121,7 +10121,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             /** typeof [array] 會 return object */
             switch (typeof components) {
                 case 'object':
-                    if (_.isArray(components))
+                    if (Array.isArray(components))
                         for (const component of components) {
                             TARGET_COMPONENT_FAST_DEVELOP_MODE = component;
                             await self.execute()

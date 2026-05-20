@@ -190,7 +190,7 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
     enableGopTopOfIndexSetter = () => false;
 
     submitTextsOfIndexSetter = async (rows) => {
-        this.setOffDays(..._.filter(rows, (row) => _.isEqual(true, row.belong)));
+        this.setOffDays(..._.filter(rows, (row) => Util.isEqual(true, row.belong)));
     };
 }
 

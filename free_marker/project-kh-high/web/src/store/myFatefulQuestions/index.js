@@ -25,7 +25,7 @@ class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
 
     getSelectSubjectStmts = () => {
         const subject = this.getFilter().getSelectedWhichSubject();
-        return _.isEqual(subject, "all") ? [] : [{ where: (stmt) => stmt.where("subject", "==", subject) }];
+        return Util.isEqual(subject, "all") ? [] : [{ where: (stmt) => stmt.where("subject", "==", subject) }];
     };
 
     getFatefulQuestionType() {
@@ -65,7 +65,7 @@ class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
         const questions = await new ExamQuestionStore().fetchQuestions(this.getComponent(), ...this.getInArrayConditions(questionIds));
 
         function getQuestion(qid) {
-            return _.find(questions, (question) => _.isEqual(question.id, qid));
+            return _.find(questions, (question) => Util.isEqual(question.id, qid));
         }
 
         const nextItems = items.map((each) => {

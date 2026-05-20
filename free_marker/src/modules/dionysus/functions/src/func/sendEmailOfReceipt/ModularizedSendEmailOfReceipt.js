@@ -51,7 +51,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         isBuyer,
         global
     }) {
-        const valid = (string) => _.isString(string) && _.size(string) > 0;
+        const valid = (string) => Util.isString(string) && _.size(string) > 0;
         const toCurrency = (n) => Number(n).toLocaleString("zh-TW");
         // <a href="${timeTree}" style="${chipStyle}"><img src="https://img.icons8.com/ios-filled/50/000000/calendar--v1.png" style="${iconStyle}">新增至TimeTree</a>
         // <a href="${ics}" style="${chipStyle}"><img src="https://img.icons8.com/ios/50/000000/calendar--v1.png" style="${iconStyle}">新增至行事曆</a>

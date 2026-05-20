@@ -114,7 +114,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitThresholdOFreeShipByCod = (price) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(price),
+            value: Util.toNumber(price),
             key: `thresholdOfFreeShipByCOD`,
             errorMessage: `金額格式錯誤 '${price}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByCOD(val),
@@ -124,7 +124,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitThresholdOfCheckoutByCredit = (price) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(price),
+            value: Util.toNumber(price),
             key: `thresholdOfCheckoutByCredit`,
             errorMessage: `金額格式錯誤 '${price}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfCheckoutByCredit(val),
@@ -134,7 +134,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitThresholdOfFreeShipByRapidly = (price) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(price),
+            value: Util.toNumber(price),
             key: `thresholdOfFreeShipByRapidly`,
             errorMessage: `金額格式錯誤 '${price}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByRapidly(val),
@@ -144,7 +144,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitThresholdOfFreeShipByHomeDelivery = (price) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(price),
+            value: Util.toNumber(price),
             key: `thresholdOfFreeShipByHomeDelivery`,
             errorMessage: `金額格式錯誤 '${price}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByHomeDelivery(val),
@@ -154,7 +154,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitThresholdOfCheckoutByLinePay = (price) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(price),
+            value: Util.toNumber(price),
             key: `thresholdOfCheckoutByLinePay`,
             errorMessage: `金額格式錯誤 '${price}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfCheckoutByLinePay(val),
@@ -164,7 +164,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitThresholdOfFreeShipByStorePickup = (fee) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(fee),
+            value: Util.toNumber(fee),
             key: `thresholdOfFreeShipByStorePickup`,
             errorMessage: `店到店運費格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByStorePickup(val),
@@ -174,7 +174,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitFeeOfHomeDelivery = (fee) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(fee),
+            value: Util.toNumber(fee),
             key: `feeOfHomeDelivery`,
             errorMessage: `宅配運費格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setFeeOfHomeDelivery(val),
@@ -184,7 +184,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitFeeOfInStorePickup = (fee) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(fee),
+            value: Util.toNumber(fee),
             key: `feeOfInStorePickup`,
             errorMessage: `店到店運費格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setFeeOfInStorePickup(val),
@@ -194,7 +194,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitFeeOfShipByCOD = (fee) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(fee),
+            value: Util.toNumber(fee),
             key: `feeOfShipByCOD`,
             errorMessage: `COD運費格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setFeeOfShipByCOD(val),
@@ -204,7 +204,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitFeeOfRapidOnDelivery = (fee) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(fee),
+            value: Util.toNumber(fee),
             key: `feeOfRapidOnDelivery`,
             errorMessage: `店到店運費格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setFeeOfRapidOnDelivery(val),
@@ -214,7 +214,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitThresholdOfAllowSelfPickup = (fee) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(fee),
+            value: Util.toNumber(fee),
             key: `thresholdOfAllowSelfPickup`,
             errorMessage: `自費最低門檻格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfAllowSelfPickup(val),
@@ -289,7 +289,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     };
 
     submitBrandName = async (name) => {
-        if (_.isEmpty(name)) return this.getComponent().showErrorSnackMessage(`網頁抬頭 格式錯誤`);
+        if (Util.isEmpty(name)) return this.getComponent().showErrorSnackMessage(`網頁抬頭 格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { nameOfBrand: name });
         UserInfo.setNameOfBrand(name);
     };
@@ -355,21 +355,21 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     };
 
     submitMaximumOfUniqueItems = async (count) => {
-        count = _.toNumber(count);
+        count = Util.toNumber(count);
         if (!this.isPositiveNum(count)) return this.getComponent().showErrorSnackMessage(`購物車數量限制 格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { maximumOfUniqueItems: count });
         UserInfo.setGlobalPerspectiveAttr({ maximumOfUniqueItems: count });
     };
 
     submitTTLOfPayment = async (minute) => {
-        minute = _.toNumber(minute);
+        minute = Util.toNumber(minute);
         if (!this.isPositiveNum(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝 格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { ttlOfPayment: minute });
         UserInfo.setGlobalPerspectiveAttr({ ttlOfPayment: minute });
     };
 
     submitTTLOfAnonymous = async (minute) => {
-        minute = _.toNumber(minute);
+        minute = Util.toNumber(minute);
         if (!this.isPositiveNum(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝（陌生）格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { ttlOfAnonymous: minute });
         UserInfo.setGlobalPerspectiveAttr({ ttlOfAnonymous: minute });
@@ -379,46 +379,46 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         const result = Util.generateLabelValuePairsWithOrigin(this.categoryOfCurrent, param);
         await this.apiOfTab.submitSelectBounds(
             this.getComponent(),
-            result.map((each) => ({ ...each, id: _.toString(each.value) }))
+            result.map((each) => ({ ...each, id: Util.toString(each.value) }))
         );
     };
 
     submitNumOfWorker = async (num) => {
-        num = _.toNumber(num);
+        num = Util.toNumber(num);
         if (!this.isPositiveNum(num)) return this.getComponent().showErrorSnackMessage(`人數格式錯誤 '${num}'`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { numOfWorker: num });
         UserInfo.setGlobalPerspectiveAttr({ numOfWorker: num });
     };
 
     submitAmountOfMaximumBuy = async (amount) => {
-        amount = _.toNumber(amount);
+        amount = Util.toNumber(amount);
         if (!this.isPositiveNum(amount)) return this.getComponent().showErrorSnackMessage(`消費額度格式錯誤 ${amount} 元`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { amountOfMaximumBuy: amount });
         UserInfo.setGlobalPerspectiveAttr({ amountOfMaximumBuy: amount });
     };
 
     submitPercentageOfDiscount = async (percent) => {
-        percent = _.toNumber(percent);
+        percent = Util.toNumber(percent);
         if (!this.isPositiveNum(percent)) return this.getComponent().showErrorSnackMessage(`折扣常數格式錯誤 ${percent} 折`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { percentageOfDiscount: percent });
         UserInfo.setGlobalPerspectiveAttr({ percentageOfDiscount: percent });
     };
 
     submitAmountOfAllowAnonymousBuy = async (amount) => {
-        amount = _.toNumber(amount);
+        amount = Util.toNumber(amount);
         if (!this.isPositiveNum(amount)) return this.getComponent().showErrorSnackMessage(`未登入消費金額格式錯誤 ${amount} 元`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { amountOfAllowAnonymousBuy: amount });
         UserInfo.setGlobalPerspectiveAttr({ amountOfAllowAnonymousBuy: amount });
     };
 
     submitWhetherBoughtWithoutLogin = async () => {
-        if (!_.isBoolean(this.getEnableOfBoughtWithoutLoginIn())) return this.getComponent().showErrorSnackMessage(`是否同意免登入下單功能的必須賦予布林值`);
+        if (!Util.isBoolean(this.getEnableOfBoughtWithoutLoginIn())) return this.getComponent().showErrorSnackMessage(`是否同意免登入下單功能的必須賦予布林值`);
         UserInfo.setGlobalPerspectiveAttr({ enableOfBoughtWithoutLoginIn: this.getEnableOfBoughtWithoutLoginIn() });
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { enableOfBoughtWithoutLoginIn: this.getEnableOfBoughtWithoutLoginIn() });
     };
 
     submitWhetherDisplaySpecific = async () => {
-        if (!_.isBoolean(this.getEnableOfWhetherDisplaySpecific())) return this.getComponent().showErrorSnackMessage(`是否在底部顯示公司資訊必須賦予布林值`);
+        if (!Util.isBoolean(this.getEnableOfWhetherDisplaySpecific())) return this.getComponent().showErrorSnackMessage(`是否在底部顯示公司資訊必須賦予布林值`);
         UserInfo.setGlobalPerspectiveAttr({ whetherDisplaySpecific: this.getEnableOfWhetherDisplaySpecific() });
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { whetherDisplaySpecific: this.getEnableOfWhetherDisplaySpecific() });
     };
@@ -434,7 +434,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     getNormalizeStmt = (titles, items) => titles.map((title, idx) => ({ index: title, content: _.get(items, idx, "") || "" }));
     isValidText = () => true;
-    isPositiveNum = (value) => _.isNumber(value) && value >= 0;
+    isPositiveNum = (value) => Util.isNumber(value) && value >= 0;
     /** text fetch */
     onTextFetchChanged = (param) => (this.getSelected() === "name" ? Util.appendInfo(`[TEXTFETCH] name text changed ${param}`) : undefined);
     onTextFetchAppendClicked = (param) => (this.getSelected() === "name" ? this.submitBrandName(param) : undefined);
@@ -450,9 +450,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     onTextsFetchAppendClicked = async (param) => (await this.getSelectedConfig()?.onAppendClicked(param, this)) ?? Util.appendInfo(`[TEXTSFETCH] default append clicked ${param}`);
 
     /** validators */
-    isValidECPayConfig = (id, key, iv) => [id, key, iv].every((p) => _.isString(p) && !_.isEmpty(p));
-    isValidLinePayConfig = (id, secret) => [id, secret].every((p) => _.isString(p) && !_.isEmpty(p));
-    isValidDiscountPercentNumber = (val) => _.inRange(_.toNumber(val), 10, 101);
+    isValidECPayConfig = (id, key, iv) => [id, key, iv].every((p) => Util.isString(p) && !Util.isEmpty(p));
+    isValidLinePayConfig = (id, secret) => [id, secret].every((p) => Util.isString(p) && !Util.isEmpty(p));
+    isValidDiscountPercentNumber = (val) => _.inRange(Util.toNumber(val), 10, 101);
 }
 
 export default ModularizedDionysusErosStore;

@@ -1,7 +1,6 @@
 import libpath from "path";
 import fs from "fs";
 import fsp from "fs/promises";
-import _ from "lodash";
 import ChildProcess from "child_process";
 import {configerer} from "configerer";
 import Utiller from "./index";
@@ -108,8 +107,8 @@ class NodeUtiller extends Utiller {
             /** todo 要是遇到 asd.sdsd.js 就麻煩了 */
             obj['fileName'] = fileNameStrings.join('\.');
             obj['name'] = fileNameStrings.join('\.');
-            obj['dirName'] = _.nth(absolute.split('\/'), -2);
-            obj['folderName'] = _.nth(absolute.split('\/'), -2);
+            obj['dirName'] = (absolute.split('\/')).at(-2);
+            obj['folderName'] = (absolute.split('\/')).at(-2);
             obj['isFile'] = true;
             obj['dirPath'] = this.getFolderPathOfSpecificPath(absolute);
             obj['folderPath'] = this.getFolderPathOfSpecificPath(absolute);
@@ -128,7 +127,7 @@ class NodeUtiller extends Utiller {
 
     /** return [...{path: ,fileName: ,extension: ,absolute: ,dirName:}]*/
     findFilePathByExtension = (rootpath, _extension = [], ...exclude) => {
-        const reg = new RegExp(`^[^\.].+.(${_.join(_extension, '|')})$`);
+        const reg = new RegExp(`^[^\.].+.(${(_extension).join('|')})$`);
         return this.findFilePathBy(rootpath, (item) => {
             return reg.test(item.fileNameExtension);
         }, ...exclude);
@@ -248,7 +247,7 @@ class NodeUtiller extends Utiller {
         const ex = [...exclude, 'node_modules', 'utiller', 'configerer'];
         /** utiller 不能刪掉,不然就爆了, configer是他的依賴也不能刪 */
 
-        const paths = this.findFilePathBy(path, (each) => _.isEqual(each.fileNameExtension, 'package.json'), ...ex)
+        const paths = this.findFilePathBy(path, (each) => this.isEqual(each.fileNameExtension, 'package.json'), ...ex)
         for (const _json of paths) {
             const path_module_root = this.getFileDirPath(_json.absolute);
             const path_gen_node_module = `${path_module_root}node_modules`;
@@ -284,16 +283,34 @@ class NodeUtiller extends Utiller {
         }
     }
 
-    /** from :'./template/sample.babel.config.js
-     *  destDir : '/template'
-     *  fileName: 'fileName.extension' => 如果fileName 是 empty ,dest就是必須包含新檔名
-     *  force 就是強制覆蓋他啦
-     * */
+    /**
+     * from : './template/sample.babel.config.js'
+     * dest : '/template' 或是 '/template/newFileName.js'
+     * fileName: 'fileName.extension' (可選)
+     * force : 強制覆蓋
+     */
     copySingleFile(from, dest, fileName, force = false) {
-        const destination = (fileName && fileName.trim()) ? libpath.join(dest, fileName) : dest;
+        // 1. 決定初步的 destination 路徑
+        let destination = (fileName && fileName.trim()) ? libpath.join(dest, fileName) : dest;
+
+        // 2. 修復 EISDIR：如果 destination 是一個已存在的「資料夾」，自動補上來源檔名
+        if (fs.existsSync(destination) && fs.statSync(destination).isDirectory()) {
+            const originalFileName = libpath.basename(from);
+            destination = libpath.join(destination, originalFileName);
+        }
+
+        // 3. 檢查檔案是否已存在，若存在且不強制覆蓋則報錯
         if (fs.existsSync(destination) && !force) {
             throw new ERROR(8006, destination);
         }
+
+        // 4. (安全防護) 確保目的地的父資料夾存在，否則會報 ENOENT 找不到路徑錯誤
+        const destDir = libpath.dirname(destination);
+        if (!fs.existsSync(destDir)) {
+            fs.mkdirSync(destDir, { recursive: true });
+        }
+
+        // 5. 執行複製
         fs.copyFileSync(from, destination);
     }
 
@@ -352,10 +369,10 @@ class NodeUtiller extends Utiller {
 
     async syncWithExistPackage(path = '../') {
         /** 產生shell_script_腳本 */
-        const paths = this.findFilePathBy(path, (each) => _.isEqual(each.fileNameExtension, 'package.json'), 'node_modules');
+        const paths = this.findFilePathBy(path, (each) => this.isEqual(each.fileNameExtension, 'package.json'), 'node_modules');
         for (let path of paths) {
             try {
-                if (!_.isEqual(path.dirName, '..'))
+                if (!this.isEqual(path.dirName, '..'))
                     this.insertShellCommand(configerer.BASE_SHELL_SCRIPT,
                         `cd_${path.dirName}`,
                         `cd ${this.getFolderPathOfSpecificPath(path.absolute)}`)
@@ -398,7 +415,7 @@ class NodeUtiller extends Utiller {
         if (fs.existsSync(ideaWorkspacePath)) {
             const workspace = this.getFileContextInRaw(ideaWorkspacePath);
             const splited = workspace.split('\n');
-            const indexOfRunManager = _.findIndex(splited, (line) => this.has(line, 'name="RunManager'));
+            const indexOfRunManager = (splited).findIndex((line) => this.has(line, 'name="RunManager'));
             this.insertToArray(splited, indexOfRunManager,
                 `<configuration name="${packageName}" 
         type="NodeJSConfigurationType" 
@@ -413,7 +430,7 @@ class NodeUtiller extends Utiller {
                 `    <method v="2" />`,
                 `</configuration>`);
 
-            const indexOfList = _.findIndex(splited, (line) => _.isEqual(_.trim(line), `<list>`), indexOfRunManager);
+            const indexOfList = (splited).findIndex((line) => this.isEqual(String(line).trim(), `<list>`), indexOfRunManager);
             this.insertToArray(splited, indexOfList, `  <item itemvalue="Node.js.${packageName}" />`)
             fs.writeFileSync(ideaWorkspacePath, splited.join('\n'));
         } else {
@@ -463,7 +480,7 @@ class NodeUtiller extends Utiller {
     }
 
     getLogString(datas) {
-        return datas.map((data) => (this.isJson(data) || _.isObject(data) || _.isArray(data)) ? this.deepFlat(data) : data).join(' ,')
+        return datas.map((data) => (this.isJson(data) || this.isObject(data) || Array.isArray(data)) ? this.deepFlat(data) : data).join(' ,')
     }
 
     /** 常常要把JSON的內容印出來，所以這個很方便 */
@@ -492,9 +509,9 @@ class NodeUtiller extends Utiller {
         const all = this.findFilePathByExtension(path, ['js'], 'node_modules');
         for (const file of all) {
             const content = this.getFileContextInRaw(file.absolute).trim();
-            if (_.isEmpty(content)) {
+            if (((content) == null || (typeof (content) === "object" && Object.keys(content).length === 0) || (typeof (content) === "string" && (content).length === 0))) {
                 this.appendInfo(file.fileName, file.absolute);
-                const className = _.isEqual(file.fileName, 'index') ? file.dirName : file.fileName;
+                const className = this.isEqual(file.fileName, 'index') ? file.dirName : file.fileName;
                 fs.writeFileSync(file.absolute, String.format(this.getFileContextInRaw(`.
             /template/s
             ample.src.index.js`), className, '明悅', new Date()));
@@ -570,8 +587,7 @@ class NodeUtiller extends Utiller {
      * exclude 裡面可以放專案名稱, 例如 free_marker,question_update */
     async generatePackage(path = './', deployToNPMServer = false, forceInstallNodeModule = true, ...exclude) {
         let packagejsons = this.findFilePathByExtension(path, ['json'], 'node_modules', 'release');
-        packagejsons = _.filter(packagejsons,
-            (each) => _.isEqual(each.fileName, 'package'));
+        packagejsons = (packagejsons).filter((each) => this.isEqual(each.fileName, 'package'));
         packagejsons = packagejsons.map((each) => this.getFolderPathOfSpecificPath(each.absolute));
 
         for (const path of packagejsons) {
@@ -810,8 +826,8 @@ class NodeUtiller extends Utiller {
                 }
                 if (!succeedOfPersistFile) {
                     await this.updateFileOfSpecificLine(path,
-                        (line) => `       "${dependency}":"^${newVersion}"${_.endsWith(_.trim(line), ',') ? ',' : ''}`,
-                        (each) => _.startsWith(_.trim(each), `"${dependency}"`));
+                        (line) => `       "${dependency}":"^${newVersion}"${String(String(line).trim()).endsWith(',') ? ',' : ''}`,
+                        (each) => String(String(each).trim()).startsWith(`"${dependency}"`));
                 }
                 console.log('💯成功修改以下 path的版本 => ',path)
             }
@@ -885,7 +901,31 @@ class NodeUtiller extends Utiller {
     }
 
     isEmptyFile(path) {
-        return !this.isPathExist(path) || _.isEmpty(this.getFileContextInRaw(path).trim())
+        // 1. 如果路徑不存在，直接視為空檔案
+        if (!this.isPathExist(path)) {
+            return true;
+        }
+
+        // 2. 取得檔案內容（只呼叫一次，節省效能）
+        const content = this.getFileContextInRaw(path);
+
+        // 3. 如果內容是 null 或 undefined
+        if (content == null) {
+            return true;
+        }
+
+        // 4. 如果內容是字串，去除前後空白後檢查長度
+        if (typeof content === "string") {
+            return content.trim().length === 0;
+        }
+
+        // 5. 如果內容是物件（陣列也屬於物件），檢查是否有 key
+        if (typeof content === "object") {
+            return Object.keys(content).length === 0;
+        }
+
+        // 6. 若非以上情況，則視為非空
+        return false;
     }
 
     isEmptyFolder(path) {
@@ -962,7 +1002,7 @@ class NodeUtiller extends Utiller {
 
     /** increment version number,  回傳latest version, name */
     async upgradePackageJsonVersion(path) {
-        if (_.isEqual('json', this.getPathInfo(path).extension)) {
+        if (this.isEqual('json', this.getPathInfo(path).extension)) {
             const json = this.getJsonObjByFilePath(path);
             json.version = this.getStringOfVersionIncrement(json.version);
             await this.writeJsonThanPrettier(path, json)
@@ -1008,7 +1048,7 @@ class NodeUtiller extends Utiller {
 
     /** 取得*.json 裡面的file*/
     getAttributeValueOfJson(path, key, defaultValue = undefined) {
-        if (_.isEqual('json', this.getPathInfo(path).extension)) {
+        if (this.isEqual('json', this.getPathInfo(path).extension)) {
             const json = this.getJsonObjByFilePath(path);
             return json[key] ?? defaultValue;
         } else {
@@ -1023,7 +1063,7 @@ class NodeUtiller extends Utiller {
 
     /**  找到 js file 裡面宣告attribute的 value ==> 例:version:'1.0.60'} */
     getAttributeValueOfJsFile(path, key, defaultValue = undefined) {
-        if (_.isEqual(this.getExtensionFromPath(path), 'js')) {
+        if (this.isEqual(this.getExtensionFromPath(path), 'js')) {
             const source = require(libpath.resolve(path)).default;
             return source[key] ?? defaultValue;
         } else {
@@ -1041,13 +1081,13 @@ class NodeUtiller extends Utiller {
         }
 
         for (const attr of attrs) {
-            if (!_.isObject(attr)) {
+            if (!this.isObject(attr)) {
                 throw new ERROR(9999, `4984651 attr is not object, which is 'type=${typeof attr} => ${attr}'`)
             }
             const key = this.getObjectKey(attr);
             const value = this.getObjectValue(attr);
             const contents = this.getFileContextInRaw(path).split(`\n`);
-            const index = _.findIndex(contents, (each) => _.startsWith(_.trim(each), `${key}`));
+            const index = (contents).findIndex((each) => String(String(each).trim()).startsWith(`${key}`));
             /** 故意空4格 */
             contents[index] = `    ${key}: '${value}',`;
             this.appendFile(path, contents.join(`\n`), true, true);
@@ -1253,7 +1293,7 @@ class NodeUtiller extends Utiller {
     getStringOfHeadOfFile(path) {
         if (this.isPathExist(path)) {
             const context = this.getFileContextInRaw(path)
-            return _.head(context.split('\n'));
+            return (context.split('\n')[0]);
         }
         return '';
     }
@@ -1281,7 +1321,7 @@ class NodeUtiller extends Utiller {
              * \s*;?：匹配可有可無的分號及其前空白。
              */
             const match = firstLine.match(/const\s+([a-zA-Z_]\w*)\s*=\s*(true|false)\s*;?/);
-            if (!match || _.size(match) < 3) return false;/** ['const bear = true','bear','true',index: 0,input: 'const bear = true', groups:undefined] */
+            if (!match || (Array.isArray(match) ? match.length : (typeof (match) === "object" && match !== null ? Object.keys(match).length : String(match).length)) < 3) return false;/** ['const bear = true','bear','true',index: 0,input: 'const bear = true', groups:undefined] */
             const editValue = match[2] === 'true';
             if (editValue === true) {
                 return true;
@@ -1347,6 +1387,8 @@ if (configerer.DEBUG_MODE) {
             await utiller.generatePackage('../utiller', true)
             // const answer = await utiller.getAnswerFromPromptQ()
             // console.log(`it really workkks => `,answer)
+            // console.log(utiller.joinRespectingDot('/usr', 'local', 'bin'));
+
         }
     )();
 }

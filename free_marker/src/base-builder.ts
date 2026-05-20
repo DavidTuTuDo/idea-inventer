@@ -71,18 +71,18 @@ class BaseBuilder extends PathBase {
 
     getParamsOfDefaultValueOfWeb(params, node) {
         return params.map(param => {
-            if (_.isEqual(param.trim(), 'id')) {
+            if (Util.isEqual(param.trim(), 'id')) {
                 if (node.isCheapArray()) return `${param} = 'contents'`;
                 else return `${param} = this.getId()`;
             } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
                 return `${param} = this`;
-            } else if (_.isEqual(param.trim(), 'restful')) {
+            } else if (Util.isEqual(param.trim(), 'restful')) {
                 return `restful = {status: 'succeed', message: 'default reason'}`;
-            } else if (_.isEqual(param.trim(), 'uid')) {
+            } else if (Util.isEqual(param.trim(), 'uid')) {
                 return `${param} = UserInfoRef.getUid()`;
-            } else if (_.isEqual(param.trim(), 'route')) {
+            } else if (Util.isEqual(param.trim(), 'route')) {
                 return `${param} = ''`;
-            } else if (_.isEqual(param.trim(), 'conditions')) {
+            } else if (Util.isEqual(param.trim(), 'conditions')) {
                 return `${param} = []`;
             }
             return param;
@@ -91,7 +91,7 @@ class BaseBuilder extends PathBase {
 
     getParamsOfDefaultValue(params, node) {
         return params.map(param => {
-            if (_.isEqual(param.trim(), 'id')) {
+            if (Util.isEqual(param.trim(), 'id')) {
                 if (node.isCheapArray()) return `${param} = 'contents'`;
             }
             return param;
@@ -271,7 +271,7 @@ class BaseBuilder extends PathBase {
         else if (child.isNumber())
             return `Util.getNumberOfNormalize(obj.${child.getFieldName()}, ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())}),${this.getCommentDescription(child)}`;
         else if (child.isBoolean())
-            return `_.isBoolean(obj.${child.getFieldName()}) ? obj.${child.getFieldName()} : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())},${this.getCommentDescription(child)}`;
+            return `Util.isBoolean(obj.${child.getFieldName()}) ? obj.${child.getFieldName()} : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())},${this.getCommentDescription(child)}`;
         else if (child.useServerTime()) return `this._firebase().getServerTimeSymbol(),`;
         else return `obj.${child.getFieldName()} ? obj.${child.getFieldName()} : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())},${this.getCommentDescription(child)}`;
     };

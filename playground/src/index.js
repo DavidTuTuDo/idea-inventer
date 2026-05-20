@@ -28,7 +28,7 @@ if (configerer.DEBUG_MODE) {
     (async () => {
             const QQQ = (aaa) => (console.log('a'));
         const sample = [[[{a:1},[{b:1}]]],[],{c:1}];
-        // console.log(_.toNumber('1,257'));
+        // console.log(Util.toNumber('1,257'));
         // enum StateOfPayment {
             console.log(Util.findLowestValue([{price:10}]));
         //     pending = 2,
@@ -145,7 +145,7 @@ if (configerer.DEBUG_MODE) {
             // console.log(`a===> `, a);
             // console.log(`b===> `, b);
             //
-            // console.log('empty:?????>>> ',`${_.isEmpty('2')}`);
+            // console.log('empty:?????>>> ',`${Util.isEmpty('2')}`);
 
             // const array = _.range(90,110);
             // const full = array.map((each) => {

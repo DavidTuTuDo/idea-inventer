@@ -15,7 +15,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     }
 
     async onInitialFetchBeginning() {
-        const payNow = _.cloneDeep(toJS(this.getPayNow()));
+        const payNow = Util.cloneDeep(toJS(this.getPayNow()));
         this.setInitialFetchCompleted(false);
         this.clean();
         this.setPayNow(payNow);
@@ -43,12 +43,12 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
     /** 賣家視角*/
     isRoleOfAuthor = (order) => {
-        return _.isEqual(UserInfoRef.getUid(), order.idOfAuthor) && _.isEqual(this.getRoleOfPerspective(), "author");
+        return Util.isEqual(UserInfoRef.getUid(), order.idOfAuthor) && Util.isEqual(this.getRoleOfPerspective(), "author");
     };
 
     /** 買家視角 */
     isRoleOfUser = (order) => {
-        return _.isEqual(order.anonymous, true) || (_.isEqual(UserInfoRef.getUid(), order.idOfUser) && _.isEqual(this.getRoleOfPerspective(), "user"));
+        return Util.isEqual(order.anonymous, true) || (Util.isEqual(UserInfoRef.getUid(), order.idOfUser) && Util.isEqual(this.getRoleOfPerspective(), "user"));
     };
 
     async onInitialFetchCompleted(collection) {
@@ -398,7 +398,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
     async setCurrentTabByType(type) {
         await Util.syncDelay(10);
-        const tab = _.find(this.getTabs(), (tab) => _.isEqual(tab.getType(), type));
+        const tab = _.find(this.getTabs(), (tab) => Util.isEqual(tab.getType(), type));
         this.setValueOfTabClickedTab(tab?.value);
     }
 

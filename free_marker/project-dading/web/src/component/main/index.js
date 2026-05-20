@@ -21,11 +21,11 @@ class MainComponent extends BaseMainComponent {
     /** following are main-filter handle logic */
 
     getInjectStyleOfMainFilterGoAheadButton(filter) {
-        return Util.getVisibleOrNone(!_.isEmpty(filter.getIdOfOrder()), true)
+        return Util.getVisibleOrNone(!Util.isEmpty(filter.getIdOfOrder()), true)
     }
 
     getInjectStyleOfMainFilterPasteButton(filter) {
-        return Util.getVisibleOrNone(_.isEmpty(filter.getIdOfOrder()), true)
+        return Util.getVisibleOrNone(Util.isEmpty(filter.getIdOfOrder()), true)
     }
 
     getInjectStyleOfMainFilterContactTextField(filter) {
@@ -50,7 +50,7 @@ class MainComponent extends BaseMainComponent {
     }
 
     getInjectStyleOfMainFilterDestToAutocomplete(filter) {
-        return Util.getVisibleOrNone(_.isEqual(filter.getSelectedType(), 3), true);
+        return Util.getVisibleOrNone(Util.isEqual(filter.getSelectedType(), 3), true);
     }
 
 
@@ -69,7 +69,7 @@ class MainComponent extends BaseMainComponent {
         const self = this;
         const filter = param.object;
         const id = filter.getIdOfOrder();
-        if (!_.isEmpty(id)) {
+        if (!Util.isEmpty(id)) {
             this.getStore().fetchOrderById(id).then((order) => {
                 self.getStore().toggleIsFilterVisible();
                 self.activateOrderDetailDialog(order)
@@ -82,7 +82,7 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainFilterSubmitButtonClicked(param) {
-        this.exeAsyncT(this.getStore().handleCustomFilter(_.cloneDeep(param.object.data())));
+        this.exeAsyncT(this.getStore().handleCustomFilter(Util.cloneDeep(param.object.data())));
     }
 
     onMainFilterCancelButtonClicked(param) {
@@ -216,7 +216,7 @@ class MainComponent extends BaseMainComponent {
 
     /** 已結清的訂單 */
     completedPaid(order) {
-        return _.toNumber(order.getFeeOfNotReceived()) <= 0;
+        return Util.toNumber(order.getFeeOfNotReceived()) <= 0;
     }
 
     onMainOrderExtraIconButtonDeleteClicked(param) {

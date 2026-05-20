@@ -120,11 +120,11 @@ class StoreBuilder extends BaseBuilder {
                     }));
             if (child.isBelong2TimeStamp()) continue;
 
-            if (child.isString()) propStmt.push(`if(obj && _.isString(obj.${fieldName}))`);
-            else if(child.isNumber()) propStmt.push(`if(obj && _.isNumber(obj.${fieldName}))`);
-            else if (child.isBoolean()) propStmt.push(`if(obj && _.isBoolean(obj.${fieldName}))`);
-            else if (child.isArrayOfField()) propStmt.push(`if(obj && _.isArray(obj.${fieldName}))`);
-            else if (child.isObjectOfEmpty()) propStmt.push(`if(obj && _.isObject(obj.${fieldName}))`);
+            if (child.isString()) propStmt.push(`if(obj && Util.isString(obj.${fieldName}))`);
+            else if(child.isNumber()) propStmt.push(`if(obj && Util.isNumber(obj.${fieldName}))`);
+            else if (child.isBoolean()) propStmt.push(`if(obj && Util.isBoolean(obj.${fieldName}))`);
+            else if (child.isArrayOfField()) propStmt.push(`if(obj && Array.isArray(obj.${fieldName}))`);
+            else if (child.isObjectOfEmpty()) propStmt.push(`if(obj && Util.isObject(obj.${fieldName}))`);
             else propStmt.push(`if(obj && !Util.isUndefinedNullEmpty(obj.${fieldName}))`);
             propStmt.push(`{`);
             if (child.isArray()) {
@@ -195,7 +195,7 @@ class StoreBuilder extends BaseBuilder {
                 self.initial(result,false);
                 }`
             })
-            return `${_.filter(stmts, (stmt) => !_.isEmpty(stmt)).join(',')}`
+            return `${_.filter(stmts, (stmt) => !Util.isEmpty(stmt)).join(',')}`
         }
 
         function getCountOfThread(node) {
@@ -366,7 +366,7 @@ class StoreBuilder extends BaseBuilder {
                 const fieldName = Util.camel('conditions', 'of', child.getName());
                 baseGenerator.appendField(fieldName, '[]')
                 baseGenerator.appendFunction(Util.camel('set', child.getName(), 'conditions'), ['conditions'], [], [],
-                    `if(_.isArray(conditions))`,
+                    `if(Array.isArray(conditions))`,
                     `this.${fieldName} = conditions`)
                 baseGenerator.appendFunction(child.getFunctionNameOfClearCondition(), [], [], [],
                     `this.${fieldName}.length = 0`)
@@ -438,7 +438,7 @@ class StoreBuilder extends BaseBuilder {
                 '}');
         });
 
-        if (_.isEqual(folderName, SIGN_OF_EMPTY_STORE)) {
+        if (Util.isEqual(folderName, SIGN_OF_EMPTY_STORE)) {
             return;
         }
 

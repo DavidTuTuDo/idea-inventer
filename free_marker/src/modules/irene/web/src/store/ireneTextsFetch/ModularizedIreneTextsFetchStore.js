@@ -16,7 +16,7 @@ class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
     getStringsOfContent = () => {
         return _.chain(this.getTitles())
             .map((title) => _.trim(title.getContent()))
-            .filter((str) => _.isString(str) && str !== "")
+            .filter((str) => Util.isString(str) && str !== "")
             .value();
     };
 
@@ -39,7 +39,7 @@ class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
     }
 
     getMaximumRowOfTextsFetch() {
-        if (this.hookOfParamObject && this.hookOfParamObject.getMaximumRowOfTextsFetch) return _.toNumber(this.hookOfParamObject.getMaximumRowOfTextsFetch());
+        if (this.hookOfParamObject && this.hookOfParamObject.getMaximumRowOfTextsFetch) return Util.toNumber(this.hookOfParamObject.getMaximumRowOfTextsFetch());
         else return 300;
     }
 

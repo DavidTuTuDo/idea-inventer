@@ -110,8 +110,8 @@ class FirebaseHelper extends BaseFirebase {
      * @returns {Firestore.CollectionReference|Firestore.DocumentReference} - Reference 物件。
      */
     reference = (path, id, { asDoc = false } = {}) => {
-        if (asDoc) return _.isEmpty(id) ? this.collectionRef(path).doc() : this.collectionRef(path).doc(id);
-        if (_.isEqual(id, "asObj")) return this.firestore().doc(path);
+        if (asDoc) return Util.isEmpty(id) ? this.collectionRef(path).doc() : this.collectionRef(path).doc(id);
+        if (Util.isEqual(id, "asObj")) return this.firestore().doc(path);
         return Util.isUndefinedNullEmpty(id) ? this.collectionRef(path) : this.collectionRef(path).doc(id);
     };
 
@@ -223,7 +223,7 @@ class FirebaseHelper extends BaseFirebase {
             items,
             (batch, object) => {
                 const parentData = object[parentCollection];
-                const parentId = _.isEmpty(parentData.id) ? this.getAutoDocumentID(parentCollection) : parentData.id;
+                const parentId = Util.isEmpty(parentData.id) ? this.getAutoDocumentID(parentCollection) : parentData.id;
                 parentData.id = parentId;
 
                 const parentRef = this.reference(parentCollection, parentId);
@@ -232,7 +232,7 @@ class FirebaseHelper extends BaseFirebase {
                 const children = object[childCollection] || [];
 
                 for (const childData of children) {
-                    const childId = _.isEmpty(childData.id) ? this.getAutoDocumentID(`${parentCollection}/${parentId}/${childCollection}`) : childData.id;
+                    const childId = Util.isEmpty(childData.id) ? this.getAutoDocumentID(`${parentCollection}/${parentId}/${childCollection}`) : childData.id;
                     childData.id = childId;
 
                     const childRef = this.reference(`${parentCollection}/${parentId}/${childCollection}`, childId);
@@ -310,7 +310,7 @@ class FirebaseHelper extends BaseFirebase {
             }));
 
             // 執行每批次的任務，例如更新 updateTime
-            if (_.isFunction(job)) await job(documents);
+            if (Util.isFunction(job)) await job(documents);
 
             lastDoc = snapshot.docs[snapshot.docs.length - 1]; // 記錄這批最後一筆，下一次從這裡繼續
             batchCount++;
@@ -342,14 +342,14 @@ class FirebaseHelper extends BaseFirebase {
 
         // 第一次過濾：將有 type 屬性的條件標準化為 { type: function }
         for (const condition of conditions) {
-            if (condition?.type && _.isArray(condition.params)) {
+            if (condition?.type && Array.isArray(condition.params)) {
                 // 將條件類型作為 key，對應的查詢函式作為 value
                 const key = condition.type;
                 const rule = {
                     [key]: (stmt) => stmt[key](...condition.params) // 使用 stmt[key] 動態調用方法
                 };
                 normalizedConditions.push(rule);
-            } else if (_.isFunction(condition) || (_.isPlainObject(condition) && Object.keys(condition).length === 1 && _.isFunction(Object.values(condition)[0]))) {
+            } else if (Util.isFunction(condition) || (_.isPlainObject(condition) && Object.keys(condition).length === 1 && Util.isFunction(Object.values(condition)[0]))) {
                 // 若已是函式或合法物件 (e.g., { where: () => ... })，直接保留
                 normalizedConditions.push(condition);
             } else {
@@ -362,12 +362,12 @@ class FirebaseHelper extends BaseFirebase {
 
         // 第二次過濾：計算每個條件的優先順序並組合
         for (const condition of normalizedConditions) {
-            if (_.isNil(condition) || _.isEmpty(condition)) continue;
+            if (_.isNil(condition) || Util.isEmpty(condition)) continue;
 
             let stmtFn = (stmt) => stmt; // 預設為不變
             let priority = 99; // 預設優先順序最低
 
-            if (_.isFunction(condition)) {
+            if (Util.isFunction(condition)) {
                 // 如果是純函式
                 stmtFn = condition;
             } else if (_.isPlainObject(condition)) {
@@ -377,8 +377,8 @@ class FirebaseHelper extends BaseFirebase {
 
                 const [key, value] = entries[0];
 
-                if (!key || !_.isFunction(value)) {
-                    throw new ERROR(9745, `條件物件中應該要有 function 為 value，但實際是：${_.toString(condition)}`);
+                if (!key || !Util.isFunction(value)) {
+                    throw new ERROR(9745, `條件物件中應該要有 function 為 value，但實際是：${Util.toString(condition)}`);
                 }
 
                 stmtFn = value;
@@ -406,7 +406,7 @@ class FirebaseHelper extends BaseFirebase {
                 }
             } else {
                 // 非支援類型，丟出錯誤
-                throw new ERROR(9745, `condition 應該是 object 或 function，但實際是 ${typeof condition}, ${_.toString(condition)}`);
+                throw new ERROR(9745, `condition 應該是 object 或 function，但實際是 ${typeof condition}, ${Util.toString(condition)}`);
             }
 
             raw.push({ stmt: stmtFn, priority });
@@ -659,7 +659,7 @@ class FirebaseHelper extends BaseFirebase {
      */
     pagination = async ({ path = "", conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_BATCH, task = null, selected = false }) => {
         // 修正 behavior 判斷：提供 task -> Modified；未提供 task -> Query
-        const hasTask = task && _.isFunction(task);
+        const hasTask = task && Util.isFunction(task);
         const behavior = hasTask ? RemoteDo.Modified : RemoteDo.Query;
 
         // ---【分頁穩定性檢查】---

@@ -22,7 +22,7 @@ class ModularizedIreneTextsIndexSetterStore extends BaseIreneTextsIndexSetterSto
 
     fetchListOfTab = async () => {
         const functionOfFetchTexts = this.getComponent().getStore().fetchTextsOfIndexSetter;
-        if (_.isFunction(functionOfFetchTexts)) this.setRows(...(await functionOfFetchTexts()));
+        if (Util.isFunction(functionOfFetchTexts)) this.setRows(...(await functionOfFetchTexts()));
         else Util.appendError(`87456646 ${this.getComponent().getComponentName()} not implement 'fetchTextsOfIndexSetter()'`);
     };
 
@@ -34,12 +34,12 @@ class ModularizedIreneTextsIndexSetterStore extends BaseIreneTextsIndexSetterSto
     @action
     modifyGoTop() {
         const func = this.getComponent().getStore().enableGopTopOfIndexSetter;
-        this.setEnableOfGoTop(_.isFunction(func) ? func() : true);
+        this.setEnableOfGoTop(Util.isFunction(func) ? func() : true);
     }
 
     async onTextsOfIndexUpdateExecuted() {
         const functionOfSubmitTexts = this.getComponent().getStore().submitTextsOfIndexSetter;
-        if (_.isFunction(functionOfSubmitTexts)) await functionOfSubmitTexts(this.getRows().map((each) => each.columnData()));
+        if (Util.isFunction(functionOfSubmitTexts)) await functionOfSubmitTexts(this.getRows().map((each) => each.columnData()));
         else Util.appendError(`87456646 ${this.getComponent().getComponentName()} not implement 'submitTextsOfIndexSetter()'`);
     }
 

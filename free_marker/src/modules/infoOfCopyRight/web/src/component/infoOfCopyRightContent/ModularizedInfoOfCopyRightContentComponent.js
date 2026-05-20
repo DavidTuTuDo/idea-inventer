@@ -13,7 +13,7 @@ class ModularizedInfoOfCopyRightContentComponent extends BaseInfoOfCopyRightCont
 
     onInfoOfCopyRightContentProjectDivClicked(param) {
         const project = param.object;
-        if (Util.isUndefinedNullEmpty(project.getRoute()) || _.isEqual(project.getRoute(), "empty")) this.showInfoSnackMessage(`施工中，請稍後再試`);
+        if (Util.isUndefinedNullEmpty(project.getRoute()) || Util.isEqual(project.getRoute(), "empty")) this.showInfoSnackMessage(`施工中，請稍後再試`);
         else this.handleProjectRouter(project.getRoute());
     }
 

@@ -1,7 +1,6 @@
 import {configerer as GlobalConfig} from 'configerer';
 import ERRORs from './ERRORs';
 import {utiller as Util} from '../index.js';
-import _ from 'lodash';
 
 class MyException extends Error {
 

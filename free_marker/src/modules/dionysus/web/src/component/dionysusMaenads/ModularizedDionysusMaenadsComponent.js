@@ -34,7 +34,7 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
     getInjectPropsOfDionysusMaenadsVariantOptionLabelChip(option) {
         return {
             disabled: option.getQuantity() <= 0,
-            color: _.isEqual(option.getSelect(), true) ? "error" : "default"
+            color: Util.isEqual(option.getSelect(), true) ? "error" : "default"
         };
     }
 

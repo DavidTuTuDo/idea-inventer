@@ -235,7 +235,7 @@ class spider_shalom extends Spider {
         let startNum = await this.getStartId();
 
         for (const num of _.range(startNum, 100001, -1)) {
-            const idStr = _.toString(num);
+            const idStr = Util.toString(num);
             let success = false;
 
             // 遇到錯誤時會留在這個 while 迴圈，直到該 ID 成功為止
@@ -466,7 +466,7 @@ class spider_shalom extends Spider {
      * @param {string|number} targetId - 指定的單號 (如: 100321)
      */
     fetchSingle = async (href, targetId) => {
-        const idStr = _.toString(targetId);
+        const idStr = Util.toString(targetId);
         console.log(`[Single Fetch] 啟動單筆測試模式，目標單號: ${idStr}`);
 
         try {

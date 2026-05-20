@@ -54,7 +54,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     }
 
     needAssistantArea() {
-        return !_.isEmpty(this.getTopicOfAssistant().getName()) || _.size(this.getTopicOfAssistant().getImages()) > 0;
+        return !Util.isEmpty(this.getTopicOfAssistant().getName()) || _.size(this.getTopicOfAssistant().getImages()) > 0;
     }
 
     isMultiSelected() {
@@ -64,7 +64,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     setReply(param) {
         /** 在historyWrong,param會是string,'ABC', 在答題的時候會是number,0123*/
 
-        const charsOfAnswer = _.isNumber(param) ? Util.integerToString(param) : param;
+        const charsOfAnswer = Util.isNumber(param) ? Util.integerToString(param) : param;
         if (this.getCompleted() || Util.has(this.getReply(), charsOfAnswer)) {
             return;
         }
@@ -92,7 +92,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
         if (this.isMathOptionalQuestion()) {
             return !this.isOptionResultWithWrong;
         }
-        return _.isEqual(this.getAnswer(), this.getReply());
+        return Util.isEqual(this.getAnswer(), this.getReply());
     }
 
     /** 就是choice選項是依賴圖中的A-E or 1-5, 讓敘述更明確*/

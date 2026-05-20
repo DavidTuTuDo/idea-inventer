@@ -59,7 +59,7 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
             const index = _.indexOf(itemsOfPu, item);
             if (index > 0) {
                 const itemOfPreview = itemsOfPu[index - 1];
-                if (_.isEqual(itemOfPreview.singer, item.singer)) item.setNeedTitle(false);
+                if (Util.isEqual(itemOfPreview.singer, item.singer)) item.setNeedTitle(false);
             }
         }
         this.setFavoritePus(...itemsOfPu);

@@ -32,7 +32,7 @@ class MainStore extends BaseMainStore {
 
     handleOrderItemValidate = (status, data, error) => {
         Util.appendInfo(`4121321 handleOrderItemUpdate STATUS:`, status, ` DATA:`, data);
-        if (_.isEqual('server', status))
+        if (Util.isEqual('server', status))
             this.updateSpecificOrders(data);
 
     }
@@ -50,7 +50,7 @@ class MainStore extends BaseMainStore {
     }
 
     async updateOrder(orderOfLast) {
-        const order = _.find(this.getOrders(), (order) => _.isEqual(order.id, orderOfLast.id));
+        const order = _.find(this.getOrders(), (order) => Util.isEqual(order.id, orderOfLast.id));
         order.initial(orderOfLast);
     }
 
@@ -149,14 +149,14 @@ class MainStore extends BaseMainStore {
     }
 
     async handleOrderByCondition(force) {
-        const current = _.cloneDeep(this.getAreaOfFunc().getSelectedOrderBy());
-        const timestamp = _.cloneDeep(this.getAreaOfFunc().getBaseOn())
+        const current = Util.cloneDeep(this.getAreaOfFunc().getSelectedOrderBy());
+        const timestamp = Util.cloneDeep(this.getAreaOfFunc().getBaseOn())
         if (force) Util.appendInfo(`base time updated`);
         else if (this.conditionOfOrderBy === current) return
         this.clean();
         this.getAreaOfFunc().setSelectedOrderBy(current);
         this.getAreaOfFunc().setBaseOn(timestamp);
-        switch (_.toNumber(current)) {
+        switch (Util.toNumber(current)) {
             case 1:
                 /** '訂單(未繳清) */
                 this.setOrderConditions(

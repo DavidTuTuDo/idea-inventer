@@ -73,7 +73,7 @@ class GCPHelper {
             // compression: "DEFLATE",
         });
         /** doing something of log usage,buf is a node.js Buffer, you can either write it to a file or res.
-         * persist file will => fs.writeFileSync(`./output${_.toString(Util.getCurrentTimeStamp())}.docx`, buf); */
+         * persist file will => fs.writeFileSync(`./output${Util.toString(Util.getCurrentTimeStamp())}.docx`, buf); */
         return buf;
     }
 

@@ -81,7 +81,7 @@ class EpisodeComponent extends BaseEpisodeComponent {
     }
 
     getInjectStyleOfEpisodeVoiceExecutingCoveredDiv(voice) {
-        return Util.getVisibleOrNone(_.isEqual(this.getStore().getCurrentVoicePath(), voice.getPathOfResource()));
+        return Util.getVisibleOrNone(Util.isEqual(this.getStore().getCurrentVoicePath(), voice.getPathOfResource()));
     }
 
     getInjectStyleOfEpisodeVoicePaper(voice) {

@@ -37,7 +37,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
     onInitialFetchCompleted = async (collection) => {
         await super.onInitialFetchCompleted(collection);
         const nameOfBrand = this.getGlobalPerspective().getNameOfBrand();
-        if (!_.isEmpty(nameOfBrand)) UserInfo.setNameOfBrand(nameOfBrand);
+        if (!Util.isEmpty(nameOfBrand)) UserInfo.setNameOfBrand(nameOfBrand);
         UserInfo.setGlobalPerspective(this.getGlobalPerspective().columnData());
 
         const { Application } = require("../../");
@@ -57,7 +57,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         try {
             await Util.syncDelay(1);
             const result = await this.apiOfKeyword.fetchKeywords();
-            if (_.isArray(this.getKeywords())) this.initialCompleteSuggestBehavior(_.uniqBy(result, "label"));
+            if (Array.isArray(this.getKeywords())) this.initialCompleteSuggestBehavior(_.uniqBy(result, "label"));
             Util.appendInfo(`已拿取完關鍵字！`);
         } catch (error) {
             Util.appendError(`fetchKeywordInBackgroundBehavior => ${error.message}`);

@@ -860,17 +860,17 @@ class CodegenNode {
 
     self = this;
 
-    useServerTime() { return this.isTimeStamp() && _.isEqual(this.forceServerTime, true); }
+    useServerTime() { return this.isTimeStamp() && Util.isEqual(this.forceServerTime, true); }
 
-    asTrim() { return _.isEqual(this.trim, true); }
+    asTrim() { return Util.isEqual(this.trim, true); }
 
-    hasVariant() { return !_.isEmpty(this.variant); }
+    hasVariant() { return !Util.isEmpty(this.variant); }
 
     isBelong2TimeStamp() { return this.belong2TimeStamp; }
 
-    disableBorder() { return _.isEqual(this.border, false); }
+    disableBorder() { return Util.isEqual(this.border, false); }
 
-    disableInput() { return _.isEqual(this.disabled, true); }
+    disableInput() { return Util.isEqual(this.disabled, true); }
 
     getVariant() {
         return this.variant ?? 'outlined'
@@ -889,7 +889,7 @@ class CodegenNode {
     getSpecificComponent(nameOfComponent) {
         const node = this.getNodeOfSource();
         return _.find(node['components'],
-          (component) => _.isEqual(component.name, nameOfComponent))
+          (component) => Util.isEqual(component.name, nameOfComponent))
     }
 
     getPresetAttributes() {
@@ -899,35 +899,35 @@ class CodegenNode {
 
     isBelong2TimeDatePicker() { return this.belong2TimeDatePicker; }
 
-    hasSize() { return this.size && !_.isEmpty(this.size); }
+    hasSize() { return this.size && !Util.isEmpty(this.size); }
 
-    hasMargin() { return this.margin && !_.isEmpty(this.margin); }
+    hasMargin() { return this.margin && !Util.isEmpty(this.margin); }
 
     isBelong2AutoComplete() { return this.belong2AutoComplete; }
 
-    hasIcon() { return !_.isEmpty(this.icon); }
+    hasIcon() { return !Util.isEmpty(this.icon); }
 
     getIcon() { return this.icon ?? ''; }
 
-    needBadge() { return _.isEqual(this.badge, true); }
+    needBadge() { return Util.isEqual(this.badge, true); }
 
-    hasIconOfDeleted() { return !_.isEmpty(this.iconOfDeleted); }
+    hasIconOfDeleted() { return !Util.isEmpty(this.iconOfDeleted); }
 
     getTypeOfTextField() { return this.typeOfTextField; }
 
-    beingScrollable() { return _.isEqual(this.scrollable, true); }
+    beingScrollable() { return Util.isEqual(this.scrollable, true); }
 
-    hasTypeOfTextField() { return !_.isEmpty(this.typeOfTextField); }
+    hasTypeOfTextField() { return !Util.isEmpty(this.typeOfTextField); }
 
     getIconOfDeleted() {
         return this.iconOfDeleted ?? 'DeleteRounded'
     }
 
-    isPresetParam() { return _.isEqual(true, this.presetParam); }
+    isPresetParam() { return Util.isEqual(true, this.presetParam); }
 
-    isDisableOfColumn() { return _.isEqual(true, this.disableOfColumn); }
+    isDisableOfColumn() { return Util.isEqual(true, this.disableOfColumn); }
 
-    hasCheckedIcon() { return !_.isEmpty(this.checkedIcon); }
+    hasCheckedIcon() { return !Util.isEmpty(this.checkedIcon); }
 
     getCheckedIcon() { return this.checkedIcon ?? ''; }
 
@@ -969,7 +969,7 @@ class CodegenNode {
             for (const node of nodes) {
                 if (_.isEqual(node.name, nameOfRef) && Util.isUndefinedNullEmpty(node.ref))
                     nodesOfRef.push(node);
-                if (_.isArray(node.children))
+                if (Array.isArray(node.children))
                     findNodeOfSpecificRef(...node.children)
             }
         }
@@ -990,7 +990,7 @@ class CodegenNode {
     useAutoFuse() { return _.isEqual(true, this.autoFuse); }
 
     hasInputRegEx() {
-        return !_.isEmpty(this.inputRegEx);
+        return !Util.isEmpty(this.inputRegEx);
     }
 
     getInputRegEx() {
@@ -1037,15 +1037,15 @@ class CodegenNode {
         return [...isMatch, ...childrenMatches];
     };
 
-    isSelected() { return _.isObject(this.select) && _.isArray(this.select.values); }
+    isSelected() { return Util.isObject(this.select) && Array.isArray(this.select.values); }
 
-    hasLabel() { return this.label && !_.isEmpty(this.label); }
+    hasLabel() { return this.label && !Util.isEmpty(this.label); }
 
-    hasFormat() { return this.format && !_.isEmpty(this.format); }
+    hasFormat() { return this.format && !Util.isEmpty(this.format); }
 
     getFormat() { return this.format ?? `YYYY/MM/DD hh:mm`; }
 
-    hasHelperText() { return this.helperText && !_.isEmpty(this.helperText); }
+    hasHelperText() { return this.helperText && !Util.isEmpty(this.helperText); }
 
     getHelperText() { return this.helperText ?? ''; }
 
@@ -1055,15 +1055,15 @@ class CodegenNode {
 
     hasLabelViewIcon() { return this.labelView && this.labelView.labelIcon && this.labelView.labelIcon.enable; }
 
-    hasDefaultValueOfLabelView() { return this.hasLabelView() && !_.isEmpty(this.labelView.defaultValue); }
+    hasDefaultValueOfLabelView() { return this.hasLabelView() && !Util.isEmpty(this.labelView.defaultValue); }
 
     getFunctionMethods() { return this.methods; }
 
     getStructs() { return this.getNodeOfComponent().getComponents().map(component => component.getStruct()); }
 
-    hasTitle() { return !_.isEmpty(this.title); }
+    hasTitle() { return !Util.isEmpty(this.title); }
 
-    hasColor() { return !_.isEmpty(this.color); }
+    hasColor() { return !Util.isEmpty(this.color); }
 
     getColor() { return this.color ?? 'primary'; }
 
@@ -1188,7 +1188,7 @@ class CodegenNode {
 
     isColumnArray() { return this.isArray() && this.column; }
 
-    isReferenceNode() { return !!this.ref && !_.isEmpty(this.ref); }
+    isReferenceNode() { return !!this.ref && !Util.isEmpty(this.ref); }
 
     hasCopyRightView() { return this.useCopyRightView.enable; }
 
@@ -1290,7 +1290,7 @@ class CodegenNode {
      * 2. selected{name} 也會被指定為string
      * */
     useStringAsValue() {
-        return _.isString(this.getSelectedDefaultValue())
+        return Util.isString(this.getSelectedDefaultValue())
     }
 
     getTypeOfSimpleSelected() { return this.select.type; }
@@ -1411,7 +1411,7 @@ class CodegenNode {
 
     getPaginateThreshold() { return this.paginate.threshold; }
 
-    hasPaginate() { return !!this.paginate && _.isObject(this.paginate); }
+    hasPaginate() { return !!this.paginate && Util.isObject(this.paginate); }
 
     appendWrapStyle(style) {
         this.wrapStyle = {...this.wrapStyle, ...style}
@@ -2048,7 +2048,7 @@ class CodegenNode {
         if (this.isAutoCompleteView()) {
             stmts.push(`/** force update AutoCompleteView view usage */`);
             stmts.push(
-              `const forceUpdate = _.toString(${this.getPreciseAttributeParentName()}.${Util.camel(
+              `const forceUpdate = Util.toString(${this.getPreciseAttributeParentName()}.${Util.camel(
                 'get',
                 this.getFieldNameOfSuggest()
               )}s()) + Util.getRandomHashV2()`
@@ -2099,7 +2099,7 @@ class CodegenNode {
 
     getCookies() {
         const node = this.getNodeOfComponent();
-        return _.isArray(node.cookies) ? node.cookies : [];
+        return Array.isArray(node.cookies) ? node.cookies : [];
     }
 
     needInjectStyle() { return !!this.injectStyle; }
@@ -2121,7 +2121,7 @@ class CodegenNode {
 
     getContents(generator) {
         const stmts = [];
-        if (!!this.contents && _.isArray(this.contents)) {
+        if (!!this.contents && Array.isArray(this.contents)) {
             stmts.push(...this.contents)
         }
         if (this.hasAlertDialog() && !this.hasWrap())
@@ -2588,14 +2588,14 @@ class CodegenNode {
     pure() { return this.node; }
 
     hasChildren() {
-        if (this.children !== undefined && !_.isArray(this.children)) {
+        if (this.children !== undefined && !Array.isArray(this.children)) {
             throw new ERROR(9999, `${this.getName()} 宣告的 children 必須是array`);
         }
 
-        return (_.isArray(this.children) && this.children.length > 0);
+        return (Array.isArray(this.children) && this.children.length > 0);
     }
 
-    getChildren() { return _.isArray(this.children) ? this.children : []; }
+    getChildren() { return Array.isArray(this.children) ? this.children : []; }
 
     setChildren(children) {
         this.children = children;
@@ -2890,7 +2890,7 @@ class CodegenNode {
             return new CodegenNode({name: SignOfInValidNode});
         }
 
-        if (_.isArray(this.parent)) {
+        if (Array.isArray(this.parent)) {
             if (this.indexOfCollection > -1) {
                 return this.parent[this.indexOfCollection];
             }
@@ -2983,13 +2983,13 @@ class CodegenNode {
             for (const obj of arrayOfDefaultValue) {
                 for (const key in obj) {
                     const value = obj[key];
-                    if (_.isArray(value)) {
+                    if (Array.isArray(value)) {
                         const latest = Util.camel(sign, key, `${_.indexOf(arrayOfDefaultValue, obj)}`);
                         refactorI18nMapOfArrayDefaultValue(value, latest)
                     }
 
                     /** icon要在 XXXStore 拿取 material-ocn/4{icon} */
-                    if (_.isString(value) && !_.isEqual(key, 'value') &&  !_.isEqual(key, 'icon')) {
+                    if (Util.isString(value) && !_.isEqual(key, 'value') &&  !_.isEqual(key, 'icon')) {
                         const valueOfI18n = Util.camel(
                           self.getPreciseAttributeGenealogyName(),
                           sign,
@@ -3012,21 +3012,21 @@ class CodegenNode {
                 const _stmts = [];
                 for (const keyOfMajor in object) {
                     const valueOfMajor = object[keyOfMajor];
-                    if (_.isArray(valueOfMajor)) {
+                    if (Array.isArray(valueOfMajor)) {
                         _stmts.push(`${keyOfMajor}:${toNormalizeArrayString(valueOfMajor)}`)
                         continue;
                     }
 
-                    if (_.isObject(valueOfMajor)) {
+                    if (Util.isObject(valueOfMajor)) {
                         const __stmts = [];
                         for (const keyOfMinor in valueOfMajor) {
                             const valueOfMinor = valueOfMajor[keyOfMinor];
-                            if (_.isArray(valueOfMinor)) {
+                            if (Array.isArray(valueOfMinor)) {
                                 __stmts.push(`${keyOfMinor}:${toNormalizeArrayString(valueOfMinor)}`);
                                 continue;
                             }
 
-                            if (_.isString(valueOfMinor)) {
+                            if (Util.isString(valueOfMinor)) {
                                 const latest = Util.camel(
                                   self.getPreciseAttributeGenealogyName(),
                                   keyOfMajor, keyOfMinor, `${_.indexOf(array, object)}`);
@@ -3037,12 +3037,12 @@ class CodegenNode {
                         continue;
                     }
 
-                    if (_.isString(valueOfMajor)) {
+                    if (Util.isString(valueOfMajor)) {
                         const latest = _.startsWith(valueOfMajor, '###') ? Util.getStringOfDropHeadSign(valueOfMajor, `#`) : `'${valueOfMajor}'`;
                         if (self.isArrayOfField() && _.isEqual(keyOfMajor, 'icon')) _stmts.push(`${keyOfMajor}: ${valueOfMajor}`); /** SIGN_OF_IMPORT_MUI */
                         else _stmts.push(`${keyOfMajor}:${latest}`);
                     } else {
-                        _stmts.push(`${keyOfMajor}:${_.toString(valueOfMajor)}`)
+                        _stmts.push(`${keyOfMajor}:${Util.toString(valueOfMajor)}`)
                     }
                 }
                 stmts.push(`{${_stmts.join(',')}}`);
@@ -3063,13 +3063,13 @@ class CodegenNode {
             }
 
             if (this.isArrayOfField()) {
-                const latest = _.cloneDeep(this.getDefaultValue());
+                const latest = Util.cloneDeep(this.getDefaultValue());
                 refactorI18nMapOfArrayDefaultValue(latest);
                 return `${toNormalizeArrayString(latest)}`;
             }
 
             if (this.isArray()) {
-                const latest = _.cloneDeep(this.getDefaultValue());
+                const latest = Util.cloneDeep(this.getDefaultValue());
                 refactorI18nMapOfArrayDefaultValue(latest);
                 return `${toNormalizeArrayString(latest)}.map(each => new ${this.getClassName()}({...each, parentNode: this}))`
             }
@@ -3200,7 +3200,7 @@ class CodegenNode {
     }
 
     getComponents() {
-        return (_.isArray(this.components) ? this.components : []);
+        return (Array.isArray(this.components) ? this.components : []);
     }
 
     getCloudFunctions() { return this.cloudFunctions ?? []; }
@@ -3274,7 +3274,7 @@ class CodegenNode {
 
     /** 在enrich node裡面的Array再加入結構*/
     static appendChildInArray(addressOfArray, rawJson) {
-        if (_.isArray(addressOfArray)) {
+        if (Array.isArray(addressOfArray)) {
             const mother = addressOfArray[0].mother;
             mother.push(rawJson);
             rawJson.parent = addressOfArray.parent
@@ -3292,7 +3292,7 @@ class CodegenNode {
 
     static enrich(nodeOfRaw, parent) {
         let involution = new CodegenNode(nodeOfRaw);
-        if (_.isArray(nodeOfRaw)) {
+        if (Array.isArray(nodeOfRaw)) {
             /** 隨便改變物件的型態,未來會出現各種bug */
             involution = [];
             involution.parent = parent;
@@ -3301,13 +3301,13 @@ class CodegenNode {
                 child.mother = nodeOfRaw;
                 involution.push(this.enrich(child, involution));
             }
-        } else if (_.isObject(nodeOfRaw)) {
+        } else if (Util.isObject(nodeOfRaw)) {
             for (const key in nodeOfRaw) {
                 if (Util.isOrEquals(key, ...this.doNotEnrichAttribute()))
                     involution[key] = nodeOfRaw[key];
-                else if (_.isObject(nodeOfRaw[key]) || _.isArray(nodeOfRaw[key])) {
+                else if (Util.isObject(nodeOfRaw[key]) || Array.isArray(nodeOfRaw[key])) {
                     const obj = nodeOfRaw[key];
-                    if (_.isArray(parent)) {
+                    if (Array.isArray(parent)) {
                         const index = _.indexOf(nodeOfRaw.mother, nodeOfRaw);
                         obj.indexOfCollection = index;
                     }

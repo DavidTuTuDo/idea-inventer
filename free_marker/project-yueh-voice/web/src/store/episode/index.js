@@ -67,7 +67,7 @@ class EpisodeStore extends BaseEpisodeStore {
     @action
     invalidateVoiceEnableState() {
         let enableAll = false;
-        if (_.isEqual(this.getEnableAll(), "全閉")) {
+        if (Util.isEqual(this.getEnableAll(), "全閉")) {
             this.setEnableAll("全開");
         } else {
             enableAll = true;
@@ -82,7 +82,7 @@ class EpisodeStore extends BaseEpisodeStore {
     @action
     invalidateRuleOfPlay() {
         const state = this.getRulesOfPlay();
-        if (_.isEqual(state, "順序")) {
+        if (Util.isEqual(state, "順序")) {
             this.setRulesOfPlay("隨機");
             this.randomPlay = true;
         } else {
@@ -92,7 +92,7 @@ class EpisodeStore extends BaseEpisodeStore {
     }
 
     getCurrentVoice = () => {
-        return _.find(this.getVoices(), (voice) => _.isEqual(this.getCurrentVoicePath(), voice.getPathOfResource()));
+        return _.find(this.getVoices(), (voice) => Util.isEqual(this.getCurrentVoicePath(), voice.getPathOfResource()));
     };
 
     async deleteVoicePrecisely(voice) {
@@ -108,7 +108,7 @@ class EpisodeStore extends BaseEpisodeStore {
     performNextVoice = async () => {
         /** 檢查 ignore */
         /** 檢查隨機 */
-        if (_.isEqual(undefined, this.getCurrentVoice())) {
+        if (Util.isEqual(undefined, this.getCurrentVoice())) {
             /**
              * 因為 this.setCurrentVoice(''),會讓audio player在呼叫onError | onEnd 在觸發一次performNextVoice
              await Util.syncDelay(10);
@@ -125,7 +125,7 @@ class EpisodeStore extends BaseEpisodeStore {
                 this.getCurrentVoice()
             );
         } else {
-            const currentIndex = _.findIndex(this.getVoices(), (voice) => _.isEqual(voice.getPathOfResource(), this.getCurrentVoicePath()));
+            const currentIndex = _.findIndex(this.getVoices(), (voice) => Util.isEqual(voice.getPathOfResource(), this.getCurrentVoicePath()));
             let nextIndex = _.findIndex([...this.getVoices(), ...this.getVoices()], (voice) => voice.enable, currentIndex + 1);
             next = Util.nth(this.getVoices(), nextIndex);
         }

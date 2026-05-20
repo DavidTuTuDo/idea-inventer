@@ -28,8 +28,8 @@ class ModularizedDemeterComponent extends BaseDemeterComponent {
 
     fetchHeraOfCompound = async (start = "20250101", end = "20250131") => {
         const self = this;
-        const startOfPrecisely = _.toNumber(`${start}000000`);
-        const endOfPrecisely = _.toNumber(`${end}235959`);
+        const startOfPrecisely = Util.toNumber(`${start}000000`);
+        const endOfPrecisely = Util.toNumber(`${end}235959`);
 
         // 初始化已查詢區間列表
         if (!self.fetchedRanges) self.fetchedRanges = [];

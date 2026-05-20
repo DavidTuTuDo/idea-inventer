@@ -75,7 +75,7 @@ class FirebaseHelper extends BaseFirebase {
         makeObservable(this);
         this.unsubscribeAuth = null;
         if (this.auth() === undefined) return;
-        if (_.isEqual(Config.env, "dev") && _.isEqual(Config.platform, "web")) {
+        if (Util.isEqual(Config.env, "dev") && Util.isEqual(Config.platform, "web")) {
             connectFunctionsEmulator(this.functions(), "localhost", 5001);
         }
     }
@@ -213,7 +213,7 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     async httpOnCall(functionName, data) {
-        const isDev = _.isEqual(Config.env, "dev") && _.isEqual(Config.platform, "web") && Config.useXTunnelDev;
+        const isDev = Util.isEqual(Config.env, "dev") && Util.isEqual(Config.platform, "web") && Config.useXTunnelDev;
         if (isDev) {
             // 這是你剛剛產生的 Cloudflare 網址
             const CF_BASE = "https://vwuahrly0k.loclx.io";
@@ -260,7 +260,7 @@ class FirebaseHelper extends BaseFirebase {
      * */
     reference = (path, id, { asDoc = false } = {}) => {
         if (asDoc) return Util.isUndefinedNullEmpty(id) ? doc(this.firestore(), path) : doc(this.firestore(), path, id);
-        if (_.isEqual(id, "asObj")) return doc(this.firestore(), path);
+        if (Util.isEqual(id, "asObj")) return doc(this.firestore(), path);
         return Util.isUndefinedNullEmpty(id) ? collection(this.firestore(), path) : doc(this.firestore(), path, id);
     };
 
@@ -476,7 +476,7 @@ class FirebaseHelper extends BaseFirebase {
             items,
             (batch, object) => {
                 const parentData = object[parentCollection];
-                const parentId = _.isEmpty(parentData.id) ? this.getAutoDocumentID(parentCollection) : parentData.id;
+                const parentId = Util.isEmpty(parentData.id) ? this.getAutoDocumentID(parentCollection) : parentData.id;
                 parentData.id = parentId;
                 const parentRef = this.reference(parentCollection, parentId);
                 batch.set(parentRef, parentData);
@@ -484,7 +484,7 @@ class FirebaseHelper extends BaseFirebase {
                 const children = object[childCollection] || [];
 
                 for (const childData of children) {
-                    const childId = _.isEmpty(childData.id) ? this.getAutoDocumentID(`${parentCollection}/${parentId}/${childCollection}`) : childData.id;
+                    const childId = Util.isEmpty(childData.id) ? this.getAutoDocumentID(`${parentCollection}/${parentId}/${childCollection}`) : childData.id;
                     childData.id = childId;
                     const childRef = this.reference(`${parentCollection}/${parentId}/${childCollection}`, childId);
                     batch.set(childRef, childData);
@@ -609,7 +609,7 @@ class FirebaseHelper extends BaseFirebase {
      * @returns {Promise<Array>} - Query 模式返回文件陣列；Modified 模式返回 true (表示操作成功)。
      */
     pagination = async ({ path = "", conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_BATCH, task = null }) => {
-        const hasTask = task && _.isFunction(task);
+        const hasTask = task && Util.isFunction(task);
         const behavior = hasTask ? RemoteDo.Modified : RemoteDo.Query;
 
         // ---【分頁穩定性檢查】---
@@ -1170,7 +1170,7 @@ class FirebaseHelper extends BaseFirebase {
         try {
             // listAll 會列出該層級下「所有」檔案與子資料夾
             // 注意：若單一資料夾檔案數破萬，建議改用 list() 配合 pageToken 分頁讀取
-            listResult = await listAll(_.isString(storageRef) ? ref(this.storage(), storageRef) : storageRef);
+            listResult = await listAll(Util.isString(storageRef) ? ref(this.storage(), storageRef) : storageRef);
         } catch (error) {
             const path = storageRef?.fullPath ?? "unknown_path";
             console.error(`[ListAll Error] Path: ${path}, Msg: ${error.message}`);
@@ -1184,7 +1184,7 @@ class FirebaseHelper extends BaseFirebase {
         // 1. 檔案處理區塊 (File Processing) - 嚴格批次刪除
         // =================================================================
         const files = listResult.items ?? [];
-        console.log(`${_.isString(storageRef) ? storageRef : "$ref"} 數量：`, files.length);
+        console.log(`${Util.isString(storageRef) ? storageRef : "$ref"} 數量：`, files.length);
         if (files.length > 0) {
             // Lodash: 將所有檔案切成小批次 (e.g., 400 files -> 20 chunks of 20)
             const fileChunks = _.chunk(files, batchSize);

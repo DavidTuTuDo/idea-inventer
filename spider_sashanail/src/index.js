@@ -63,12 +63,12 @@ class sashanailgel_scraper extends Spider {
                     }
 
                     productsOfBrief[srcValue] = {
-                        index: _.toNumber(`${head}${tail}`),
+                        index: Util.toNumber(`${head}${tail}`),
                         valueOfType, valueOfSubType,
                         category: [{ valueOfType, valueOfSubType }], //一個商品可能出現在多個分頁(value) 和 分頁子類(sub)
                         name: titleText,
                         options: _.filter(subs, sub => !_.isUndefined(sub)).map(each => {
-                            return { name: _.trim(each.name), value: _.toNumber(each.value) };
+                            return { name: _.trim(each.name), value: Util.toNumber(each.value) };
                         }),
                         href: srcValue
                     };
@@ -117,7 +117,7 @@ class sashanailgel_scraper extends Spider {
 
         const pagesShouldFetch = categories.filter(page => {
             const splits = page.href.split('/');
-            const id = _.toNumber(splits.pop());
+            const id = Util.toNumber(splits.pop());
             return id > 0 && _.isEqual(splits.pop(), 'plist');
         });
 
@@ -213,7 +213,7 @@ class sashanailgel_scraper extends Spider {
                 console.log(`[${product.name}-${nameOfOption}]輸入框[${input}]得到focus`);
                 /** 加入購物車 */
                 const countsOfRandom = Util.getRandomValue(10000, 20000);
-                await Util.writeElementAttributes(page, input, { value: _.toString(countsOfRandom) });
+                await Util.writeElementAttributes(page, input, { value: Util.toString(countsOfRandom) });
                 console.log(`加了 ${nameOfOption} ：${countsOfRandom} 個 `);
                 const button = `#gd-detail > table > tbody > .add-cart-zone > td > #add-to-list`;
                 const selectorOfAppendToCart = await page.$(button);
@@ -298,7 +298,7 @@ class sashanailgel_scraper extends Spider {
                 for (const product of listInCart) {
                     const nameOfOption = await Util.fetchElementAttributes(product, `.t1-4`, 'empty', `innerText`);
                     const countOfMax = await Util.fetchElementAttributes(product, `.t1-6 > input`, '0', `value`);
-                    optionsInCart.push({ name: _.trim(nameOfOption), count: _.toNumber(countOfMax) });
+                    optionsInCart.push({ name: _.trim(nameOfOption), count: Util.toNumber(countOfMax) });
                 }
 
                 const result = {

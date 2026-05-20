@@ -15,7 +15,7 @@ import _ from "lodash";
 
     function getExpression(product) {
         const stmts = [];
-        if (product && _.isArray(product.introduces)) {
+        if (product && Array.isArray(product.introduces)) {
             product.introduces.forEach((each) => {
                 if (_.size(each.description) > 5) stmts.push(`${each.title}\n\n${each.description}\n`);
             });
@@ -39,7 +39,7 @@ import _ from "lodash";
         if (value == null) return 0;
 
         // 2. 如果已經是數字，直接回傳
-        if (_.isNumber(value)) return value;
+        if (Util.isNumber(value)) return value;
 
         // 3. 清洗字串：
         // - toString() 確保處理非字串型態
@@ -48,7 +48,7 @@ import _ from "lodash";
 
         // 4. 轉換並處理無法解析的情況
         // 使用 ?? (ES11) 確保如果解析失敗回傳 0
-        const result = _.toNumber(cleanValue);
+        const result = Util.toNumber(cleanValue);
 
         return _.isNaN(result) ? 0 : result;
     }

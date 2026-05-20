@@ -81,7 +81,7 @@ class ComponentBuilder extends BaseBuilder {
     async buildBaseComponent(componentNode) {
 
         const baseComponentName = componentNode.getStruct().getName();
-        if (_.isEqual(baseComponentName, SIGN_OF_EMPTY_STORE)) {
+        if (Util.isEqual(baseComponentName, SIGN_OF_EMPTY_STORE)) {
             return;
         }
 
@@ -144,7 +144,7 @@ class ComponentBuilder extends BaseBuilder {
                 this.getStore().setErrorMsg('網址參數異常');`);
         }
 
-        if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
+        if (Util.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
             baseGenerator.appendFunction('isNavigationView', [], [], [],
                 `return true`
             )
@@ -155,7 +155,7 @@ class ComponentBuilder extends BaseBuilder {
         if (componentNode.hasPageTitle()) {
             this.appendStmtIntoComponentDidMount(`this.invalidatePageTitle()`);
         }
-        this.appendStmtIntoComponentDidMount(`if(this instanceof ImpComponent && _.isFunction(this.exeAsyncT)) this.exeAsyncT(this.initialize())`)
+        this.appendStmtIntoComponentDidMount(`if(this instanceof ImpComponent && Util.isFunction(this.exeAsyncT)) this.exeAsyncT(this.initialize())`)
         baseGenerator.appendFunction(
             {name: `invalidatePageTitle`, arrow: true}, ['title'], [], [],
             `this.setPageFullTitle(title ?? this.getStore().${this.getFunctionNameOfSimpleGetter(componentNode.getStruct().getFieldNameOfPageTitle(), false)})`
@@ -228,11 +228,11 @@ class ComponentBuilder extends BaseBuilder {
         baseGenerator.appendFunction('isDisposableComponent',
             [], [], [], `return ${componentNode.disposablePage}`);
         /** index.js */
-        if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
+        if (Util.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
             baseGenerator.appendFunction('isNavigator', [], [], [], 'return true');
         }
 
-        if (_.isEqual(componentNode.getName(), 'infoOfCopyRight')) {
+        if (Util.isEqual(componentNode.getName(), 'infoOfCopyRight')) {
             baseGenerator.appendFunction('isCPRT', [], [], [], 'return true');
         }
 
@@ -319,10 +319,10 @@ class ComponentBuilder extends BaseBuilder {
             let result;
 
             // --- 1. 處理基本類型：數字 / 布林值 / 字串 ---
-            if (_.isNumber(value) || _.isBoolean(value)) {
+            if (Util.isNumber(value) || Util.isBoolean(value)) {
                 // 巢狀時不加 {}，頂層時加上 {}
                 result = isNested ? `${value}` : `{${value}}`;
-            } else if (_.isString(value)) {
+            } else if (Util.isString(value)) {
                 if (value.startsWith("###")) {
                     const cleaned = Util.getStringOfDropHeadSign(value, "#");
                     // 處理 ### 字串：巢狀時不加 {}，頂層時加上 {}
@@ -340,7 +340,7 @@ class ComponentBuilder extends BaseBuilder {
             }
 
             // --- 2. 處理陣列 (遞迴點 1) ---
-            if (_.isArray(value)) {
+            if (Array.isArray(value)) {
                 // 對陣列中的每個元素遞迴調用 normalize，並標記 isNested = true
                 // 陣列總是使用 [] 包圍
                 const stmts = value.map(val => normalize(val, true));
@@ -348,12 +348,12 @@ class ComponentBuilder extends BaseBuilder {
             }
 
             // --- 3. 處理物件 (遞迴點 2) ---
-            if (_.isObject(value)) {
+            if (Util.isObject(value)) {
                 const stmts = Object.entries(value).map(([key, val]) => {
                     let normalizedVal;
 
                     // 檢查值是否為特殊字串：物件內 ### 字串的終止條件，保持不變
-                    if (_.isString(val) && val.startsWith("###")) {
+                    if (Util.isString(val) && val.startsWith("###")) {
                         // 在物件內部，特殊字串始終不加 {} (因為父層的 {} 已經被 ' : ' 隔開)
                         normalizedVal = Util.getStringOfDropHeadSign(val, "#");
                     } else {
@@ -428,7 +428,7 @@ class ComponentBuilder extends BaseBuilder {
             stmt.push(`{${prop}}`)
         }
 
-        if (_.isEmpty(contents)) {
+        if (Util.isEmpty(contents)) {
             stmt.push(`/>`);
             stmt.push('\n');
             return stmt;
@@ -811,7 +811,7 @@ class ComponentBuilder extends BaseBuilder {
                     `/** 快速複製一個相同屬性的項目,除了id以外 */`,
                     `const parentNode = ${node.getName()}.getParentNode()`,
                     `if(parentNode !== undefined) {`,
-                    `const clonedObject = _.cloneDeep(${node.getName()}.columnData())`,
+                    `const clonedObject = Util.cloneDeep(${node.getName()}.columnData())`,
                     `delete clonedObject.id`,
                     `await parentNode.${node.getFunctionNameOfSubmit()}(self, clonedObject)`,
                     `}`,

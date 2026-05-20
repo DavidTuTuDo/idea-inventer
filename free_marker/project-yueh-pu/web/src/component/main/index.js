@@ -31,7 +31,7 @@ class MainComponent extends BaseMainComponent {
         const func = param.object;
         switch (func.route) {
             case "randomRhythm":
-                const rhythm = Util.getRandomItemOfArray(this.getKeywordSuggests().filter((each) => _.isEqual(each.type, 11) && each.popularLevel > 10000));
+                const rhythm = Util.getRandomItemOfArray(this.getKeywordSuggests().filter((each) => Util.isEqual(each.type, 11) && each.popularLevel > 10000));
                 return Router.gotoSheetDetailPage(this, rhythm.uid);
             case "preludes":
                 return Router.gotoPortfolioPage(this, "preludes", Util.getRandomHash(10));

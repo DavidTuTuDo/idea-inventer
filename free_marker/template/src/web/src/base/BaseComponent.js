@@ -223,7 +223,7 @@ class BaseComponent extends MuiComponent {
      question={whoknowz.question}/>
      * */
     isComponentView = () => {
-        return _.isEqual(this.propsOfMobX.isComponentView, true);
+        return Util.isEqual(this.propsOfMobX.isComponentView, true);
     };
 
     isNotNavigatorNComponentNCprtView() {
@@ -503,7 +503,7 @@ class BaseComponent extends MuiComponent {
     };
 
     getSelectedSuggest(value, suggests) {
-        if (_.isArray(suggests) && value) return _.find(suggests, (suggest) => _.isEqual(_.toString(suggest.value), _.toString(value)));
+        if (Array.isArray(suggests) && value) return _.find(suggests, (suggest) => Util.isEqual(Util.toString(suggest.value), Util.toString(value)));
     }
 
     shouldDisplayLoadingArea(items = []) {

@@ -13,7 +13,7 @@ class firebaser {
 
     constructor(credential = Util.getFileContextInRaw(configerer.PATH_ACCOUNT_ADMIN)) {
         admin.initializeApp({
-            credential: admin.credential.cert(_.isString(credential) ?
+            credential: admin.credential.cert(Util.isString(credential) ?
                 JSON.parse(credential) : credential),
             databaseURL: configerer.DATA_BASE_URL
         });
@@ -227,7 +227,7 @@ class firebaser {
         ]
 
         for (const plan of plans) {
-            await this.setValues(path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_PRICE, _.toString(plan.pid)), plan)
+            await this.setValues(path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_PRICE, Util.toString(plan.pid)), plan)
         }
     }
 

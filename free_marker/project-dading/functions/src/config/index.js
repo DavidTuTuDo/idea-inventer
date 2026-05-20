@@ -138,12 +138,12 @@ class Config extends BaseConfig {
     ];
 
     getNameOfAgentByValue(value) {
-        const item = _.find(this.AGENT, (each) => _.isEqual(each.value, value));
+        const item = _.find(this.AGENT, (each) => Util.isEqual(each.value, value));
         return item ? item.label : `(未選擇)承辦旅行社`
     }
 
     getCertificateOfAgentByValue(value) {
-        const item = _.find(this.AGENT, (each) => _.isEqual(each.value, value));
+        const item = _.find(this.AGENT, (each) => Util.isEqual(each.value, value));
         return item.certificate;
     }
 

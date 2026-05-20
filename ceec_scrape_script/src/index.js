@@ -50,7 +50,7 @@ class ceec_scrape_script {
                             const title = _.trim(await Browser.getSelectorProperty(element, 'title'));
                             const href = _.trim(await Browser.getSelectorProperty(element, 'href'));
                             const innerText = _.trim(await Browser.getSelectorProperty(element, 'innerText'));
-                            if (_.isString(innerText) && Util.or(Util.has(innerText, `答案`), Util.has(innerText, `試題`))) {
+                            if (Util.isString(innerText) && Util.or(Util.has(innerText, `答案`), Util.has(innerText, `試題`))) {
                                 if (Util.isPathEqualsFileType(href, 'pdf')) {
                                     Util.appendInfo(`考科:${label}, 考卷:${title}, 網址:${href}`)
                                     await Browser.download(href, `./GSAT/${label}/${yearTitle}/${innerText}`, `${title}.pdf`);
@@ -74,7 +74,7 @@ class ceec_scrape_script {
         const subjects = Util.getNamesOfFolderChild(pathOfRoot);
         for (const subject of subjects) {
 
-            if (!_.isEmpty(onlySubject) && !_.isEqual(onlySubject, subject)) {
+            if (!Util.isEmpty(onlySubject) && !_.isEqual(onlySubject, subject)) {
                 continue;
             }
 
@@ -85,7 +85,7 @@ class ceec_scrape_script {
                 const pathOfRootSubjectYear = libpath.join(pathOfRootSubject, year);
                 const pathOfExamPaper = libpath.join(pathOfRootSubjectYear, folderOfQuestion);
                 const pathOfAnswerPaper = this.handleAnswerPath(pathOfRootSubjectYear);
-                const numberOfYear = _.toNumber(year.match(new RegExp(`[0-9]{2,3}`)));
+                const numberOfYear = Util.toNumber(year.match(new RegExp(`[0-9]{2,3}`)));
 
                 if (onlyYear > 0 && !_.isEqual(numberOfYear, onlyYear)) {
                     continue;
@@ -147,7 +147,7 @@ class ceec_scrape_script {
 
                 /** 處理這種 `E 以上答案依照考選部規定`*/
                 return {
-                    qid: _.toNumber(_.trim(qid)),
+                    qid: Util.toNumber(_.trim(qid)),
                     answer: answerShouldBe === null ? undefined : answerShouldBe[0],
                 }
             })
@@ -172,7 +172,7 @@ class ceec_scrape_script {
         }
 
         function safeGetQuestionOrderNumber(string) {
-            return _.toNumber(Util.getNormalizedStringNotEndWith(Util.toSpaceLessString(string), '.'));
+            return Util.toNumber(Util.getNormalizedStringNotEndWith(Util.toSpaceLessString(string), '.'));
         }
 
         const answers = [];

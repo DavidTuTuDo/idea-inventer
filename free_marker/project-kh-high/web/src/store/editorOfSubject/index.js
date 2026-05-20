@@ -18,7 +18,7 @@ class EditorOfSubjectStore extends BaseEditorOfSubjectStore {
 
         const yearOfString = this.getAreaOfStatement().getSelectedYear();
 
-        if (_.isEqual("unknown", yearOfString)) {
+        if (Util.isEqual("unknown", yearOfString)) {
             conditions.push({ where: (stmt) => stmt.where("typeOfMath", "==", -1) });
         } else {
             const yearOfInteger = _.toInteger(_.split(yearOfString, "-").shift());

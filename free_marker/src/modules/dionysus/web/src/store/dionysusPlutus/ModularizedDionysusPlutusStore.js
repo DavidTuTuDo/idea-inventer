@@ -92,7 +92,7 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
 
     whetherPickupByMySelfValidate = async () => {
         const checked = this.getWhetherPickupByMySelf();
-        this.setFeeOfTransport(checked ? 0 : _.toNumber(this.getFeeOfTransport()));
+        this.setFeeOfTransport(checked ? 0 : Util.toNumber(this.getFeeOfTransport()));
     };
 
     @computed
@@ -118,7 +118,7 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
     };
 
     getSelectedLabelByValue(array, value) {
-        const item = _.find(array, (each) => _.isEqual(_.toNumber(each.getValue()), _.toNumber(value)));
+        const item = _.find(array, (each) => Util.isEqual(Util.toNumber(each.getValue()), Util.toNumber(value)));
         return item ? item.label : "";
     }
 }

@@ -132,7 +132,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     }
 
     isEcommerceEnabled() {
-        return !Util.isUndefinedNullEmpty(Config.EPayType) && !_.isEqual(Config.EPayType, {});
+        return !Util.isUndefinedNullEmpty(Config.EPayType) && !Util.isEqual(Config.EPayType, {});
     }
 }
 

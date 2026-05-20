@@ -135,12 +135,12 @@ export default class Lean {
         const self = this;
 
         async function modifyObjectState(func, from) {
-            if (_.isEqual(true, func.scan)) return;
+            if (Util.isEqual(true, func.scan)) return;
             const content = await self.extractLinesFromFile(func);
             func.scan = true;
             const referencedNames = self.extractFunctionNames(content);
             func.children = referencedNames.join(' ,');
-            if (!_.isEmpty(referencedNames)) {
+            if (!Util.isEmpty(referencedNames)) {
                 const functionsOfReference = _.filter(self.listOfFunctions, (func) => referencedNames.includes(func.name));
                 functionsOfReference.forEach(func => func.used = true);
                 /**遞迴處理主func（例如：fetch(){ one();a.two();const c = d.three; }）所引用的子func（例如one two, three）*/
@@ -154,7 +154,7 @@ export default class Lean {
             const latest = _.filter(functionsOfUsage, (func) => !func.used || !func.scan)
             const keywords = latest.map(each => each.name);
             for (const keyword of keywords) {
-                const list = _.filter(self.listOfFunctions, (each) => _.isEqual(each.name, keyword));
+                const list = _.filter(self.listOfFunctions, (each) => Util.isEqual(each.name, keyword));
                 for (const func of list) {
                     await modifyObjectState(func);
                 }
@@ -322,7 +322,7 @@ export default class Lean {
         await this.buildFunctionGraph();
         await this.scanUsage();
         await Util.persistJsonFilePrettier('./temp/list_functions_after_scan.json', this.listOfFunctions);
-        await this.saveAnalyzedReportAsJSON(_.filter(this.listOfFunctions, (func => _.isEqual(false, func.used))), './temp/list_of_analysis.json');
+        await this.saveAnalyzedReportAsJSON(_.filter(this.listOfFunctions, (func => Util.isEqual(false, func.used))), './temp/list_of_analysis.json');
 
         /** 以下會更動到目的檔案*/
         await this.cleanMultipleJsFilesAsync(this.listOfAnalysis);

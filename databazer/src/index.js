@@ -14,7 +14,7 @@ const SPLIT_SIGN_OF_ARRAY = `#&#@#`;
 function getValidPresentOfSQLStatement(value) {
     if (_.isArray(value) || _.isObject(value))
         return `'${normalizeText(Util.deepFlat(value, SPLIT_SIGN_OF_ARRAY))}'`;
-    if (_.isString(value))
+    if (Util.isString(value))
         return `'${normalizeText(value)}'`;
     return value;
 }
@@ -70,7 +70,7 @@ class SqliteHandler {
     }
 
     async tableNotExist(tableName) {
-        const _tableNotExist = _.isEmpty(
+        const _tableNotExist = Util.isEmpty(
             await this.fetchRecords('sqlite_master',
                 SqliteHandler.Builder().equal('name', tableName).stmt(), 'name'));
         return _tableNotExist;
@@ -105,10 +105,10 @@ class SqliteHandler {
             }
 
             let column = '*';
-            if (!_.isEmpty(columns))
+            if (!Util.isEmpty(columns))
                 column = _.join(columns, ', ');
 
-            const needWhere = _.isEmpty(condition) ? '' : Util.startWiths(_.toUpper(condition), configerer.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
+            const needWhere = Util.isEmpty(condition) ? '' : Util.startWiths(_.toUpper(condition), configerer.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
             stmt = `SELECT ${column} FROM ${tableName} ${needWhere} ${condition}`;
             if (configerer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo('FETCH RECORD STMT:' + stmt);
@@ -230,7 +230,7 @@ class SqliteHandler {
     async createIndex(tableName, ...index) {
         let stmt;
         try {
-            if (!_.isEmpty(index)) {
+            if (!Util.isEmpty(index)) {
                 stmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
                 if (configerer.MODULE_MSG.SHOW_SUCCEED)
                     Util.appendInfo(`CREATE INDEX STMT: ${stmt}`);
@@ -250,7 +250,7 @@ class SqliteHandler {
                 Util.appendInfo(`CREATE STMT ${createStmt}`);
             await this.db.run(createStmt);
 
-            if (!_.isEmpty(index)) {
+            if (!Util.isEmpty(index)) {
                 indexStmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
                 if (configerer.MODULE_MSG.SHOW_SUCCEED)
                     Util.appendInfo(`CREATE INDEX STMT:${indexStmt}`);
@@ -382,7 +382,7 @@ class SqliteHandler {
             const diff = _.difference(guest, host).map((key) => {
                 differ[key] = content[key]
             });
-            if (!_.isEmpty(diff)) {
+            if (!Util.isEmpty(diff)) {
                 stmts = this.getAlterColumnStmt(tableName, differ);
                 for (const stmt of stmts) {
                     if (configerer.MODULE_MSG.SHOW_SUCCEED)
@@ -512,7 +512,7 @@ class ConditionBuilder {
     }
 
     isEmpty() {
-        return _.isEmpty(this._stmt);
+        return Util.isEmpty(this._stmt);
     }
 
 }

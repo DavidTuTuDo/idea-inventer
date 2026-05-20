@@ -68,8 +68,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         const splitPeriod = period.split("-");
 
         transaction.set(ref, {
-            startYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.shift()}00`),
-            endYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.pop()}00`),
+            startYYYYMMDDHHmmss: Util.toNumber(`${splitPeriod.shift()}00`),
+            endYYYYMMDDHHmmss: Util.toNumber(`${splitPeriod.pop()}00`),
             idOfVariant: variant.id,
             idOfBooze: variant.idOfBooze,
             useMainTrunk: variant.useMainTrunk ?? false,
@@ -203,7 +203,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
          * @returns {number} 實際需支付的運費
          */
         const getPreciseTransportFee = (thresholdOfFreeTransport, feeOfTransport) => {
-            const isCOD = _.isEqual(typeOfTransaction, Config.TransactionMethod.COD);
+            const isCOD = Util.isEqual(typeOfTransaction, Config.TransactionMethod.COD);
             const reachFreeShip = priceOfTotalIncludingDiscount >= thresholdOfFreeTransport;
 
             // 非貨到付款：達免運門檻則免運，否則收取基本運費
@@ -269,7 +269,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             return this.appendErrorLog(9999, `97845611232 未登入購物上限 ${globalPerspective.amountOfMaximumBuy} 元內（不含運費）`);
 
         /**  (done) todo:總價驗證(client端計算的結果是否等於remote端的結果，防止Hack機制) */
-        if (!_.isEqual(priceOfTotalOfShould, priceOfTotal4Client))
+        if (!Util.isEqual(priceOfTotalOfShould, priceOfTotal4Client))
             this.appendErrorLog(
                 9999,
                 `655345675546 遠端計算總價 (${priceOfTotalOfShould}) 與客戶端提交總價 (${priceOfTotal4Client}) 不符 (Remote total price does not match client total price).`
@@ -365,7 +365,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             feeOfTransport,
             discountOfTotal,
             stateOfTransport: containsTransportedVariant
-                ? _.isEqual(typeOfTransport, Config.TransportMethod.SelfPickup)
+                ? Util.isEqual(typeOfTransport, Config.TransportMethod.SelfPickup)
                     ? Config.StateOfTransport.Needless
                     : Config.StateOfTransport.Pending
                 : Config.StateOfTransport.Needless,

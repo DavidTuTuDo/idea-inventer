@@ -90,7 +90,7 @@ class UserInfo {
     }
 
     isValidUser(user) {
-        return user && !_.isEmpty(user.uid);
+        return user && !Util.isEmpty(user.uid);
     }
 
     getEmailOfCurrentUser = () => {
@@ -165,7 +165,7 @@ class UserInfo {
         this.isLoginSucceed = loggedIn;
 
         // 修正：確保型別正確，避免 boolean 值導致 startsWith 等字串方法噴錯
-        this.adminUser = loggedIn && _.isEqual(this.getUid(true), Configer.superUserUid);
+        this.adminUser = loggedIn && Util.isEqual(this.getUid(true), Configer.superUserUid);
         this.adminHelper = (loggedIn && user.isAdmin) || false;
         this.authorUser = (loggedIn && user.isAuthor) || false;
         this.displayName = (loggedIn && user.displayName) || "";
@@ -227,13 +227,13 @@ class UserInfo {
     };
 
     getUid = (allowCache = true) => {
-        if (!_.isEmpty(this.uid)) return this.uid;
+        if (!Util.isEmpty(this.uid)) return this.uid;
         let uid = firebaser.getUid();
-        if (!_.isEmpty(uid)) return uid;
+        if (!Util.isEmpty(uid)) return uid;
         if (allowCache) {
             const user = Cookie.getUser();
             if (Util.exist(user)) uid = user.uid;
-            if (!_.isEmpty(uid)) return uid;
+            if (!Util.isEmpty(uid)) return uid;
         }
         return "";
     };
@@ -303,7 +303,7 @@ class UserInfo {
     joinItemToCart = ({ isTaskJob = false, idOfAuthor, idOfBooze = "", idOfVariant = "", quantity, quantityOfMaximum, component }) => {
         Util.appendInfo({ idOfBooze, quantity, isTaskJob });
         const infoOfCartie = Cookie.getInfoOfCartie();
-        const key = [idOfBooze, _.toString(idOfVariant)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
+        const key = [idOfBooze, Util.toString(idOfVariant)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
         const object = infoOfCartie[key];
         Util.appendInfo(`joinItemToCart ==>`);
         Util.appendInfo({ idOfBooze, idOfVariant, quantity, isTaskJob, key });
@@ -323,7 +323,7 @@ class UserInfo {
         const infoOfCartie = Cookie.getInfoOfCartie();
         const item = infoOfCartie[key];
         if (item) {
-            item.quantity = _.toNumber(quantity);
+            item.quantity = Util.toNumber(quantity);
             item.checked = checked;
         }
         Cookie.setInfoOfCartie(infoOfCartie);
@@ -359,11 +359,11 @@ class UserInfo {
     /** 拿勾選項目裡第一個idOfAuthor */
     getAuthorOfHeadItemOfCartie = () => {
         const items = this.getCheckedCartieItems();
-        return _.isArray(items) && items.length > 0 ? items[0].idOfAuthor : "";
+        return Array.isArray(items) && items.length > 0 ? items[0].idOfAuthor : "";
     };
 
     anonymous = () => {
-        return !_.isEmpty(this.uid);
+        return !Util.isEmpty(this.uid);
     };
 
     getArrayOfCartieItem() {
@@ -377,12 +377,12 @@ class UserInfo {
     }
 
     setTotalPriceOfCartie(price) {
-        Cookie.setTotalPriceOfCartie(_.toString(price));
+        Cookie.setTotalPriceOfCartie(Util.toString(price));
     }
 
     getTotalPriceOfCartie() {
-        const price = _.toNumber(Cookie.getTotalPriceOfCartie());
-        return _.isNumber(price) && price > 0 ? price : 0;
+        const price = Util.toNumber(Cookie.getTotalPriceOfCartie());
+        return Util.isNumber(price) && price > 0 ? price : 0;
     }
 
     invalidateCartie = (cartie) => {
@@ -406,7 +406,7 @@ class UserInfo {
 
     isGotoCartieDirect() {
         const result = Cookie.getGotoCartieDirectly();
-        return _.isEqual(result, "true");
+        return Util.isEqual(result, "true");
     }
 
     waitLoginCompleted = () => {

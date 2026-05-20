@@ -35,7 +35,7 @@ class WhoknowzStore extends BaseWhoknowzStore {
     }
 
     hasTargetAnswerId() {
-        return !_.isEmpty(this.aid);
+        return !Util.isEmpty(this.aid);
     }
 
     @action
@@ -49,7 +49,7 @@ class WhoknowzStore extends BaseWhoknowzStore {
     }
 
     isConfuserOwner() {
-        return _.isEqual(this.getHeadConfuse().userId, UserInfoRef.getUid());
+        return Util.isEqual(this.getHeadConfuse().userId, UserInfoRef.getUid());
     }
 
     isMathOrEnglish() {

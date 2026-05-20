@@ -29,7 +29,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     onDionysusPlutusFindIconButtonClicked(param) {
         const self = this;
-        if (!_.isEmpty(this.getStore().getAddress())) {
+        if (!Util.isEmpty(this.getStore().getAddress())) {
             const address = this.getStore().getPreciselyAddress();
             Functions.httpOnCallGetDistanceOfSpecificAddress(this, { address }).then((result) => {
                 this.getStore().setDistanceOfSasha(`距離倉庫 ${result}`);
@@ -97,10 +97,10 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                 )
             )
                 return false;
-            return _.isEmpty(self.getStore().getAddress());
+            return Util.isEmpty(self.getStore().getAddress());
         }
 
-        if (Util.or(isAddressShouldFormed(), _.isEmpty(this.getStore().getEmail()), _.isEmpty(this.getStore().getPhone()), _.isEmpty(this.getStore().getName())))
+        if (Util.or(isAddressShouldFormed(), Util.isEmpty(this.getStore().getEmail()), Util.isEmpty(this.getStore().getPhone()), Util.isEmpty(this.getStore().getName())))
             return { succeed: false, behavior: async () => this.showWarningSnackMessage(`資料尚未完整填寫，請再度確認欄位內容`) };
         if (Util.isOrEquals(selectedOfTransport, Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711) && _.size(this.getStore().getCvs()) < 3)
             return { succeed: false, behavior: async () => this.showWarningSnackMessage(`需填入收店代碼，點擊「放大鏡」`) };

@@ -15,7 +15,7 @@ class HtmlAnalysis {
     needFormat = true;
 
     constructor(raw) {
-        this.samplingTaget = _.isString(raw) ? html2json.parse(raw) : {};
+        this.samplingTaget = Util.isString(raw) ? html2json.parse(raw) : {};
         this.init();
     }
 
@@ -26,7 +26,7 @@ class HtmlAnalysis {
 
 
     init() {
-        if (Configer.DEBUG_MODE && _.isEmpty(this.samplingTaget)) {
+        if (Configer.DEBUG_MODE && Util.isEmpty(this.samplingTaget)) {
             let sample = {};
             const mSamplePath = path.join(config.PATH_SAMPLE_OBJECT_ROOT, this.getSampleConfig().filename);
             if (fs.existsSync(mSamplePath))
@@ -109,7 +109,7 @@ class HtmlAnalysis {
     findNodeByAttributes(node, ...attrs) {
         let traits = [...attrs];
         let result = node;
-        while (this.hasChildren(result) && !_.isEmpty(traits)) {
+        while (this.hasChildren(result) && !Util.isEmpty(traits)) {
             result = this.findNodeByAttribute(result, traits[0]);
             if (this.isNode(result)) {
                 traits.shift();
@@ -121,7 +121,7 @@ class HtmlAnalysis {
     findNodeByPredicate(node, array, predicate) {
         let traits = array;
         let result = node;
-        while (this.hasChildren(result) && !_.isEmpty(traits)) {
+        while (this.hasChildren(result) && !Util.isEmpty(traits)) {
             const trait = traits[0];
             traits.shift();
             result = predicate(result, trait);
@@ -166,7 +166,7 @@ class HtmlAnalysis {
 
     /** single level */
     findNodeByTag(node, tagName) {
-        if (node && !_.isEmpty(node.children))
+        if (node && !Util.isEmpty(node.children))
             return _.find(node.children, {'tagName': tagName});
         return {};
     }
@@ -208,7 +208,7 @@ class HtmlAnalysis {
     }
 
     getFlatTextByNode(node, needNewLine) {
-        if (_.isEmpty(node))
+        if (Util.isEmpty(node))
             return '';
 
         let result = '';
@@ -264,7 +264,7 @@ class HtmlAnalysis {
     }
 
     hasAttributes(node) {
-        return node && !_.isEmpty(node.attributes);
+        return node && !Util.isEmpty(node.attributes);
     }
 
     getNodeAttributeValue(node, key) {
@@ -275,11 +275,11 @@ class HtmlAnalysis {
     }
 
     hasChildren(node) {
-        return node && node.children && !_.isEmpty(node.children);
+        return node && node.children && !Util.isEmpty(node.children);
     }
 
     isNode(node) {
-        return node && !_.isEmpty(node.tagName);
+        return node && !Util.isEmpty(node.tagName);
     }
 }
 

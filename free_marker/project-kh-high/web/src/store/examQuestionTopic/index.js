@@ -13,7 +13,7 @@ class ExamQuestionTopicStore extends BaseExamQuestionTopicStore {
 
     getName() {
         const self = super.getName();
-        return _.isEqual(_.trim(self), "請依照題目作答") ? "" : self;
+        return Util.isEqual(_.trim(self), "請依照題目作答") ? "" : self;
     }
 
     /** -------------------- async api -------------------- **/

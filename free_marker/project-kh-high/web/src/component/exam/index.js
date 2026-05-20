@@ -156,7 +156,7 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfExamQuestionTopicOfAssistantNameTypography(topicOfAssistant) {
-        return Util.getVisibleOrNone(!_.isEmpty(topicOfAssistant.getName()));
+        return Util.getVisibleOrNone(!Util.isEmpty(topicOfAssistant.getName()));
     }
 
     getInjectStyleOfExamQuestionTopicNameTypography(topic) {

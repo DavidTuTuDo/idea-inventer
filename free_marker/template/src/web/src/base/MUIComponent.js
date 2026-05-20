@@ -62,7 +62,7 @@ class MuiComponent extends React.Component {
             }
             return object;
         } else {
-            return _.toString(object);
+            return Util.toString(object);
         }
     }
 
@@ -92,7 +92,7 @@ class MuiComponent extends React.Component {
 
         // 6. 驗證是否為合法格式
         // 檢查是否結尾是點，或是合法的數字字串
-        if (nextValue.endsWith(".") || !isNaN(_.toNumber(nextValue))) {
+        if (nextValue.endsWith(".") || !isNaN(Util.toNumber(nextValue))) {
             return nextValue;
         }
 

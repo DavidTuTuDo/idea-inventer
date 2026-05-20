@@ -1,6 +1,5 @@
 import { utiller as Util } from '../index.js';
 import { configerer } from "configerer";
-import _ from 'lodash';
 
 /** author:明悅
  * create time:Sun Oct 13 2024 02:27:45 GMT+0800 (Taipei Standard Time)
@@ -284,7 +283,7 @@ class Spider {
         await this.randomViewport({ page, type });
 
         /** inject cookies 到 page裡面*/
-        if (!Util.isUndefinedNullEmpty(href) && _.size(cookies) > 0) {
+        if (!Util.isUndefinedNullEmpty(href) && (cookies).length > 0) {
             await page.goto(href, { waitUntil: 'domcontentloaded' });
             await page.setCookie(...cookies);
         }
@@ -1215,7 +1214,7 @@ class Spider {
             if (stringOfLoadingSelector) {
                 // 我們使用剛才優化的函數，確保 Loading Bar 真的跑完了
                 await this.waitForLoadingToVanish(page, stringOfLoadingSelector, loadingTimeout);
-                if(_.isFunction(fetcher)) await fetcher(page)
+                if((typeof (fetcher) === "function")) await fetcher(page)
             }
 
             // 4. 檢查高度變化

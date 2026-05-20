@@ -47,7 +47,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
         this.isECPayCheckMacValueValid(contentOfSucceed, ecpay.HashKeyXGetter(), ecpay.HashIVXGetter());
         await this.validateIdOfDocumentQualify(contentOfSucceed.MerchantTradeNo);
 
-        if (_.isEqual(_.toInteger(contentOfSucceed.RtnCode), 1)) {
+        if (Util.isEqual(_.toInteger(contentOfSucceed.RtnCode), 1)) {
             await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
                 await this.validateOrderIsUnPaidWaiting(item);
                 return {

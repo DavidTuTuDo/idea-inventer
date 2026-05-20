@@ -31,7 +31,7 @@ class PortfolioStore extends BasePortfolioStore {
                 const fuse = new Fuse(keywords, { includeScore: true, keys: ["label", "value"] });
                 let suggests = fuse.search(view.paramOfId).map((each) => each.item); //_.orderBy(fuse.search(view.paramOfId), 'score', 'asc')
                 // console.log('suggests ==> ', 'search keyword ==> ', view.paramOfId, '\n\n', suggests);
-                const rhythms = _.remove(suggests, (each) => _.isEqual(each.type, 11));
+                const rhythms = _.remove(suggests, (each) => Util.isEqual(each.type, 11));
                 /** 先抓出type = 11, 歌曲的關鍵字*/
                 this.pushNextRhythmIDs(...rhythms.map((each) => each.uid));
                 if (_.size(suggests) > 0) {

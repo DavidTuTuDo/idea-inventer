@@ -114,7 +114,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     isErrorState() {
-        return _.isEqual(this.state, "error");
+        return Util.isEqual(this.state, "error");
     }
 
     @action
@@ -319,7 +319,7 @@ class BaseStore extends ClientRemoteApi {
             }
 
             // 4. 其他情況嘗試轉為數字 (處理數字字串等)
-            return _.toNumber(obj);
+            return Util.toNumber(obj);
         }
 
         return obj;
@@ -355,7 +355,7 @@ class BaseStore extends ClientRemoteApi {
             await this.getComponent().invalidateNextPageBehavior();
         }
 
-        while (!_.isEmpty(this.taskOfCompleted)) {
+        while (!Util.isEmpty(this.taskOfCompleted)) {
             const task = this.taskOfCompleted.shift();
             await task(this); /** this就是store本人*/
         }
@@ -402,7 +402,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     getInArrayConditions = (targets) => {
-        if (_.isArray(targets)) {
+        if (Array.isArray(targets)) {
             return [{ type: "where", params: [this.getFieldNameOfDocumentId(), "in", targets.length > 0 ? targets : [Util.getRandomHash(30)]] }];
         } else {
             throw new ERROR(7008, `${typeof targets}, "${targets}" is not allow`);

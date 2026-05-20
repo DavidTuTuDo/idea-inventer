@@ -115,11 +115,11 @@ class PathBase {
             const nodes = _.filter(arrayOfEachNode, (each) => each.independence);
             for (const node of nodes) {
                 const nameOfReference = node.raw.ref;
-                if (_.isEmpty(nameOfReference)) throw new ERROR(9999, `8487896 node has independence(true), but forget to ref='{nameOfNode}' `)
+                if (Util.isEmpty(nameOfReference)) throw new ERROR(9999, `8487896 node has independence(true), but forget to ref='{nameOfNode}' `)
                 const nodeOfReference = mapOfIndexing[nameOfReference];
                 if (_.isUndefined(nodeOfReference))
                     throw new ERROR(9999, `8487897 node has independence(true) & ref(${nodeOfReference}), but node(${nodeOfReference}) is not exist in project`)
-                _.merge(node.raw, _.cloneDeep(nodeOfReference));
+                Util.merge(node.raw, Util.cloneDeep(nodeOfReference));
                 delete node.raw.independence;
                 delete node.raw.ref;
             }
@@ -133,7 +133,7 @@ class PathBase {
                     raw: node
                 })
                 if (!!node.name) mapOfIndexing[node.name] = node;
-                if (_.isArray(node.children)) mapping(...node.children);
+                if (Array.isArray(node.children)) mapping(...node.children);
             }
         }
 
@@ -150,13 +150,13 @@ class PathBase {
 
         /** 把common module[account, dionysus, epay...]加入 */
         for (const file of Util.findFilePathBy(PATH_OF_COMPONENT_MODULE,
-            (each) => _.isEqual(each.fileNameExtension, FILENAME_OF_SOURCE_JS))) {
+            (each) => Util.isEqual(each.fileNameExtension, FILENAME_OF_SOURCE_JS))) {
             if (Util.has(getAllowListOfModuleComponent(source), file.dirName, true)) {
                 /** require的default在一個process只會被new一次，為了設計build queue['project-kh-high','project-yueh-pu']，使用了clone */
                 const module = _.clone(require(file.absolute).default);
                 if (Util.has(source.components.map((each) => each.name), module.name)) continue;
                 /** 必免重復的component 被匯入 */
-                const componentsOfExtra = _.isArray(module.componentsOfExtra) ?
+                const componentsOfExtra = Array.isArray(module.componentsOfExtra) ?
                     module.componentsOfExtra.map((component) => {
                         return {...component, isExtraComponent: true};
                     }) : [];
@@ -176,7 +176,7 @@ class PathBase {
 
         /** 把component props改變 */
         source.components = source.components.map((component) => {
-            const obj = _.isObject(source.setsOfComponentProp) && source.setsOfComponentProp[component.name];
+            const obj = Util.isObject(source.setsOfComponentProp) && source.setsOfComponentProp[component.name];
             return obj ? {...component, ...obj} : component;
         });
 
@@ -185,7 +185,7 @@ class PathBase {
 
 
     isProduction() {
-        return _.isEqual(this.env, 'prod');
+        return Util.isEqual(this.env, 'prod');
     }
 
     getStructs() {
@@ -197,15 +197,15 @@ class PathBase {
     }
 
     isFunctionsPlatform() {
-        return _.isEqual(this.platform, 'functions')
+        return Util.isEqual(this.platform, 'functions')
     }
 
     isWebPlatform() {
-        return _.isEqual(this.platform, 'web')
+        return Util.isEqual(this.platform, 'web')
     }
 
     isAdminPlatform() {
-        return _.isEqual(this.platform, 'admin')
+        return Util.isEqual(this.platform, 'admin')
     }
 
     isUnInstallProject() {
@@ -230,7 +230,7 @@ class PathBase {
         const functions = source.getCloudFunctions();
         for (const component of _.filter(source.getComponents(), (each) => !each.isPreciselyEditableComponent())) {
             const bunchOfCloudFunction = component.getCloudFunctions();
-            if (_.isArray(bunchOfCloudFunction)) {
+            if (Array.isArray(bunchOfCloudFunction)) {
                 functions.push(...bunchOfCloudFunction.map((each) => {
                     each.isCommonModule = true;
                     return each;
@@ -344,7 +344,7 @@ class PathBase {
             if (CodegenNode.isCodegenNode(node) &&
                 node.isCollection() &&
                 !node.isReferenceNode() &&
-                !_.isEqual(node.getName(), SIGN_OF_EMPTY_STORE)) {
+                !Util.isEqual(node.getName(), SIGN_OF_EMPTY_STORE)) {
 
                 list.push(node.getStoreFolderName())
                 for (const child of node.getChildren()) {

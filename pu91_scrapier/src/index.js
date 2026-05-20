@@ -35,7 +35,7 @@ const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
                 for (const rank of ranks) {
                     for (const each of _.reverse(rank.items)) {
                         const obj = {}
-                        obj[`${rank.type ? rank.type : maintype}`] = _.toNumber(each.rank);
+                        obj[`${rank.type ? rank.type : maintype}`] = Util.toNumber(each.rank);
                         const exist = await database.fetchRecord(tableName, SQL.Builder().equal('url', each.url).stmt());
                         if (exist) {
                             await database.updateRecords(tableName, obj, SQL.Builder().equal('url', each.url).stmt())
@@ -300,7 +300,7 @@ const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
 
                 if (record) {
                     song = record;
-                    if (Util.or(_.isEmpty(song.name) || _.isEmpty(song.url))) {
+                    if (Util.or(Util.isEmpty(song.name) || Util.isEmpty(song.url))) {
                         await database.updateRecords('SONG', {state: 'FAIL'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
                     } else {
                         await database.updateRecords('SONG', {state: 'ING'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
@@ -390,7 +390,7 @@ const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
             let singers = await fetchAllSinger(singerType);
 
             const inValid = _.remove(singers, (singer) => {
-                return _.isEmpty(_.trim(singer.name)) || _.isEmpty(_.trim(singer.url))
+                return Util.isEmpty(_.trim(singer.name)) || Util.isEmpty(_.trim(singer.url))
             })
 
             const exists = (await database.fetchRecords('SINGER', '', 'names')).map((singer) => singer.names);

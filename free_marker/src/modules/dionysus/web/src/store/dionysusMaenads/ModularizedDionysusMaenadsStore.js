@@ -34,7 +34,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         }
 
         function isBooze(param) {
-            return param && _.isEqual(param.visibility, true);
+            return param && Util.isEqual(param.visibility, true);
         }
 
         async function handleConflictIssue() {
@@ -93,7 +93,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             .join("-");
 
         const items = this.getListOfSpecific(this.listOfVariant, keyOfVariant);
-        if (!_.isEmpty(items)) {
+        if (!Util.isEmpty(items)) {
             const { level, items: transformed } = this.transformListAutoLevel(items);
             const options = this.getVariants()[level].getOptions();
 
@@ -181,7 +181,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
      ]}
      */
     transformListAutoLevel = (list, key = "id") => {
-        if (_.isEmpty(list)) return { level: null, items: [] };
+        if (Util.isEmpty(list)) return { level: null, items: [] };
 
         // 把 id 拆成陣列
         const splitted = list.map((item) => String(item[key]).split("-"));
@@ -220,7 +220,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
     validateCountOfOrder(increase = true) {
         if (!this.getCurrentOptionExist()) return this.getComponent().showWarningSnackMessage(`尚未選擇商品`);
 
-        const current = _.toNumber(this.getCountOfSubmit());
+        const current = Util.toNumber(this.getCountOfSubmit());
         const delta = increase ? 1 : -1;
         const next = current + delta;
         const max = this.getCount();

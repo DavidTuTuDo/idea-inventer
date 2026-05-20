@@ -155,14 +155,14 @@ class ImpComponent extends BaseComponent {
                 const page = words.shift();
                 const functionName = `goto${_.upperFirst(page)}Page`;
                 const functionOfGotoPage = Router[functionName];
-                if (_.isFunction(functionOfGotoPage)) {
+                if (Util.isFunction(functionOfGotoPage)) {
                     functionOfGotoPage(this.getComponentInstance(), ...words);
                 } else {
                     this.updateSnackStatus(true, `4097 can't handle ${page}`, { type: "error" });
                 }
                 break;
             default:
-                if (_.isEmpty(routeString)) {
+                if (Util.isEmpty(routeString)) {
                     /** doing nothing */
                 } else {
                     this.updateSnackStatus(true, `can't handle ${routeString}`, { type: "error" });
@@ -195,7 +195,7 @@ class ImpComponent extends BaseComponent {
     /** auto completed 有suggest的概念{label,value,uid,popularLevel }*/
     getNumberOfSelected(suggest) {
         if (suggest !== null) {
-            return suggest.value ? _.toNumber(suggest.value) : -1;
+            return suggest.value ? Util.toNumber(suggest.value) : -1;
         }
         return 0;
     }

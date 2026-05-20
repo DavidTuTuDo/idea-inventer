@@ -27,7 +27,7 @@ class ModularizedMetisClazzStore extends BaseMetisClazzStore {
 
         let counts = this.getCountsOfStudentCapacity() - this.getCountsOfRegistered();
 
-        if (_.isEqual(counts, this.getCountsOfStudentCapacity())) counts = counts - 3;
+        if (Util.isEqual(counts, this.getCountsOfStudentCapacity())) counts = counts - 3;
 
         if (counts <= 0) counts = 0;
 

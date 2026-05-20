@@ -471,11 +471,11 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
             id: Util.isUndefinedNullEmpty(tone.idOfRemote) ? undefined : tone.idOfRemote,
             tonalityOfContext: info.tonalityOfContext,
             context: Util.getDecryptString(latestTone),
-            capoLevel: info.capo ? _.toNumber(info.capo) : -1,
+            capoLevel: info.capo ? Util.toNumber(info.capo) : -1,
             tonalityOfFemale: info["女調"],
             tonalityOfMale: info["男調"],
             tonalityOfOriginal: info["原調"],
-            speed: info["速度"] ? _.toNumber(info["速度"]) : -1,
+            speed: info["速度"] ? Util.toNumber(info["速度"]) : -1,
             singer: tone.singer,
             name: tone.name,
             uid: tone.id /** database 裡面的column id */,
@@ -684,14 +684,14 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
         const raws = await database.fetchRecords("TONE", new Builder().gte("popularLevel", 1000).orderBy({ popularLevel: "DESC" }).stmt());
         const tones = {};
         for (const tone of raws) {
-            tones[_.toString(tone.uid)] = tone;
+            tones[Util.toString(tone.uid)] = tone;
         }
 
         for (const folder of Util.getChildPathByPath(pathOfPreludes)) {
             if (Util.isDirectory(folder.absolute) && _.size(Util.getChildPathByPath(folder.absolute)) > 1) {
                 const trait = folder.dirName.split(`-`);
                 /** 從database 裡面找出 tone的document id*/
-                const uid = _.toString(trait.shift());
+                const uid = Util.toString(trait.shift());
                 /** url的末碼*/
                 const name = trait.pop();
                 const record = tones[uid];

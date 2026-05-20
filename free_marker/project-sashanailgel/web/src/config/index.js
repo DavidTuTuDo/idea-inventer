@@ -340,7 +340,7 @@ class Config extends BaseConfig {
     ];
 
     getDistrictsByCity(valueOfCity) {
-        return _.filter(this.districts, (each) => _.isEqual(each.type, valueOfCity));
+        return _.filter(this.districts, (each) => Util.isEqual(each.type, valueOfCity));
     }
     /** -------------------- async api -------------------- **/
 }

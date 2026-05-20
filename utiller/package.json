@@ -1,6 +1,6 @@
 {
   "name": "utiller",
-  "version": "1.0.495",
+  "version": "1.0.506",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,6 @@
     "dayjs": "^1.11.19",
     "del": "^6.0.0",
     "fs-extra": "^9.1.0",
-    "lodash": "^4.17.20",
     "node-html-parser": "^7.0.1",
     "uuid": "^8.3.2",
     "inquirer": "^13.1.0"

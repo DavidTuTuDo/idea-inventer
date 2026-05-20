@@ -48,7 +48,7 @@ class ExamStore extends BaseExamStore {
     }
 
     isHistoryWrongPage = () => {
-        return _.isEqual("historyWrong", this.getExamFilterTips().type);
+        return Util.isEqual("historyWrong", this.getExamFilterTips().type);
     };
 
     isFreezePage() {
@@ -81,8 +81,8 @@ class ExamStore extends BaseExamStore {
         const replyType = filter.getSelectedReplyType();
         const orderByWhat = filter.getSelectedOrderByWhat();
         const conditions = [];
-        if (!_.isEqual("all", subject)) conditions.push({ type: "where", params: ["subject", "==", subject] });
-        if (!_.isEqual("all", replyType)) conditions.push({ type: "where", params: ["isWrongReply", "==", _.isEqual(replyType, "wrong")] });
+        if (!Util.isEqual("all", subject)) conditions.push({ type: "where", params: ["subject", "==", subject] });
+        if (!Util.isEqual("all", replyType)) conditions.push({ type: "where", params: ["isWrongReply", "==", Util.isEqual(replyType, "wrong")] });
 
         switch (orderByWhat) {
             case "duration":
@@ -115,15 +115,15 @@ class ExamStore extends BaseExamStore {
         let typeOfMath = [];
         if (Util.isOrEquals(subject, "數學A", "數學B")) {
             isMath = true;
-            typeOfMath = _.isEqual(_.last(subject), "A") ? [0, 1] : [0, 2];
+            typeOfMath = Util.isEqual(_.last(subject), "A") ? [0, 1] : [0, 2];
             subject = "數學";
         }
 
         function getRandomCondition() {
             const conditions = [];
-            if (!_.isEqual("綜合題目", subject)) conditions.push({ type: "where", params: ["subject", "==", _.trim(subject)] });
-            conditions.push({ type: "where", params: ["year", ">=", _.toNumber(range.shift())] });
-            conditions.push({ type: "where", params: ["year", "<=", _.toNumber(range.shift())] });
+            if (!Util.isEqual("綜合題目", subject)) conditions.push({ type: "where", params: ["subject", "==", _.trim(subject)] });
+            conditions.push({ type: "where", params: ["year", ">=", Util.toNumber(range.shift())] });
+            conditions.push({ type: "where", params: ["year", "<=", Util.toNumber(range.shift())] });
             conditions.push({ type: "orderBy", disabled: true });
             handleConditionsBySubjectName(conditions);
             return conditions;
@@ -142,8 +142,8 @@ class ExamStore extends BaseExamStore {
 
                 const conditionsOfHistory = [
                     { type: "where", params: ["subject", "==", _.trim(subject)] },
-                    { type: "where", params: ["year", "==", _.toNumber(year)] },
-                    { type: "where", params: ["timesOfYear", "==", _.toNumber(times)] },
+                    { type: "where", params: ["year", "==", Util.toNumber(year)] },
+                    { type: "where", params: ["timesOfYear", "==", Util.toNumber(times)] },
                     { type: "orderBy", params: ["qid"] }
                 ];
 
@@ -246,10 +246,10 @@ class ExamStore extends BaseExamStore {
         if (UserInfo.isLoginWithSucceed()) {
             const store = new ExamCountsOfExamTodayStore();
             const info = await store.fetchCountsOfExamToday();
-            _.isEqual(info.today, today) ? await store.submitIncrementCounts() : await store.submitCountsOfExamToday(undefined, { today: Util.getTodayTimeFormat(), counts: 1 });
+            Util.isEqual(info.today, today) ? await store.submitIncrementCounts() : await store.submitCountsOfExamToday(undefined, { today: Util.getTodayTimeFormat(), counts: 1 });
         } else {
             const info = Cookie.getCountsOfExamToday();
-            let counts = info ? (_.isEqual(today, info.today) ? info.counts + 1 : 1) : 1;
+            let counts = info ? (Util.isEqual(today, info.today) ? info.counts + 1 : 1) : 1;
             Cookie.setCountsOfExamToday({ today, counts });
         }
     }

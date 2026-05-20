@@ -55,7 +55,7 @@ class ExamQuestionOptionalStore extends BaseExamQuestionOptionalStore {
     }
 
     isAnswerRight() {
-        return _.isEqual(this.getReply(), this.getAnswer());
+        return Util.isEqual(this.getReply(), this.getAnswer());
     }
 
     /** -------------------- async api -------------------- **/

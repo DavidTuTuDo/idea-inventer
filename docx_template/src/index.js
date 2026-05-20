@@ -43,7 +43,7 @@ if (configerer.DEBUG_MODE) {
             });
 // buf is a nodejs Buffer, you can either write it to a
 // file or res.send it with express for example.
-            fs.writeFileSync(`./output${_.toString(Util.getCurrentTimeStamp())}.docx`, buf);
+            fs.writeFileSync(`./output${Util.toString(Util.getCurrentTimeStamp())}.docx`, buf);
         }
     )();
 }

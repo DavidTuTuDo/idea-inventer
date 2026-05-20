@@ -161,7 +161,7 @@ class BaseFunction extends ClientRemoteApi {
     isECPayCheckMacValueValid(data, key, iv) {
         const computedMacValue = Util.getECPayCheckMacValue(data, key, iv);
         /** 判斷檢查碼 [CheckMacValue] */
-        if (!_.isEqual(computedMacValue, data.CheckMacValue)) this.appendErrorLog(9999, `65451953-${this.getName()} 訂單(${data.MerchantTradeNo})CheckMacValue檢查碼失敗`);
+        if (!Util.isEqual(computedMacValue, data.CheckMacValue)) this.appendErrorLog(9999, `65451953-${this.getName()} 訂單(${data.MerchantTradeNo})CheckMacValue檢查碼失敗`);
     }
 
     /** 如果是CVS OR ATM 就不能再改變付款狀態了*/
@@ -213,11 +213,11 @@ class BaseFunction extends ClientRemoteApi {
     };
 
     validateIsUserOfOrder = async (order, session) => {
-        if (!_.isEqual(this.getUid(session), order.idOfUser)) this.appendErrorLog(9999, `484546141654-${this.getName()} 「必須是買家」`);
+        if (!Util.isEqual(this.getUid(session), order.idOfUser)) this.appendErrorLog(9999, `484546141654-${this.getName()} 「必須是買家」`);
     };
 
     validateIsAuthorOfOrder = async (order, session) => {
-        if (!_.isEqual(this.getUid(session), order.idOfAuthor)) this.appendErrorLog(9999, `48454615142-${this.getName()} 「必須是賣家」`);
+        if (!Util.isEqual(this.getUid(session), order.idOfAuthor)) this.appendErrorLog(9999, `48454615142-${this.getName()} 「必須是賣家」`);
     };
 
     validateIsAuthorOrUserOfOrder = async (order, session) => {
@@ -229,10 +229,10 @@ class BaseFunction extends ClientRemoteApi {
         let typeOfUser = "";
         let allowUpdate = false;
 
-        if (_.isEqual(this.getUid(session), order.idOfUser)) {
+        if (Util.isEqual(this.getUid(session), order.idOfUser)) {
             typeOfUser = "買家";
             allowUpdate = true;
-        } else if (_.isEqual(this.getUid(session), order.idOfAuthor)) {
+        } else if (Util.isEqual(this.getUid(session), order.idOfAuthor)) {
             typeOfUser = "賣家";
             allowUpdate = true;
         } else if (await this.isAdminUser(session)) {

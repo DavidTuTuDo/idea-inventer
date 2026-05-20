@@ -2,7 +2,7 @@ const edit = true;
 
 import BaseChordiventorStore from "./BaseChordiventorStore";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { clone } from "lodash-es";
 import ApiOfGuitarPu from "../sheetGuitarpu";
 import ApiOfRhythm from "../portfolioRhythm";
 import UserInfo from "../../base/BaseUserInfo";
@@ -22,7 +22,7 @@ class ChordiventorStore extends BaseChordiventorStore {
     };
 
     loadLatestData = async () => {
-        const singers = _.clone(this.getSingerSuggests());
+        const singers = clone(this.getSingerSuggests());
         const content = await this.fetchChordiventor(this.getComponent());
         this.fromJson(content);
         this.initialSingerSuggestBehavior(singers);
@@ -49,7 +49,7 @@ class ChordiventorStore extends BaseChordiventorStore {
     invalidate = (options = { cleanIdOfSinger: false }) => {
         this.invalidateSheetPage();
         this.getSheet().setState(`stable`);
-        if (_.isEqual(options.cleanIdOfSinger, true)) {
+        if (Util.isEqual(options.cleanIdOfSinger, true)) {
             this.removeSinger();
             this.setIdOfSinger("");
         }
@@ -88,7 +88,7 @@ class ChordiventorStore extends BaseChordiventorStore {
         const singer = pu.getSinger();
         if (_.size(this.getName()) < 1) cautions.push("曲名不能為空");
         if (_.size(singer) < 1) cautions.push("歌手不能為空");
-        else if (_.size(singer) > 0 && _.isEmpty(this.getIdOfSinger())) cautions.push("不存在歌手相關資訊");
+        else if (_.size(singer) > 0 && Util.isEmpty(this.getIdOfSinger())) cautions.push("不存在歌手相關資訊");
 
         if (_.size(cautions) > 0) this.setCaution(`✶✶提示：${cautions.join("、")}`);
         else this.setCaution("");
@@ -114,7 +114,7 @@ class ChordiventorStore extends BaseChordiventorStore {
             const pu = await this.apiOfPu.fetchGuitarpuItem(this.getComponent(), idOfGuitarPu);
 
             const conditionA = UserInfo.isAdmin();
-            const conditionB = _.isEqual(pu.copyright, false) && _.isEqual(pu.idOfAuthor, UserInfo.getUid());
+            const conditionB = Util.isEqual(pu.copyright, false) && Util.isEqual(pu.idOfAuthor, UserInfo.getUid());
 
             if (conditionA || conditionB) {
                 const txt = pu.context;
@@ -195,7 +195,7 @@ class ChordiventorStore extends BaseChordiventorStore {
     };
 
     normalize = (obj) => {
-        const data = _.clone(obj);
+        const data = clone(obj);
         delete data.singer;
         delete data.tonalityOfContext;
         delete data.tonalityOfOriginal;

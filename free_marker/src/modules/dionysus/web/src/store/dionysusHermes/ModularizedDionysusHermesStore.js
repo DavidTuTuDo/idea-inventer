@@ -20,7 +20,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
     }
 
     getPriceOfSelectedTransport() {
-        const transport = _.find(this.getTransports(), (transport) => _.isEqual(true, transport.getChoice()));
+        const transport = _.find(this.getTransports(), (transport) => Util.isEqual(true, transport.getChoice()));
         return transport ? transport.getPrice() : 0;
     }
 
@@ -130,7 +130,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
                         : Util.getPriceOfPercentageBehavior(transport.getPrice(), this.eros?.percentageFeeOfCOD, false)
                 );
             else if (this.getPriceB4Transport() >= transport.getFreeOfThreshold()) transport.setPrice(0);
-            if (_.isEqual(transport.getAvailable(), false)) transportsOfShouldHidden.push(transport);
+            if (Util.isEqual(transport.getAvailable(), false)) transportsOfShouldHidden.push(transport);
         }
         this.removeTransports(...transportsOfShouldHidden);
     };
@@ -161,9 +161,9 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
         Util.appendInfo(`選擇的物流方式:`, transport ? transport.data() : "");
 
         return {
-            typeOfTransaction: _.toNumber(transaction.getTypeOfTransaction()),
-            typeOfTransport: this.getHasPhysical() ? _.toNumber(transport.getTypeOfTransport()) : Config.TransportMethod.Needless,
-            feeOfTransport: this.getHasPhysical() ? _.toNumber(transport.getPrice()) : 0,
+            typeOfTransaction: Util.toNumber(transaction.getTypeOfTransaction()),
+            typeOfTransport: this.getHasPhysical() ? Util.toNumber(transport.getTypeOfTransport()) : Config.TransportMethod.Needless,
+            feeOfTransport: this.getHasPhysical() ? Util.toNumber(transport.getPrice()) : 0,
             priceB4Transport: this.getPriceB4Transport(),
             price: this.getPriceOfTotal(),
             itemsOfChecked: this.getItemsOfChecked(),

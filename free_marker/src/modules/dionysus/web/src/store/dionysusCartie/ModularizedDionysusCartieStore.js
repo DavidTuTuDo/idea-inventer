@@ -42,7 +42,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         await super.onInitialFetchCompleted(collection);
         Util.syncDelay(1).then(async () => {
             const cartie = self.getBriefOfHead();
-            if (!_.isEmpty(cartie?.idOfAuthor)) await self.modifyErosInfoOfAuthor(cartie.idOfAuthor);
+            if (!Util.isEmpty(cartie?.idOfAuthor)) await self.modifyErosInfoOfAuthor(cartie.idOfAuthor);
         });
         this.getComponent().scrollToTop();
         if (_.size(this.getBriefs()) === 0) {
@@ -83,7 +83,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
             return;
         }
 
-        const current = _.toNumber(brief.getCountOfSubmit());
+        const current = Util.toNumber(brief.getCountOfSubmit());
         let countOfLatest = 0;
         if (increase) {
             const result = _.sum([current, 1]);
@@ -127,7 +127,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         const self = this;
         this.cleanBriefs();
         const info = Cookie.getInfoOfCartie();
-        if (_.isObject(info)) {
+        if (Util.isObject(info)) {
             const carties = _.values(info);
             const variants = await this.api.fetchVariantBatchItems(
                 this.getComponent(),
@@ -137,7 +137,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
             );
             for (const cartieOfCookie of carties)
                 pushCurrentBrief(
-                    _.find(variants, (v) => _.isEqual(v.id, cartieOfCookie.idOfVariant)),
+                    _.find(variants, (v) => Util.isEqual(v.id, cartieOfCookie.idOfVariant)),
                     cartieOfCookie
                 );
         }

@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import {utiller as Util} from '../index.js';
 import {configerer} from "configerer";
 import ERROR from '../exceptioner';
@@ -122,7 +121,7 @@ class InfinitePool {
      */
     constructor(maxWorkers = configerer.POOLLER_WORKER_DEFAULT, name = Util.getRandomValue(0, 100000000000)) {
         this.maximumOfWorker = maxWorkers;
-        this.setPoolId(_.toString(name));
+        this.setPoolId(String(name));
         // 初始化優先級隊列
         for (const prior of configerer.POOLLER_PRIORITY) {
             this.queueOfAssignTask[prior] = [];
@@ -205,7 +204,7 @@ class InfinitePool {
         this.terminate();
         let attempts = 0;
         const maxAttempts = 30; // 30 * 500ms = 15 秒最大等待時間
-        while (_.size(this.queueOfExecutingTask) > 0 && attempts < maxAttempts) {
+        while ((this.queueOfExecutingTask).length > 0 && attempts < maxAttempts) {
             await Util.syncDelay(500);
             this.printLogMessage(`784512, 卡在 stopInBackground 出不來,${this.getLogMessageOfExecutingTaskQueueCount()}`)
             this.showState();
@@ -213,8 +212,8 @@ class InfinitePool {
         }
 
         // [修復] 如果超時仍有任務在執行，應該返回 false
-        if (_.size(this.queueOfExecutingTask) > 0) {
-            this.printLogMessage(`stopInBackground 超時，仍有 ${_.size(this.queueOfExecutingTask)} 個任務在執行`, true);
+        if ((this.queueOfExecutingTask).length > 0) {
+            this.printLogMessage(`stopInBackground 超時，仍有 ${(this.queueOfExecutingTask).length} 個任務在執行`, true);
             return false;
         }
         return true;
@@ -253,7 +252,7 @@ class InfinitePool {
      */
     enableTaskSleepInterval(enable = true, interval = configerer.POOLLER_TASK_OF_INTERVAL_DEFAULT) {
         this.enableOfTaskSleepByInterval = enable
-        if (_.isNumber(interval)) {
+        if ((typeof (interval) === "number" && !Number.isNaN(interval))) {
             interval = {min: interval, max: interval};
         }
         this.taskSleepInterval = interval;
@@ -344,7 +343,7 @@ class InfinitePool {
      * @param {string} hash - 任務的 hash
      */
     updateExecuteTaskState = (hash) => {
-        const task = _.find(this.queueOfExecutingTask, (each) => _.isEqual(each.hash, hash))
+        const task = (this.queueOfExecutingTask).find((each) => Util.isEqual(each.hash, hash))
         if (task) {
             this.printLogMessage(`847875153, 客端委託的任務: ${hash},更改狀態為 'ING'`)
             task.state = 'ING';
@@ -469,7 +468,7 @@ class InfinitePool {
      */
     adds = (tasks, priority = 'low') => {
         const hashes = [];
-        if (_.isArray(tasks)) {
+        if (Array.isArray(tasks)) {
             for (const task of tasks) {
                 hashes.push(this.add(task, priority));
             }
@@ -520,7 +519,7 @@ class InfinitePool {
         let taskInfo = this.getTaskInfoByHash(hash);
         if (taskInfo) {
             for (const prior of configerer.POOLLER_PRIORITY) {
-                const _index = _.indexOf(this.queueOfAssignTask[prior], taskInfo);
+                const _index = (this.queueOfAssignTask[prior]).indexOf(taskInfo);
                 // [修復] 改為 >= 0，否則索引為 0 的任務無法刪除
                 if (_index >= 0) {
                     this.queueOfAssignTask[prior].splice(_index, 1);
@@ -571,14 +570,14 @@ class InfinitePool {
      */
     runInInfinite = async (task = [], interval) => {
         this.beforeRun();
-        if (_.isFunction(task))
+        if ((typeof (task) === "function"))
             this.add(task)
-        else if (_.isArray(task))
+        else if (Array.isArray(task))
             this.adds(task);
         else
             throw new ERROR(4006, `type of task is ===> ${typeof task}`)
 
-        this.enableTaskSleepInterval(_.isNumber(interval), interval);
+        this.enableTaskSleepInterval((typeof (interval) === "number" && !Number.isNaN(interval)), interval);
         this.setState(configerer.POOLLER_STATE.RUN_INFINITE);
 
         while (!this.ruleOfStopInfiniteRun()) {
@@ -605,7 +604,7 @@ class InfinitePool {
      * @returns {boolean} true 表示隊列為空
      */
     isExecutingTaskQueueEmpty = () => {
-        return _.size(this.queueOfExecutingTask) === 0;
+        return (this.queueOfExecutingTask).length === 0;
     }
 
     /**
@@ -638,9 +637,9 @@ class InfinitePool {
         }
 
         // [修復] 允許 triggerBgInstance 純喚醒時不傳入參數 (只處理舊任務)，避免拋錯
-        if (functionOfAsyncTask !== undefined && !_.isFunction(functionOfAsyncTask))
+        if (functionOfAsyncTask !== undefined && !(typeof (functionOfAsyncTask) === "function"))
             throw new ERROR(4006, `runByParams error, typeof task can't be ${typeof functionOfAsyncTask}`);
-        if (!_.isArray(params))
+        if (!Array.isArray(params))
             throw new ERROR(4006, `runByParams error, typeof params can't be ${typeof params}`);
 
         this.beforeRun();
@@ -654,14 +653,14 @@ class InfinitePool {
         this.setState(configerer.POOLLER_STATE.RUN_BY_PARAMS);
 
         // [修復] 只要還有參數待處理，就繼續調度
-        while (_.size(this.queueOfWaitingParam) > 0) {
+        while ((this.queueOfWaitingParam).length > 0) {
             await this.#run();
         }
 
         // [新增] 等待所有執行中的任務完成
         while (!this.isExecutingTaskQueueEmpty()) {
             await Util.syncDelay(33); // 短暫等待，避免空轉消耗CPU
-            this.printLogMessage(`等待執行中的任務完成，剩餘: ${_.size(this.queueOfExecutingTask)}`);
+            this.printLogMessage(`等待執行中的任務完成，剩餘: ${(this.queueOfExecutingTask).length}`);
         }
 
         this.printLogMessage(`951281952, runByParams() 結束了while()`);
@@ -767,7 +766,7 @@ class InfinitePool {
      * @returns {string} 格式化的日誌消息
      */
     getPoollerLogFormat = (msg) => {
-        return `POOLLER NAME: ${this.getPoolId()}${_.isEmpty(msg) ? '' : ' , '}${msg}`;
+        return `POOLLER NAME: ${this.getPoolId()}${((msg) == null || (typeof (msg) === "object" && Object.keys(msg).length === 0) || (typeof (msg) === "string" && (msg).length === 0)) ? '' : ' , '}${msg}`;
     }
 
     /**
@@ -849,7 +848,7 @@ class InfinitePool {
      * @returns {boolean} true 表示隊列已滿
      */
     isExecutingQueueFull() {
-        return _.size(this.queueOfExecutingTask) >= this.maximumOfWorker;
+        return (this.queueOfExecutingTask).length >= this.maximumOfWorker;
     }
 
     /**
@@ -928,7 +927,7 @@ class InfinitePool {
             case configerer.POOLLER_STATE.RUN_BY_EACH_TASK:
                 return this.isRunning() && !this.isExecutingQueueFull() && this.getCountOfAssignTaskInQueue() > 0;
             case configerer.POOLLER_STATE.RUN_BY_PARAMS:
-                return this.isRunning() && !this.isExecutingQueueFull() && _.size(this.queueOfWaitingParam) > 0;
+                return this.isRunning() && !this.isExecutingQueueFull() && (this.queueOfWaitingParam).length > 0;
             case configerer.POOLLER_STATE.RUN_BY_TIMES:
             case configerer.POOLLER_STATE.RUN_INFINITE:
                 // 這些模式的任務數在 AssignTaskQueue 中只有一個或一組
@@ -946,7 +945,7 @@ class InfinitePool {
      */
     appendTaskToExecuteQueue = (hash, promise) => {
         // 對於 RUN_BY_TIMES 模式，遞減計數
-        if (_.isEqual(this.state, configerer.POOLLER_STATE.RUN_BY_TIMES)) {
+        if (Util.isEqual(this.state, configerer.POOLLER_STATE.RUN_BY_TIMES)) {
             this.countsOfRunByTimes = this.countsOfRunByTimes - 1;
         }
         const task = {state: 'NOT', hash: hash, task: promise};
@@ -959,7 +958,7 @@ class InfinitePool {
      * @returns {string} 格式化的日誌消息
      */
     getLogMessageOfExecutingTaskQueueCount = () => {
-        return `ExecutingTaskQueueCount: ${_.size(this.queueOfExecutingTask)}`
+        return `ExecutingTaskQueueCount: ${(this.queueOfExecutingTask).length}`
     }
 
     /**
@@ -991,8 +990,8 @@ class InfinitePool {
     showState = () => {
         Util.appendInfo(this.getPoollerLogFormat(`workerCount: ${this.maximumOfWorker}`));
         Util.appendInfo(this.getPoollerLogFormat(`taskQueue(還在排隊的Task): ${this.getCountOfAssignTaskInQueue()}`));
-        Util.appendInfo(this.getPoollerLogFormat(`QueueOfExecutingTask(正在執行的AsyncTask, 超過workerCount就是bug): ${_.size(this.queueOfExecutingTask)}`));
-        Util.appendInfo(this.getPoollerLogFormat(`mapOfHashNTask(還沒執行到的AsyncTask reference的暫存區): ${_.size(this.mapOfHashNTask)}`));
+        Util.appendInfo(this.getPoollerLogFormat(`QueueOfExecutingTask(正在執行的AsyncTask, 超過workerCount就是bug): ${(this.queueOfExecutingTask).length}`));
+        Util.appendInfo(this.getPoollerLogFormat(`mapOfHashNTask(還沒執行到的AsyncTask reference的暫存區): ${(this.mapOfHashNTask).length}`));
     }
 
     /**
@@ -1014,16 +1013,16 @@ class InfinitePool {
          * 使用 Promise.race 實現並發控制
          */
         async function execute() {
-            const tasks = _.filter(self.queueOfExecutingTask, (each) => _.isEqual(each.state, 'NOT')).map((each) => {
+            const tasks = (self.queueOfExecutingTask).filter((each) => Util.isEqual(each.state, 'NOT')).map((each) => {
                 const taskWrapper = each.task;
                 return taskWrapper();
             })
 
-            self.printLogMessage(`454652321, 開始任務(taskWrapper): run() 裡面的execute開始執行, task(state = NOT)的長度 ${_.size(tasks)}`);
+            self.printLogMessage(`454652321, 開始任務(taskWrapper): run() 裡面的execute開始執行, task(state = NOT)的長度 ${(tasks).length}`);
 
             // [修復] Issue 1: 避免當所有任務狀態皆為 'ING' 時，Promise.race 收不到新任務導致 Event Loop 死迴圈
             let result;
-            if (_.size(tasks) > 0) {
+            if ((tasks).length > 0) {
                 result = await Promise.race(tasks);
             } else if (self.queueOfExecutingTask.length > 0) {
                 await Util.syncDelay(33); // 強制讓出執行權
@@ -1122,7 +1121,7 @@ class InfinitePool {
         }
 
         // 如果所有優先級隊列都為空，且不是 RUN_BY_EACH_TASK 模式，拋出錯誤
-        if (!_.isEqual(this.state, configerer.POOLLER_STATE.RUN_BY_EACH_TASK))
+        if (!Util.isEqual(this.state, configerer.POOLLER_STATE.RUN_BY_EACH_TASK))
             throw new ERROR(4007);
     }
 
@@ -1160,7 +1159,7 @@ class InfinitePool {
      */
     removePromiseFromExecutingQueue = (hash) => {
         this.printLogMessage(`56448412, QueueOfExecutingTask 拿掉了完成的任務 ${this.getLogMessageOfTaskHash(hash)}`)
-        _.remove(this.queueOfExecutingTask, (each) => _.isEqual(hash, each.hash));
+        Util.removeMutate(this.queueOfExecutingTask, (each) => Util.isEqual(hash, each.hash));
     }
 
     /**
@@ -1294,12 +1293,12 @@ if (configerer.DEBUG_MODE) {
             await pool.runByParams(async() => {
                 const million = await Util.syncDelayRandom();
                 console.log(million);
-            }, ..._.range(0, 20))
+            }, ...Array.from({ length: (20) - (0) }, (_, i) => i + (0)))
             console.log(`上面完成後才能顯示1`);
             await pool.runByParams(async() => {
                 const million = await Util.syncDelayRandom();
                 console.log(million);
-            }, ..._.range(0, 20))
+            }, ...Array.from({ length: (20) - (0) }, (_, i) => i + (0)))
             console.log(`上面完成後才能顯示2`);
         }
 
