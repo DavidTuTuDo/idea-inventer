@@ -40,7 +40,9 @@ class admin {
         await Api.upsertStatistic({ latestDate: latest });
     };
 
-    /** 1.把ios手機 line彙整的XXX.txt放置到 ./temp
+    /**
+     *  2026.05.21
+     *  1.把ios手機 line彙整的XXX.txt放置到 ./temp
      *  2.執行submitLastestDiaries
      * */
     submitLastestDiaries = async () => {

@@ -641,13 +641,13 @@ class CommonStyle {
 
     EpayFootprintOrderAreaOfSerialDiv = {};
 
-    EpayFootprintOrderAreaOfCvsPickUpCvsLabelOfPickUpCvsTypography = {};
+    EpayFootprintOrderAreaOfCVSPickUpCVSLabelOfPickUpCVSTypography = {};
 
-    EpayFootprintOrderAreaOfCvsPickUpCvsDivWrap = {};
+    EpayFootprintOrderAreaOfCVSPickUpCVSDivWrap = {};
 
-    EpayFootprintOrderAreaOfCvsPickUpCvsTypography = {};
+    EpayFootprintOrderAreaOfCVSPickUpCVSTypography = {};
 
-    EpayFootprintOrderAreaOfCvsDiv = {};
+    EpayFootprintOrderAreaOfCVSDiv = {};
 
     EpayFootprintOrderAreaOfTransportTransportByLabelOfTransportByTypography = {};
 

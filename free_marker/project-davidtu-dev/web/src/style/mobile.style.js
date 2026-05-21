@@ -641,13 +641,13 @@ class MobileStyle {
 
     EpayFootprintOrderAreaOfSerialDiv = {};
 
-    EpayFootprintOrderAreaOfCvsPickUpCvsLabelOfPickUpCvsTypography = {};
+    EpayFootprintOrderAreaOfCVSPickUpCVSLabelOfPickUpCVSTypography = {};
 
-    EpayFootprintOrderAreaOfCvsPickUpCvsDivWrap = {};
+    EpayFootprintOrderAreaOfCVSPickUpCVSDivWrap = {};
 
-    EpayFootprintOrderAreaOfCvsPickUpCvsTypography = {};
+    EpayFootprintOrderAreaOfCVSPickUpCVSTypography = {};
 
-    EpayFootprintOrderAreaOfCvsDiv = {};
+    EpayFootprintOrderAreaOfCVSDiv = {};
 
     EpayFootprintOrderAreaOfTransportTransportByLabelOfTransportByTypography = {};
 
