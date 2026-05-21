@@ -4383,17 +4383,30 @@ class Utiller {
      * 3. 回傳filter array,(反查出哪些課程重複會用到其他資訊)
      * */
     getFilteredHeraPeriods(arr, idOfCurrentBooze) {
-        return (arr)
+        if (!Array.isArray(arr)) return [];
+
+        // 用來記錄已經出現過的唯一鍵 (PK)
+        const seenKeys = new Set();
+
+        return arr
             // 1️⃣ 刪掉 idOfBooze 等於目標值的項目
             .filter(item => item.idOfBooze !== idOfCurrentBooze)
-            // 2️⃣ 根據 idOfBooze+idOfVariant 組成唯一鍵 僅保留一組
-            .uniqBy(item => `${item.idOfBooze}_${item.idOfVariant}`)
-            // 3️⃣ 只保留 period 欄位
-            // .map('period')
-            // 4️⃣ 過濾掉沒有 period 的項目（避免 undefined）
-            // .filter(Boolean)
-            // 5️⃣ 轉回陣列
-            .value();
+            // 2️⃣ 根據 idOfBooze + idOfVariant 進行去重
+            .filter(item => {
+                const pk = `${item.idOfBooze}_${item.idOfVariant}`;
+                if (seenKeys.has(pk)) {
+                    return false; // 已經存在，過濾掉
+                }
+                seenKeys.add(pk); // 第一次見到，記錄下來並保留
+                return true;
+            })
+            // 3️⃣ 只保留 period 欄位，同時過濾掉沒有 period 的項目 (避免 undefined 或空值)
+            .reduce((acc, item) => {
+                if (item && item.period) {
+                    acc.push(item.period);
+                }
+                return acc;
+            }, []);
     }
 
     /**
