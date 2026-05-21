@@ -13,6 +13,7 @@ import { storeOfSplash } from "./SplashX";
 import liff from "./LiffHelper";
 
 class UserInfo {
+
     @observable
     isEditMode = false;
 
@@ -363,7 +364,7 @@ class UserInfo {
     };
 
     anonymous = () => {
-        return !Util.isEmpty(this.uid);
+        return Util.isEmpty(this.uid);
     };
 
     getArrayOfCartieItem() {

@@ -4861,8 +4861,10 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
           const utiller = new Utiller();
-          console.log(utiller.camelCase(`youarecvsking`))
+          console.log(utiller.isEmpty('dhjnsjdnfjdsknfkjds'));
+          // console.log(utiller.camelCase(`youarecvsking`))
           // console.log('qqqq => ',utiller.isEqual('a','v'));
+
           // console.log(utiller.getRelativePath('/free_marker/src/exam/web/src/base/AlertDialog.js','/free_marker/src/exam/web'));
           // console.log(utiller.getNormalizedStringNotStartWith('...31231', '.'))
           // console.log(utiller.getNormalizedStringNotEndWith('.3123111', '1'))

@@ -2,6 +2,7 @@ const edit = true;
 
 import _ from "lodash";
 import BaseIreneTextsFetchStore from "./BaseIreneTextsFetchStore";
+import { utiller as Util } from 'utiller';
 
 class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
     constructor(props) {

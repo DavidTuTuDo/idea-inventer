@@ -1383,8 +1383,8 @@ class NodeUtiller extends Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const utiller = new NodeUtiller();
-            await utiller.generatePackage('../databazer', true)
+            // const utiller = new NodeUtiller();
+            // await utiller.generatePackage('../databazer', true)
             // const answer = await utiller.getAnswerFromPromptQ()
             // console.log(`it really workkks => `,answer)
             // console.log(utiller.joinRespectingDot('/usr', 'local', 'bin'));

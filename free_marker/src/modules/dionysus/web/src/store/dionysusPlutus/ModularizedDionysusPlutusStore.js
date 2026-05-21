@@ -22,7 +22,7 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
     }
 
     waitResultOfCVS = async (tempVar) => {
-        this.unsubscribeCVS = this.apiOfCVS.listenSelectorOfCvsItem(tempVar, this.handleCVSonReceived);
+        this.unsubscribeCVS = this.apiOfCVS.listenSelectorOfCVSItem(tempVar, this.handleCVSonReceived);
         return this.unsubscribeCVS;
     };
 
@@ -31,7 +31,7 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
             this.setCvs(data.storeid);
             this.setLabelOfCvsSticky(data.storename);
             this.setHelperTextOfCvs(`${data.storeaddress}`);
-            this.unsubscribeCVS();
+            this.unsubscribeCVS?.();
         }
     };
 
