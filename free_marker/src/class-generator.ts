@@ -411,8 +411,8 @@ class ClassGenerator {
             const fileNameExtension = Util.getFileNameExtensionFromPath(this.filePath);
             const fileName = Util.getFileNameFromPath(this.filePath)
             const ruleOfAllowFile = Util.or(
-                (_.startsWith(fileName, `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),/** BaseXXX 必須建立 */
-                (_.startsWith(fileName, `${KEYWORD_OF_MODULARIZED}${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`) &&
+                (_.startsWith(fileName, `Base${Util.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),/** BaseXXX 必須建立 */
+                (_.startsWith(fileName, `${KEYWORD_OF_MODULARIZED}${Util.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`) &&
                     Util.isEmptyFile(this.filePath)), /** 不存在的 ModularizedXXX 才建立,FAST MODE不會override files */
                 (_.startsWith(folderName, TARGET_COMPONENT_FAST_DEVELOP_MODE) &&
                     Util.isEqual(fileName, 'index') &&

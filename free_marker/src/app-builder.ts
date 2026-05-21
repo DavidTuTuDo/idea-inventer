@@ -85,7 +85,7 @@ class AppBuilder extends ComponentBuilder {
                 for (const keyOfMajor in obj) {
                     const valueOfMajor = obj[keyOfMajor];
                     if (Array.isArray(valueOfMajor)) {
-                        const latest = Util.camel(sign, keyOfMajor, `${_.indexOf(arrayOfDefaultValue, obj)}`);
+                        const latest = Util.camel(sign, keyOfMajor, `${Util.indexOf(arrayOfDefaultValue, obj)}`);
                         recursiveOfDoingSomethingMinor(valueOfMajor, child, latest)
                     }
 
@@ -100,7 +100,7 @@ class AppBuilder extends ComponentBuilder {
                             if (Util.isString(valueOfMinor)) {
                                 appendMapOfKeyValue(Util.camel(
                                         child.getPreciseAttributeGenealogyName(),
-                                        keyOfMajor, keyOfMinor, `${_.indexOf(arrayOfDefaultValue, obj)}`),
+                                        keyOfMajor, keyOfMinor, `${Util.indexOf(arrayOfDefaultValue, obj)}`),
                                     valueOfMinor)
                             }
                         }
@@ -111,7 +111,7 @@ class AppBuilder extends ComponentBuilder {
                             child.getPreciseAttributeGenealogyName(),
                             sign,
                             keyOfMajor,
-                            `${_.indexOf(arrayOfDefaultValue, obj)}`), valueOfMajor)
+                            `${Util.indexOf(arrayOfDefaultValue, obj)}`), valueOfMajor)
                     }
 
                 }
@@ -414,7 +414,7 @@ class AppBuilder extends ComponentBuilder {
         for (const _func of this.getAllCloudFunctions()) {
             if (Util.isEqual(_func.getType(), 'httpOnCall')) {
                 baseFunctionGenerator.appendAsyncFunction(
-                    `${_.lowerFirst(_func.getType())}${_.upperFirst(_func.getName())}`,
+                    `${Util.lowerFirst(_func.getType())}${Util.upperFirst(_func.getName())}`,
                     ['view', 'data'],
                     [], [`payload:${JSON.stringify(_func.payload ?? 'needless payload')}`],
                     `return await this.runUIAsyncCloudFunctionsTask('${_func.getName()}', data, view);`
@@ -455,9 +455,9 @@ class AppBuilder extends ComponentBuilder {
             }
 
             for (const attr of attrs)
-                stmts.push(`this.App().get${_.upperFirst(nodeOfComponent.getStruct().getName())}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
+                stmts.push(`this.App().get${Util.upperFirst(nodeOfComponent.getStruct().getName())}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
 
-            stmts.push(`this.App().get${_.upperFirst(nodeOfComponent.getStruct().getName())}Store().initial(presetObj)`)
+            stmts.push(`this.App().get${Util.upperFirst(nodeOfComponent.getStruct().getName())}Store().initial(presetObj)`)
             return stmts;
         }
 
@@ -563,7 +563,7 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport(`{Route, Routes, BrowserRouter, useNavigate, useLocation, useParams, Navigate}`, `react-router-dom`);
         appGenerator.appendClass(`BaseApp`,{name: 'CoreApp', from: './base/CoreApp'});
         for (const component of this.getGenComponent()) {
-            appGenerator.appendInClassHead(`import ${_.upperFirst(component)} from './component/${component}'`);
+            appGenerator.appendInClassHead(`import ${Util.upperFirst(component)} from './component/${component}'`);
         }
 
         const stmtsOfRenderView = [];
@@ -607,7 +607,7 @@ class AppBuilder extends ComponentBuilder {
             const stmtsOfParams = _.size(params) > 0 ? `const {${params.join(',')}} = useParams();` : '';
             stmtsOfRenderView.push(`
             const ${observed} = observer(${nameOfComponent});
-            const ${wrapper} = inject('${_.lowerFirst(nameOfComponent)}')((props) => {
+            const ${wrapper} = inject('${Util.lowerFirst(nameOfComponent)}')((props) => {
             ${stmtsOfParams} return ${renderStmts.join('')} })`)
         }
 
@@ -703,7 +703,7 @@ class AppBuilder extends ComponentBuilder {
             }
 
             const generator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'style', `${type}.style.js`), this.nodeOfAncestor)
-            generator.appendClass(`${_.upperFirst(type)}Style`);
+            generator.appendClass(`${Util.upperFirst(type)}Style`);
             for (const info of classNameInfos) {
 
                 for (const className of info.classNames) {
@@ -864,17 +864,17 @@ class AppBuilder extends ComponentBuilder {
         }
 
         // 將系統支援的所有裝置轉為 Regex 用的字串，例如 "(mobile|tablet|desktop)"
-        const stringOfPlatforms = _.map(LESS_MODULES, 'name').map((each) => `(${each})`).join("|");
+        const stringOfPlatforms = Util.map(LESS_MODULES, 'name').map((each) => `(${each})`).join("|");
 
         if (fs.existsSync(srcLessPath)) {
             const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
 
             /**
-             * 過濾掉不需處理的行數 (注意!! _.remove 會直接 mutate 原本的 array)
+             * 過濾掉不需處理的行數 (注意!! Util.remove 會直接 mutate 原本的 array)
              * 移除：註解 (/**)、空白行、import (@import)、以及頂層的裝置變數宣告 (@mobile: ~'...';)
              */
-            _.remove(stub, (each) => (
-                _.startsWith(each.trim(), '/**')
+            Util.remove(stub, (each) => (
+                Util.startsWith(each.trim(), '/**')
                 || Util.isEqual(each.trim(), '')
                 || _.startsWith(each.trim(), '@import')
                 || Util.startWithRegex(each.trim(), `@(${stringOfPlatforms})\:`)

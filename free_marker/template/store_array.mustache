@@ -38,33 +38,33 @@ return this.{{{fieldName}}};
     {{{這裡就是放else暨不等於isSelected的邏輯}}}
 
     get{{{fieldClass}}}ByAttribute = (value, attribute = 'id') => {
-    return _.find(this.get{{{functionName}}}(), ({{{name}}}) => Util.isEqual(value, {{{name}}}[attribute]));
+    return Util.find(this.get{{{functionName}}}(), ({{{name}}}) => Util.isEqual(value, {{{name}}}[attribute]));
     }
 
     get{{{fieldClass}}}ByAttributes = (values = ['id', '20241213'], attributes = ['id', 'updateTime']) => {
-    return _.find(this.get{{{functionName}}}(), ({{{name}}}) =>
+    return Util.find(this.get{{{functionName}}}(), ({{{name}}}) =>
     Util.isAndEquals(...attributes.map((attr,idx) => Util.isEqual({{{name}}}[attr], values[idx]))))
     }
 
     get{{{functionName}}}ByAttribute(value, attribute = 'id'){
-    return _.filter(this.get{{{functionName}}}(), ({{{name}}}) => Util.isEqual(value, {{{name}}}[attribute]));
+    return Util.filter(this.get{{{functionName}}}(), ({{{name}}}) => Util.isEqual(value, {{{name}}}[attribute]));
     }
 
     get{{{functionName}}}ByAttributes = (values = ['id', '20241213'], attributes = ['id', 'updateTime']) => {
-    return _.filter(this.get{{{functionName}}}(), ({{{name}}}) =>
+    return Util.filter(this.get{{{functionName}}}(), ({{{name}}}) =>
     Util.isAndEquals(...attributes.map((attr,idx) => Util.isEqual({{{name}}}[attr], values[idx]))))
     }
 
     get{{{fieldClass}}}OfHead = () => {
-    return _.head(this.get{{{functionName}}}());
+    return Util.head(this.get{{{functionName}}}());
     }
 
     get{{{fieldClass}}}OfLast = () => {
-    return _.last(this.get{{{functionName}}}());
+    return Util.last(this.get{{{functionName}}}());
     }
 
     getLengthOf{{{fieldClass}}} = () => {
-    return _.size(this.get{{{functionName}}}());
+    return Util.size(this.get{{{functionName}}}());
     }
 
     @action
@@ -91,7 +91,7 @@ return this.{{{fieldName}}};
 
     @action
     updateSpecific{{{functionName}}}(latest, attr = 'id') {
-        const {{{name}}} = _.find(this.get{{{functionName}}}(), ({{{name}}}) => Util.isEqual({{{name}}}[attr], latest[attr]));
+        const {{{name}}} = Util.find(this.get{{{functionName}}}(), ({{{name}}}) => Util.isEqual({{{name}}}[attr], latest[attr]));
         messageX ? {{{name}}}.initial(latest) : this.push{{{functionName}}}ByIndex(-1, latest)
     }
 
@@ -107,14 +107,14 @@ return this.{{{fieldName}}};
     return;
     }
     }
-    _.pullAt(this.{{{fieldName}}}, indexes);
+    Util.pullAt(this.{{{fieldName}}}, indexes);
     }
 
     @action
     remove{{{functionName}}}(...fatefulItems) {
     const indexes = [];
     for (const item of fatefulItems) {
-    indexes.push(_.indexOf(this.{{{fieldName}}}, item));
+    indexes.push(Util.indexOf(this.{{{fieldName}}}, item));
     }
     this.remove{{{functionName}}}ByIndex(...indexes);
     }
@@ -206,7 +206,7 @@ return this.{{{fieldName}}};
     break;
     case "paging":
     const itemsOfNextPage = await self.fetch{{{fieldClass}}}NextPageItems({{{stringOfArgumentInFetch}}});
-    this.lastItemOf{{{fieldClass}}} = _.last(itemsOfNextPage);
+    this.lastItemOf{{{fieldClass}}} = Util.last(itemsOfNextPage);
     fatefulItems.push(...itemsOfNextPage);
     break;
     default:
@@ -218,7 +218,7 @@ return this.{{{fieldName}}};
     break;
     }
 
-    if(_.size(fatefulItems) < {{{fieldClass}}}.sizeOfPerPage) {
+    if(Util.size(fatefulItems) < {{{fieldClass}}}.sizeOfPerPage) {
     this.setHasNextPageBehavior(false);
     }
 
@@ -238,7 +238,7 @@ return this.{{{fieldName}}};
 
     fetch{{{fieldClass}}}ByNextIds = async ({{{stringOfParamInFetch}}}) => {
     const self = this;
-    const targets = _.remove(self.getNext{{{fieldClass}}}IDs(), (each, index) => {
+    const targets = Util.remove(self.getNext{{{fieldClass}}}IDs(), (each, index) => {
     return index < {{{fieldClass}}}.sizeOfPerPage;
     })
     if (!Util.isEmpty(targets)) {

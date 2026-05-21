@@ -1,4 +1,3 @@
-
 import CryptoJS from "crypto-js";
 import { configerer } from "configerer";
 import ERROR from "../exceptioner";
@@ -56,7 +55,222 @@ String.format = function() {
  */
 class Utiller {
 
-    mapOfIdNTimeoutId = {}/**   Key : idOfSetTimout */
+    mapOfIdNTimeoutId = {}
+
+    find(array, predicate) {
+        if (!Array.isArray(array)) return undefined;
+        for (let i = 0; i < array.length; i++) {
+            if (predicate(array[i], i, array)) {
+                return array[i];
+            }
+        }
+        return undefined;
+    }
+
+    pullAt(array, indexes) {
+        if (!Array.isArray(array)) return [];
+        const indexArr = Array.isArray(indexes) ? indexes : Array.prototype.slice.call(arguments, 1).flat();
+        const removed = [];
+        const sortedIndexes = [...new Set(indexArr)].sort((a, b) => b - a);
+
+        for (const index of sortedIndexes) {
+            if (index >= 0 && index < array.length) {
+                const extracted = array.splice(index, 1)[0];
+                const originalPos = indexArr.indexOf(index);
+                removed[originalPos] = extracted;
+            }
+        }
+        return removed.filter(item => item !== undefined);
+    }
+
+    iteratee(value) {
+        if (typeof value === 'function') return value;
+        if (value == null) return (v) => v;
+        if (typeof value === 'string' || typeof value === 'number') {
+            return (item) => item == null ? undefined : item[value];
+        }
+        if (typeof value === 'object') {
+            if (Array.isArray(value)) {
+                return (item) => item != null && this.isEqual(item[value[0]], value[1]);
+            }
+            return (item) => {
+                if (item == null) return false;
+                for (const key in value) {
+                    if (!this.isEqual(item[key], value[key])) return false;
+                }
+                return true;
+            };
+        }
+        return (v) => v;
+    }
+
+    /**
+     * 迭代陣列或物件，對每個元素執行 iteratee
+     */
+    each(collection, iteratee) {
+        if (collection == null) return collection;
+        const func = this.iteratee(iteratee);
+        if (Array.isArray(collection) || typeof collection === 'string') {
+            for (let i = 0; i < collection.length; i++) {
+                if (func(collection[i], i, collection) === false) break;
+            }
+        } else {
+            const keys = Object.keys(collection);
+            for (let i = 0; i < keys.length; i++) {
+                if (func(collection[keys[i]], keys[i], collection) === false) break;
+            }
+        }
+        return collection;
+    }
+
+    /**
+     * 過濾集合，返回 predicate 為 truthy 的元素陣列
+     */
+    filter(collection, predicate) {
+        const result = [];
+        if (collection == null) return result;
+        const func = this.iteratee(predicate);
+        this.each(collection, (value, index, coll) => {
+            if (func(value, index, coll)) {
+                result.push(value);
+            }
+        });
+        return result;
+    }
+
+    /**
+     * 獲取陣列的第一個元素
+     */
+    head(array) {
+        return (array != null && array.length) ? array[0] : undefined;
+    }
+
+    /**
+     * 找出目標值在陣列中的索引，找不到則回傳 -1
+     */
+    indexOf(array, value, fromIndex = 0) {
+        if (array == null) return -1;
+        const length = array.length;
+        if (!length) return -1;
+        let index = fromIndex < 0 ? Math.max(length + fromIndex, 0) : fromIndex;
+        for (; index < length; index++) {
+            if (array[index] === value || (array[index] !== array[index] && value !== value)) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 檢查值是否為 undefined
+     */
+    isUndefined(value) {
+        return value === undefined;
+    }
+
+    /**
+     * 獲取陣列的最後一個元素
+     */
+    last(array) {
+        const length = array == null ? 0 : array.length;
+        return length ? array[length - 1] : undefined;
+    }
+
+    /**
+     * 將字串的首字母轉換為小寫
+     */
+    lowerFirst(string) {
+        const str = string == null ? '' : String(string);
+        return str ? str.charAt(0).toLowerCase() + str.slice(1) : '';
+    }
+
+    /**
+     * 創建一個陣列，值為原集合元素經 iteratee 處理後的結果
+     */
+    map(collection, iteratee) {
+        const result = [];
+        if (collection == null) return result;
+        const func = this.iteratee(iteratee);
+        this.each(collection, (value, index, coll) => {
+            result.push(func(value, index, coll));
+        });
+        return result;
+    }
+
+    /**
+     * 根據指定的屬性與排序方向排序集合
+     */
+    orderBy(collection, iteratees = [this.iteratee()], orders = []) {
+        if (collection == null) return [];
+        const arr = Array.isArray(collection) ? collection : Object.values(collection);
+        const funcs = (Array.isArray(iteratees) ? iteratees : [iteratees]).map(i => this.iteratee(i));
+        const dirs = (Array.isArray(orders) ? orders : [orders]).map(o => String(o).toLowerCase() === 'desc' ? -1 : 1);
+
+        return [...arr].sort((a, b) => {
+            for (let i = 0; i < funcs.length; i++) {
+                const valA = funcs[i](a);
+                const valB = funcs[i](b);
+                if (valA > valB) return dirs[i] || 1;
+                if (valA < valB) return -(dirs[i] || 1);
+            }
+            return 0;
+        });
+    }
+
+    /**
+     * 移除陣列中 predicate 回傳 truthy 的元素，並回傳被移除元素的陣列 (會改變原陣列)
+     */
+    remove(array, predicate) {
+        const result = [];
+        if (!Array.isArray(array)) return result;
+        const func = this.iteratee(predicate);
+        let i = 0;
+        while (i < array.length) {
+            if (func(array[i], i, array)) {
+                result.push(array.splice(i, 1)[0]);
+            } else {
+                i++;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 獲取集合的長度或物件的可枚舉屬性數量
+     */
+    size(collection) {
+        if (collection == null) return 0;
+        if (typeof collection.length === 'number' && typeof collection !== 'function') {
+            return collection.length;
+        }
+        if (typeof collection === 'object') {
+            return Object.keys(collection).length;
+        }
+        return 0;
+    }
+
+    /**
+     * 將字串整體轉換為大寫
+     */
+    toUpper(string) {
+        const str = string == null ? '' : String(string);
+        return str.toUpperCase();
+    }
+
+    /**
+     * 創建一個剔除掉所有指定值的新陣列
+     */
+    without(array, ...values) {
+        if (!Array.isArray(array)) return [];
+        return array.filter(value => {
+            for (let i = 0; i < values.length; i++) {
+                if (value === values[i] || (value !== value && values[i] !== values[i])) {
+                    return false;
+                }
+            }
+            return true;
+        });
+    }
 
     /**
      * upperFirst
@@ -960,7 +1174,8 @@ class Utiller {
         try {
             const value = CryptoJS.AES.decrypt(ciphertext, stringKey, { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8);
             if (value && value.trim().length > 0) return value;
-        } catch (e) {}
+        } catch (e) {
+        }
 
         // 使用 padEnd 補齊
         const fallbackKeyStr = stringKey.padEnd(maxLengthOfKey, '0');
@@ -1044,8 +1259,8 @@ class Utiller {
 
     getShuffledArrayWithLimitCountHighPerformance(arr, n) {
         let result = new Array(n),
-          len = arr.length,
-          taken = new Array(len);
+            len = arr.length,
+            taken = new Array(len);
         if (n > len)
             n = len; // Handle n > arr.length case gracefully
 
@@ -1084,6 +1299,7 @@ class Utiller {
         // 如果檔名沒有小數點（長度1），或是類似 .hiddenfile 這種開頭是點的情況
         return segments.length > 1 ? segments.pop() : '';
     }
+
     /** ../folderName/fileName.xxx  => ./folderName */
     getFolderPathOfSpecificPath(path) {
         const split = path.split('/');
@@ -2081,8 +2297,8 @@ class Utiller {
      *
      * @returns {Object} - 一個包含合併結果的全新物件。
      */
-     merO = (...objs) => {
-         return this.merge(...objs)
+    merO = (...objs) => {
+        return this.merge(...objs)
     };
 
     /**
@@ -2111,34 +2327,34 @@ class Utiller {
      * @param {...Object} objs - 任意數量的物件，第一個物件作為基礎，後續物件為覆蓋來源。
      * @returns {Object} - 一個包含合併結果的全新物件。
      */
-     merO4 = (...objs) =>{
-         // 檢查參數，如果沒有物件，則返回空物件
-         if (objs.length === 0) {
-             return {};
-         }
+    merO4 = (...objs) => {
+        // 檢查參數，如果沒有物件，則返回空物件
+        if (objs.length === 0) {
+            return {};
+        }
 
-         // 取得作為基礎（Target）的第一個物件
-         const baseObject = objs[0];
+        // 取得作為基礎（Target）的第一個物件
+        const baseObject = objs[0];
 
-         // 取得所有用於覆蓋的來源物件 (Source)，使用 slice(1) 排除第一個物件
-         const sources = objs.slice(1);
+        // 取得所有用於覆蓋的來源物件 (Source)，使用 slice(1) 排除第一個物件
+        const sources = objs.slice(1);
 
-         // --- 確保不動性 (Immutability) 的關鍵步驟 ---
+        // --- 確保不動性 (Immutability) 的關鍵步驟 ---
 
-         // 1. 對基礎物件進行深層複製 (Deep Clone)
-         // 這是確保原始的 baseObject 及其所有巢狀屬性都不會被修改的關鍵。
-         const clonedTarget = structuredClone(baseObject);
+        // 1. 對基礎物件進行深層複製 (Deep Clone)
+        // 這是確保原始的 baseObject 及其所有巢狀屬性都不會被修改的關鍵。
+        const clonedTarget = structuredClone(baseObject);
 
-         // 2. 執行深層合併 (Deep Merge)
-         // 將所有來源物件 (sources) 依序合併到這個新的複製體 (clonedTarget) 中。
-         return this.merge(clonedTarget, ...sources);
+        // 2. 執行深層合併 (Deep Merge)
+        // 將所有來源物件 (sources) 依序合併到這個新的複製體 (clonedTarget) 中。
+        return this.merge(clonedTarget, ...sources);
     }
 
     syncSetTimeout(func, ms, callback = () => {
     }) {
         (function sync(done) {
             if (!done) {
-                setTimeout(function () {
+                setTimeout(function() {
                     func();
                     sync(true);
                 }, ms);
@@ -2164,10 +2380,10 @@ class Utiller {
      */
     mergeArrayBy(identifier = 'id', ...array) {
         return Object.values(
-          array.flat().reduce((acc, item) => {
-              if (item[identifier]) acc[item[identifier]] = { ...(acc[item[identifier]] || {}), ...item };
-              return acc;
-          }, {})
+            array.flat().reduce((acc, item) => {
+                if (item[identifier]) acc[item[identifier]] = { ...(acc[item[identifier]] || {}), ...item };
+                return acc;
+            }, {})
         );
     }
 
@@ -2225,7 +2441,7 @@ class Utiller {
 
 
     getVisibleOrNone(judgement, flex = false) {
-        return {display: judgement ? flex ? 'flex' : 'inherit' : 'none'};
+        return { display: judgement ? flex ? 'flex' : 'inherit' : 'none' };
     }
 
     integerToString(integer) {
@@ -2422,10 +2638,10 @@ class Utiller {
     getStateOfStringContainsSign(string, ...signs) {
         for (const sign of signs) {
             if (this.has(string, sign)) {
-                return {exists: true, sign};
+                return { exists: true, sign };
             }
         }
-        return {exists: false};
+        return { exists: false };
     }
 
     /** others returns  [{logic:true|false,message:'oops'}]
@@ -3122,51 +3338,54 @@ class Utiller {
     /**
      * Extract unique values of a specific key from an array of objects.
      * array = [ { valueOfType: 1 }, { valueOfType: 7, valueOfSubType: 6 }, { valueOfType: 1 } ];
-       console.log(getUniqueValuesBy(array, 'valueOfType')); //[1, 7]
+     console.log(getUniqueValuesBy(array, 'valueOfType')); //[1, 7]
      *
      * @param {Array<Object>} array - The array of objects to process.
      * @param {string} key - The key to extract values from. Default is 'valueOfType'.
      * @returns {Array<any>} A deduplicated array of the extracted values.
      */
     getUniqueValuesBy(array, key = 'valueOfType') {
-      return Array.from(new Set(array.map(item => item[key])));
-        }
+        return Array.from(new Set(array.map(item => item[key])));
+    }
 
-     /**
-      * ({key: 'color', label: '顏色', options: [  { value: 0, label: '紅' }, { value: 1, label: '白' }, { value: 2, label: '黑'}]},
-      *  {key: 'size', label: '尺寸', options: [ { value: 0, label: 'S號' }, { value: 1, label: 'M號' }, { value: 2, label: 'L號' }]})
-      *
-      * [
-      *   { trait: {color: 0, size: 0}, id: 'color_0_size_0', content: '紅｜S號' },
-      *   { trait: {color: 0, size: 1}, id: 'color_0_size_1', content: '紅｜M號' },
-      *   { trait: {color: 0, size: 2}, id: 'color_0_size_2', content: '紅｜L號' },
-      *   { trait: {color: 1, size: 0}, id: 'color_1_size_0', content: '白｜S號' },
-      *   { trait: {color: 1, size: 1}, id: 'color_1_size_1', content: '白｜M號' },
-      *   { trait: {color: 1, size: 2}, id: 'color_1_size_2', content: '白｜L號' },
-      * ]
-      *
     /**
+     * ({key: 'color', label: '顏色', options: [  { value: 0, label: '紅' }, { value: 1, label: '白' }, { value: 2, label: '黑'}]},
+     *  {key: 'size', label: '尺寸', options: [ { value: 0, label: 'S號' }, { value: 1, label: 'M號' }, { value: 2, label: 'L號' }]})
+     *
+     * [
+     *   { trait: {color: 0, size: 0}, id: 'color_0_size_0', content: '紅｜S號' },
+     *   { trait: {color: 0, size: 1}, id: 'color_0_size_1', content: '紅｜M號' },
+     *   { trait: {color: 0, size: 2}, id: 'color_0_size_2', content: '紅｜L號' },
+     *   { trait: {color: 1, size: 0}, id: 'color_1_size_0', content: '白｜S號' },
+     *   { trait: {color: 1, size: 1}, id: 'color_1_size_1', content: '白｜M號' },
+     *   { trait: {color: 1, size: 2}, id: 'color_1_size_2', content: '白｜L號' },
+     * ]
+     *
+     /**
      * 生成所有組合並依照 value 遞增排序，並回傳指定格式
      * @param {Array} attributes - 屬性陣列
      * @returns {Array} - 格式化組合
      */
-     generateCombinations(...attributes) {
+    generateCombinations(...attributes) {
         const keys = attributes.map(attr => attr.key); // 屬性順序
-        const labelMap = attributes.reduce((acc, attr) => { acc[attr.key] = attr; return acc; }, {});
+        const labelMap = attributes.reduce((acc, attr) => {
+            acc[attr.key] = attr;
+            return acc;
+        }, {});
 
         // 把每個屬性的 options 提取成格式化陣列
         const optionArrays = attributes.map(attr =>
-          attr.options.map(option => ({
-              key: attr.key,
-              value: option.value,
-              label: option.label
-          }))
+            attr.options.map(option => ({
+                key: attr.key,
+                value: option.value,
+                label: option.label
+            }))
         );
 
         // 計算笛卡兒積
         const cartesianProduct = optionArrays.reduce((acc, curr) =>
-            acc.flatMap(a => curr.map(b => [...a, b]))
-          , [[]]);
+                acc.flatMap(a => curr.map(b => [...a, b]))
+            , [[]]);
 
         // 格式化每一筆組合
         const results = cartesianProduct.map(combination => {
@@ -3219,13 +3438,13 @@ class Utiller {
      */
     extractStaticSegments(path, rules = [':']) {
         return path
-          .trim()
-          .replace(/^\.?\/*|\/*$/g, '') // 移除開頭 './' 或 '/'，結尾 '/'
-          .split('/')
-          .filter(segment =>
-            segment &&
-            !rules.some(rule => segment.startsWith(rule))
-          );
+            .trim()
+            .replace(/^\.?\/*|\/*$/g, '') // 移除開頭 './' 或 '/'，結尾 '/'
+            .split('/')
+            .filter(segment =>
+                segment &&
+                !rules.some(rule => segment.startsWith(rule))
+            );
     }
 
 
@@ -3238,10 +3457,10 @@ class Utiller {
      * @param {Array<Object>} array - 要修改的原始 array
      * @param {Array<string>} keysToRemove - 要刪除的 key 清單
      */
-     mutateRemoveKeys(array, keysToRemove) {
+    mutateRemoveKeys(array, keysToRemove) {
         array.forEach((obj, index) => {
             const filtered = Object.fromEntries(
-              Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
+                Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
             );
             // 原地替換每個 object 的 key
             Object.keys(obj).forEach(k => delete obj[k]);
@@ -3263,9 +3482,9 @@ class Utiller {
      */
     removeKeysFromArrayObjects(array, keysToRemove) {
         return array.map(obj =>
-          Object.fromEntries(
-            Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
-          )
+            Object.fromEntries(
+                Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
+            )
         );
     }
 
@@ -3315,9 +3534,9 @@ class Utiller {
      * @param {Function} predict - 過濾條件函式，預設為 each.used === true
      * @returns {Object} - 符合條件的新物件
      */
-    getObjectBy(obj,predict = (attr) => attr.checked !== true) {
+    getObjectBy(obj, predict = (attr) => attr.checked !== true) {
         return Object.fromEntries(
-          Object.entries(obj).filter(([_, value]) => predict(value))
+            Object.entries(obj).filter(([_, value]) => predict(value))
         );
     }
 
@@ -3374,12 +3593,15 @@ class Utiller {
      **/
     findUniqueStrings(...arrays) {
         const allStrings = arrays.flat();
-        const grouped = allStrings.reduce((acc, val) => { acc[val] = (acc[val] || 0) + 1; return acc; }, {});
+        const grouped = allStrings.reduce((acc, val) => {
+            acc[val] = (acc[val] || 0) + 1;
+            return acc;
+        }, {});
 
         return Object.entries(grouped)
-          .filter(([_, count]) => count === 1)
-          .map(([key, _]) => key)
-          .filter(Boolean);
+            .filter(([_, count]) => count === 1)
+            .map(([key, _]) => key)
+            .filter(Boolean);
     }
 
     /**
@@ -3496,12 +3718,15 @@ class Utiller {
 
         const [reference, ...rest] = arrays;
         const allExceptRef = rest.flat();
-        const counted = allExceptRef.reduce((acc, str) => { acc[str] = (acc[str] || 0) + 1; return acc; }, {});
+        const counted = allExceptRef.reduce((acc, str) => {
+            acc[str] = (acc[str] || 0) + 1;
+            return acc;
+        }, {});
 
         return Object.entries(counted)
-          .filter(([str, count]) => count === 1 && !reference.includes(str))
-          .map(([str]) => str)
-          .filter(Boolean);
+            .filter(([str, count]) => count === 1 && !reference.includes(str))
+            .map(([str]) => str)
+            .filter(Boolean);
     }
 
     /**
@@ -3548,7 +3773,7 @@ class Utiller {
         return cloned;
     };
 
-     /**
+    /**
      * const input = [
      *   { value: 'xx0132', label: 'A款' },
      *   { value: 'y1y123', label: 'B款' },
@@ -3565,7 +3790,7 @@ class Utiller {
         const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
         const generateRandomValue = () =>
-          Array.from({ length: 8 }, () => charset[Math.floor(Math.random() * charset.length)]).join('');
+            Array.from({ length: 8 }, () => charset[Math.floor(Math.random() * charset.length)]).join('');
 
         const usedValues = new Set(array.map(item => item.value).filter(Boolean));
 
@@ -3596,8 +3821,8 @@ class Utiller {
      */
     isFirestoreAutoId(id) {
         return (typeof (id) === "string") &&
-          id.length === 20 &&
-          /^[A-Za-z0-9]{20}$/.test(id);
+            id.length === 20 &&
+            /^[A-Za-z0-9]{20}$/.test(id);
     }
 
     getAutoIdOfFirestore() {
@@ -3627,41 +3852,41 @@ class Utiller {
      * @param {Array<string>} latest - 最新輸入的 label 陣列，可能有重複或新值。
      * @returns {Array<{label: string, value: number}>} - 轉換完成的唯一 label/value 陣列。
      */
-     generateLabelValuePairsWithOrigin = (
-      origin = [
-          { label: 'aa', value: 1203 },
-          { label: 'cc', value: 1204 },
-          { label: 'gg', value: 2 }
-      ],
-      latest = ['aa', 'bb']
+    generateLabelValuePairsWithOrigin = (
+        origin = [
+            { label: 'aa', value: 1203 },
+            { label: 'cc', value: 1204 },
+            { label: 'gg', value: 2 }
+        ],
+        latest = ['aa', 'bb']
     ) => {
         // 建立已使用過的 value 集合，避免重複
         const usedValues = new Set(origin.map(o => o.value));
 
         // 處理 latest label 清單
         return Array.from(new Set(latest))
-          .map(label => {
-              // 2. 嘗試從 origin 找出是否已存在該 label
-              const originItem = origin.find(o => o.label === label);
+            .map(label => {
+                // 2. 嘗試從 origin 找出是否已存在該 label
+                const originItem = origin.find(o => o.label === label);
 
-              if (originItem) {
-                  // 3. 若存在，直接使用 origin 中的 value
-                  return { label, value: originItem.value };
-              }
+                if (originItem) {
+                    // 3. 若存在，直接使用 origin 中的 value
+                    return { label, value: originItem.value };
+                }
 
-              // 4. 若不存在，產生一個不重複的隨機 value
-              let value;
-              do {
-                  // Firestore 可接受的整數範圍（可調整範圍）
-                  value = Math.floor(Math.random() * (999999999 - 2 + 1)) + 2;
-              } while (usedValues.has(value)); // 確保 value 唯一
+                // 4. 若不存在，產生一個不重複的隨機 value
+                let value;
+                do {
+                    // Firestore 可接受的整數範圍（可調整範圍）
+                    value = Math.floor(Math.random() * (999999999 - 2 + 1)) + 2;
+                } while (usedValues.has(value)); // 確保 value 唯一
 
-              // 5. 記錄該值為已使用，避免後續重複
-              usedValues.add(value);
+                // 5. 記錄該值為已使用，避免後續重複
+                usedValues.add(value);
 
-              // 6. 回傳新的物件
-              return { label, value };
-          });
+                // 6. 回傳新的物件
+                return { label, value };
+            });
     };
 
     /**
@@ -3685,15 +3910,15 @@ class Utiller {
      *          ]
      **/
     getItemsOfMarkMatching = (
-      sourceArray= [],
-      values= [],
-      valueKey = 'value',
-      flagKey = 'belong'
+        sourceArray = [],
+        values = [],
+        valueKey = 'value',
+        flagKey = 'belong'
     ) => {
         const valuesSet = new Set(values); // 使用 Set 提高效能
         return (sourceArray).map((item) => ({
             ...item,
-            [flagKey]: valuesSet.has(item[valueKey]),
+            [flagKey]: valuesSet.has(item[valueKey])
         }));
     };
 
@@ -3752,8 +3977,8 @@ class Utiller {
         }
 
         const combinations = nonEmptyArrays.reduce(
-          (acc, curr) => acc.flatMap(a => curr.map(b => [...a, b])),
-          [[]]
+            (acc, curr) => acc.flatMap(a => curr.map(b => [...a, b])),
+            [[]]
         );
 
         return combinations.map(comb => ({
@@ -3789,7 +4014,7 @@ class Utiller {
     renameKeysInArray = (arr, ...keyMappings) => {
         const mapping = Object.fromEntries(keyMappings);
         return arr.map(item =>
-          Object.fromEntries(Object.entries(item).map(([key, value]) => [mapping[key] || key, value]))
+            Object.fromEntries(Object.entries(item).map(([key, value]) => [mapping[key] || key, value]))
         );
     };
 
@@ -3815,7 +4040,10 @@ class Utiller {
      */
     getArrayOfMergeBySpecificId = (array1, array2, idKey = "id") => {
         if (!Array.isArray(array2)) return array1;
-        const map2 = array2.reduce((acc, item) => { acc[item[idKey]] = item; return acc; }, {});
+        const map2 = array2.reduce((acc, item) => {
+            acc[item[idKey]] = item;
+            return acc;
+        }, {});
 
         return array1.map(item => {
             const id = item[idKey];
@@ -4226,15 +4454,15 @@ class Utiller {
      * @param {string} [event.memo] - 描述/備註 (TimeTree 使用 'memo')。
      * @returns {string} TimeTree 行事曆新增連結。
      */
-     generateTimeTreeLink = ({
-                                      title,
-                                      startDate,
-                                      startTime,
-                                      endDate,
-                                      endTime,
-                                      location,
-                                      memo,
-                                  }) => {
+    generateTimeTreeLink = ({
+                                title,
+                                startDate,
+                                startTime,
+                                endDate,
+                                endTime,
+                                location,
+                                memo
+                            }) => {
         const params = new URLSearchParams();
 
         if (title) params.append('title', title);
@@ -4873,37 +5101,37 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-          const utiller = new Utiller();
-          console.log(utiller.isEmpty('dhjnsjdnfjdsknfkjds'));
-          // console.log(utiller.camelCase(`youarecvsking`))
-          // console.log('qqqq => ',utiller.isEqual('a','v'));
+            const utiller = new Utiller();
+            console.log(utiller.isEmpty('dhjnsjdnfjdsknfkjds'));
+            // console.log(utiller.camelCase(`youarecvsking`))
+            // console.log('qqqq => ',utiller.isEqual('a','v'));
 
-          // console.log(utiller.getRelativePath('/free_marker/src/exam/web/src/base/AlertDialog.js','/free_marker/src/exam/web'));
-          // console.log(utiller.getNormalizedStringNotStartWith('...31231', '.'))
-          // console.log(utiller.getNormalizedStringNotEndWith('.3123111', '1'))
-          // console.log(utiller.getNormalizedStringEndWith('.31234111', '4'))
-          // console.log(utiller.getUrlPath('https://a','123','/123ko/','/gfd'));
-          // console.log(utiller.getUrlPath('123','/123ko/','/gfd'));
-          // console.log(utiller.toPercentageDecimal(30))
-          // console.log(utiller.getPriceOfPercentageBehavior(60,30, false));
-          // console.log(utiller.generateAllCalendarLinks(utiller.getObjectOfStartEndDateTime('2025/11/10 ｜ 13:00 - 15:00')));
-          // console.log(utiller.generateUniversalKeywords('刻在我心底的名字'))
-          // console.log(utiller.getTSOfSpecificDate('2025/08/18(一)'))
-          // const input = [
-          //     { value: "", label: "A款" },
-          //     { value: "", label: "B款" },
-          //     { value: "", label: "C款" },
-          //     { value: "", label: "D款" },
-          //     { value: null, label: "E款" },
-          //     { value: undefined, label: "F款" }
-          // ];
-          // const output = utiller.getArrayOfFillMissingValues(input);
-          // console.log(output);
-          //     const array1 = ['黑色', '綠色']
-          //     const array2 = ['S', 'M']
-          //     const array3 = ['長袖', '短袖']
-          //     console.log(utiller.generateUidCombinations([array1,[]]));
-              // console.log(utiller.decodeFromUid('6buR6ImyIHwgUyB8IOmVt-iilg'));
+            // console.log(utiller.getRelativePath('/free_marker/src/exam/web/src/base/AlertDialog.js','/free_marker/src/exam/web'));
+            // console.log(utiller.getNormalizedStringNotStartWith('...31231', '.'))
+            // console.log(utiller.getNormalizedStringNotEndWith('.3123111', '1'))
+            // console.log(utiller.getNormalizedStringEndWith('.31234111', '4'))
+            // console.log(utiller.getUrlPath('https://a','123','/123ko/','/gfd'));
+            // console.log(utiller.getUrlPath('123','/123ko/','/gfd'));
+            // console.log(utiller.toPercentageDecimal(30))
+            // console.log(utiller.getPriceOfPercentageBehavior(60,30, false));
+            // console.log(utiller.generateAllCalendarLinks(utiller.getObjectOfStartEndDateTime('2025/11/10 ｜ 13:00 - 15:00')));
+            // console.log(utiller.generateUniversalKeywords('刻在我心底的名字'))
+            // console.log(utiller.getTSOfSpecificDate('2025/08/18(一)'))
+            // const input = [
+            //     { value: "", label: "A款" },
+            //     { value: "", label: "B款" },
+            //     { value: "", label: "C款" },
+            //     { value: "", label: "D款" },
+            //     { value: null, label: "E款" },
+            //     { value: undefined, label: "F款" }
+            // ];
+            // const output = utiller.getArrayOfFillMissingValues(input);
+            // console.log(output);
+            //     const array1 = ['黑色', '綠色']
+            //     const array2 = ['S', 'M']
+            //     const array3 = ['長袖', '短袖']
+            //     console.log(utiller.generateUidCombinations([array1,[]]));
+            // console.log(utiller.decodeFromUid('6buR6ImyIHwgUyB8IOmVt-iilg'));
             // console.log(utiller.extractStaticSegments('/dionysus'));
             // const result = utiller.generateCombinations({key: 'color', label: '顏色', options: [  { value: 0, label: '紅' }, { value: 1, label: '白' }, { value: 2, label: '黑'}]},
             //   {key: 'size', label: '尺寸', options: [ { value: 0, label: 'S號' }, { value: 1, label: 'M號' }, { value: 2, label: 'L號' }]})

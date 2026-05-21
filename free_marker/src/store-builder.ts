@@ -73,7 +73,7 @@ class StoreBuilder extends BaseBuilder {
                 // `this.${store} = new ${_.upperFirst(store)}()`,
             )
         }
-        baseGenerator.appendConstructor(...stores.map(child => `this.${child} = new ${_.upperFirst(child)}(props)`))
+        baseGenerator.appendConstructor(...stores.map(child => `this.${child} = new ${Util.upperFirst(child)}(props)`))
         baseGenerator.needIndexFile('Store');
         await baseGenerator.persist();
     }
@@ -147,7 +147,7 @@ class StoreBuilder extends BaseBuilder {
                     continue;
                 }
                 generator.appendImport(child.getClassName(), `../${child.getStoreFolderName()}`)
-                propStmt.push(`this.set${_.upperFirst(fieldName)}(obj.${fieldName})`);
+                propStmt.push(`this.set${Util.upperFirst(fieldName)}(obj.${fieldName})`);
                 await this.buildBaseStore(child)
             } else {
                 if (child.isNumber())
@@ -195,7 +195,7 @@ class StoreBuilder extends BaseBuilder {
                 self.initial(result,false);
                 }`
             })
-            return `${_.filter(stmts, (stmt) => !Util.isEmpty(stmt)).join(',')}`
+            return `${Util.filter(stmts, (stmt) => !Util.isEmpty(stmt)).join(',')}`
         }
 
         function getCountOfThread(node) {
@@ -351,13 +351,13 @@ class StoreBuilder extends BaseBuilder {
         if (node.isArray()) {
             baseGenerator.appendFunction('remove', [], [], ['type是array, 才會被gen出的method'],
                 `if(this.getParentNode())`,
-                `this.getParentNode().remove${_.upperFirst(node.getFieldName())}(this)`
+                `this.getParentNode().remove${Util.upperFirst(node.getFieldName())}(this)`
             )
 
             baseGenerator.appendFunction('moveSelfToAside', ['toTail = true'], ['action'], ['把自己移動到array的頭或尾'],
                 `if(this.getParentNode()){`,
-                `const items = this.getParentNode().get${_.upperFirst(node.getFieldName())}();`,
-                `this.getParentNode().set${_.upperFirst(node.getFieldName())}(...Util.getArrayOfMoveSpecificItemToAside(items, this, toTail))}`,
+                `const items = this.getParentNode().get${Util.upperFirst(node.getFieldName())}();`,
+                `this.getParentNode().set${Util.upperFirst(node.getFieldName())}(...Util.getArrayOfMoveSpecificItemToAside(items, this, toTail))}`,
             )
         }
         const stmtsOfRangeNormalize = [];
@@ -391,10 +391,10 @@ class StoreBuilder extends BaseBuilder {
                         name: child.getFunctionNameOfAutoCompleteInvalidate(),
                         async: true
                     }, ['keyword'], [], [],
-                    `if (!_.isUndefined(keyword) && this.${child.getFieldNameOfFuse()}) {`,
+                    `if (!Util.isUndefined(keyword) && this.${child.getFieldNameOfFuse()}) {`,
                     `Util.executeTimeoutTask(async () => {`,
                     `const suggests = this.${child.getFieldNameOfFuse()}.search(keyword).map(each => each.item);`,
-                    `this.${Util.camel('set', child.getFieldNameOfSuggest())}s(...suggests) },300,'ID_OF_ASYNC_HANDLE_${_.toUpper(child.getFieldName())}')}`
+                    `this.${Util.camel('set', child.getFieldNameOfSuggest())}s(...suggests) },300,'ID_OF_ASYNC_HANDLE_${Util.toUpper(child.getFieldName())}')}`
                 )
 
             }
@@ -474,7 +474,7 @@ class StoreBuilder extends BaseBuilder {
                 .map((child) => {
                         if(!child.l10n) return ''
                         else if(child.isCheapArray() || child.isPathArray())
-                            return `_.each(this.${child.getFunctionNameOfGetters()}() , (item) => item.refreshLocally())`
+                            return `Util.each(this.${child.getFunctionNameOfGetters()}() , (item) => item.refreshLocally())`
                          else if (child.isArray())
                             return `this.${child.getFunctionNameOfSetter()}(...Util.getArrayOfMappingRef(this.${child.getFieldName()},${child.getDefaultValueByType()}))`;
                          else if (child.isObject())

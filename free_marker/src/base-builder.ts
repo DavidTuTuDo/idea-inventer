@@ -144,7 +144,7 @@ class BaseBuilder extends PathBase {
                 params = [`items = [{father:{id:''},child:[{id:''},{id:''}]}]`, `batchCount = 100`];
                 break;
             case "batch delete parent":
-                params = [`idsOf${_.upperFirst(node.getName())} = ['']`,`batchCount = 100`]
+                params = [`idsOf${Util.upperFirst(node.getName())} = ['']`,`batchCount = 100`]
                 break;
             case 'modify items':
                 params = [...params, 'job = async (items) => {}', 'conditions', 'size']
@@ -265,7 +265,7 @@ class BaseBuilder extends PathBase {
         else if (child.isObject())
             return `obj.${child.getFieldName()} ? ${getPreciseObj()} : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())}.columnData(),${this.getCommentDescription(child)}`;
         else if (child.isTimeStamp())
-            return `!_.isUndefined(obj.${child.getFieldName()}) ? this.toFireBaseTimestampObject(obj.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp(),${this.getCommentDescription(child)}`;
+            return `!Util.isUndefined(obj.${child.getFieldName()}) ? this.toFireBaseTimestampObject(obj.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp(),${this.getCommentDescription(child)}`;
         else if (child.isString())
             return `Util.getStringOfNormalize(obj.${child.getFieldName()}, ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())}${child.asTrim() ? ',true' : ''}),${this.getCommentDescription(child)}`;
         else if (child.isNumber())

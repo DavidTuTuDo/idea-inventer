@@ -311,7 +311,7 @@ class ProjectFileHandler extends PathBase {
 
         for (const cloud of this.getAllCloudFunctions()) {
             if (Util.isOrEquals(cloud.type, 'httpOnCall', 'httpOnRequest')) {
-                baseConfigGenerator.appendField(`urlOf${_.upperFirst(cloud.name)}`,
+                baseConfigGenerator.appendField(`urlOf${Util.upperFirst(cloud.name)}`,
                     `'${new URL(sourceObj.getHostOfCloudFunction(cloud)).href}' /** ${cloud.type} */`)
             }
         }
@@ -853,7 +853,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     props:{expandIcon: `###<${node.icon} />`},
                     children: [{
                         view: "Typography",
-                        name: `titleOf${_.upperFirst(node.getName())}`,
+                        name: `titleOf${Util.upperFirst(node.getName())}`,
                         type: "string",
                         incest: { view: false, attribute: true },
                         defaultValue: node.title
@@ -1020,7 +1020,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 node.setView('IconButton');
                 node.needParam = true;
                 node.appendChildrenWithJsons({
-                    name: `imgOf${_.upperFirst(node.getName())}`,
+                    name: `imgOf${Util.upperFirst(node.getName())}`,
                     view: `img`,
                     type: `string`,
                     imgPreview: false,
@@ -1121,7 +1121,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
                 if (node.hasLabelViewIcon()) {
                     node.appendChildrenWithJsons({
-                        name: `btnOf${_.upperFirst(node.getName())}`,
+                        name: `btnOf${Util.upperFirst(node.getName())}`,
                         needParam: true,
                         outer: !node.isSimpleSelected(),
                         listOuter: !!node.isSimpleSelected(),
@@ -1489,15 +1489,15 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             /** 清除掉value為undefined,因為JSON.parse會過不了 */
             stringsOfItem.push(JSON.stringify(objectOfItem));
             if (Util.isString(item.icon)) node.getPreciseAttributeParent().appendChildrenWithJsons({
-                name: `iconOf${_.upperFirst(node.getName())}4Imp${_.indexOf(alertMenu.items, item)}`,
+                name: `iconOf${Util.upperFirst(node.getName())}4Imp${Util.indexOf(alertMenu.items, item)}`,
                 type: SIGN_OF_IMPORT_MUI,
                 defaultValue: item.icon,
             });
         }
 
-        const nameOfImpl = `implementsOfAlertItemClicked${_.upperFirst(sign)}`;
+        const nameOfImpl = `implementsOfAlertItemClicked${Util.upperFirst(sign)}`;
 
-        const fieldNameOfItems = `itemsOf${_.upperFirst(node.getName())}${_.upperFirst(sign)}`;
+        const fieldNameOfItems = `itemsOf${Util.upperFirst(node.getName())}${Util.upperFirst(sign)}`;
         node.listOfImplementsOfAlertItemClicked.push({name: `${nameOfImpl}`, stmts: implementsOfClicked.join(`,`)})
         node.getPreciseAttributeParent().appendChildrenWithJsons({
             name: fieldNameOfItems,
@@ -1508,7 +1508,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         })
 
         const content = `{self.renderAlertMenu({ref:${node.getFieldNameOfAlertMenu()},
-                component:self,items:${node.getPreciseAttributeParentName()}.get${_.upperFirst(fieldNameOfItems)}().map((item, index) => ({...item, ...${nameOfImpl}[index]}))})}`
+                component:self,items:${node.getPreciseAttributeParentName()}.get${Util.upperFirst(fieldNameOfItems)}().map((item, index) => ({...item, ...${nameOfImpl}[index]}))})}`
         return content;
     }
 
@@ -1524,7 +1524,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             if (node.isSwitchView()) {
                 paramStmt = `self.getCheckStateByEvent(event)`;
             } else if(node.isSimpleSelected() && !node.isButton()){
-                stmts.push(`const latest = ${node.useStringAsValue() ? `event.target.value;` : `_.toNumber(event.target.value);`}`)
+                stmts.push(`const latest = ${node.useStringAsValue() ? `event.target.value;` : `Util.toNumber(event.target.value);`}`)
                 stmts.push(`objectOfParam.value = latest;`)
                 stmts.push(`objectOfParam.event = event;`)
                 stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(latest)`)
@@ -1563,8 +1563,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 stmts.push(`const dayjses = event`);
                 stmts.push(`objectOfParam.value = dayjses`);
                 stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldName())}(dayjses)`)
-                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfStart())}(_.head(dayjses))`);
-                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfEnd())}(_.last(dayjses))`);
+                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfStart())}(Util.head(dayjses))`);
+                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfEnd())}(Util.last(dayjses))`);
             } else {
                 /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
             }
@@ -1728,7 +1728,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 switch (node.getView()) {
                     case 'Button':
                         const obj = {};
-                        obj[`${Util.camel(node.getAnchorOfButton(), 'icon')}`] = `###<${_.upperFirst(node.getIcon())} />`;
+                        obj[`${Util.camel(node.getAnchorOfButton(), 'icon')}`] = `###<${Util.upperFirst(node.getIcon())} />`;
                         node.appendViewProps(obj);
                         break;
                     case 'IconButton':
@@ -1848,7 +1848,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     belong2TimeStamp: true,
                     defaultValue: -1,
                     incest: node.incest,
-                    description: `用來放${node.getName()}的number值，方便比較(_.orderBy)用`
+                    description: `用來放${node.getName()}的number值，方便比較(Util.orderBy)用`
                 })
             }
 
@@ -1897,7 +1897,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     /** onSearchPress() */
                     node.appendViewProps({
                         onKeyPress: `###(event, value) => {
-                        if(_.isEqual(event.key ,'Enter')){
+                        if(Util.isEqual(event.key ,'Enter')){
                             event.preventDefault();
                             self.${node.getFunctionNameOfSearchPressed()}(${node.getFieldName()},${node.getPreciseAttributeParentName()})
                         } 
@@ -2077,10 +2077,10 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             appendPropsOfNode(node, node.isTabListView,
                 [
                     ...propsOfTab,
-                    {value: `###${node.getParentNode().getName()}.getValueOf${_.upperFirst(node.getName())}ClickedTab()`}], [],
+                    {value: `###${node.getParentNode().getName()}.getValueOf${Util.upperFirst(node.getName())}ClickedTab()`}], [],
                 [
                     {
-                        name: `valueOf${_.upperFirst(node.getName())}ClickedTab`,
+                        name: `valueOf${Util.upperFirst(node.getName())}ClickedTab`,
                         type: `number`,
                         defaultValue: node.getValueOfTabDefault(),
                     }
@@ -2150,8 +2150,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             const stmts = [`${node.getFieldNameOfAlertDialog()}.current.open();`]
             node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
         } else if (node.isTabItemView()) {
-            onClickStmts.push(`objectOfParam.changed = !_.isEqual(self.getStore().getValueOf${_.upperFirst(node.getName())}ClickedTab(), ${node.getName()}.getValue()); /** tab是否有改變，還點擊同一個 */`)
-            onClickStmts.push(`self.getStore().setValueOf${_.upperFirst(node.getName())}ClickedTab(${node.getName()}.getValue())`)
+            onClickStmts.push(`objectOfParam.changed = !Util.isEqual(self.getStore().getValueOf${Util.upperFirst(node.getName())}ClickedTab(), ${node.getName()}.getValue()); /** tab是否有改變，還點擊同一個 */`)
+            onClickStmts.push(`self.getStore().setValueOf${Util.upperFirst(node.getName())}ClickedTab(${node.getName()}.getValue())`)
             onClickStmts.push(`${this.getStmtOfEventInValidate(node, functionNameOfClicked)}`)
         } else if (node.hasCustomViewDialog()) {
             const stmts = [`${node.getFieldNameOfAlertDialog()}.current.open();`]
@@ -2584,7 +2584,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         function isRapidModeCleanFileAllowRule(file) {
             return Util.or(
                 (_.startsWith(file.dirName, TARGET_COMPONENT_FAST_DEVELOP_MODE) &&
-                    _.startsWith(file.fileName, `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),
+                    _.startsWith(file.fileName, `Base${Util.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),
                 _.isEqual(file.dirName, 'less'),
                 _.isEqual(file.dirName, 'style'),
                 (_.isEqual(file.dirName, 'cookie') && _.isEqual(file.fileNameExtension, 'BaseCookie.js')),

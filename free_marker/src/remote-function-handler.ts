@@ -277,7 +277,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `const all = hasParent ? this.getParentNode().${self.getFunctionNameOfSimpleGetter(node.getFieldName())}() : await self.${node.getFunctionNameOfFetch()}()`,
                             `all.push(this.${functionNameOfNormalize}({...item,id}))`,
                             `await self.${node.getFunctionNameOfSubmit()}(${needView()} all, id)`,
-                            `const result = hasParent ? this.getParentNode().push${_.upperFirst(node.getName())}(item) : true`,
+                            `const result = hasParent ? this.getParentNode().push${Util.upperFirst(node.getName())}(item) : true`,
                             `return result;`
                         ],
                         `submit item of cheap`);
@@ -289,7 +289,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `path = this.buildPath(path, ${node.getName()})`,
                             `const hasParent = this.getParentNode && this.getParentNode()`,
                             `const all = hasParent ? this.getParentNode().${Util.camel('get', node.getFieldName())}() : await self.${node.getFunctionNameOfFetch()}()`,
-                            `await self.${node.getFunctionNameOfSubmit()}(${needView()} _.without(all, item), id)`,
+                            `await self.${node.getFunctionNameOfSubmit()}(${needView()} Util.without(all, item), id)`,
                             `return hasParent ? this.getParentNode().${Util.camel('remove', node.getFieldName())}(item) : true`,
                         ],
                         `delete item of cheap`);
@@ -309,7 +309,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
                         [
                             `path = this.buildPath(path, ${node.getName()})`,
-                            `return _.size(await self.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')}))`],
+                            `return Util.size(await self.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')}))`],
                         `fetch size of cheap`)
 
 
@@ -377,7 +377,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                           node,
                           node.getFunctionNameOfBatchSubmitParentItems(child),
                           [
-                              `${this.isWebPlatform() ? `const api = new ${_.upperFirst(child.getName())}()` : ""}`,
+                              `${this.isWebPlatform() ? `const api = new ${Util.upperFirst(child.getName())}()` : ""}`,
                               `const commitments = items.map((item) => {
                                return {
                                  ${father} : self.${functionNameOfNormalize}(item.${father}),
@@ -391,7 +391,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                           node,
                           node.getFunctionNameOfBatchDeleteParentItems(child),
                           [
-                              `return await self.deleteBatchParentItems(${JSON.stringify(segments)}, idsOf${_.upperFirst(node.getName())} , batchCount)`],
+                              `return await self.deleteBatchParentItems(${JSON.stringify(segments)}, idsOf${Util.upperFirst(node.getName())} , batchCount)`],
                           "batch delete parent");
                     }
 

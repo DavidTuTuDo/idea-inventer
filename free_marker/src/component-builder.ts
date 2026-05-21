@@ -85,10 +85,10 @@ class ComponentBuilder extends BaseBuilder {
             return;
         }
 
-        const baseClassName = `Base${_.upperFirst(baseComponentName)}Component`;
-        const moduleClassName = `${KEYWORD_OF_MODULARIZED}${_.upperFirst(baseComponentName)}Component`;
+        const baseClassName = `Base${Util.upperFirst(baseComponentName)}Component`;
+        const moduleClassName = `${KEYWORD_OF_MODULARIZED}${Util.upperFirst(baseComponentName)}Component`;
 
-        const className = `${_.upperFirst(baseComponentName)}Component`;
+        const className = `${Util.upperFirst(baseComponentName)}Component`;
         const folderName = baseComponentName;
 
         const baseGenerator = new ClassGenerator(Util.joinRespectingDot(this.genComponentRootPath, folderName, `${baseClassName}.js`), this.nodeOfAncestor);
@@ -162,7 +162,7 @@ class ComponentBuilder extends BaseBuilder {
         )
         const nodesUseCache = componentNode.getNodesBy(node => node.useCache);
         const cookieCaller = (node) => Util.camel(`get`, node.getNameOfHierarchicalOfCookieUsage());
-        const setterCaller = node => `set${_.upperFirst(node.getName())}`
+        const setterCaller = node => `set${Util.upperFirst(node.getName())}`
         this.appendStmtIntoComponentDidMount(...nodesUseCache.map((node) => `this.getStore().${setterCaller(node)}(Cookie.${cookieCaller(node)}())`));
 
         baseGenerator.appendFunction({name: `isEnableInitFetch`, arrow: true}, [], [], [],
@@ -548,7 +548,7 @@ class ComponentBuilder extends BaseBuilder {
             const stmts = []
             if (node.needEmptyTip()) {
                 generator.appendImport(`ListEmptyTrigger`, `../../base/ListEmptyTrigger`);
-                stmts.push(`<ListEmptyTrigger hasPath={${node.hasPath()}} component={self} size={_.size(${node.getFieldName()})}  />`)
+                stmts.push(`<ListEmptyTrigger hasPath={${node.hasPath()}} component={self} size={Util.size(${node.getFieldName()})}  />`)
             }
             return stmts;
         }
