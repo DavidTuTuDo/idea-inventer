@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import { each, filter, size } from 'lodash-es';
+import { each, filter, size } from "lodash-es";
 import BaseDionysusStore from "./BaseDionysusStore";
 import UserInfo from "../../base/BaseUserInfo";
 import Booze from "../dionysusBooze";
@@ -15,8 +15,14 @@ class ModularizedDionysusStore extends BaseDionysusStore {
     }
 
     async onInitialFetchBeginning() {
+        const keyword = this.getParamOfKeywordInPath?.();
+        // [修改] 如果已經初始化過且關鍵字沒變，則不重複執行 clean 與 fetch，以保留頁面狀態與捲動位置
+        if (this.isInitialFetchCompleted() && Util.isEqual(this.keyword4CompoundSearch, keyword)) {
+            return;
+        }
+
         this.clean();
-        this.keyword4CompoundSearch = this.getParamOfKeywordInPath?.();
+        this.keyword4CompoundSearch = keyword;
         if (size(this.keyword4CompoundSearch) > 1) {
             this.setValueOfSelectBoundClickedTab(INDEX_VALUE_OF_SEARCH);
             this.pushBoozeConditions({ type: "where", params: ["keywords", "array-contains", this.keyword4CompoundSearch] });
@@ -26,6 +32,9 @@ class ModularizedDionysusStore extends BaseDionysusStore {
     }
 
     async onInitialFetchCompleted(collection) {
+        // [修改] 避免重複執行初始化邏輯（例如重複插入 Tab）
+        if (this.isInitialFetchCompleted()) return;
+
         await super.onInitialFetchCompleted(collection);
         await Util.syncDelay(1);
         if (collection && size(collection.selectBounds) > 0) this.setSelectBounds(...[{ label: "一覽表", value: 0, type: "all" }, ...collection.selectBounds]);

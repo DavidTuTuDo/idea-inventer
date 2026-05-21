@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import { get, inRange } from 'lodash-es';
+import { get, inRange } from "lodash-es";
 import libpath from "path";
 import BaseDionysusErosStore from "./BaseDionysusErosStore";
 import NavigatorInfo from "../navigatorGlobalPerspective";

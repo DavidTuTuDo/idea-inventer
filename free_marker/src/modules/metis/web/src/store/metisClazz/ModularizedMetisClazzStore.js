@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import { sum } from 'lodash-es';
+import { sum } from "lodash-es";
 import BaseMetisClazzStore from "./BaseMetisClazzStore";
 
 class ModularizedMetisClazzStore extends BaseMetisClazzStore {

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import { startsWith } from 'lodash-es';
+import { startsWith } from "lodash-es";
 import BasePaymentInfoByECPay from "./BasePaymentInfoByECPay";
 import Config from "../../config";
 import Api from "../../api";

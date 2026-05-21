@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import { remove, size } from 'lodash-es';
+import { remove, size } from "lodash-es";
 import BaseSendEmailOfReceipt from "./BaseSendEmailOfReceipt";
 import Api from "../../api";
 import FirebaseHelper from "../../base/FirebaseHelper";

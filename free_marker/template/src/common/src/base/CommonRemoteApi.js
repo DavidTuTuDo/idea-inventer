@@ -1,7 +1,7 @@
 const edit = true;
 
 import { exceptioner as ERROR, utiller as Util } from "utiller";
-import { isNull, isUndefined, orderBy, size, split } from 'lodash-es';
+import { isNull, isUndefined, orderBy, size, split } from "lodash-es";
 import dayjs from "dayjs";
 import firebase from "./FirebaseHelper";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";

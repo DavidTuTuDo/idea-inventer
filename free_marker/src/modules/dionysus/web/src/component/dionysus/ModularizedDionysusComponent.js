@@ -4,7 +4,7 @@ import { utiller as Util } from "utiller";
 import Router from "../../router";
 import BaseDionysusComponent from "./BaseDionysusComponent";
 import UserInfo from "../../base/BaseUserInfo";
-import { size } from 'lodash-es';
+import { size } from "lodash-es";
 
 class ModularizedDionysusComponent extends BaseDionysusComponent {
     constructor(props) {

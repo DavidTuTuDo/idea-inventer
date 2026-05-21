@@ -7,7 +7,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import { action, makeObservable, observable } from "mobx";
 import { observer } from "mobx-react";
 import UserInfoRef from "./BaseUserInfo";
-import { indexOf, isFunction, size } from 'lodash-es';
+import { indexOf, isFunction, size } from "lodash-es";
 import MuiComponent from "./MUIComponent";
 
 class MenuStore {

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import { last, sortBy, sum } from 'lodash-es';
+import { last, sortBy, sum } from "lodash-es";
 import React from "react";
 import JobCalendar from "../../base/JobCalendar";
 import BaseDemeterComponent from "./BaseDemeterComponent";

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util } from "utiller";
-import { find, multiply, size, subtract, sum } from 'lodash-es';
+import { find, multiply, size, subtract, sum } from "lodash-es";
 import Config from "../../config";
 import UserInfoRef from "../../base/BaseUserInfo";
 import { computed } from "mobx";

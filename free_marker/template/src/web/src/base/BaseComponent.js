@@ -1,6 +1,6 @@
 const edit = true;
 
-import { find, size, throttle } from 'lodash-es';
+import { find, size, throttle } from "lodash-es";
 import React from "react";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import Typography from "@mui/material/Typography";

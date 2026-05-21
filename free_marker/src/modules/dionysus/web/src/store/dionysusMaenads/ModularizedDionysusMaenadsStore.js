@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import { every, filter, find, get, head, last, map, maxBy, min, size } from 'lodash-es';
+import { every, filter, find, get, head, last, map, maxBy, min, size } from "lodash-es";
 import BaseDionysusMaenadsStore from "./BaseDionysusMaenadsStore";
 import ApiOfVariant from "../dionysusBoozeVariant";
 import ApiOfHera from "../dionysusHera";

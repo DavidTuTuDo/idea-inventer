@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import { each, filter, find, multiply, size, subtract, sum, values } from 'lodash-es';
+import { each, filter, find, multiply, size, subtract, sum, values } from "lodash-es";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
@@ -168,9 +168,9 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     @computed
     get getComputedPriceOfTotal() {
-        const sum = sum([this.getPriceWithoutDiscount(), this.getPriceOfDiscount(), this.getDiscountOfMember()]);
-        this.setPriceOfTotal(sum);
-        return sum;
+        const total = sum([this.getPriceWithoutDiscount(), this.getPriceOfDiscount(), this.getDiscountOfMember()]);
+        this.setPriceOfTotal(total);
+        return total;
     }
 
     /** 1.更新cookie裡面的cartie，checked(送出訂單時，最後選擇的)*/

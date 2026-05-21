@@ -1,6 +1,6 @@
 const edit = true;
 
-import { uniqBy } from 'lodash-es';
+import { uniqBy } from "lodash-es";
 import { makeObservable, action, observable } from "mobx";
 import BaseNavigatorStore from "./BaseNavigatorStore";
 import NavigatorKeywordStore from "../navigatorKeyword";

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import { indexOf } from 'lodash-es';
+import { indexOf } from "lodash-es";
 import BaseIreneTextsIndexSetterComponent from "./BaseIreneTextsIndexSetterComponent";
 
 class ModularizedIreneTextsIndexSetterComponent extends BaseIreneTextsIndexSetterComponent {

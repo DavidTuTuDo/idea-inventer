@@ -18,7 +18,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import NavigateNext from "@mui/icons-material/NavigateNext";
 import Collapse from "@mui/material/Collapse";
-import { head, last, size } from 'lodash-es';
+import { head, last, size } from "lodash-es";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 
 class ModularizedNavigatorComponent extends BaseNavigatorComponent {

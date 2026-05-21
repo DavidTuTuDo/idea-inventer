@@ -1,7 +1,6 @@
 const edit = true;
 import { utiller as Util } from "utiller";
 
-
 class BaseCookie {
     /** 因為google限制碼cookieName 不能有特殊字元在
      * console.log(getEternalEncryptStringOfCookieName('name=John Doe; age/25"test\'key\\'))

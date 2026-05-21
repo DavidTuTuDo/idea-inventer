@@ -1,6 +1,6 @@
 const edit = true;
 
-import { size } from 'lodash-es';
+import { size } from "lodash-es";
 import BaseCheckoutByLinePay from "./BaseCheckoutByLinePay";
 import Api from "../../api";
 import Config from "../../config";

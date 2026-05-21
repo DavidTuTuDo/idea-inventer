@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util } from "utiller";
-import { filter, size, some, sum, values } from 'lodash-es';
+import { filter, size, some, sum, values } from "lodash-es";
 import firebaser from "./FirebaseHelper";
 import Cookie from "../cookie";
 import Configer from "../config";
@@ -13,10 +13,9 @@ import { storeOfSplash } from "./SplashX";
 import liff from "./LiffHelper";
 
 class UserInfo {
-
     /** 用來設定是否顯示「筆」 */
     @observable
-    enable4EditPan = false
+    enable4EditPan = false;
 
     /** 如果「編輯中」就會是true */
     @observable
@@ -198,7 +197,7 @@ class UserInfo {
 
     @action
     modifyEditPen = (enable = true) => {
-        this.enable4EditPan = enable
+        this.enable4EditPan = enable;
     };
 
     @action

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { exceptioner as ERROR, utiller as Util } from "utiller";
-import { toInteger } from 'lodash-es';
+import { toInteger } from "lodash-es";
 import BaseConfirmedByECPay from "./BaseConfirmedByECPay";
 import Config from "../../config";
 import Api from "../../api";

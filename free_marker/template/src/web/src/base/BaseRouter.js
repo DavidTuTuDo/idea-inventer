@@ -3,7 +3,7 @@ const edit = true;
 import { utiller as Util } from "utiller";
 import libpath from "path";
 import Config from "../config";
-import UserInfo from './BaseUserInfo';
+import UserInfo from "./BaseUserInfo";
 
 class BaseRouter {
     currentParam = [];
@@ -27,12 +27,11 @@ class BaseRouter {
 
     isGotoSameRoute = (route) => {
         return Util.isEqual(this.currentRoute, route);
-    }
+    };
 
     routeTo(component, path) {
         const navigate = component?.props?.navigate;
         if (!this.isGotoSameRoute(path)) {
-            console.log(`比較圖：`, this.currentRoute, '<-對照->', path)
             UserInfo.modifyEditPen(false);
         }
         UserInfo.modifyEditMode(false);

@@ -6,7 +6,7 @@ import copy from "copy-to-clipboard";
 import functions from "../functions";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import { isMobile } from "react-device-detect";
-import { upperFirst } from 'lodash-es';
+import { upperFirst } from "lodash-es";
 import Router from "../router";
 
 class ImpComponent extends BaseComponent {

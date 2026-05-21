@@ -1,6 +1,6 @@
 const edit = true;
 
-import { chain, last, size, sum, trim } from 'lodash-es';
+import { chain, last, size, sum, trim } from "lodash-es";
 import BaseIreneTextsFetchStore from "./BaseIreneTextsFetchStore";
 import { utiller as Util } from "utiller";
 

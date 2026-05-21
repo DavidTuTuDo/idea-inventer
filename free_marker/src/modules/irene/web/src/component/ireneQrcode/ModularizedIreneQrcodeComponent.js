@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import { size } from 'lodash-es';
+import { size } from "lodash-es";
 import BaseIreneQrcodeComponent from "./BaseIreneQrcodeComponent";
 
 class ModularizedIreneQrcodeComponent extends BaseIreneQrcodeComponent {

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util } from "utiller";
-import { toInteger } from 'lodash-es';
+import { toInteger } from "lodash-es";
 import UserInfoRef from "../../base/BaseUserInfo";
 import Router from "../../router";
 import BaseDionysusMaenadsComponent from "./BaseDionysusMaenadsComponent";
