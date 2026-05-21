@@ -17,6 +17,13 @@ const THRESHOLD_OF_UPDATE_POPULAR_LEVEL = 600;
 const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
 
 (async () => {
+        /**
+         * 2026.05.21
+         * 問題：跑一段時間後，table會自己drop，然後再也不會去拿rank
+         * 解決：要大改了，已經看不懂邏輯，先hard code改，如果rank跑過就不要再進去執行
+         * */
+        let rankPersisted = false;
+
         async function syncDelay(delayInms) {
             return new Promise(resolve => {
                 setTimeout(() => {
@@ -26,12 +33,16 @@ const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
         }
 
         async function persistRankTable() {
+            if(rankPersisted) return console.error(`已經跑過rank了，所以跳出去邏輯圈，不然rank會被drop table`);
+
             const tableName = Config.RANK_TABLE_NAME;
             for (const maintype in Config.RANK_TABLE_TYPE) {
                 Util.appendInfo(`正在fetch 排行榜上  "${maintype}" 的 RANK...`)
                 const ranks = await fetchRankTable(Config.RANK_TABLE_TYPE[maintype].ID, Config.RANK_TABLE_TYPE[maintype].SORT)
 
                 await database.dropTable(tableName);
+                console.warn(`OMG************ databazer drop table ==> '${tableName}'`);
+                console.warn(`OMG************ databazer drop table ==> '${tableName}'`);
                 for (const rank of ranks) {
                     for (const each of _.reverse(rank.items)) {
                         const obj = {}
@@ -51,6 +62,9 @@ const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
                         }
                     }
                 }
+                console.warn(`完成Rank************ databazer finish table ==> '${tableName}'`);
+                console.warn(`完成Rank************ databazer finish table ==> '${tableName}'`);
+                rankPersisted = true;
             }
         }
 

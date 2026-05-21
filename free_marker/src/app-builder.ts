@@ -676,7 +676,10 @@ class AppBuilder extends ComponentBuilder {
         if (this.nodeOfAncestor.hasCopyRightView())
             appGenerator.appendConstructor(`this.copyRightRef = React.createRef()`);
         if (!this.isProduction())
-            appGenerator.appendConstructor(`if (process.env.NODE_ENV === 'development') window.store = this.store;`);
+            appGenerator.appendConstructor(`if (process.env.NODE_ENV === 'development') {
+            window.store = this.store;
+            window._userInfo = require('./base/BaseUserInfo.js').default;
+            }`);
 
         appGenerator.appendFunction({ name: `getRenderView`, arrow:true }, [],
           [], [], 'console.log(`🛑🛑🛑🛑 注意！root re-render()`)','const self = this;',...stmtsOfRenderView,`return (${entire.join("")})`);
