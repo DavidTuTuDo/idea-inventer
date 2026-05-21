@@ -76,6 +76,15 @@ class SqliteHandler {
         return _tableNotExist;
     }
 
+    startWiths(string, key = []) {
+        for (const _key of key) {
+            if (_.startsWith(string, _key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     async fetchRecord(tableName, condition = '', ...columns) {
         const records = await this.fetchRecords(tableName, condition, ...columns);
@@ -108,7 +117,7 @@ class SqliteHandler {
             if (!Util.isEmpty(columns))
                 column = _.join(columns, ', ');
 
-            const needWhere = Util.isEmpty(condition) ? '' : Util.startWiths(_.toUpper(condition), configerer.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
+            const needWhere = Util.isEmpty(condition) ? '' : this.startWiths(_.toUpper(condition), configerer.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
             stmt = `SELECT ${column} FROM ${tableName} ${needWhere} ${condition}`;
             if (configerer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo('FETCH RECORD STMT:' + stmt);

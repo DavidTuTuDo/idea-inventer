@@ -15,7 +15,7 @@
     "@babel/runtime": "^7.28.4",
     "configerer": "^1.0.11",
     "crypto-js": "^4.0.0",
-    "databazer": "^1.0.12",
+    "databazer": "^1.0.25",
     "download-file": "^0.1.5",
     "himalaya": "^1.1.0",
     "lodash": "^4.17.20",
