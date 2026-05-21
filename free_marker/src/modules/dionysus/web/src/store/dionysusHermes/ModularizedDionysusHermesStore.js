@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { find, some, sum } from 'lodash-es';
 import UserInfo from "../../base/BaseUserInfo";
 import { computed, toJS } from "mobx";
 import BaseDionysusHermesStore from "./BaseDionysusHermesStore";
@@ -16,11 +16,11 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
 
     @computed
     get getComputedPriceOfTotal() {
-        return _.sum([this.getPriceB4Transport(), this.getPriceOfSelectedTransport()]);
+        return sum([this.getPriceB4Transport(), this.getPriceOfSelectedTransport()]);
     }
 
     getPriceOfSelectedTransport() {
-        const transport = _.find(this.getTransports(), (transport) => Util.isEqual(true, transport.getChoice()));
+        const transport = find(this.getTransports(), (transport) => Util.isEqual(true, transport.getChoice()));
         return transport ? transport.getPrice() : 0;
     }
 
@@ -28,7 +28,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
         await super.onInitialFetchCompleted(collection);
         const idOfAuthor = this.getItemsOfChecked()?.[0]?.idOfAuthor;
         const priceOfWithoutTransport = this.getPriceB4Transport();
-        this.setHasPhysical(_.some(this.getItemsOfChecked(), { isTaskJob: false }));
+        this.setHasPhysical(some(this.getItemsOfChecked(), { isTaskJob: false }));
         if (idOfAuthor) {
             this.eros = await this.App().getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
             Util.appendInfo(`hermes拿到了 eros => `, this.eros);
@@ -80,7 +80,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
         transaction.setChoice(true);
 
         const isTransactionOfCOD = transaction.getTypeOfTransaction() === Config.TransactionMethod.COD;
-        const selfPickUp = _.find(this.getTransports(), (transport) => transport.getTypeOfTransport() === Config.TransportMethod.SelfPickup);
+        const selfPickUp = find(this.getTransports(), (transport) => transport.getTypeOfTransport() === Config.TransportMethod.SelfPickup);
         if (isTransactionOfCOD) selfPickUp?.setChoice(false);
         selfPickUp?.setChoiceDisabled(isTransactionOfCOD);
         this.touchPriceOfTransport();
@@ -146,11 +146,11 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
     }
 
     getSelectedTransport = () => {
-        return _.find(this.getTransports(), (transport) => transport.getChoice());
+        return find(this.getTransports(), (transport) => transport.getChoice());
     };
 
     getSelectedTransaction = () => {
-        return _.find(this.getTransactions(), (transaction) => transaction.getChoice());
+        return find(this.getTransactions(), (transaction) => transaction.getChoice());
     };
 
     updateTransportInfo = () => {

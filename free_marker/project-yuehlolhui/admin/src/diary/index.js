@@ -2,7 +2,7 @@ const edit = true;
 
 import { configerer } from "configerer";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import libpath from "path";
 import fs from "fs";
 import crypto from "crypto";

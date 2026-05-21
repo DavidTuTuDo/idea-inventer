@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { each, filter, size } from 'lodash-es';
 import BaseDionysusStore from "./BaseDionysusStore";
 import UserInfo from "../../base/BaseUserInfo";
 import Booze from "../dionysusBooze";
@@ -17,7 +17,7 @@ class ModularizedDionysusStore extends BaseDionysusStore {
     async onInitialFetchBeginning() {
         this.clean();
         this.keyword4CompoundSearch = this.getParamOfKeywordInPath?.();
-        if (_.size(this.keyword4CompoundSearch) > 1) {
+        if (size(this.keyword4CompoundSearch) > 1) {
             this.setValueOfSelectBoundClickedTab(INDEX_VALUE_OF_SEARCH);
             this.pushBoozeConditions({ type: "where", params: ["keywords", "array-contains", this.keyword4CompoundSearch] });
         }
@@ -28,12 +28,12 @@ class ModularizedDionysusStore extends BaseDionysusStore {
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         await Util.syncDelay(1);
-        if (collection && _.size(collection.selectBounds) > 0) this.setSelectBounds(...[{ label: "一覽表", value: 0, type: "all" }, ...collection.selectBounds]);
+        if (collection && size(collection.selectBounds) > 0) this.setSelectBounds(...[{ label: "一覽表", value: 0, type: "all" }, ...collection.selectBounds]);
 
-        if (_.size(this.keyword4CompoundSearch) > 1)
+        if (size(this.keyword4CompoundSearch) > 1)
             this.pushSelectBoundsByIndex(-1, { label: `搜尋「${this.keyword4CompoundSearch}」`, value: INDEX_VALUE_OF_SEARCH, type: "search" });
 
-        if (collection && _.size(collection.selectBounds) === 0) this.pushSelectBoundsByIndex(0, { label: "一覽表", value: 0, type: "all" });
+        if (collection && size(collection.selectBounds) === 0) this.pushSelectBoundsByIndex(0, { label: "一覽表", value: 0, type: "all" });
         if (UserInfo.isAdmin()) UserInfo.modifyEditPen(true);
     }
 
@@ -45,7 +45,7 @@ class ModularizedDionysusStore extends BaseDionysusStore {
         this.lastItemOfBooze = undefined;
         const valueOfCurrentTab = this.getValueOfSelectBoundClickedTab();
 
-        if (valueOfCurrentTab === INDEX_VALUE_OF_SEARCH && _.size(this.keyword4CompoundSearch) > 1) {
+        if (valueOfCurrentTab === INDEX_VALUE_OF_SEARCH && size(this.keyword4CompoundSearch) > 1) {
             this.pushBoozeConditions({ type: "where", params: ["keywords", "array-contains", this.keyword4CompoundSearch] });
         } else if (valueOfCurrentTab > 0) this.pushBoozeConditions({ type: "where", params: ["category", "array-contains", this.getValueOfSelectBoundClickedTab()] });
         await Util.syncDelay(20);
@@ -54,13 +54,13 @@ class ModularizedDionysusStore extends BaseDionysusStore {
     };
 
     getCheckedItems = () => {
-        return _.filter(this.getBoozes(), (each) => each.getChecked());
+        return filter(this.getBoozes(), (each) => each.getChecked());
     };
 
     mvChecked2Head = async () => {
         const items = this.getCheckedItems();
         await this.apiOfBooze.updateBoozes(this.getComponent(), this.getCheckedItems());
-        _.each(items, (item) => item.moveSelfToAside(false));
+        each(items, (item) => item.moveSelfToAside(false));
         await this.vanishEdit();
     };
 
@@ -70,7 +70,7 @@ class ModularizedDionysusStore extends BaseDionysusStore {
             this.getComponent(),
             items.map((each) => ({ id: each.id, visibility: false }))
         );
-        _.each(items, (item) => item.remove());
+        each(items, (item) => item.remove());
         await this.vanishEdit();
     };
 

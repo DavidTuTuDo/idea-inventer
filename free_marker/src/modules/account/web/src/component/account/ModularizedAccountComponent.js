@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { size } from 'lodash-es';
 import Router from "../../router";
 import BaseAccountComponent from "./BaseAccountComponent";
 import UserInfoRef from "../../base/BaseUserInfo";
@@ -47,7 +47,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     onAccountArrowOfAppendReaderIconButtonClicked(param) {
         const object = param.object;
         const hash = object.getDialogInputValueOfAccountArrowOfAppendReader();
-        if (_.size(hash) > 8)
+        if (size(hash) > 8)
             this.api.updateUserItem(this.getComponentInstance(), { allowRead: true }, hash).then((result) => {
                 this.showInfoSnackMessage(`升級 ${hash} 為「無限悅讀」成功`);
             });
@@ -56,7 +56,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     onAccountArrowOfAppendAuthorIconButtonClicked(param) {
         const object = param.object;
         const hash = object.getDialogInputValueOfAccountArrowOfAppendAuthor();
-        if (_.size(hash) > 8) console.log(`user id =>`, hash);
+        if (size(hash) > 8) console.log(`user id =>`, hash);
         this.api.updateUserItem(this.getComponentInstance(), { isAuthor: true }, hash).then((result) => {
             this.showInfoSnackMessage(`升級 ${hash} 為「賣家」成功`);
         });
@@ -65,7 +65,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     onAccountArrowOfAppendAdminIconButtonClicked(param) {
         const object = param.object;
         const hash = object.getDialogInputValueOfAccountArrowOfAppendAdmin();
-        if (_.size(hash) > 8)
+        if (size(hash) > 8)
             this.api.updateUserItem(this.getComponentInstance(), { isAdmin: true }, hash).then((result) => {
                 this.showInfoSnackMessage(`升級 ${hash} 為「管理者」成功`);
             });

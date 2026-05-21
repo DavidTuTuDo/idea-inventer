@@ -1,6 +1,6 @@
 const edit = true;
 
-import _ from "lodash";
+import { chain, last, size, sum, trim } from 'lodash-es';
 import BaseIreneTextsFetchStore from "./BaseIreneTextsFetchStore";
 import { utiller as Util } from "utiller";
 
@@ -15,8 +15,8 @@ class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
     }
 
     getStringsOfContent = () => {
-        return _.chain(this.getTitles())
-            .map((title) => _.trim(title.getContent()))
+        return chain(this.getTitles())
+            .map((title) => trim(title.getContent()))
             .filter((str) => Util.isString(str) && str !== "")
             .value();
     };
@@ -33,9 +33,9 @@ class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
     invalidate() {
         if (this.hookOfParamObject && this.hookOfParamObject.autoIncrementOfTextsFetch()) {
             /** 自動增加index =>. 1. 2. 3.*/
-            this.getTitles().forEach((title, index) => title.setIndex(`${_.sum([index, 1])}. `));
+            this.getTitles().forEach((title, index) => title.setIndex(`${sum([index, 1])}. `));
             /** 填入 =>. 1. 2. 3.*/
-            if (_.size(_.last(this.getTitles()).getContent()) > 0 && _.size(this.getTitles()) < this.getMaximumRowOfTextsFetch()) this.pushTitle();
+            if (size(last(this.getTitles()).getContent()) > 0 && size(this.getTitles()) < this.getMaximumRowOfTextsFetch()) this.pushTitle();
         }
     }
 
@@ -47,7 +47,7 @@ class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
     async onInitialCompleted(props) {
         const exist = this.hookOfParamObject && this.hookOfParamObject.getDefaultTextsOfTextFetch;
         const texts = exist ? await this.hookOfParamObject.getDefaultTextsOfTextFetch() : [];
-        if (_.size(texts) > 0) {
+        if (size(texts) > 0) {
             this.cleanTitles();
             this.pushTitles(...texts);
         }

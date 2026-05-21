@@ -384,7 +384,6 @@ class ClassGenerator {
 
     importDefaultModule() {
         this.appendImport('libpath', 'path');
-        this.appendImport('_', 'lodash');
         this.appendImport('{ utiller as Util, exceptioner as ERROR, pooller as InfinitePool }', 'utiller');
     }
 

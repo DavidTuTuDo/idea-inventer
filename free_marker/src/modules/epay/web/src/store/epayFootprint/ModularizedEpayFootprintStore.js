@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { filter, find, isUndefined, size, split, startsWith, toLower } from 'lodash-es';
 import UserInfoRef from "../../base/BaseUserInfo";
 import EpayPreciseOrderStore from "../epayPreciseOrder";
 import BaseEpayFootprintStore from "./BaseEpayFootprintStore";
@@ -22,10 +22,10 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
         switch (this.getRoleOfPerspective()) {
             case "user":
-                this.setTabs(..._.filter(this.getTabs(), (each) => each.getValue() < 10));
+                this.setTabs(...filter(this.getTabs(), (each) => each.getValue() < 10));
                 break;
             case "author":
-                this.setTabs(..._.filter(this.getTabs(), (each) => each.getValue() > 10));
+                this.setTabs(...filter(this.getTabs(), (each) => each.getValue() > 10));
                 break;
         }
     }
@@ -113,13 +113,13 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
     fetchAndPushOrders = async (view, conditions) => {
         const ordersOfRemote = [];
-        if (_.size(this.getOrders()) > 0) {
+        if (size(this.getOrders()) > 0) {
             ordersOfRemote.push(...(await this.api.fetchNextPreciseOrders(view, this.getOrderOfLast().raw, ...conditions)));
         } else {
             ordersOfRemote.push(...(await this.api.fetchPreciseOrders(this.getComponent(), ...conditions)));
         }
         this.pushOrders(...ordersOfRemote);
-        if (_.size(ordersOfRemote) === 0) {
+        if (size(ordersOfRemote) === 0) {
             this.setHasNextPageBehavior(false);
         }
     };
@@ -165,46 +165,46 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         }
 
         function getKeywordOfProcedure() {
-            const split = _.split(order.procedureOfPayment, Util.getSeparatorOfUnique());
-            const target = _.toLower(split.pop());
+            const split = split(order.procedureOfPayment, Util.getSeparatorOfUnique());
+            const target = toLower(split.pop());
             return target;
         }
 
         function isATM() {
-            return _.startsWith(getKeywordOfProcedure(), "atm");
+            return startsWith(getKeywordOfProcedure(), "atm");
         }
 
         function isWebATM() {
-            return _.startsWith(getKeywordOfProcedure(), "webatm");
+            return startsWith(getKeywordOfProcedure(), "webatm");
         }
 
         function isECPay() {
-            return _.startsWith(getKeywordOfProcedure(), "ecpay");
+            return startsWith(getKeywordOfProcedure(), "ecpay");
         }
 
         function isCVS() {
-            return _.startsWith(getKeywordOfProcedure(), "cvs");
+            return startsWith(getKeywordOfProcedure(), "cvs");
         }
 
         function isCredit() {
-            return _.startsWith(getKeywordOfProcedure(), "credit");
+            return startsWith(getKeywordOfProcedure(), "credit");
         }
 
         function isLinePay() {
-            return _.startsWith(getKeywordOfProcedure(), "linepay");
+            return startsWith(getKeywordOfProcedure(), "linepay");
         }
 
         function isIPassMoney() {
-            return _.startsWith(getKeywordOfProcedure(), "digitalpayment_ipass");
+            return startsWith(getKeywordOfProcedure(), "digitalpayment_ipass");
         }
 
         function isAuthorForcePaid() {
-            return _.startsWith(getKeywordOfProcedure(), "authorforcepaid");
+            return startsWith(getKeywordOfProcedure(), "authorforcepaid");
         }
 
         /** 用戶下了訂單, 但沒有走到付款頁面 */
         function isUnknown() {
-            return _.startsWith(getKeywordOfProcedure(), "unknown");
+            return startsWith(getKeywordOfProcedure(), "unknown");
         }
 
         function getByEachPaymentProcess(map) {
@@ -233,7 +233,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             }
 
             const value = Util.getObjectValue(target);
-            if (_.isUndefined(value)) {
+            if (isUndefined(value)) {
                 throw new ERROR(9999, `545645643456 ${Util.getObjectKey(target)} 沒有定義`);
             }
             return value;
@@ -273,7 +273,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         function getStringOfDomain() {
             return getByEachPaymentProcess({
                 cvs: `全家、7-11、萊爾富`,
-                atm: `分行代碼(${_.split(order.infoOfPayment, Util.getSeparatorOfUnique()).shift()})`,
+                atm: `分行代碼(${split(order.infoOfPayment, Util.getSeparatorOfUnique()).shift()})`,
                 credit: ``,
                 linepay: ``,
                 webatm: ``,
@@ -287,8 +287,8 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
         function getStringOfCode() {
             return getByEachPaymentProcess({
-                cvs: _.split(order.infoOfPayment, Util.getSeparatorOfUnique()).shift(),
-                atm: _.split(order.infoOfPayment, Util.getSeparatorOfUnique()).pop(),
+                cvs: split(order.infoOfPayment, Util.getSeparatorOfUnique()).shift(),
+                atm: split(order.infoOfPayment, Util.getSeparatorOfUnique()).pop(),
                 credit: ``,
                 linepay: ``,
                 webatm: ``,
@@ -398,7 +398,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
     async setCurrentTabByType(type) {
         await Util.syncDelay(10);
-        const tab = _.find(this.getTabs(), (tab) => Util.isEqual(tab.getType(), type));
+        const tab = find(this.getTabs(), (tab) => Util.isEqual(tab.getType(), type));
         this.setValueOfTabClickedTab(tab?.value);
     }
 

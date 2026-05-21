@@ -1,7 +1,7 @@
 const edit = true;
 import BaseConfig from "./BaseConfig";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
-import _ from "lodash";
+import { find } from 'lodash-es';
 import libpath from "path";
 
 class Config extends BaseConfig {
@@ -138,12 +138,12 @@ class Config extends BaseConfig {
     ];
 
     getNameOfAgentByValue(value) {
-        const item = _.find(this.AGENT, (each) => Util.isEqual(each.value, value));
+        const item = find(this.AGENT, (each) => Util.isEqual(each.value, value));
         return item ? item.label : `(未選擇)承辦旅行社`
     }
 
     getCertificateOfAgentByValue(value) {
-        const item = _.find(this.AGENT, (each) => Util.isEqual(each.value, value));
+        const item = find(this.AGENT, (each) => Util.isEqual(each.value, value));
         return item.certificate;
     }
 

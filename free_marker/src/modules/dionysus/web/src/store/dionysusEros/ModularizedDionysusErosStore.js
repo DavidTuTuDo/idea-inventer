@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { get, inRange } from 'lodash-es';
 import libpath from "path";
 import BaseDionysusErosStore from "./BaseDionysusErosStore";
 import NavigatorInfo from "../navigatorGlobalPerspective";
@@ -432,7 +432,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     fetchDefaultTextOfECPay = async () => this.getNormalizeStmt(["Merchant ID", "Hash Key", "Hash IV"], this.getCupidSecret().getECPaySet());
     fetchDefaultHrefOfDirectPay = async () => this.getNormalizeStmt(["付費連結"], [this.getCupidPublic().getHrefOfDirectPay()]);
 
-    getNormalizeStmt = (titles, items) => titles.map((title, idx) => ({ index: title, content: _.get(items, idx, "") || "" }));
+    getNormalizeStmt = (titles, items) => titles.map((title, idx) => ({ index: title, content: get(items, idx, "") || "" }));
     isValidText = () => true;
     isPositiveNum = (value) => Util.isNumber(value) && value >= 0;
     /** text fetch */
@@ -452,7 +452,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     /** validators */
     isValidECPayConfig = (id, key, iv) => [id, key, iv].every((p) => Util.isString(p) && !Util.isEmpty(p));
     isValidLinePayConfig = (id, secret) => [id, secret].every((p) => Util.isString(p) && !Util.isEmpty(p));
-    isValidDiscountPercentNumber = (val) => _.inRange(Util.toNumber(val), 10, 101);
+    isValidDiscountPercentNumber = (val) => inRange(Util.toNumber(val), 10, 101);
 }
 
 export default ModularizedDionysusErosStore;

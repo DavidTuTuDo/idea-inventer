@@ -1,7 +1,7 @@
 const edit = true;
 import Api from "./api";
 import { utiller as Util, pooller as InfinitePool, exceptioner as ERROR } from "utiller";
-import _ from "lodash";
+import { filter, has, multiply, range, size, sum } from 'lodash-es';
 
 (async () => {
     const api = new Api();
@@ -60,7 +60,7 @@ import _ from "lodash";
     }
 
     async function multiThreadUpdateItem() {
-        const tasks = _.range(0, 20).map((each) => async () => {
+        const tasks = range(0, 20).map((each) => async () => {
             const order = await api.fetchOrderItem(`jfk6ALWdhyoAi7f9LyJv`);
             await api.updateOrderItem({ countOfPeople: order.countOfPeople + 1 }, `jfk6ALWdhyoAi7f9LyJv`);
         });
@@ -70,13 +70,13 @@ import _ from "lodash";
     }
 
     async function multiThreadUpdateItemAtomically() {
-        const tasks = _.range(0, 20).map((each) => async () => {
+        const tasks = range(0, 20).map((each) => async () => {
             await api.updateOrderItemAtomically(async (order, transaction, ref) => {
                 const current = order.countOfPeople;
                 return { countOfPeople: current + 1 };
             }, `jfk6ALWdhyoAi7f9LyJv`);
         });
-        Util.appendInfo(_.size(tasks));
+        Util.appendInfo(size(tasks));
         const worker = new InfinitePool(2);
         await worker.runByEachTask(tasks);
     }
@@ -86,7 +86,7 @@ import _ from "lodash";
         const lines = string.split("\n");
 
         // 過濾掉包含表情符號或特定關鍵詞的行
-        const filteredLines = _.filter(lines, (line) => {
+        const filteredLines = filter(lines, (line) => {
             return !line.trim().match(/💓Sachia 美學|🔎賣場IG:|請搭配/);
         });
 
@@ -102,9 +102,9 @@ import _ from "lodash";
         /** batch delete booze/variant */
         await api.deleteBatchBoozeVariantItems(ids);
 
-        let products = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail.json"), (each) => _.size(each.options) > 1);
+        let products = filter(Util.getFileContextInJSON("./sasha_of_products_detail.json"), (each) => size(each.options) > 1);
         // products = Util.getShuffledArrayWithLimitCount(products, 100);
-        console.log(`莎夏美學合計商品共有： `, _.size(products), ` 個`);
+        console.log(`莎夏美學合計商品共有： `, size(products), ` 個`);
         await api.submitBatchBoozeVariantItems(
             products.map((product) => {
                 const price = Util.findLowestValue(product.options);
@@ -126,7 +126,7 @@ import _ from "lodash";
                         allowSelfPickUp: true,
                         keywords: [...Util.generateUniversalKeywords(product.name), "莎夏", "莎夏美學"],
                         specificAttributes: [{ key: "main", label: "", options: options.map((option) => ({ label: option.name, value: `${Util.toString(option.value)}sasha` })) }],
-                        priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])) //generateLabelValuePairsWithOrigin //)
+                        priceB4Discount: Math.round(sum([price, multiply(0.3, price)])) //generateLabelValuePairsWithOrigin //)
                     },
                     variants: options.map((option) => ({
                         id: `${Util.toString(option.value)}sasha`,
@@ -140,7 +140,7 @@ import _ from "lodash";
                         allowSelfPickUp: true,
                         quantity: option.count,
                         price: option.price,
-                        priceB4Discount: Math.round(_.sum([option.price, _.multiply(0.3, option.price)]))
+                        priceB4Discount: Math.round(sum([option.price, multiply(0.3, option.price)]))
                     }))
                 };
             })
@@ -152,9 +152,9 @@ import _ from "lodash";
             return _(data)
                 .groupBy("valueOfType")
                 .map((items, valueOfType) => {
-                    const mainItem = items.find((i) => !_.has(i, "labelOfSubType"));
+                    const mainItem = items.find((i) => !has(i, "labelOfSubType"));
                     const subItems = items
-                        .filter((i) => _.has(i, "labelOfSubType"))
+                        .filter((i) => has(i, "labelOfSubType"))
                         .map((i) => ({
                             label: i.labelOfSubType,
                             value: i.valueOfSubType,
@@ -196,7 +196,7 @@ import _ from "lodash";
     }
 
     async function getAllNames() {
-        const products = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail.json"), (each) => _.size(each.options) > 1);
+        const products = filter(Util.getFileContextInJSON("./sasha_of_products_detail.json"), (each) => size(each.options) > 1);
         return products.map((each) => each.name);
     }
 

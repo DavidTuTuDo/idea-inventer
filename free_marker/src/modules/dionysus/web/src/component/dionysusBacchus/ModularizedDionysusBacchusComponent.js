@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { size } from 'lodash-es';
 import UserInfoRef from "../../base/BaseUserInfo";
 import BaseDionysusBacchusComponent from "./BaseDionysusBacchusComponent";
 import Router from "../../router";
@@ -12,11 +12,11 @@ class ModularizedDionysusBacchusComponent extends BaseDionysusBacchusComponent {
     }
 
     getListInjectStyleOfDionysusBacchusBanDiv(dionysusBacchus) {
-        return Util.getVisibleOrNone(_.size(dionysusBacchus.getBans()) > 0);
+        return Util.getVisibleOrNone(size(dionysusBacchus.getBans()) > 0);
     }
 
     getWrapInjectStyleOfDionysusBacchusStatementTypography(dionysusBacchus) {
-        return Util.getVisibleOrNone(_.size(dionysusBacchus.getStatement()) > 0);
+        return Util.getVisibleOrNone(size(dionysusBacchus.getStatement()) > 0);
     }
 
     onDionysusBacchusBackToHomeChipClicked(param) {
@@ -95,7 +95,7 @@ class ModularizedDionysusBacchusComponent extends BaseDionysusBacchusComponent {
 
     getInjectStyleOfDionysusBacchusAreaOfPayDiv(dionysusBacchus) {
         const eros = dionysusBacchus.getErosPublic();
-        return Util.getVisibleOrNone(!Util.isUndefinedNullEmpty(eros) && _.size(this.getNotsOfPayments(eros)) > 0);
+        return Util.getVisibleOrNone(!Util.isUndefinedNullEmpty(eros) && size(this.getNotsOfPayments(eros)) > 0);
     }
 
     getNotsOfTransport(eros) {
@@ -142,7 +142,7 @@ class ModularizedDionysusBacchusComponent extends BaseDionysusBacchusComponent {
 
     getInjectStyleOfDionysusBacchusAreaOfShippingDiv(dionysusBacchus) {
         const eros = dionysusBacchus.getErosPublic();
-        return Util.getVisibleOrNone(!Util.isUndefinedNullEmpty(eros) && _.size(this.getNotsOfTransport(eros)) > 0);
+        return Util.getVisibleOrNone(!Util.isUndefinedNullEmpty(eros) && size(this.getNotsOfTransport(eros)) > 0);
     }
 }
 

@@ -4,6 +4,7 @@ import { utiller as Util } from "utiller";
 import Router from "../../router";
 import BaseDionysusComponent from "./BaseDionysusComponent";
 import UserInfo from "../../base/BaseUserInfo";
+import { size } from 'lodash-es';
 
 class ModularizedDionysusComponent extends BaseDionysusComponent {
     constructor(props) {
@@ -23,7 +24,7 @@ class ModularizedDionysusComponent extends BaseDionysusComponent {
     }
 
     getListInjectStyleOfDionysusSelectBoundTab(dionysus) {
-        return Util.getVisibleOrNone(_.size(this.getStore().getSelectBounds()) > 1, true);
+        return Util.getVisibleOrNone(size(this.getStore().getSelectBounds()) > 1, true);
     }
 
     onDionysusSelectBoundTabClicked(param) {

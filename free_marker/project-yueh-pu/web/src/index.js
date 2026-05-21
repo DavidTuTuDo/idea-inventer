@@ -1,7 +1,7 @@
 import "./less";
 import BaseApp from "./BaseApp";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import Config from "./config";
 
 class App extends BaseApp {

@@ -2,7 +2,7 @@ const edit = true;
 
 import BaseCelestialStore from "./BaseCelestialStore";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import { Application } from "../../";
 
 class CelestialStore extends BaseCelestialStore {

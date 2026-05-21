@@ -1,7 +1,7 @@
 const edit = true;
 import BaseMainFilterStore from "./BaseMainFilterStore";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import Config from "../../config";
 
 class MainFilterStore extends BaseMainFilterStore {

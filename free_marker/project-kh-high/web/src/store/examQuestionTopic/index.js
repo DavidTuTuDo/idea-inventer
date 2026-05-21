@@ -1,5 +1,5 @@
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { trim } from 'lodash-es';
 import libpath from "path";
 import BaseExamQuestionTopicStore from "./BaseExamQuestionTopicStore";
 
@@ -13,7 +13,7 @@ class ExamQuestionTopicStore extends BaseExamQuestionTopicStore {
 
     getName() {
         const self = super.getName();
-        return Util.isEqual(_.trim(self), "請依照題目作答") ? "" : self;
+        return Util.isEqual(trim(self), "請依照題目作答") ? "" : self;
     }
 
     /** -------------------- async api -------------------- **/

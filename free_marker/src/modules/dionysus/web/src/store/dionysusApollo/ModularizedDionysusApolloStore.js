@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR } from "utiller";
-import _ from "lodash";
+import { filter } from 'lodash-es';
 import BaseDionysusApolloStore from "./BaseDionysusApolloStore";
 
 import dayjs from "dayjs";
@@ -190,7 +190,7 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
     enableGopTopOfIndexSetter = () => false;
 
     submitTextsOfIndexSetter = async (rows) => {
-        this.setOffDays(..._.filter(rows, (row) => Util.isEqual(true, row.belong)));
+        this.setOffDays(...filter(rows, (row) => Util.isEqual(true, row.belong)));
     };
 }
 

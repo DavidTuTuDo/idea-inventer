@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { size } from 'lodash-es';
 import Config from "../../config";
 import Router from "../../router";
 import BaseEpayFootprintComponent from "./BaseEpayFootprintComponent";
@@ -114,7 +114,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     onEpayFootprintTransNotifyDivClicked(param) {
         const serial = this.getStore().getDialogInputValueOfEpayFootprintTransNotify();
-        if (_.size(serial) < 2) return this.showErrorSnackMessage(`物流編號填寫不正確`);
+        if (size(serial) < 2) return this.showErrorSnackMessage(`物流編號填寫不正確`);
         this.exeAsyncT(this.remoteAuthorFormTransport(this.order, serial));
     }
 

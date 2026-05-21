@@ -6,7 +6,7 @@ const edit = true;
  updateTime:2021-06-24-23-20-01
  */
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import BasePurchaseSucceedComponent from "./BasePurchaseSucceedComponent";
 import queryString from "query-string";
 import Router from "../../router";

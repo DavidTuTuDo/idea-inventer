@@ -1,7 +1,7 @@
 const edit = true;
 import BaseSheetStore from "./BaseSheetStore";
 import { utiller as Util } from "utiller";
-import _ from "lodash";
+import { dropRightWhile, dropWhile, filter, flatten, head, indexOf, last, orderBy, size, sum, trim, zip } from 'lodash-es';
 import UserInfoRef from "../../base/BaseUserInfo";
 import FavoritePu from "../personalRhythmFavoritePu";
 import HistoryPu from "../historyRhythmPuOfRecord";
@@ -27,14 +27,14 @@ const RULE_OF_CHANGE_CHORD_MINOR_SIGN_BACK_UP = [
 
 const RULE_OF_CHANGE_CHORD_MINOR_SIGN = [["Am"], ["Bbm", "A#m"], ["Bm"], ["Cm"], ["C#m", "Dbm"], ["Dm"], ["Ebm", "D#m"], ["Em"], ["Fm"], ["F#m", "Gbm"], ["Gm"], ["G#m", "Abm"]];
 
-const RULE_OF_CHANGE_CHORD_WHOLE_SIGN = _.zip(RULE_OF_CHANGE_CHORD_MAJOR_SIGN, RULE_OF_CHANGE_CHORD_MINOR_SIGN).map((each) => _.flatten(each));
+const RULE_OF_CHANGE_CHORD_WHOLE_SIGN = zip(RULE_OF_CHANGE_CHORD_MAJOR_SIGN, RULE_OF_CHANGE_CHORD_MINOR_SIGN).map((each) => flatten(each));
 /**
  0: (3) ['A', 'F#m', 'Gbm']
  1: (3) ['Bb', 'A#', 'Gm']
  2: (3) ['B', 'G#m', 'Abm']
  */
 
-const RULE_OF_CHANGE_CHORD_SIGN_ORDER_BY_STRING_LENGTH = _.orderBy(_.flatten(RULE_OF_CHANGE_CHORD_MAJOR_SIGN), (each) => _.size(each), "desc");
+const RULE_OF_CHANGE_CHORD_SIGN_ORDER_BY_STRING_LENGTH = orderBy(flatten(RULE_OF_CHANGE_CHORD_MAJOR_SIGN), (each) => size(each), "desc");
 
 /**
  * ['Bb', 'A#', 'Db', 'C#', 'Eb', 'D#', 'F#', 'Gb', 'Ab', 'G#', 'A', 'B', 'C', 'D', 'E', 'F', 'G']
@@ -82,9 +82,9 @@ class SheetStore extends BaseSheetStore {
         if (Util.isUndefinedNullEmpty(this.getUidOfSheetDetail())) return {};
 
         const result = await super.fetch(view);
-        if (_.size(result.guitarpus) > 0) {
+        if (size(result.guitarpus) > 0) {
             const pu = result.guitarpus[0];
-            await this.updateFavoriteToggleState(_.size(result.guitarpus) > 0 ? pu.id : "");
+            await this.updateFavoriteToggleState(size(result.guitarpus) > 0 ? pu.id : "");
             this.exeAsyncT(
                 this.apiOfHistory.submitPuOfRecordItem(view, {
                     idOfGuitarPu: pu.id,
@@ -104,7 +104,7 @@ class SheetStore extends BaseSheetStore {
 
     async getFavoritePuByIdOfGuitarPu(idOfGuitarPu) {
         const items = await this.apiOfFavorite.fetchFavoritePus(this.getComponent(), UserInfoRef.getUid(), { type: "where", params: ["idOfGuitarPu", "==", idOfGuitarPu] });
-        return _.head(items);
+        return head(items);
     }
 
     async submitFavoritePuState(join = false) {
@@ -182,7 +182,7 @@ class SheetStore extends BaseSheetStore {
         if (Util.isUndefinedNullEmpty(context)) return;
 
         const segmentsOfContext = context.split("\n");
-        const segmentsOfContextChord = _.filter(segmentsOfContext, (each) => this.isGuitarChordParagraph(each));
+        const segmentsOfContextChord = filter(segmentsOfContext, (each) => this.isGuitarChordParagraph(each));
         for (const segment of segmentsOfContextChord) {
             Util.replaceArrayByContentIndex(segmentsOfContext, segment, this.getStringOfTranspositionBySigns(segment, level, [" ", "/"]));
         }
@@ -197,8 +197,8 @@ class SheetStore extends BaseSheetStore {
 
     normalizePu = (context) => {
         let segments = context.split("\n");
-        segments = _.dropWhile(segments, (each) => Util.isUndefinedNullEmpty(_.trim(each)));
-        segments = _.dropRightWhile(segments, (each) => Util.isUndefinedNullEmpty(_.trim(each)));
+        segments = dropWhile(segments, (each) => Util.isUndefinedNullEmpty(trim(each)));
+        segments = dropRightWhile(segments, (each) => Util.isUndefinedNullEmpty(trim(each)));
         return segments.join("\n");
     };
 
@@ -211,7 +211,7 @@ class SheetStore extends BaseSheetStore {
     }
 
     getCurrentPu() {
-        return _.head(this.getGuitarpus()) ?? new GuitarPu();
+        return head(this.getGuitarpus()) ?? new GuitarPu();
     }
 
     setVisibleOfChordInContext(hide = false) {
@@ -229,7 +229,7 @@ class SheetStore extends BaseSheetStore {
             return Util.getStringHandledByEachLine(
                 after,
                 (segment, index, segments) => {
-                    if (reg.test(_.trim(segment))) {
+                    if (reg.test(trim(segment))) {
                         Util.replaceArrayByContentIndex(segments, segment, "");
                     }
                 },
@@ -277,8 +277,8 @@ class SheetStore extends BaseSheetStore {
      */
     getChordOfTransposition(chord, level) {
         const indexOfCurrent = this.getIndexOfChordLevel(chord);
-        let indexOfNext = _.sum([indexOfCurrent, level]);
-        return _.head(Util.nth(RULE_OF_CHANGE_CHORD_MAJOR_SIGN, indexOfNext));
+        let indexOfNext = sum([indexOfCurrent, level]);
+        return head(Util.nth(RULE_OF_CHANGE_CHORD_MAJOR_SIGN, indexOfNext));
     }
 
     transpositionParagraph(paragraph, level) {
@@ -297,7 +297,7 @@ class SheetStore extends BaseSheetStore {
     getIndexOfChordLevel(chord = "C") {
         for (const compound of RULE_OF_CHANGE_CHORD_WHOLE_SIGN) {
             if (Util.containsBy(compound, chord)) {
-                return _.indexOf(RULE_OF_CHANGE_CHORD_WHOLE_SIGN, compound);
+                return indexOf(RULE_OF_CHANGE_CHORD_WHOLE_SIGN, compound);
             }
         }
         Util.appendError(`878415451 ${chord} is not handled`);
@@ -327,14 +327,14 @@ class SheetStore extends BaseSheetStore {
     getSuggestTonalityCapoLevel(tonality) {
         const isMinerTonality = Util.has(tonality, "m");
         const suggestTonality = isMinerTonality ? ["Am", "Em"] : ["C", "G"];
-        const resultOfSuggest = _.orderBy(
+        const resultOfSuggest = orderBy(
             suggestTonality.map((each) => {
                 return { from: tonality, to: each, level: this.getLevelOfBetweenChords(each, tonality) };
             }),
             (each) => each.level,
             "desc"
         );
-        return _.last(resultOfSuggest).level >= 0 ? _.last(resultOfSuggest) : _.head(resultOfSuggest);
+        return last(resultOfSuggest).level >= 0 ? last(resultOfSuggest) : head(resultOfSuggest);
     }
 
     /**
@@ -361,7 +361,7 @@ class SheetStore extends BaseSheetStore {
 
     /** 檢查這條訊息是吉他Chord*/
     isGuitarChordParagraph(string) {
-        return _.size(Util.indexesOf(string, SEPARATOR_OF_CHORD)) > 1;
+        return size(Util.indexesOf(string, SEPARATOR_OF_CHORD)) > 1;
     }
 }
 

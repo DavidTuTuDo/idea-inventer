@@ -1,6 +1,6 @@
 const edit = true;
 import BaseEstablishDesktopVisitorStore from "./BaseEstablishDesktopVisitorStore";
-import _ from "lodash";
+import { indexOf } from 'lodash-es';
 
 class EstablishDesktopVisitorStore extends BaseEstablishDesktopVisitorStore {
   /** -------------------- fields -------------------- **/
@@ -13,7 +13,7 @@ class EstablishDesktopVisitorStore extends BaseEstablishDesktopVisitorStore {
   }
 
   invalidate() {
-    this.setIndexOfSequence(_.indexOf(this.getParentNode().getVisitors(), this) + 1);
+    this.setIndexOfSequence(indexOf(this.getParentNode().getVisitors(), this) + 1);
   }
 
   @computed

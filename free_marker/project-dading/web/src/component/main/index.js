@@ -2,7 +2,7 @@ const edit = true;
 import {inject} from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
-import _ from "lodash";
+
 import {observer} from "mobx-react";
 import functions from '../../functions';
 import Router from "../../router";

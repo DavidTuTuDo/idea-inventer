@@ -2,7 +2,7 @@ const edit = true;
 
 import BaseMainStore from "./BaseMainStore";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
-import _ from "lodash";
+import { find, orderBy, range, size, trim } from 'lodash-es';
 import Order from "../mainOrder";
 import Establish from '../establish';
 import dayjs from "dayjs";
@@ -50,7 +50,7 @@ class MainStore extends BaseMainStore {
     }
 
     async updateOrder(orderOfLast) {
-        const order = _.find(this.getOrders(), (order) => Util.isEqual(order.id, orderOfLast.id));
+        const order = find(this.getOrders(), (order) => Util.isEqual(order.id, orderOfLast.id));
         order.initial(orderOfLast);
     }
 
@@ -94,7 +94,7 @@ class MainStore extends BaseMainStore {
                 /** 訂購人 */
                 this.setOrderConditions(
                     [
-                        {type: 'where', params: ['host', '==', _.trim(filter.host)]},
+                        {type: 'where', params: ['host', '==', trim(filter.host)]},
                         {type: 'orderBy', params: ['createTime', 'desc']}
                     ]
                 )
@@ -103,7 +103,7 @@ class MainStore extends BaseMainStore {
                 /** 聯絡電話 */
                 this.setOrderConditions(
                     [
-                        {type: 'where', params: ['contact', '==', _.trim(filter.contact)]},
+                        {type: 'where', params: ['contact', '==', trim(filter.contact)]},
                         {type: 'orderBy', params: ['createTime', 'desc']}
                     ]
                 )
@@ -139,12 +139,12 @@ class MainStore extends BaseMainStore {
         const selectedOfCustom = this.getFilter().getSelectedType();
         if (selected === 7 || selectedOfCustom === 4) {
             /** 旅行社 */
-            this.setOrders(..._.orderBy(this.getOrders(), ['selectedAgent', 'valueOfStartTravel'], ['asc', 'asc']))
+            this.setOrders(...orderBy(this.getOrders(), ['selectedAgent', 'valueOfStartTravel'], ['asc', 'asc']))
         }
 
         if (selected === 8 || selectedOfCustom === 3) {
             /** 目的地 */
-            this.setOrders(..._.orderBy(this.getOrders(), ['selectedDestination', 'valueOfStartTravel'], ['asc', 'asc']))
+            this.setOrders(...orderBy(this.getOrders(), ['selectedDestination', 'valueOfStartTravel'], ['asc', 'asc']))
         }
     }
 
@@ -231,7 +231,7 @@ class MainStore extends BaseMainStore {
 
     /** 驗證firebase api 用*/
     async appendsOrder(counts = 5) {
-        const orders = _.range(1, counts).map(each => {
+        const orders = range(1, counts).map(each => {
             return {isHotCreate: true, members: [{}], records: [{}]}
         })
         const items = await this.apiOfOrder.submitOrders(this.component, orders);
@@ -268,7 +268,7 @@ class MainStore extends BaseMainStore {
     transactionPeople = async () => {
         const task = new InfinitePool(2);
         const self = this;
-        const tasks = _.range(0, 20).map((each) => async () => {
+        const tasks = range(0, 20).map((each) => async () => {
             const key = `kjm47HARHx3g6nP8LzbB`;
             /** stupid doing
              const order = await this.fetchOrderById(key)
@@ -281,7 +281,7 @@ class MainStore extends BaseMainStore {
             }, key);
 
         })
-        Util.appendInfo('task的長度 ==> ', _.size(tasks));
+        Util.appendInfo('task的長度 ==> ', size(tasks));
         await task.runByEachTask(tasks);
     }
 

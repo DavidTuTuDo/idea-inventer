@@ -2,7 +2,7 @@ const edit = true;
 
 import ModularizedSendEmailOfReceipt from "./ModularizedSendEmailOfReceipt";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 
 class SendEmailOfReceipt extends ModularizedSendEmailOfReceipt {
     /** -------------------- fields -------------------- **/

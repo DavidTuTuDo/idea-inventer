@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { filter, forEach, head, indexOf, map, size, subtract, sum, uniq } from 'lodash-es';
 import BaseCreateEPayPreciseOrder from "./BaseCreateEPayPreciseOrder";
 import Api from "../../api";
 import Config from "../../config";
@@ -92,7 +92,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         const globalPerspective = await Api.fetchGlobalPerspective();
 
         /** (done) todo:檢查_.size(items)有沒有超過maximumOfOrderingItem */
-        if (_.size(items) > globalPerspective.maximumOfUniqueItems) this.appendErrorLog(9999, `453543741232113 購買品項不可超過 ${globalPerspective.maximumOfUniqueItems} 個`);
+        if (size(items) > globalPerspective.maximumOfUniqueItems) this.appendErrorLog(9999, `453543741232113 購買品項不可超過 ${globalPerspective.maximumOfUniqueItems} 個`);
         const preciseOrderRef = Api.getPreciseOrderItemDocRef();
 
         try {
@@ -148,13 +148,13 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         let containsTransportedVariant = false;
 
         /** (done) todo:確認 _.size(_.filter(variantSnaps,snap => snap.exists && snap.data().visibility) === _.size(itemsOfClientOrdering)，否則拋出錯誤(部分商品不存在) */
-        const existingAndVisibleVariants = _.filter(variantSnaps, (snap) => snap.exists && snap.data()?.visibility);
-        if (_.size(existingAndVisibleVariants) !== _.size(itemsOfClientOrdering)) {
+        const existingAndVisibleVariants = filter(variantSnaps, (snap) => snap.exists && snap.data()?.visibility);
+        if (size(existingAndVisibleVariants) !== size(itemsOfClientOrdering)) {
             throw new Error("12135451231 部分商品不存在或已下架 (Some items do not exist or are not visible).");
         }
 
         /** (done) todo:確認產品的idOfAuthor都相同，否則拋出錯誤(僅能購買同一個idOfAuthor的商品) */
-        const uniqueAuthors = _.uniq(_.map(existingAndVisibleVariants, (snap) => snap.data()?.idOfAuthor));
+        const uniqueAuthors = uniq(map(existingAndVisibleVariants, (snap) => snap.data()?.idOfAuthor));
         if (uniqueAuthors.length !== 1 || !uniqueAuthors[0]) {
             throw new Error("154684513213 僅能購買同一個 idOfAuthor 的商品 (Can only purchase items from the same idOfAuthor).");
         }
@@ -170,7 +170,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         /** (done) todo(累加計算總價):計算出itemsOfClientOrdering裡面的總價，priceOfTotalOfShould(itemsOfClientOrdering裡面的總價 = _.sum([...(itemOfClientOrdering.quantity*itemOfClientOrdering.variant.price)] )，必須等於priceOfTotal，否則拋出錯誤(remote計算結果和client端不同) */
         let priceOfTotalOfShould = 0;
 
-        _.forEach(itemsOfClientOrdering, (itemOfClientOrdering, index) => {
+        forEach(itemsOfClientOrdering, (itemOfClientOrdering, index) => {
             const variantSnap = variantSnaps[index];
             const variant = variantSnap.data();
 
@@ -189,8 +189,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             /** 累加計算總價 */
             priceOfTotalOfShould += itemOfClientOrdering.quantity * variant.price;
         });
-        const feeOfDiscount = _.subtract(0, Util.getFeeOfDiscount(priceOfTotalOfShould, globalPerspective.percentageOfDiscount));
-        const priceOfTotalIncludingDiscount = _.sum([priceOfTotalOfShould, feeOfDiscount]);
+        const feeOfDiscount = subtract(0, Util.getFeeOfDiscount(priceOfTotalOfShould, globalPerspective.percentageOfDiscount));
+        const priceOfTotalIncludingDiscount = sum([priceOfTotalOfShould, feeOfDiscount]);
 
         /** (done) todo:透過eros是否支援transport */
         /** (done) todo:如果超過免運就免，否則就是依照transport的(feeOfPickupStore, feeOfCOD) */
@@ -260,7 +260,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                 break;
         }
 
-        priceOfTotalOfShould = _.sum([priceOfTotalIncludingDiscount, feeOfTransport]); //遠端計算出來的總價
+        priceOfTotalOfShould = sum([priceOfTotalIncludingDiscount, feeOfTransport]); //遠端計算出來的總價
 
         if (this.isAnonymousUser(session) && !globalPerspective.enableOfBoughtWithoutLoginIn) return this.appendErrorLog("未登入，無法完成結帳程序");
         if (this.isAnonymousUser(session) && globalPerspective.enableOfBoughtWithoutLoginIn && priceOfTotalOfShould > globalPerspective.amountOfAllowAnonymousBuy)
@@ -304,7 +304,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         for (const itemOfClientOrdering of itemsOfClientOrdering) {
             const { idOfBooze, idOfVariant, quantity } = itemOfClientOrdering;
             const variant = itemOfClientOrdering.variant; //{quantity:商品總量}
-            Util.appendInfo(`processInventoryAndSchedules() writing! => ${_.indexOf(itemsOfClientOrdering, itemOfClientOrdering)} idB='${idOfBooze}', idV='${idOfVariant}'`);
+            Util.appendInfo(`processInventoryAndSchedules() writing! => ${indexOf(itemsOfClientOrdering, itemOfClientOrdering)} idB='${idOfBooze}', idV='${idOfVariant}'`);
             const variantRef = Api.getVariantItemDocRef(idOfVariant, idOfBooze);
             const quantityOfBalance = (variant.quantity || 0) - quantity;
             if (quantityOfBalance < 0) this.appendErrorLog(9999, `123213453213 ${variant.nameOfBooze}|${variant.content}|數量不足`);
@@ -350,7 +350,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             timeOfExpired: Util.getTimeStampWithConditions({ minutes: this.isAnonymousUser(session) ? globalPerspective.ttlOfAnonymous : globalPerspective.ttlOfPayment }),
             timeOfCreate: Util.getCurrentTimeStamp(),
             priceOfTotal,
-            imageUrlOfHeadPhoto: _.head(itemsOfClientOrdering)?.photo ?? "",
+            imageUrlOfHeadPhoto: head(itemsOfClientOrdering)?.photo ?? "",
             items: this.getPreciseItemsAsRecord(itemsOfClientOrdering),
             email: email || "",
             address: address || "",

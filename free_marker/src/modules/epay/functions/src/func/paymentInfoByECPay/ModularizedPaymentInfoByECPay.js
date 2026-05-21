@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { startsWith } from 'lodash-es';
 import BasePaymentInfoByECPay from "./BasePaymentInfoByECPay";
 import Config from "../../config";
 import Api from "../../api";
@@ -77,7 +77,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
         const timeOfExpired = contentOfPaymentInfo.ExpireDate;
         const idOfOrder = itemOfPreciseOrder.id;
         Util.appendInfo(`訂單(${itemOfPreciseOrder.id})的採用'${typeOfPayment}'付費方式`);
-        if (_.startsWith(typeOfPayment, "CVS")) {
+        if (startsWith(typeOfPayment, "CVS")) {
             /** 當user選擇超商付款時 */
             await Api.updatePreciseOrderItemAtomically(async (itemOfOrder) => {
                 await this.validateOrderIsUnPaidWaiting(itemOfOrder);
@@ -93,7 +93,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                     true
                 );
             }, idOfOrder);
-        } else if (_.startsWith(typeOfPayment, "ATM")) {
+        } else if (startsWith(typeOfPayment, "ATM")) {
             /** 當user選擇ATM付款時 */
             await Api.updatePreciseOrderItemAtomically(async (itemOfOrder) => {
                 await this.validateOrderIsUnPaidWaiting(itemOfOrder);

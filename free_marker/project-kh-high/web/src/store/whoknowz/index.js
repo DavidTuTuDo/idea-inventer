@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { head } from 'lodash-es';
 import libpath from "path";
 import BaseWhoknowzStore from "./BaseWhoknowzStore";
 import ConfuseStore from "../whoknowzConfuse";
@@ -44,7 +44,7 @@ class WhoknowzStore extends BaseWhoknowzStore {
     }
 
     getHeadConfuse() {
-        const confuse = _.head(this.getConfuses());
+        const confuse = head(this.getConfuses());
         return confuse === undefined ? {} : confuse;
     }
 
@@ -92,7 +92,7 @@ class WhoknowzStore extends BaseWhoknowzStore {
     }
 
     async submitConfirmedAnswer() {
-        const answer = _.head(this.getAnswers());
+        const answer = head(this.getAnswers());
         if (answer.getAnswerByText().length <= 10) {
             this.getComponent().showWarningSnackMessage(`文字答案至少需要到10個字元,方便過濾無意義回答`);
         } else {

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { exceptioner as ERROR, utiller as Util } from "utiller";
-import _ from "lodash";
+import { isNull, isUndefined, orderBy, size, split } from 'lodash-es';
 import dayjs from "dayjs";
 import firebase from "./FirebaseHelper";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
@@ -35,7 +35,7 @@ class CommonRemoteApi {
          */
         function getSpecificExpress(pram) {
             // 1. 保留 null 值，確保 MUI Picker 顯示 label 而非預設日期
-            if (_.isNull(pram)) return pram;
+            if (isNull(pram)) return pram;
 
             // 2. 處理 Firebase Timestamp (偵測是否存在 toMillis 方法)
             if (pram instanceof self.FirebaseTimestampClass()) {
@@ -67,7 +67,7 @@ class CommonRemoteApi {
     }
 
     toFireBaseTimestampObject(obj) {
-        if (_.isNull(obj) || _.isUndefined(obj)) return null;
+        if (isNull(obj) || isUndefined(obj)) return null;
 
         if (obj instanceof firebase.getLibOfFirebaseTimestamp()) {
             return obj;
@@ -102,13 +102,13 @@ class CommonRemoteApi {
      * */
     async batchBracket(objects, predicate = (batch, object) => {}) {
         await firebase.batchDo(objects, predicate);
-        return { message: `batchBracket succeed size:${_.size(objects)} succeed` };
+        return { message: `batchBracket succeed size:${size(objects)} succeed` };
     }
 
     async submitItems(path, ...items) {
         const size = items.length;
         const uid = Util.getRandomHashV2(10);
-        Util.appendInfo(`${uid} batch submit => path:${path}, size:(${_.size(items)})`);
+        Util.appendInfo(`${uid} batch submit => path:${path}, size:(${size(items)})`);
         Util.appendInfo("${uid} batch submit items => ", items);
         const result = await firebase.submitDocuments(path, items);
         Util.appendInfo(`${uid} batch submit path:${path}, size:${size} succeed`);
@@ -117,10 +117,10 @@ class CommonRemoteApi {
 
     async updateItems(path, items) {
         const uid = Util.getRandomHashV2(10);
-        Util.appendInfo(`${uid} batch update path:${path} size:(${_.size(items)})`);
+        Util.appendInfo(`${uid} batch update path:${path} size:(${size(items)})`);
         Util.appendInfo("${uid} batch update items => ", items);
         const result = await firebase.updateDocuments(path, items);
-        Util.appendInfo(`${uid} batch update path:${path}, size:${_.size(result)} succeed`);
+        Util.appendInfo(`${uid} batch update path:${path}, size:${size(result)} succeed`);
         return result;
     }
 
@@ -128,7 +128,7 @@ class CommonRemoteApi {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} batch eligible update path:${path}`);
         const result = await firebase.updateEligibleDocuments(path, obj2Update, ...conditions);
-        Util.appendInfo(`${uid} batch eligible update path:${path}, size:${_.size(result)} succeed`);
+        Util.appendInfo(`${uid} batch eligible update path:${path}, size:${size(result)} succeed`);
         return result;
     }
 
@@ -140,7 +140,7 @@ class CommonRemoteApi {
         if (Util.isEqual("id", fieldName)) {
             fieldName = this.getFieldNameOfDocumentId();
         }
-        while (_.size(valuesOfComparison) > 0) {
+        while (size(valuesOfComparison) > 0) {
             const values = await this.fetchItems(path, {
                 type: "where",
                 params: [fieldName, action, Util.getSliceArrayWithMutate(valuesOfComparison, 10)]
@@ -322,7 +322,7 @@ class CommonRemoteApi {
             }
             raw.push({ stmt: stmtOfFunction, priority });
         }
-        return Util.isEmpty(raw) ? [] : _.orderBy(raw, ["priority"], ["desc"]).map((each) => each.stmt);
+        return Util.isEmpty(raw) ? [] : orderBy(raw, ["priority"], ["desc"]).map((each) => each.stmt);
     }
 
     async fetchItem(path, id) {
@@ -336,34 +336,34 @@ class CommonRemoteApi {
     /** 用promise.all()拿不同id的documents，firestore目前不支援給batchFetch(已知id) */
     async fetchBatchItems(path, ...references) {
         const uid = Util.getRandomHashV2(10);
-        Util.appendInfo(`${uid} start batch fetch item(${_.size(references)}) => ${path}`);
+        Util.appendInfo(`${uid} start batch fetch item(${size(references)}) => ${path}`);
         const item = await firebase.fetchBatchDocuments(references);
-        Util.appendInfo(`${uid} succeed batch fetch item(${_.size(references)}) => ${path}`);
+        Util.appendInfo(`${uid} succeed batch fetch item(${size(references)}) => ${path}`);
         return item;
     }
 
     async submitBatchParentItems(pathOfParent = ["father", "children"], items = [{ father: {}, children: {} }], batchCount = 100) {
         const uid = Util.getRandomHashV2(10);
         const path = JSON.stringify(pathOfParent);
-        Util.appendInfo(`${uid} start batch parent ${path} items(${_.size(items)})`);
+        Util.appendInfo(`${uid} start batch parent ${path} items(${size(items)})`);
         const result = await firebase.submitBatchParentDocuments(pathOfParent, items, batchCount);
-        Util.appendInfo(`${uid} succeed batch parent ${path} items(${_.size(items)})`);
+        Util.appendInfo(`${uid} succeed batch parent ${path} items(${size(items)})`);
         return result;
     }
 
     async deleteBatchParentItems(pathOfParent = ["father", "children"], idsOfFather = [""], batchCount = 100) {
         const uid = Util.getRandomHashV2(10);
         const path = JSON.stringify(pathOfParent);
-        Util.appendInfo(`${uid} start delete batch parent ${path} items(${_.size(idsOfFather)})`);
+        Util.appendInfo(`${uid} start delete batch parent ${path} items(${size(idsOfFather)})`);
         const result = await firebase.deleteBatchParentDocuments(pathOfParent, idsOfFather, batchCount);
-        Util.appendInfo(`${uid} succeed delete batch parent ${path} items(${_.size(idsOfFather)})`);
+        Util.appendInfo(`${uid} succeed delete batch parent ${path} items(${size(idsOfFather)})`);
         return result;
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
     async deleteItems(path, items) {
         const uid = Util.getRandomHashV2(10);
-        Util.appendInfo(`${uid} start delete items ${path} size:(${_.size(items)})`);
+        Util.appendInfo(`${uid} start delete items ${path} size:(${size(items)})`);
         await firebase.deleteDocuments(path, items);
         Util.appendInfo(`${uid} succeed delete items ${path}`);
     }
@@ -372,14 +372,14 @@ class CommonRemoteApi {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} start eligible delete items ${path} `);
         const result = await firebase.deleteEligibleDocuments(path, ...conditions);
-        Util.appendInfo(`${uid} succeed eligible delete items ${path} size:(${_.size(result)})`);
+        Util.appendInfo(`${uid} succeed eligible delete items ${path} size:(${size(result)})`);
     }
 
     async deleteWholeItems(path) {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} start delete whole items ${path}`);
         const result = await firebase.deleteWholeDocuments(path);
-        Util.appendInfo(`${uid} succeed delete whole  items ${path} size:(${_.size(result)})`);
+        Util.appendInfo(`${uid} succeed delete whole  items ${path} size:(${size(result)})`);
     }
 
     async submitObject(path, content) {
@@ -449,7 +449,7 @@ class CommonRemoteApi {
     };
 
     isCollectionPath(path) {
-        const segments = _.split(Util.getNormalizedStringNotStartWith(path, "/"), "/");
+        const segments = split(Util.getNormalizedStringNotStartWith(path, "/"), "/");
         return Util.isOdd(segments.length);
     }
 

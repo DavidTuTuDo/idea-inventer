@@ -1,7 +1,7 @@
 const edit = true;
 import BaseAdditionStore from "./BaseAdditionStore";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import libpath from "path";
 import Member from "../additionMember";
 import BaseStore from "../../base/BaseStore";

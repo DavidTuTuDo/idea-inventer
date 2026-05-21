@@ -18,7 +18,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import NavigateNext from "@mui/icons-material/NavigateNext";
 import Collapse from "@mui/material/Collapse";
-import _ from "lodash";
+import { head, last, size } from 'lodash-es';
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 
 class ModularizedNavigatorComponent extends BaseNavigatorComponent {
@@ -31,7 +31,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     getInjectStyleOfNavigatorMenuIconButton() {
-        return Util.getVisibleOrNone(_.size(this.getStore().getShortcuts()) > 0, true);
+        return Util.getVisibleOrNone(size(this.getStore().getShortcuts()) > 0, true);
     }
 
     onNavigatorTitleTypographyClicked(param) {
@@ -79,16 +79,16 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     ListItemIconView = observer(({ img = "" }) => {
         const self = this;
         const words = img.split(":");
-        const type = _.head(words).trim();
+        const type = head(words).trim();
         const MUIconView = self.MUIconView;
         let content = null;
         switch (type) {
             case "path":
-                const iconPath = _.last(words);
+                const iconPath = last(words);
                 content = <Avatar className={"BaseShortcutItemAvatarView"} src={iconPath} />;
                 break;
             case "muIcon":
-                const muIcon = _.last(words);
+                const muIcon = last(words);
                 content = (
                     <IconButton className={"BaseShortcutItemNavView"}>
                         <MUIconView name={muIcon} />
@@ -158,7 +158,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     onSearchPressed(content) {
         if (Util.isObject(content) && content.uid) {
             /** 處理整理過的關鍵字們{參考悅譜} */
-        } else if (Config.TransactionMethod && _.size(content) > 1) Router.gotoDionysusPage(this, content);
+        } else if (Config.TransactionMethod && size(content) > 1) Router.gotoDionysusPage(this, content);
         else this.showWarningSnackMessage(`搜尋條件至少2個字元`);
     }
 

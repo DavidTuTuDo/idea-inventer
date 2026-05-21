@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { last, sortBy, sum } from 'lodash-es';
 import React from "react";
 import JobCalendar from "../../base/JobCalendar";
 import BaseDemeterComponent from "./BaseDemeterComponent";
@@ -18,7 +18,7 @@ class ModularizedDemeterComponent extends BaseDemeterComponent {
 
     getColorByString = (str) => {
         // 利用 lodash 將字串的 charCode 累加成一個 hash
-        const hash = _.sum(Array.from(str).map((ch) => ch.charCodeAt(0)));
+        const hash = sum(Array.from(str).map((ch) => ch.charCodeAt(0)));
 
         // 將 hash 映射到 colors 的 index 範圍內
         const index = hash % COLORS_OF_JOB.length;
@@ -69,11 +69,11 @@ class ModularizedDemeterComponent extends BaseDemeterComponent {
         if (!Array.isArray(ranges)) return [];
 
         // 按照起始時間排序
-        const sorted = _.sortBy(ranges, ["from"]);
+        const sorted = sortBy(ranges, ["from"]);
 
         const merged = [];
         for (const range of sorted) {
-            const last = _.last(merged);
+            const last = last(merged);
 
             if (!last || range.from > last.to) {
                 // 沒重疊：直接加入

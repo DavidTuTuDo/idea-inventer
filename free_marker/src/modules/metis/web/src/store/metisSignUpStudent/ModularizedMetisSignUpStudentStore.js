@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { sum } from 'lodash-es';
 import BaseMetisSignUpStudentStore from "./BaseMetisSignUpStudentStore";
 import MyClazz from "../metisClazz";
 class ModularizedMetisSignUpStudentStore extends BaseMetisSignUpStudentStore {
@@ -44,7 +44,7 @@ class ModularizedMetisSignUpStudentStore extends BaseMetisSignUpStudentStore {
             return Util.getStringOfCalculateClassTime(
                 this.normalizeTimestamp(clazz.startOfSpecificClass),
                 this.normalizeTimestamp(clazz.endOfSpecificClass),
-                _.sum(clazz.classTimes.map((time) => Util.getNumberOfPeriodMinute(this.normalizeTimestamp(time.startOfTime), this.normalizeTimestamp(time.endOfTime))))
+                sum(clazz.classTimes.map((time) => Util.getNumberOfPeriodMinute(this.normalizeTimestamp(time.startOfTime), this.normalizeTimestamp(time.endOfTime))))
             );
         else return `0 小時`;
     };

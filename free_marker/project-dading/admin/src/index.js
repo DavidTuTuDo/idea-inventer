@@ -2,7 +2,7 @@ const edit = true;
 import Api from './api';
 import {databazer as Databaser, builder as Builder} from "databazer";
 import {utiller as Util, pooller as InfinitePool, exceptioner as ERROR} from "utiller";
-import _ from 'lodash';
+import { range, size } from 'lodash-es';
 
 
 (async () => {
@@ -59,7 +59,7 @@ import _ from 'lodash';
     }
 
     async function multiThreadUpdateItem() {
-        const tasks = _.range(0, 20).map(each => async () => {
+        const tasks = range(0, 20).map(each => async () => {
             const order = await api.fetchOrderItem(`jfk6ALWdhyoAi7f9LyJv`);
             await api.updateOrderItem({countOfPeople: order.countOfPeople + 1}, `jfk6ALWdhyoAi7f9LyJv`);
         })
@@ -69,13 +69,13 @@ import _ from 'lodash';
     }
 
     async function multiThreadUpdateItemAtomically() {
-        const tasks = _.range(0, 20).map(each => async () => {
+        const tasks = range(0, 20).map(each => async () => {
             await api.updateOrderItemAtomically(async (order, transaction, ref) => {
                 const current = order.countOfPeople;
                 return {countOfPeople: current + 1}
             },`jfk6ALWdhyoAi7f9LyJv`);
         })
-        Util.appendInfo(_.size(tasks));
+        Util.appendInfo(size(tasks));
         const worker = new InfinitePool(2);
         await worker.runByEachTask(tasks);
     }

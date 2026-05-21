@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { remove, size } from 'lodash-es';
 import BaseSendEmailOfReceipt from "./BaseSendEmailOfReceipt";
 import Api from "../../api";
 import FirebaseHelper from "../../base/FirebaseHelper";
@@ -51,7 +51,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         isBuyer,
         global
     }) {
-        const valid = (string) => Util.isString(string) && _.size(string) > 0;
+        const valid = (string) => Util.isString(string) && size(string) > 0;
         const toCurrency = (n) => Number(n).toLocaleString("zh-TW");
         // <a href="${timeTree}" style="${chipStyle}"><img src="https://img.icons8.com/ios-filled/50/000000/calendar--v1.png" style="${iconStyle}">新增至TimeTree</a>
         // <a href="${ics}" style="${chipStyle}"><img src="https://img.icons8.com/ios/50/000000/calendar--v1.png" style="${iconStyle}">新增至行事曆</a>
@@ -164,7 +164,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         if (isTransportCompleted) {
             /** 商品已寄出通知 */
             if (!order.isTransported) return this.appendErrorLog(9999, `652112132132 商品尚未完成物流程序`);
-            _.remove(order.items, (item) => item.isTaskJob); //只有實體商品需要寄出，把課程拿掉
+            remove(order.items, (item) => item.isTaskJob); //只有實體商品需要寄出，把課程拿掉
             const isBuyer = true;
             this.sendEmailTo({ isTransportCompleted, isBuyer, order, global });
         } else [true, false].forEach((isBuyer) => this.sendEmailTo({ isBuyer, order, global }));

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import UserInfo from "../../base/BaseUserInfo";
 import BaseDionysusBacchusStore from "./BaseDionysusBacchusStore";
 import ApiOfBooze from "../dionysusBooze";

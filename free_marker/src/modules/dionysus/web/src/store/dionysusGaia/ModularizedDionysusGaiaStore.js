@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util } from "utiller";
-import _ from "lodash";
+import { filter, find, head, keyBy, maxBy, minBy, size, sum, truncate } from 'lodash-es';
 import BaseDionysusGaiaStore from "./BaseDionysusGaiaStore";
 import Booze from "../dionysusBooze";
 import BoozeVariant from "../dionysusBoozeVariant";
@@ -92,12 +92,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.setUseMainTrunkDisabled(booze.initCompleted);
         this.setIsHomeTeachingDisabled(booze.initCompleted);
         this.setAllowSelfPickUpDisabled(booze.initCompleted);
-        this.setStmtOfDescriptionMaximum(`${_.size(this.getStatement())}/${MAXIMUM_TEXT_OF_STATEMENT}`);
-        this.setStmtOfNameMaximum(`${_.size(this.getName())}/${MAXIMUM_TEXT_OF_NAME}`);
+        this.setStmtOfDescriptionMaximum(`${size(this.getStatement())}/${MAXIMUM_TEXT_OF_STATEMENT}`);
+        this.setStmtOfNameMaximum(`${size(this.getName())}/${MAXIMUM_TEXT_OF_NAME}`);
     }
 
     getOptionsOfBrief = (booze, type = "main") => {
-        const attr = _.find(booze.specificAttributes, (each) => Util.isEqual(each.key, type));
+        const attr = find(booze.specificAttributes, (each) => Util.isEqual(each.key, type));
         return attr ? attr.options : [];
     };
 
@@ -110,7 +110,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         /** 找出是否存在過specificAttribute，然後刪掉的又加回去 */
         const bunchOfLatest = this.getAttributesOfMatchLabels(
             uniques,
-            _.find((this.getBooze() ?? {}).specificAttributes, (each) => Util.isEqual(each.key, "main"))
+            find((this.getBooze() ?? {}).specificAttributes, (each) => Util.isEqual(each.key, "main"))
         );
         /** 為類別加上一個不重複的unique value */
         const latest = Util.getArrayOfFillMissingValues([...this.getBriefMains().map((each) => each.columnData()), ...bunchOfLatest]);
@@ -126,7 +126,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         /** 找出是否存在過specificAttribute，然後刪掉的又加回去 */
         const bunchOfLatest = this.getAttributesOfMatchLabels(
             uniques,
-            _.find((this.getBooze() ?? {}).specificAttributes, (each) => Util.isEqual(each.key, "sub"))
+            find((this.getBooze() ?? {}).specificAttributes, (each) => Util.isEqual(each.key, "sub"))
         );
         /** 為類別加上一個不重複的unique value */
         const latest = Util.getArrayOfFillMissingValues([...this.getBriefSubs().map((each) => each.columnData()), ...bunchOfLatest]);
@@ -167,25 +167,25 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     onNameFieldChanged = () => {
         const current = this.getName();
         this.setName(this.truncateString(current, MAXIMUM_TEXT_OF_NAME));
-        this.setStmtOfNameMaximum(`${_.size(this.getName())}/${MAXIMUM_TEXT_OF_NAME}`);
+        this.setStmtOfNameMaximum(`${size(this.getName())}/${MAXIMUM_TEXT_OF_NAME}`);
     };
 
     onStatementFieldChanged = () => {
         const current = this.getStatement();
         this.setStatement(this.truncateString(current, MAXIMUM_TEXT_OF_STATEMENT));
-        this.setStmtOfDescriptionMaximum(`${_.size(this.getStatement())}/${MAXIMUM_TEXT_OF_STATEMENT}`);
+        this.setStmtOfDescriptionMaximum(`${size(this.getStatement())}/${MAXIMUM_TEXT_OF_STATEMENT}`);
     };
 
     truncateString(str, length = 30) {
         if (!Util.isString(str)) return "";
-        return _.truncate(str, {
+        return truncate(str, {
             length,
             omission: "" // 不加 "..."，若要保留可以改為 '...'
         });
     }
 
     uploadBriefImages = async (files = [], type = Config.ImageUploadMethod.Minion) => {
-        if (_.sum([this.getLengthOfBriefPhoto(), _.size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
+        if (sum([this.getLengthOfBriefPhoto(), size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
         /** todo:loadingProgress還沒設計好，單張上傳會有進度0～100%  */
         const useUploadProgress = files.length === 1;
@@ -265,7 +265,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             statement: this.getStatement(),
             photos: this.getBriefPhotos(),
             bans: this.getBriefBans(),
-            photoOfDemo: this.getLengthOfBriefPhoto() > 0 ? _.head(this.getBriefPhotos()).href : "",
+            photoOfDemo: this.getLengthOfBriefPhoto() > 0 ? head(this.getBriefPhotos()).href : "",
             ...this.modifySpecificAttribute(),
             visibility: this.getVisibility(),
             idOfAuthor: UserInfo.getUid(),
@@ -287,8 +287,8 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         const alertNewbie = !this.getInitCompleted();
         await this.handleIdOfBooze();
         if (this.getLengthOfBriefPhoto() === 0) return this.showErrorMsg4UpdateVisibility(`至少需要上傳一張「商品圖片」`);
-        if (_.size(this.getName()) < 2) return this.showErrorMsg4UpdateVisibility(`「商品名稱」必須超過2個字元`);
-        if (this.belong2TaskJob() && _.size(this.getBriefSubs()) === 0) return this.showErrorMsg4UpdateVisibility(`需要新增課程的「日期與「時段」`);
+        if (size(this.getName()) < 2) return this.showErrorMsg4UpdateVisibility(`「商品名稱」必須超過2個字元`);
+        if (this.belong2TaskJob() && size(this.getBriefSubs()) === 0) return this.showErrorMsg4UpdateVisibility(`需要新增課程的「日期與「時段」`);
         if (this.getLengthOfBriefMain() === 0) return this.showErrorMsg4UpdateVisibility(`商品選項至少需要一個「主選項」`);
 
         const result = await this.apiOfBooze.updateBoozeItem(
@@ -359,7 +359,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
      * ]
      */
     getAttributesOfMatchLabels = (strings, specifyAttribute) => {
-        const labelMap = _.keyBy((specifyAttribute ?? {}).options || [], "label");
+        const labelMap = keyBy((specifyAttribute ?? {}).options || [], "label");
         return strings.map((label) => {
             return labelMap[label] || { value: "", label };
         });
@@ -378,7 +378,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     submitTextsOfIndexSetter = async (rows) => {
         await this.handleIdOfBooze();
-        const indexesOfCategory = _.filter(rows, (row) => Util.isEqual(true, row.belong)).map((each) => each.value);
+        const indexesOfCategory = filter(rows, (row) => Util.isEqual(true, row.belong)).map((each) => each.value);
         const tabsOfSubmit = rows.map((row) => {
             delete row.belong;
             return row;
@@ -420,8 +420,8 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     onVariantsQuantityUpdate = async (variants, component) => {
-        const submits = _.filter(variants, (variant) => !variant.existing);
-        const updates = _.filter(variants, (variants) => variants.existing);
+        const submits = filter(variants, (variant) => !variant.existing);
+        const updates = filter(variants, (variants) => variants.existing);
 
         await this.apiOfVariant.updateVariants(
             this.getComponent(),
@@ -431,7 +431,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             this.getIdOfBooze()
         );
         await Util.syncDelay(10);
-        if (_.size(submits) > 0) await this.submitCustomVariant(submits);
+        if (size(submits) > 0) await this.submitCustomVariant(submits);
         this.getComponent().showSuccessSnackMessage(`已更新全部數量`);
         await Util.syncDelay(500);
         if (component instanceof BaseComponent) component.dismiss();
@@ -473,18 +473,18 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     updatePriceOfBooze = async (variants) => {
-        const lowest = _.minBy(variants, "price");
-        const greatest = _.maxBy(variants, "price");
+        const lowest = minBy(variants, "price");
+        const greatest = maxBy(variants, "price");
         const isEqual = Util.isEqual(lowest.price, greatest.price);
         const rangeOfPrice = isEqual ? `$${lowest.price}` : `$${lowest.price} - $${greatest.price}`;
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), { rangeOfPrice, price: lowest.price, priceB4Discount: lowest.priceB4Discount }, this.getIdOfBooze());
     };
 
     onVariantsPriceUpdate = async (variants, component) => {
-        const submits = _.filter(variants, (variant) => !variant.existing);
-        const updates = _.filter(variants, (variants) => variants.existing);
+        const submits = filter(variants, (variant) => !variant.existing);
+        const updates = filter(variants, (variants) => variants.existing);
 
-        if (_.size(submits) > 0) await this.submitCustomVariant(submits);
+        if (size(submits) > 0) await this.submitCustomVariant(submits);
         await Util.syncDelay(10);
         await this.updatePriceOfBooze(variants);
         await Util.syncDelay(10);
@@ -499,7 +499,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     onVariantPhotoUpdate = async (variant, files) => {
-        if (_.size(files) < 1) this.getComponent().showSuccessSnackMessage(`選取圖片出現異常問題`);
+        if (size(files) < 1) this.getComponent().showSuccessSnackMessage(`選取圖片出現異常問題`);
         const href = await this.apiOfImage.uploadFileOfHref(this.getComponent(), files[0], this.getIdOfBooze());
         variant.setPhoto(href);
         await Util.syncDelay(10);

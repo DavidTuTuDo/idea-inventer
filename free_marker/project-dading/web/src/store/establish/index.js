@@ -1,7 +1,7 @@
 const edit = true;
 import BaseEstablishStore from "./BaseEstablishStore";
 import {utiller as Util} from "utiller";
-import _ from "lodash";
+import { find, orderBy, subtract } from 'lodash-es';
 import Config from "../../config";
 import UserInfoRef from "../../base/BaseUserInfo";
 import OrderStore from '../mainOrder';
@@ -210,10 +210,10 @@ class EstablishStore extends BaseEstablishStore {
 
     sync(order) {
         const numberOfDestination = Util.toNumber(order.destination);
-        order.destination = numberOfDestination > 0 ? _.find(Config.COUNTRY_OF_TRAVEL, ['value', `${numberOfDestination}`]) : undefined;
+        order.destination = numberOfDestination > 0 ? find(Config.COUNTRY_OF_TRAVEL, ['value', `${numberOfDestination}`]) : undefined;
         this.setId(order.id);
         this.getDesktop().setInfo(order);
-        const latest = _.orderBy(order.records.map(record => {
+        const latest = orderBy(order.records.map(record => {
             return {...record, createTime: this.normalizeTimestamp(record.createTime)}
         }), '[createTime]', 'asc');
         this.getDesktop().setFinances(...latest);
@@ -225,7 +225,7 @@ class EstablishStore extends BaseEstablishStore {
     }
 
     getPriceAWithDiscount() {
-        return _.subtract(this.getDesktop().getInfo().getPriceOfAgent(), this.getDesktop().getInfo().getDiscountOfAgent());
+        return subtract(this.getDesktop().getInfo().getPriceOfAgent(), this.getDesktop().getInfo().getDiscountOfAgent());
     }
 
     getPriceOfCash() {

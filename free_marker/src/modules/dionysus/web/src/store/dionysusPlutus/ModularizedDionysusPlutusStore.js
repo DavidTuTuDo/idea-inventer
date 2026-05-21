@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util } from "utiller";
-import _ from "lodash";
+import { find, multiply, size, subtract, sum } from 'lodash-es';
 import Config from "../../config";
 import UserInfoRef from "../../base/BaseUserInfo";
 import { computed } from "mobx";
@@ -57,8 +57,8 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
         this.setBriefs(...itemsOfChecked.map((each) => this.normalizeBriefFromOrderItem(each)));
         this.setProcedureOfTransport(Config.LabelOfTransportMethod(this.getTypeOfTransport()));
         this.setProcedureOfPayment(Config.LabelOfTransactionMethod(this.getTypeOfTransaction()));
-        this.setPrice(_.sum(itemsOfChecked.map((each) => _.multiply(each.countOfSubmit, each.price))));
-        this.setDiscount(_.subtract(0, Util.getFeeOfDiscount(this.getPrice(), UserInfoRef.getGlobalPerspectiveAttr("percentageOfDiscount"))));
+        this.setPrice(sum(itemsOfChecked.map((each) => multiply(each.countOfSubmit, each.price))));
+        this.setDiscount(subtract(0, Util.getFeeOfDiscount(this.getPrice(), UserInfoRef.getGlobalPerspectiveAttr("percentageOfDiscount"))));
         if (UserInfoRef.isLoginWithSucceed()) {
             if (!Util.isUndefinedNullEmpty(UserInfoRef.getEmailOfCurrentUser())) this.setEmail(UserInfoRef.getEmailOfCurrentUser());
             if (!Util.isUndefinedNullEmpty(UserInfoRef.getPhoneOfCurrentUser())) this.setPhone(UserInfoRef.getPhoneOfCurrentUser());
@@ -87,7 +87,7 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
     validateDistrictByCity = () => {
         const districts = Config.getDistrictsByCity(this.getSelectedCity());
         this.setDistricts(...districts);
-        if (_.size(districts) > 0) this.setSelectedDistrict(districts[0].value);
+        if (size(districts) > 0) this.setSelectedDistrict(districts[0].value);
     };
 
     whetherPickupByMySelfValidate = async () => {
@@ -97,14 +97,14 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
 
     @computed
     get getComputedPriceOfTotal() {
-        const total = _.sum([this.getPrice(), this.getDiscount(), this.getFeeOfTransport()]);
+        const total = sum([this.getPrice(), this.getDiscount(), this.getFeeOfTransport()]);
         this.setPriceOfTotal(total);
         return total;
     }
 
     @computed
     get getComputedFeeOfPayment() {
-        const total = _.sum([this.getPrice(), this.getDiscount(), this.getFeeOfTransport()]);
+        const total = sum([this.getPrice(), this.getDiscount(), this.getFeeOfTransport()]);
         this.setFeeOfPayment(total);
         return total;
     }
@@ -118,7 +118,7 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
     };
 
     getSelectedLabelByValue(array, value) {
-        const item = _.find(array, (each) => Util.isEqual(Util.toNumber(each.getValue()), Util.toNumber(value)));
+        const item = find(array, (each) => Util.isEqual(Util.toNumber(each.getValue()), Util.toNumber(value)));
         return item ? item.label : "";
     }
 }

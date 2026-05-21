@@ -1,6 +1,6 @@
 const edit = true;
 import BaseReimburseRecordStore from "./BaseReimburseRecordStore";
-import _ from "lodash";
+import { multiply, round } from 'lodash-es';
 import {computed} from "mobx";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 
@@ -31,7 +31,7 @@ class ReimburseRecordStore extends BaseReimburseRecordStore {
   @computed
   get getComputedFeeOfProcedure() {
     const rate = Util.getNumberOfPercentageToFloat(`${this.getRateOfCredit()}%`);
-    const result = _.round(_.multiply(this.getFeeOfPaid(), rate));
+    const result = round(multiply(this.getFeeOfPaid(), rate));
     this.setFeeOfProcedure(result);
     return result;
   }

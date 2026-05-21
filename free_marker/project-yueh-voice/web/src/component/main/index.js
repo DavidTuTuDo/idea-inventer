@@ -4,7 +4,7 @@ import { observer } from "mobx-react";
 import { inject } from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 
 class MainComponent extends BaseMainComponent {
     /** -------------------- fields -------------------- **/

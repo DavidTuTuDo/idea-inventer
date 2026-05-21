@@ -1,7 +1,7 @@
 const edit = true;
 import BaseConfig from "./BaseConfig";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { filter } from 'lodash-es';
 import libpath from "path";
 
 class Config extends BaseConfig {
@@ -340,7 +340,7 @@ class Config extends BaseConfig {
     ];
 
     getDistrictsByCity(valueOfCity) {
-        return _.filter(this.districts, (each) => Util.isEqual(each.type, valueOfCity));
+        return filter(this.districts, (each) => Util.isEqual(each.type, valueOfCity));
     }
     /** -------------------- async api -------------------- **/
 }

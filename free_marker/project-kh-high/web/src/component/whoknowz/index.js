@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import BaseWhoknowzComponent from "./BaseWhoknowzComponent";
 import ExamQuestionView from "../exam";
 import React from "react";

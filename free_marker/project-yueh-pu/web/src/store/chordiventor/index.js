@@ -86,16 +86,16 @@ class ChordiventorStore extends BaseChordiventorStore {
         const cautions = [];
         const pu = this.getCurrentEditedPu();
         const singer = pu.getSinger();
-        if (_.size(this.getName()) < 1) cautions.push("曲名不能為空");
-        if (_.size(singer) < 1) cautions.push("歌手不能為空");
-        else if (_.size(singer) > 0 && Util.isEmpty(this.getIdOfSinger())) cautions.push("不存在歌手相關資訊");
+        if (size(this.getName()) < 1) cautions.push("曲名不能為空");
+        if (size(singer) < 1) cautions.push("歌手不能為空");
+        else if (size(singer) > 0 && Util.isEmpty(this.getIdOfSinger())) cautions.push("不存在歌手相關資訊");
 
-        if (_.size(cautions) > 0) this.setCaution(`✶✶提示：${cautions.join("、")}`);
+        if (size(cautions) > 0) this.setCaution(`✶✶提示：${cautions.join("、")}`);
         else this.setCaution("");
     }
 
     invalidateSheetPage = () => {
-        if (_.size(this.getSheet().getGuitarpus()) < 1) {
+        if (size(this.getSheet().getGuitarpus()) < 1) {
             this.getSheet().setState(`stable`);
             this.getSheet().setGuitarpus({});
         }
@@ -108,7 +108,7 @@ class ChordiventorStore extends BaseChordiventorStore {
     async onInitialFetchCompleted(collection) {
         const result = await super.onInitialFetchCompleted(collection);
         const idOfGuitarPu = this.getParamOfIdOfGuitarPuInPath();
-        if (_.size(idOfGuitarPu) > 4) {
+        if (size(idOfGuitarPu) > 4) {
             /** 從SHEET->編輯->來到這裡*/
 
             const pu = await this.apiOfPu.fetchGuitarpuItem(this.getComponent(), idOfGuitarPu);
@@ -135,9 +135,9 @@ class ChordiventorStore extends BaseChordiventorStore {
     }
 
     constraint = () => {
-        if (_.size(this.getTxt()) < 10 || this.getTxt() > 10000) return this.displayTipThenRefuse(`內文字數量異常，請檢查後再嘗試`);
-        else if (_.size(this.getName()) < 1) return this.displayTipThenRefuse(`歌曲名稱不能為空`);
-        else if (_.size(this.getCurrentEditedPu().getSinger()) < 1) return this.displayTipThenRefuse(`歌手名稱不能為空`);
+        if (size(this.getTxt()) < 10 || this.getTxt() > 10000) return this.displayTipThenRefuse(`內文字數量異常，請檢查後再嘗試`);
+        else if (size(this.getName()) < 1) return this.displayTipThenRefuse(`歌曲名稱不能為空`);
+        else if (size(this.getCurrentEditedPu().getSinger()) < 1) return this.displayTipThenRefuse(`歌手名稱不能為空`);
         return true;
     };
 
@@ -153,7 +153,7 @@ class ChordiventorStore extends BaseChordiventorStore {
         const content = this.getTxtOfNormalize();
         const normalize = { context: content, ...spec };
         let update = false;
-        if (_.size(this.getIdOfGuitarPu()) > 3) {
+        if (size(this.getIdOfGuitarPu()) > 3) {
             update = true;
             await this.apiOfPu.updateGuitarpuItem(this.getComponent(), normalize, this.getIdOfGuitarPu());
             try {

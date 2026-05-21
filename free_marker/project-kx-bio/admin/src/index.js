@@ -2,7 +2,7 @@ const edit = true;
 
 import Api from "./api";
 import { utiller as Util, pooller as InfinitePool, exceptioner as ERROR } from "utiller";
-import _ from "lodash";
+import { filter, multiply, size, sum } from 'lodash-es';
 
 (async () => {
     const api = new Api();
@@ -15,11 +15,11 @@ import _ from "lodash";
         /** batch delete booze/variant */
         await api.deleteBatchBoozeVariantItems(ids);
         let products = Util.getFileContextInJSON("./temp/variants.json");
-        console.log(`康新生物合計商品共有： `, _.size(products), ` 個`);
+        console.log(`康新生物合計商品共有： `, size(products), ` 個`);
         await api.submitBatchBoozeVariantItems(
             products.map((product) => {
                 const price = Util.getRandomValue(5000, 10000);
-                const priceB4Discount = Math.round(_.sum([price, _.multiply(0.3, price)]));
+                const priceB4Discount = Math.round(sum([price, multiply(0.3, price)]));
                 const gallery = product.photos?.map((photo) => ({ href: photo }));
                 return {
                     dionysus: {
@@ -66,7 +66,7 @@ import _ from "lodash";
     async function uploadCatalogs() {
         const categories = Util.getFileContextInJSON("./temp/categories.json");
         await api.submitSelectBounds(
-            _.filter(categories, (category) => category.href?.includes("collections")).map((item) => ({
+            filter(categories, (category) => category.href?.includes("collections")).map((item) => ({
                 label: item.name,
                 id: `kxBio${Util.toString(item.category)}`,
                 value: item.category

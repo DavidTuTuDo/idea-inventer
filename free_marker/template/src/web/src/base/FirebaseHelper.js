@@ -1,7 +1,8 @@
 const edit = true;
 
 import { exceptioner as ERROR, utiller as Util } from "utiller";
-import _ from "lodash";
+import { chunk, each, filter, head, isPlainObject, isUndefined, last, remove, size } from 'lodash-es';
+import _orderBy from 'lodash-es/orderBy.js';
 import BaseFirebase from "./BaseFirebase";
 import Config from "../config";
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, signInWithCustomToken } from "firebase/auth";
@@ -495,8 +496,8 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     deleteBatchParentDocuments = async (pathOfParent = ["father", "children"], idsOfFather = [], batchCount = 200) => {
-        const pathOfFather = _.head(pathOfParent);
-        const pathOfSon = _.last(pathOfParent);
+        const pathOfFather = head(pathOfParent);
+        const pathOfSon = last(pathOfParent);
         await this.batchDo(
             idsOfFather,
             async (batch, id) => {
@@ -577,7 +578,7 @@ class FirebaseHelper extends BaseFirebase {
     };
 
     sortedByPriority = (conditions) => {
-        _.each(conditions, (each) => {
+        each(conditions, (each) => {
             switch (each.type) {
                 case `where`:
                 case `or`:
@@ -596,7 +597,7 @@ class FirebaseHelper extends BaseFirebase {
                     break;
             }
         });
-        return _.orderBy(conditions, ["index"], "asc");
+        return _orderBy(conditions, ["index"], "asc");
     };
 
     /**
@@ -613,7 +614,7 @@ class FirebaseHelper extends BaseFirebase {
         const behavior = hasTask ? RemoteDo.Modified : RemoteDo.Query;
 
         // ---【分頁穩定性檢查】---
-        const hasOrderBy = conditions.some((c) => (_.isPlainObject(c) && Object.keys(c).includes("orderBy")) || (_.isPlainObject(c) && c.type === "orderBy"));
+        const hasOrderBy = conditions.some((c) => (isPlainObject(c) && Object.keys(c).includes("orderBy")) || (isPlainObject(c) && c.type === "orderBy"));
 
         let finalConditions = conditions;
         if (!hasOrderBy) {
@@ -622,7 +623,7 @@ class FirebaseHelper extends BaseFirebase {
             finalConditions = [...conditions, orderByCondition];
         }
 
-        _.remove(finalConditions, (each) => each.disabled);
+        remove(finalConditions, (each) => each.disabled);
         // ---【分頁穩定性檢查】---
 
         let lastDocSnap = null;
@@ -637,7 +638,7 @@ class FirebaseHelper extends BaseFirebase {
             if (lastDocSnap) queryConstraints.push({ type: "startAfter", params: [lastDocSnap] });
 
             //設置查詢限制 (Limit)
-            const hasLimit = conditions.some((c) => (_.isPlainObject(c) && Object.keys(c).includes("limit")) || (_.isPlainObject(c) && c.type === "limit"));
+            const hasLimit = conditions.some((c) => (isPlainObject(c) && Object.keys(c).includes("limit")) || (isPlainObject(c) && c.type === "limit"));
 
             if (!hasLimit) queryConstraints.push({ type: "limit", params: [pageSize] });
 
@@ -683,16 +684,16 @@ class FirebaseHelper extends BaseFirebase {
     };
 
     constraints = (conditions) => {
-        return _.filter(
+        return filter(
             this.sortedByPriority(conditions).map((condition) => this.normalize(condition)),
-            (each) => !_.isUndefined(each)
+            (each) => !isUndefined(each)
         );
     };
 
     compound = (path, conditions) => {
         console.log(`搜尋條件：`, conditions);
         const ref = this.reference(path);
-        return _.size(conditions) > 0 ? query(ref, ...this.constraints(conditions)) : query(ref);
+        return size(conditions) > 0 ? query(ref, ...this.constraints(conditions)) : query(ref);
     };
 
     transaction = async (task = async (transaction) => true) => {
@@ -1125,7 +1126,7 @@ class FirebaseHelper extends BaseFirebase {
         console.log(`🚀 開始批量刪除，目標路徑數: ${safePrefixes.length}，批次大小: ${batchCount}`);
 
         // Lodash: 使用 _.chunk 快速分割陣列
-        const prefixChunks = _.chunk(safePrefixes, batchCount);
+        const prefixChunks = chunk(safePrefixes, batchCount);
         let allResults = [];
         let chunkIndex = 0;
 
@@ -1187,7 +1188,7 @@ class FirebaseHelper extends BaseFirebase {
         console.log(`${Util.isString(storageRef) ? storageRef : "$ref"} 數量：`, files.length);
         if (files.length > 0) {
             // Lodash: 將所有檔案切成小批次 (e.g., 400 files -> 20 chunks of 20)
-            const fileChunks = _.chunk(files, batchSize);
+            const fileChunks = chunk(files, batchSize);
 
             // 序列處理每個批次 (Sequential Loop)
             for (const [index, chunk] of fileChunks.entries()) {
@@ -1214,7 +1215,7 @@ class FirebaseHelper extends BaseFirebase {
         const folders = listResult.prefixes ?? [];
         if (folders.length > 0) {
             // 雖然子資料夾通常較少，但為了安全，也對遞迴操作進行分批
-            const folderChunks = _.chunk(folders, batchSize);
+            const folderChunks = chunk(folders, batchSize);
 
             for (const folderChunk of folderChunks) {
                 // 建立遞迴任務

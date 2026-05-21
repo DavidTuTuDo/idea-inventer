@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { filter, map } from 'lodash-es';
 import libpath from "path";
 import Api from "../../api";
 import Config from "../../config";
@@ -21,10 +21,10 @@ class ModularizedSchedulerOfExpiredOrder extends BaseSchedulerOfExpiredOrder {
         const orders = await Api.fetchPreciseOrdersOfLimitation("in", "stateOfPayment", Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting);
         /** 比對當前時間是否 > expired time，如果過期了 1.把狀態改成failure, 還有增加失效原因 */
         const currentTimeStamp = Util.getCurrentTimeStamp();
-        const results = _.filter(orders, (order) => {
+        const results = filter(orders, (order) => {
             return currentTimeStamp > this.normalizeTimestamp(order.timeOfExpired);
         });
-        const expired = _.map(results, (result) => {
+        const expired = map(results, (result) => {
             return {
                 ...result,
                 messageOfPayment: `已超過付費期限`,

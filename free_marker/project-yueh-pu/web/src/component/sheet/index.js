@@ -2,7 +2,7 @@ const edit = true;
 import { inject, observer } from "mobx-react";
 import BaseSheetComponent from "./BaseSheetComponent";
 import { utiller as Util } from "utiller";
-import _ from "lodash";
+import { size } from 'lodash-es';
 import Typography from "@mui/material/Typography";
 import Style from "../../style";
 import React from "react";
@@ -127,12 +127,12 @@ class SheetComponent extends BaseSheetComponent {
     }
 
     getInjectStyleOfSheetNameOfSongAndSingerTypography() {
-        const visible = _.size(this.getStore().getGuitarpus()) > 0;
+        const visible = size(this.getStore().getGuitarpus()) > 0;
         return Util.getVisibleOrNone(visible, true);
     }
 
     getInjectStyleOfSheetTipOfLoadingTypography(sheet) {
-        const visible = !_.size(this.getStore().getGuitarpus()) > 0;
+        const visible = !size(this.getStore().getGuitarpus()) > 0;
         return Util.getVisibleOrNone(visible, true);
     }
 

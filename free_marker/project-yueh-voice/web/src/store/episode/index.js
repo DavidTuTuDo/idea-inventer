@@ -2,7 +2,7 @@ const edit = true;
 
 import BaseEpisodeStore from "./BaseEpisodeStore";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { find, findIndex, isUndefined, size } from 'lodash-es';
 import libpath from "path";
 import UserInfoRef from "../../base/BaseUserInfo";
 import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction } from "mobx";
@@ -30,7 +30,7 @@ class EpisodeStore extends BaseEpisodeStore {
         const nameOfEpisode = this.getNameOfEpisode();
         const nameOfSinger = this.getNameOfSinger();
 
-        if (_.isUndefined(this.getComponent()) || _.size(nameOfEpisode) < 5 || _.size(nameOfSinger) < 2) {
+        if (isUndefined(this.getComponent()) || size(nameOfEpisode) < 5 || size(nameOfSinger) < 2) {
             this.getComponent().showWarningSnackMessage(`不符合上傳規範`);
             return;
         }
@@ -92,7 +92,7 @@ class EpisodeStore extends BaseEpisodeStore {
     }
 
     getCurrentVoice = () => {
-        return _.find(this.getVoices(), (voice) => Util.isEqual(this.getCurrentVoicePath(), voice.getPathOfResource()));
+        return find(this.getVoices(), (voice) => Util.isEqual(this.getCurrentVoicePath(), voice.getPathOfResource()));
     };
 
     async deleteVoicePrecisely(voice) {
@@ -125,8 +125,8 @@ class EpisodeStore extends BaseEpisodeStore {
                 this.getCurrentVoice()
             );
         } else {
-            const currentIndex = _.findIndex(this.getVoices(), (voice) => Util.isEqual(voice.getPathOfResource(), this.getCurrentVoicePath()));
-            let nextIndex = _.findIndex([...this.getVoices(), ...this.getVoices()], (voice) => voice.enable, currentIndex + 1);
+            const currentIndex = findIndex(this.getVoices(), (voice) => Util.isEqual(voice.getPathOfResource(), this.getCurrentVoicePath()));
+            let nextIndex = findIndex([...this.getVoices(), ...this.getVoices()], (voice) => voice.enable, currentIndex + 1);
             next = Util.nth(this.getVoices(), nextIndex);
         }
         if (next !== undefined && next instanceof Voice) {

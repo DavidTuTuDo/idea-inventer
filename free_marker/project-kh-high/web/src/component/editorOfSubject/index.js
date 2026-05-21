@@ -2,7 +2,7 @@ const edit = true;
 
 import BaseEditorOfSubjectComponent from "./BaseEditorOfSubjectComponent";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { find } from 'lodash-es';
 import Question from "../../store/examQuestion";
 
 class EditorOfSubjectComponent extends BaseEditorOfSubjectComponent {
@@ -34,7 +34,7 @@ class EditorOfSubjectComponent extends BaseEditorOfSubjectComponent {
     getLabelByValue(value) {
         const question = new Question();
         const types = question.getSelectorOfMaths().map((each) => each.data());
-        const item = _.find(types, (type) => Util.isEqual(type.value, value));
+        const item = find(types, (type) => Util.isEqual(type.value, value));
         return item ? item.label : "error";
     }
 

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { size } from 'lodash-es';
 import BaseIreneQrcodeComponent from "./BaseIreneQrcodeComponent";
 
 class ModularizedIreneQrcodeComponent extends BaseIreneQrcodeComponent {
@@ -22,7 +22,7 @@ class ModularizedIreneQrcodeComponent extends BaseIreneQrcodeComponent {
     }
 
     getWrapInjectStyleOfIreneQrcodeSubTypography(ireneQrcode) {
-        return Util.getVisibleOrNone(_.size(ireneQrcode.getSub()) > 0);
+        return Util.getVisibleOrNone(size(ireneQrcode.getSub()) > 0);
     }
 
     onIreneQrcodeScanDivClicked(param) {

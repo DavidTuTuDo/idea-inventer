@@ -1,5 +1,5 @@
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import BaseInfoOfCopyRightContentComponent from "./BaseInfoOfCopyRightContentComponent";
 
 class ModularizedInfoOfCopyRightContentComponent extends BaseInfoOfCopyRightContentComponent {

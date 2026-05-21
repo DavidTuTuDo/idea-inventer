@@ -8,7 +8,7 @@ const edit = true;
 import BaseMyRouter from "./BaseMyRouter";
 import Cookie from "../cookie";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import UserInfoRef from "../base/BaseUserInfo";
 
 class Router extends BaseMyRouter {

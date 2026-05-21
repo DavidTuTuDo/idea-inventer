@@ -2,7 +2,7 @@ const edit = true;
 
 import BaseEpayTestStore from "./BaseEpayTestStore";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import Functions from "../../functions";
 import EpayOrderStore from "../epayPreciseOrder";
 

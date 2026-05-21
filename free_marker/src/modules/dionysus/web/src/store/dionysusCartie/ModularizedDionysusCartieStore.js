@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { each, filter, find, multiply, size, subtract, sum, values } from 'lodash-es';
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
@@ -45,7 +45,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
             if (!Util.isEmpty(cartie?.idOfAuthor)) await self.modifyErosInfoOfAuthor(cartie.idOfAuthor);
         });
         this.getComponent().scrollToTop();
-        if (_.size(this.getBriefs()) === 0) {
+        if (size(this.getBriefs()) === 0) {
             this.getComponent().showErrorSnackMessage(`購物車已經清空，將回到主畫面！`);
             await Util.syncDelay(2000);
             Router.gotoHomePage(this.getComponent());
@@ -54,8 +54,8 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     isCheckedVariantValid = async () => {
         /** 檢查商品是否皆為同一人 */
-        const variantsOfSelected = _.filter(this.getBriefs(), (brief) => brief.sure);
-        if (_.size(variantsOfSelected) < 1) throw new Error(`沒有選取的商品`);
+        const variantsOfSelected = filter(this.getBriefs(), (brief) => brief.sure);
+        if (size(variantsOfSelected) < 1) throw new Error(`沒有選取的商品`);
 
         if (!Util.areAllValuesTheSameOnKeys(variantsOfSelected, "idOfAuthor")) throw new Error(`勾選的商品來自不同賣家，無法進行交易`);
         await this.modifyErosInfoOfAuthor(variantsOfSelected?.[0]?.idOfAuthor, true);
@@ -86,13 +86,13 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         const current = Util.toNumber(brief.getCountOfSubmit());
         let countOfLatest = 0;
         if (increase) {
-            const result = _.sum([current, 1]);
+            const result = sum([current, 1]);
             /**
              * 要判斷當前數量有沒有超過 銷售數量
              * this.setCountOfSubmit(current > brief.Quantity() ? current : result) */
             countOfLatest = result <= brief.getQuantity() ? result : brief.getQuantity();
         } else {
-            const result = _.sum([current, -1]);
+            const result = sum([current, -1]);
             countOfLatest = current < 2 ? current : result;
         }
         brief.setCountOfSubmit(countOfLatest);
@@ -128,7 +128,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         this.cleanBriefs();
         const info = Cookie.getInfoOfCartie();
         if (Util.isObject(info)) {
-            const carties = _.values(info);
+            const carties = values(info);
             const variants = await this.api.fetchVariantBatchItems(
                 this.getComponent(),
                 ...carties.map((cartie) => {
@@ -137,7 +137,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
             );
             for (const cartieOfCookie of carties)
                 pushCurrentBrief(
-                    _.find(variants, (v) => Util.isEqual(v.id, cartieOfCookie.idOfVariant)),
+                    find(variants, (v) => Util.isEqual(v.id, cartieOfCookie.idOfVariant)),
                     cartieOfCookie
                 );
         }
@@ -145,8 +145,8 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     @computed
     get getComputedPriceWithoutDiscount() {
-        const feesOfEachBrief = _.filter(this.getBriefs(), (brief) => brief.getSure()).map((brief) => _.multiply(brief.getPrice(), brief.getCountOfSubmit()));
-        const result = _.sum(feesOfEachBrief);
+        const feesOfEachBrief = filter(this.getBriefs(), (brief) => brief.getSure()).map((brief) => multiply(brief.getPrice(), brief.getCountOfSubmit()));
+        const result = sum(feesOfEachBrief);
         this.setPriceWithoutDiscount(result);
         return result;
     }
@@ -161,14 +161,14 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     @computed
     get getComputedDiscountOfMember() {
         const discount = Util.getFeeOfDiscount(this.getPriceWithoutDiscount(), UserInfoRef.getGlobalPerspectiveAttr("percentageOfDiscount"));
-        const computed = _.subtract(0, discount);
+        const computed = subtract(0, discount);
         this.setDiscountOfMember(computed);
         return computed;
     }
 
     @computed
     get getComputedPriceOfTotal() {
-        const sum = _.sum([this.getPriceWithoutDiscount(), this.getPriceOfDiscount(), this.getDiscountOfMember()]);
+        const sum = sum([this.getPriceWithoutDiscount(), this.getPriceOfDiscount(), this.getDiscountOfMember()]);
         this.setPriceOfTotal(sum);
         return sum;
     }
@@ -182,11 +182,11 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     /** 如果全選打勾，全部打勾 -> 如果全選消除，全部消除*/
     updateBriefByWholeStatus() {
         const checked = this.getWhole();
-        _.each(this.getBriefs(), (brief) => brief.setSure(brief.quantity > 0 ? checked : false));
+        each(this.getBriefs(), (brief) => brief.setSure(brief.quantity > 0 ? checked : false));
     }
 
     updateWholeStatusByBrief() {
-        const unChecked = _.find(this.getBriefs(), (brief) => !brief.getSure());
+        const unChecked = find(this.getBriefs(), (brief) => !brief.getSure());
         this.setWhole(!unChecked);
     }
 }

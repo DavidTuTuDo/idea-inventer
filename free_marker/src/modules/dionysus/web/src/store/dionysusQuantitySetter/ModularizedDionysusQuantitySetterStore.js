@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import BaseDionysusQuantitySetterStore from "./BaseDionysusQuantitySetterStore";
 
 class ModularizedDionysusQuantitySetterStore extends BaseDionysusQuantitySetterStore {

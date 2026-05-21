@@ -1,7 +1,7 @@
 const edit = true;
 import BasePersonalRhythmStore from "./BasePersonalRhythmStore";
 import { utiller as Util } from "utiller";
-import _ from "lodash";
+import { indexOf, isFunction, orderBy } from 'lodash-es';
 import { action } from "mobx";
 
 class PersonalRhythmStore extends BasePersonalRhythmStore {
@@ -26,7 +26,7 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
     };
 
     hasOnClickOfDeleteOfMenuItem() {
-        return _.isFunction(this.onClickOfDeleteOfMenuItem);
+        return isFunction(this.onClickOfDeleteOfMenuItem);
     }
 
     constructor(props) {
@@ -53,10 +53,10 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
     invalidate() {
         if (this.controlOfManual) return;
 
-        const itemsOfPu = _.orderBy(this.getFavoritePus(), ["singer", "name"]);
+        const itemsOfPu = orderBy(this.getFavoritePus(), ["singer", "name"]);
         for (const item of itemsOfPu) {
             item.setNeedTitle(true);
-            const index = _.indexOf(itemsOfPu, item);
+            const index = indexOf(itemsOfPu, item);
             if (index > 0) {
                 const itemOfPreview = itemsOfPu[index - 1];
                 if (Util.isEqual(itemOfPreview.singer, item.singer)) item.setNeedTitle(false);

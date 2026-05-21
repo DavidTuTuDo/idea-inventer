@@ -50,21 +50,25 @@ const config = {
     publicPath: "/", // 確保 Firebase 能正確載入資源
   },
   optimization: {
-      splitChunks: {
-      chunks: 'all',
-      cacheGroups: {
-        mui: {
-          test: /[\\/]node_modules[\\/]@mui[\\/]/,
-          name: 'mui',
-          chunks: 'all',
-        },
-        lodash: {
-          test: /[\\/]node_modules[\\/]lodash[\\/]/,
-          name: 'lodash',
-          chunks: 'all',
-        },
+splitChunks: {
+    chunks: 'all',
+    cacheGroups: {
+      // 1. 把 MUI 獨立切出來做快取 (適合大體積套件)
+      mui: {
+        test: /[\\/]node_modules[\\/](@mui)[\\/]/,
+        name: 'mui',
+        chunks: 'all',
+        priority: 10, // 給予較高權重，確保它先被獨立出來
       },
-  },
+      // 2. 把其餘所有的 node_modules 統整成一個 vendor 檔案 (包含被瘦身過後的 lodash-es)
+      vendors: {
+        test: /[\\/]node_modules[\\/]/,
+        name: 'vendors',
+        chunks: 'all',
+        priority: 5,
+      }
+    },
+   },
   },
   watchOptions: {
     aggregateTimeout: 200,

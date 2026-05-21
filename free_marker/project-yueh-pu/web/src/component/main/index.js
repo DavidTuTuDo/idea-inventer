@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { inject } from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import { utiller as Util } from "utiller";
-import _ from "lodash";
+
 import Router from "../../router";
 import PortfolioRhythmStore from "../../store/portfolioRhythm";
 

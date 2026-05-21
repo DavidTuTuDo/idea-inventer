@@ -7,7 +7,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import { action, makeObservable, observable } from "mobx";
 import { observer } from "mobx-react";
 import UserInfoRef from "./BaseUserInfo";
-import _ from "lodash";
+import { indexOf, isFunction, size } from 'lodash-es';
 import MuiComponent from "./MUIComponent";
 
 class MenuStore {
@@ -56,7 +56,7 @@ class AlertMenu extends MuiComponent {
 
     handleClick = async ({ onClick, loginOnly = false, notice = { title: "", content: "" } }, event) => {
         function hasNoticeDialog() {
-            return _.size(notice.title) > 0;
+            return size(notice.title) > 0;
         }
 
         event.stopPropagation();
@@ -69,7 +69,7 @@ class AlertMenu extends MuiComponent {
 
         if (hasNoticeDialog()) {
             this.component.enableAlertDialog(notice.title, notice.content, onClick);
-        } else if (_.isFunction(onClick)) await onClick(event);
+        } else if (isFunction(onClick)) await onClick(event);
 
         this.close();
     };
@@ -87,7 +87,7 @@ class AlertMenu extends MuiComponent {
                 {self.items.map((item) => {
                     const Custom = item.icon;
                     return (
-                        <MenuItem className={"BaseAlertMenuItem"} key={`index${_.indexOf(self.items, item)}`} onClick={async (event) => await self.handleClick(item, event)}>
+                        <MenuItem className={"BaseAlertMenuItem"} key={`index${indexOf(self.items, item)}`} onClick={async (event) => await self.handleClick(item, event)}>
                             <ListItemIcon>
                                 <Custom />
                             </ListItemIcon>

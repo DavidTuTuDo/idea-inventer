@@ -3,7 +3,7 @@ const edit = true;
 import Api from "./api";
 import { databazer as Databaser, builder as Builder } from "databazer";
 import { utiller as Util, pooller as InfinitePool, exceptioner as ERROR } from "utiller";
-import _ from "lodash";
+import { chunk, each, filter, find, head, orderBy, remove, size, startsWith, sum, trim } from 'lodash-es';
 import Listener from "./listener";
 import firebase from "./base/FirebaseHelper";
 import libpath from "path";
@@ -26,7 +26,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
     async function fetchTopSongsOfRank(n) {
         return Util.getArrayOfSize(
-            _.orderBy(await database.fetchRecords("RANK", new Builder().gt("WEEK", 0).orderBy({ WEEK: "ASC" }).stmt()), (each) => each.WEEK, "ASC"),
+            orderBy(await database.fetchRecords("RANK", new Builder().gt("WEEK", 0).orderBy({ WEEK: "ASC" }).stmt()), (each) => each.WEEK, "ASC"),
             n
         );
     }
@@ -38,7 +38,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
         const ranks = await fetchTopSongsOfRank(n);
         let guitars = await getObjectOfToneUrlAsKey();
         console.log(ranks);
-        if (_.size(ranks) > 5) {
+        if (size(ranks) > 5) {
             await api.submitHotRhythms(
                 ranks.map((each) => {
                     return {
@@ -189,7 +189,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
     /** 找出週 rank 對應的tone*/
     async function deployMainPageHotSingers(n) {
         const singers = Util.getArrayOfSize(await api.fetchSingers({ orderBy: (stmt) => stmt.orderBy("popularLevel", "desc") }, { limit: (stmt) => stmt.limit(n) }), n);
-        if (_.size(singers) > 0) {
+        if (size(singers) > 0) {
             await api.submitHotSingers(
                 singers.map((each, index) => {
                     return {
@@ -208,8 +208,8 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
         const singers = await database.fetchRecords("SINGER");
         for (const singer of singers) {
             const tones = await database.fetchRecords("TONE", new Builder().equal("singerUrl", singer.url).stmt());
-            const popularLevel = _.sum(tones.map((each) => each.popularLevel));
-            const countsOfRhythm = _.size(tones);
+            const popularLevel = sum(tones.map((each) => each.popularLevel));
+            const countsOfRhythm = size(tones);
             console.log(`歌手:${singer.name}, 有 ${popularLevel} 個讚, 有 ${countsOfRhythm} 個作品`);
             await database.updateRecords(
                 "SINGER",
@@ -224,11 +224,11 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
     async function deploySingers(popularLevel) {
         const singers = await database.fetchRecords("SINGER", new Builder().gt("songCounts", 0).and().gte("popularLevel", popularLevel).stmt());
-        console.log("所有singer => " + _.size(singers));
-        _.remove(singers, (singer) => !Util.isUndefinedNullEmpty(singer.idOfRemote));
-        _.remove(singers, (singer) => Util.isUndefinedNullEmpty(singer.url));
-        console.log("所有singer 扣掉 已經有idOfRemote,剩下 => " + _.size(singers));
-        if (_.size(singers) > THRESHOLD_OF_BATCH_MODE) {
+        console.log("所有singer => " + size(singers));
+        remove(singers, (singer) => !Util.isUndefinedNullEmpty(singer.idOfRemote));
+        remove(singers, (singer) => Util.isUndefinedNullEmpty(singer.url));
+        console.log("所有singer 扣掉 已經有idOfRemote,剩下 => " + size(singers));
+        if (size(singers) > THRESHOLD_OF_BATCH_MODE) {
             await api.submitSingers(singers.map((singer) => getNormalizedSingerItem(singer)));
             await syncSingerRemoteIdIntoLocalStorage();
         } else {
@@ -294,7 +294,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
             })
         );
         /** extra 放進去會超過一個document的上限 必須>500! 不然keyword的已經exceed 一個document 可以放進去的數量*/
-        await api.submitKeywords(_.filter(keywords, (item) => item.popularLevel >= THRESHOLD_OF_KEYWORD_MATCH));
+        await api.submitKeywords(filter(keywords, (item) => item.popularLevel >= THRESHOLD_OF_KEYWORD_MATCH));
     }
 
     async function deployAllSingerTone(popularLevel) {
@@ -304,13 +304,13 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
     async function deployGuitarPuByPopularLevel(n) {
         const tones = await database.fetchRecords("TONE", new Builder().gte("popularLevel", n).stmt());
-        console.log("所有tones => " + _.size(tones));
-        _.remove(tones, (tone) => !Util.isUndefinedNullEmpty(tone.idOfRemote));
-        _.remove(tones, (tone) => Util.isUndefinedNullEmpty(tone.url));
+        console.log("所有tones => " + size(tones));
+        remove(tones, (tone) => !Util.isUndefinedNullEmpty(tone.idOfRemote));
+        remove(tones, (tone) => Util.isUndefinedNullEmpty(tone.url));
 
-        console.log("所有tones 扣掉 已經有idOfRemote,剩下 => " + _.size(tones));
+        console.log("所有tones 扣掉 已經有idOfRemote,剩下 => " + size(tones));
 
-        if (_.size(tones) > THRESHOLD_OF_BATCH_MODE) {
+        if (size(tones) > THRESHOLD_OF_BATCH_MODE) {
             await deployGuitarPu(tones);
             await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
         } else {
@@ -344,7 +344,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
     async function fetchSingersContainRemoteId() {
         const singersOfLocalDatabase = await database.fetchRecords("SINGER");
-        _.remove(singersOfLocalDatabase, (singer) => Util.isUndefinedNullEmpty(singer.idOfRemote));
+        remove(singersOfLocalDatabase, (singer) => Util.isUndefinedNullEmpty(singer.idOfRemote));
         return singersOfLocalDatabase;
     }
 
@@ -358,7 +358,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
     async function fetchTonesContainRemoteId() {
         const tonesOfLocalDatabase = await database.fetchRecords("TONE");
-        _.remove(tonesOfLocalDatabase, (tone) => Util.isUndefinedNullEmpty(tone.idOfRemote));
+        remove(tonesOfLocalDatabase, (tone) => Util.isUndefinedNullEmpty(tone.idOfRemote));
         return tonesOfLocalDatabase;
     }
 
@@ -566,7 +566,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
         let array = Util.toOneLineString(string).split(new RegExp("\(原調|速度|男調|女調\)", "gm"));
         array.shift();
-        array = _.chunk(array, 2);
+        array = chunk(array, 2);
         const object = {};
         for (const each of array) {
             object[each.shift()] = Util.replaceAll(getWordOnly(each.pop()), "-", "|");
@@ -626,7 +626,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
     /** 哪個遠端code被改髒了，改快用local資料庫救回來 */
     async function syncLocalDatabase2Remote(id) {
         const records = await database.fetchRecords("TONE", new Builder().equal("idOfRemote", id).stmt());
-        const record = _.head(records);
+        const record = head(records);
         const singers = await getObjectOfSingerUrlAsKey();
         const guitar = getSubmitGuitarPuItemWithNormalized(record, singers);
         await api.updateGuitarpuItem(guitar, id);
@@ -635,7 +635,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
     async function updateSpecificGuitarPu(id = "Wipyxry0V0CKLkPxjaS1") {
         const records = await database.fetchRecords("TONE", new Builder().equal("idOfRemote", id).stmt());
-        const record = _.head(records);
+        const record = head(records);
         const guitar = getSubmitGuitarPuItemWithNormalized(record);
         await api.updateGuitarpuItem(guitar.id, {
             currentContext: guitar.currentContext,
@@ -688,7 +688,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
         }
 
         for (const folder of Util.getChildPathByPath(pathOfPreludes)) {
-            if (Util.isDirectory(folder.absolute) && _.size(Util.getChildPathByPath(folder.absolute)) > 1) {
+            if (Util.isDirectory(folder.absolute) && size(Util.getChildPathByPath(folder.absolute)) > 1) {
                 const trait = folder.dirName.split(`-`);
                 /** 從database 裡面找出 tone的document id*/
                 const uid = Util.toString(trait.shift());
@@ -701,9 +701,9 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
                 /** 上傳C/G調的圖片，取得url of download */
                 const files = Util.getChildPathByPath(folder.absolute);
-                const fileOfC = _.find(files, (item) => _.startsWith(item.fileName, "CAm"));
-                const fileOfG = _.find(files, (item) => _.startsWith(item.fileName, "GEm"));
-                const prefix = `preludes/${_.trim(record.uid)}-${_.trim(record.name)}`;
+                const fileOfC = find(files, (item) => startsWith(item.fileName, "CAm"));
+                const fileOfG = find(files, (item) => startsWith(item.fileName, "GEm"));
+                const prefix = `preludes/${trim(record.uid)}-${trim(record.name)}`;
                 const urlOfC = await uploadFileToPublicStorage(fileOfC.absolute, `${prefix}-CAm.png`);
                 const urlOfG = await uploadFileToPublicStorage(fileOfG.absolute, `${prefix}-GEm.png`);
                 /** update pathOfPreludeC/pathOfPreludeG || hasPrelude必須改成true */
@@ -1017,7 +1017,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
     async function fetchInterestingFunctions() {
         const results = await api.fetchInterestingOfFunctions();
-        _.each(results, (each) => {
+        each(results, (each) => {
             delete each._doc;
             delete each.updateTime;
         });

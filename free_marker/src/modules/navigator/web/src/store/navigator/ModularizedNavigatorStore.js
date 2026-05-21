@@ -1,6 +1,6 @@
 const edit = true;
 
-import _ from "lodash";
+import { uniqBy } from 'lodash-es';
 import { makeObservable, action, observable } from "mobx";
 import BaseNavigatorStore from "./BaseNavigatorStore";
 import NavigatorKeywordStore from "../navigatorKeyword";
@@ -57,7 +57,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         try {
             await Util.syncDelay(1);
             const result = await this.apiOfKeyword.fetchKeywords();
-            if (Array.isArray(this.getKeywords())) this.initialCompleteSuggestBehavior(_.uniqBy(result, "label"));
+            if (Array.isArray(this.getKeywords())) this.initialCompleteSuggestBehavior(uniqBy(result, "label"));
             Util.appendInfo(`已拿取完關鍵字！`);
         } catch (error) {
             Util.appendError(`fetchKeywordInBackgroundBehavior => ${error.message}`);

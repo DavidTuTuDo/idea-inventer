@@ -1,7 +1,7 @@
 const edit = true;
 
 import { exceptioner as ERROR, utiller as Util } from "utiller";
-import _ from "lodash";
+import { toInteger } from 'lodash-es';
 import BaseConfirmedByECPay from "./BaseConfirmedByECPay";
 import Config from "../../config";
 import Api from "../../api";
@@ -47,7 +47,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
         this.isECPayCheckMacValueValid(contentOfSucceed, ecpay.HashKeyXGetter(), ecpay.HashIVXGetter());
         await this.validateIdOfDocumentQualify(contentOfSucceed.MerchantTradeNo);
 
-        if (Util.isEqual(_.toInteger(contentOfSucceed.RtnCode), 1)) {
+        if (Util.isEqual(toInteger(contentOfSucceed.RtnCode), 1)) {
             await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
                 await this.validateOrderIsUnPaidWaiting(item);
                 return {

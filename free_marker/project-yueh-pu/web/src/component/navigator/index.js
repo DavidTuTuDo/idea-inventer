@@ -1,7 +1,7 @@
 const edit = true;
 import { observer, inject } from "mobx-react";
 import Router from "../../router";
-import _ from "lodash";
+import { find } from 'lodash-es';
 import ModularizedNavigatorComponent from "./ModularizedNavigatorComponent";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import UserInfoRef from "../../base/BaseUserInfo";
@@ -29,7 +29,7 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
         } else if (!Util.isUndefinedNullEmpty(content)) {
             Router.gotoPortfolioPage(this, "search", content);
         } else if (!Util.isEmpty(inputOfComplete)) {
-            const keyword = _.find(this.getStore().getCompleteSuggests(), (each) => each.label.includes(inputOfComplete.trim()));
+            const keyword = find(this.getStore().getCompleteSuggests(), (each) => each.label.includes(inputOfComplete.trim()));
             if (keyword) this.gotoPageByContent(keyword);
             else this.showWarningSnackMessage(`「${inputOfComplete}」沒有搜尋結果`);
         }

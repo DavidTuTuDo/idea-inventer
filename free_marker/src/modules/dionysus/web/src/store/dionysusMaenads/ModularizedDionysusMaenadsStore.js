@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { every, filter, find, get, head, last, map, maxBy, min, size } from 'lodash-es';
 import BaseDionysusMaenadsStore from "./BaseDionysusMaenadsStore";
 import ApiOfVariant from "../dionysusBoozeVariant";
 import ApiOfHera from "../dionysusHera";
@@ -17,8 +17,8 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
     }
 
     isSingleItemOfBooze = () => {
-        const conditionA = _.size(this.getVariants()) === 1;
-        const conditionB = _.size(this.getVariants()[0]?.getOptions()) === 1;
+        const conditionA = size(this.getVariants()) === 1;
+        const conditionB = size(this.getVariants()[0]?.getOptions()) === 1;
         return conditionA && conditionB;
     };
 
@@ -30,7 +30,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             self.setPhoto(booze.photoOfDemo);
             self.setRangeOfPrice(booze.rangeOfPrice);
             self.setCount(`未選擇`);
-            self.setVariants(..._.map(booze.specificAttributes, (attr) => ({ key: attr.key, options: _.map(attr.options, ({ label, value }) => ({ label, value })) })));
+            self.setVariants(...map(booze.specificAttributes, (attr) => ({ key: attr.key, options: map(attr.options, ({ label, value }) => ({ label, value })) })));
         }
 
         function isBooze(param) {
@@ -38,7 +38,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         }
 
         async function handleConflictIssue() {
-            const [firstOpt, lastOpt] = [_.head(booze.specificAttributes[0].options), _.last(booze.specificAttributes[0].options)];
+            const [firstOpt, lastOpt] = [head(booze.specificAttributes[0].options), last(booze.specificAttributes[0].options)];
             const start = Util.getTSOfSpecificDate(firstOpt.label);
             const end = Util.getTSOfSpecificDate(lastOpt.label, { end: true });
             const timesOfOccupied = await self.apiOfHera.fetchPureHeras(
@@ -98,7 +98,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             const options = this.getVariants()[level].getOptions();
 
             transformed.forEach(({ value, quantity }) => {
-                const option = _.find(options, (o) => o.getValue() === value);
+                const option = find(options, (o) => o.getValue() === value);
                 option?.setQuantity(quantity);
             });
         } else this.getVariants().forEach((v) => v.getOptions().forEach((o) => o.setQuantity(1)));
@@ -138,8 +138,8 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
      * */
     getListOfSpecific = (arr, affix, key = "id") => {
         const lowerAffix = affix.toLowerCase();
-        return _.filter(arr, (o) => {
-            const value = _.get(o, key, "").toLowerCase();
+        return filter(arr, (o) => {
+            const value = get(o, key, "").toLowerCase();
             // 前綴匹配
             if (affix.startsWith("-")) {
                 // 後綴匹配
@@ -188,11 +188,11 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
 
         // 找出第一個不一致的 index
         let level = 0;
-        const maxParts = _.maxBy(splitted, (arr) => arr.length).length;
+        const maxParts = maxBy(splitted, (arr) => arr.length).length;
 
         for (let i = 0; i < maxParts; i++) {
             const partsAtIndex = splitted.map((arr) => arr[i] || "");
-            if (!_.every(partsAtIndex, (val) => val === partsAtIndex[0])) {
+            if (!every(partsAtIndex, (val) => val === partsAtIndex[0])) {
                 level = i;
                 break;
             }
@@ -225,7 +225,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         const next = current + delta;
         const max = this.getCount();
 
-        this.setCountOfSubmit(increase ? _.min([next, max]) : next < 2 ? current : next);
+        this.setCountOfSubmit(increase ? min([next, max]) : next < 2 ? current : next);
     }
 }
 

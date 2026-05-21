@@ -1,7 +1,7 @@
 const edit = true;
 import BaseMainOrderStore from "./BaseMainOrderStore";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
-import _ from "lodash";
+
 import Config from "../../config";
 
 class MainOrderStore extends BaseMainOrderStore {

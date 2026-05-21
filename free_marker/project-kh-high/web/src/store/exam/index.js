@@ -3,7 +3,7 @@ const edit = true;
 import BaseExamStore from "./BaseExamStore";
 import QuestionStore from "../examQuestion";
 
-import _ from "lodash";
+import { head, last, nth, sampleSize, trim } from 'lodash-es';
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import Cookie from "../../cookie";
 import Router from "../../router";
@@ -32,7 +32,7 @@ class ExamStore extends BaseExamStore {
 
     syncQuestionDurationReply() {
         this.getTestingRecords().forEach((record, index) => {
-            const question = _.nth(this.getQuestions(), index);
+            const question = nth(this.getQuestions(), index);
             if (question instanceof QuestionStore) {
                 const reply = record.getIsWrongReply() ? record.getMyWrongAnswer() : question.getAnswer();
                 question.setReply(reply);
@@ -115,13 +115,13 @@ class ExamStore extends BaseExamStore {
         let typeOfMath = [];
         if (Util.isOrEquals(subject, "數學A", "數學B")) {
             isMath = true;
-            typeOfMath = Util.isEqual(_.last(subject), "A") ? [0, 1] : [0, 2];
+            typeOfMath = Util.isEqual(last(subject), "A") ? [0, 1] : [0, 2];
             subject = "數學";
         }
 
         function getRandomCondition() {
             const conditions = [];
-            if (!Util.isEqual("綜合題目", subject)) conditions.push({ type: "where", params: ["subject", "==", _.trim(subject)] });
+            if (!Util.isEqual("綜合題目", subject)) conditions.push({ type: "where", params: ["subject", "==", trim(subject)] });
             conditions.push({ type: "where", params: ["year", ">=", Util.toNumber(range.shift())] });
             conditions.push({ type: "where", params: ["year", "<=", Util.toNumber(range.shift())] });
             conditions.push({ type: "orderBy", disabled: true });
@@ -136,26 +136,26 @@ class ExamStore extends BaseExamStore {
         switch (type) {
             case "history":
                 /** 考古題呀 */
-                const mTimesAndYear = _.head(range).split("-");
+                const mTimesAndYear = head(range).split("-");
                 const year = mTimesAndYear.shift();
                 const times = mTimesAndYear.pop();
 
                 const conditionsOfHistory = [
-                    { type: "where", params: ["subject", "==", _.trim(subject)] },
+                    { type: "where", params: ["subject", "==", trim(subject)] },
                     { type: "where", params: ["year", "==", Util.toNumber(year)] },
                     { type: "where", params: ["timesOfYear", "==", Util.toNumber(times)] },
                     { type: "orderBy", params: ["qid"] }
                 ];
 
                 handleConditionsBySubjectName(conditionsOfHistory);
-                Util.appendInfo("year:" + year, "times:" + times, "complete:" + _.head(range));
+                Util.appendInfo("year:" + year, "times:" + times, "complete:" + head(range));
                 this.setQuestionConditions(conditionsOfHistory);
                 break;
             case "random":
                 /** 隨機測驗 */
                 const subjectID = new ExamSubjectIdStore();
                 const idMaps = await subjectID.fetchPureSubjectIds(this.getComponent(), ...getRandomCondition());
-                const ids = _.sampleSize(idMaps, countsOfExam).map((each) => each.quid);
+                const ids = sampleSize(idMaps, countsOfExam).map((each) => each.quid);
                 this.pushNextQuestionIDs(...ids);
                 break;
             case "historyWrong":

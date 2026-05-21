@@ -2,7 +2,7 @@ const edit = true;
 
 import BaseUpdateLatestDate from "./BaseUpdateLatestDate";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import libpath from "path";
 import Api from "../../api";
 

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util } from "utiller";
-import _ from "lodash";
+import { filter, size, some, sum, values } from 'lodash-es';
 import firebaser from "./FirebaseHelper";
 import Cookie from "../cookie";
 import Configer from "../config";
@@ -350,7 +350,7 @@ class UserInfo {
 
     deleteCheckedCartieItemBehavior() {
         const infoOfCartie = Cookie.getInfoOfCartie();
-        const latest = _.filter(infoOfCartie, (each) => !each.checked);
+        const latest = filter(infoOfCartie, (each) => !each.checked);
         const latestOfInfoOfCartie = Util.toObjectWithAttributeKey(latest, "idOfCookieUsage");
         Cookie.setInfoOfCartie(latestOfInfoOfCartie);
         Cookie.removeTotalPriceOfCartie();
@@ -359,13 +359,13 @@ class UserInfo {
 
     getCheckedCartieItems = () => {
         const infoOfCartie = Cookie.getInfoOfCartie();
-        return _.values(_.filter(infoOfCartie, (each) => each.checked));
+        return values(filter(infoOfCartie, (each) => each.checked));
     };
 
     /**
      * 檢查勾選商品裡有沒有實體商品
      * _.some(collection, predicate)：會遍歷陣列，只要有一個元素符合條件就回傳 true。 */
-    containsPhysicalGoodOfCheckedItem = () => _.some(this.getCheckedCartieItems(), { isTaskJob: false });
+    containsPhysicalGoodOfCheckedItem = () => some(this.getCheckedCartieItems(), { isTaskJob: false });
 
     /** 拿勾選項目裡第一個idOfAuthor */
     getAuthorOfHeadItemOfCartie = () => {
@@ -379,7 +379,7 @@ class UserInfo {
 
     getArrayOfCartieItem() {
         const infoOfCartie = Cookie.getInfoOfCartie();
-        return _.values(infoOfCartie);
+        return values(infoOfCartie);
     }
 
     deleteWholeItemFromCart() {
@@ -403,12 +403,12 @@ class UserInfo {
 
     getCountOfBadge = (cartie) => {
         const infoOfCartie = cartie ?? Cookie.getInfoOfCartie();
-        return _.sum(_.values(infoOfCartie).map((info) => info.quantity));
+        return sum(values(infoOfCartie).map((info) => info.quantity));
     };
 
     getCountsOfVariant = (cartie) => {
         const infoOfCartie = cartie ?? Cookie.getInfoOfCartie();
-        return _.size(_.values(infoOfCartie).map((info) => info.idOfVariant));
+        return size(values(infoOfCartie).map((info) => info.idOfVariant));
     };
 
     setGotoCartieDirect(enable = false) {

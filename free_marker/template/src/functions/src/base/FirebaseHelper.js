@@ -1,7 +1,7 @@
 const edit = true;
 
 import { exceptioner as ERROR, utiller as Util } from "utiller";
-import _ from "lodash";
+import { chain, chunk, head, isFunction, isNil, isPlainObject, last, size } from 'lodash-es';
 import BaseFirebase from "./BaseFirebase";
 import { Timestamp, FieldValue, FieldPath } from "firebase-admin/firestore";
 import libpath from "path";
@@ -251,8 +251,8 @@ class FirebaseHelper extends BaseFirebase {
      * @returns {Promise<void>}
      */
     deleteBatchParentDocuments = async (pathOfParent = ["father", "children"], idsOfFather = [], batchCount = 200) => {
-        const pathOfFather = _.head(pathOfParent);
-        const pathOfSon = _.last(pathOfParent);
+        const pathOfFather = head(pathOfParent);
+        const pathOfSon = last(pathOfParent);
         await this.batchDo(
             idsOfFather,
             async (batch, id) => {
@@ -283,7 +283,7 @@ class FirebaseHelper extends BaseFirebase {
         let totalProcessed = 0;
 
         // 檢查條件中是否有使用者指定的 limit
-        const hasLimit = conditions.some((c) => (_.isPlainObject(c) && Object.keys(c).includes("limit")) || (_.isPlainObject(c) && c.type === "limit"));
+        const hasLimit = conditions.some((c) => (isPlainObject(c) && Object.keys(c).includes("limit")) || (isPlainObject(c) && c.type === "limit"));
 
         while (true) {
             // 這裡為了讓 startAfter 穩定工作，通常需要一個明確的 orderBy
@@ -349,7 +349,7 @@ class FirebaseHelper extends BaseFirebase {
                     [key]: (stmt) => stmt[key](...condition.params) // 使用 stmt[key] 動態調用方法
                 };
                 normalizedConditions.push(rule);
-            } else if (Util.isFunction(condition) || (_.isPlainObject(condition) && Object.keys(condition).length === 1 && _.isFunction(Object.values(condition)[0]))) {
+            } else if (Util.isFunction(condition) || (isPlainObject(condition) && Object.keys(condition).length === 1 && isFunction(Object.values(condition)[0]))) {
                 // 若已是函式或合法物件 (e.g., { where: () => ... })，直接保留
                 normalizedConditions.push(condition);
             } else {
@@ -362,7 +362,7 @@ class FirebaseHelper extends BaseFirebase {
 
         // 第二次過濾：計算每個條件的優先順序並組合
         for (const condition of normalizedConditions) {
-            if (_.isNil(condition) || Util.isEmpty(condition)) continue;
+            if (isNil(condition) || Util.isEmpty(condition)) continue;
 
             let stmtFn = (stmt) => stmt; // 預設為不變
             let priority = 99; // 預設優先順序最低
@@ -370,7 +370,7 @@ class FirebaseHelper extends BaseFirebase {
             if (Util.isFunction(condition)) {
                 // 如果是純函式
                 stmtFn = condition;
-            } else if (_.isPlainObject(condition)) {
+            } else if (isPlainObject(condition)) {
                 // 如果是物件，假設只含一個 key-value配對
                 const entries = Object.entries(condition);
                 if (entries.length === 0) continue;
@@ -414,7 +414,7 @@ class FirebaseHelper extends BaseFirebase {
 
         // 將條件依優先順序從高到低排序 (priority 數字越小，表示優先權越高，越晚應用於查詢)
         // 確保 where/orderBy 先應用，limit/startAfter 最後應用
-        return _.chain(raw).orderBy("priority", "asc").map("stmt").value();
+        return chain(raw).orderBy("priority", "asc").map("stmt").value();
     }
 
     /**
@@ -567,7 +567,7 @@ class FirebaseHelper extends BaseFirebase {
      */
     fetchCountOfCollection = async (path) => {
         const list = await this.reference(path).listDocuments();
-        return _.size(list);
+        return size(list);
     };
 
     /**
@@ -664,7 +664,7 @@ class FirebaseHelper extends BaseFirebase {
 
         // ---【分頁穩定性檢查】---
         // 確保有排序條件 (這是分頁的必要條件，避免 startAfter 錯亂)
-        const hasOrderBy = conditions.some((c) => (_.isPlainObject(c) && Object.keys(c).includes("orderBy")) || (_.isPlainObject(c) && c.type === "orderBy"));
+        const hasOrderBy = conditions.some((c) => (isPlainObject(c) && Object.keys(c).includes("orderBy")) || (isPlainObject(c) && c.type === "orderBy"));
 
         let finalConditions = conditions;
         if (!hasOrderBy) {
@@ -674,7 +674,7 @@ class FirebaseHelper extends BaseFirebase {
         }
         // ---【分頁穩定性檢查】---
         // 3. 設置查詢限制 (Limit)
-        const hasLimit = conditions.some((c) => (_.isPlainObject(c) && Object.keys(c).includes("limit")) || (_.isPlainObject(c) && c.type === "limit"));
+        const hasLimit = conditions.some((c) => (isPlainObject(c) && Object.keys(c).includes("limit")) || (isPlainObject(c) && c.type === "limit"));
 
         if (!hasLimit) finalConditions = [...finalConditions, { limit: (stmt) => stmt.limit(pageSize) }];
 
@@ -819,7 +819,7 @@ class FirebaseHelper extends BaseFirebase {
 
         console.log(`🚀 開始 Storage 批量刪除（Admin SDK），目標路徑數: ${safePrefixes.length}，批次大小: ${batchCount}`);
 
-        const prefixChunks = _.chunk(safePrefixes, batchCount);
+        const prefixChunks = chunk(safePrefixes, batchCount);
         const allResults = [];
 
         // 外層：prefix 批次（序列處理）
@@ -879,7 +879,7 @@ class FirebaseHelper extends BaseFirebase {
         }
 
         const operationResults = [];
-        const fileChunks = _.chunk(files, batchSize);
+        const fileChunks = chunk(files, batchSize);
 
         // 嚴格分批刪除（避免瞬間大量 request）
         for (const [index, chunk] of fileChunks.entries()) {

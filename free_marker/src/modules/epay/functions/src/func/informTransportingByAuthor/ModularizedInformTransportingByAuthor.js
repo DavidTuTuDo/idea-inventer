@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { size } from 'lodash-es';
 import libpath from "path";
 import Config from "../../config";
 import Api from "../../api";
@@ -16,7 +16,7 @@ class ModularizedInformTransportingByAuthor extends BaseInformTransportingByAuth
 
     async handleHttpOnCall(data, session) {
         const { serialOfTransport, idOfPreciseOrder } = data;
-        if (_.size(serialOfTransport) < 2) this.appendErrorLog(9999, "物流編號填寫錯誤");
+        if (size(serialOfTransport) < 2) this.appendErrorLog(9999, "物流編號填寫錯誤");
         await this.validateIdOfDocumentQualify(idOfPreciseOrder);
         const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
         await this.validatePreciseOrderIsExist(detailOfPreciseOrder, idOfPreciseOrder);

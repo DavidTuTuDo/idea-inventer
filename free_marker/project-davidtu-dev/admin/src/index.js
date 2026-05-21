@@ -3,7 +3,7 @@ const edit = true;
 import Api from "./api";
 import { databazer as Databaser, builder as Builder } from "databazer";
 import { utiller as Util, pooller as InfinitePool, exceptioner as ERROR } from "utiller";
-import _ from "lodash";
+import { filter, find, flattenDeep, head, map, size } from 'lodash-es';
 import Listener from "./listener";
 import firebase from "./base/FirebaseHelper";
 
@@ -105,7 +105,7 @@ import firebase from "./base/FirebaseHelper";
 
     async function sampleOfFetchUrl() {
         const products = await api.fetchPreciseProducts();
-        const urls = _.head(_.flattenDeep(products.map((item) => item.photos)).map((item) => item.url));
+        const urls = head(flattenDeep(products.map((item) => item.photos)).map((item) => item.url));
         console.log(urls);
 
         // console.log(_.head(_.flattenDeep([...urls])))
@@ -136,10 +136,10 @@ import firebase from "./base/FirebaseHelper";
         const orders = await api.fetchPreciseOrdersOfLimitation("in", "stateOfPayment", "pending", "waiting");
         /** 比對當前時間是否 > expired time，如果過期了 1.把狀態改成failure, 還有增加失效原因 */
         const currentTimeStamp = Util.getCurrentTimeStamp();
-        const results = _.filter(orders, (order) => {
+        const results = filter(orders, (order) => {
             return currentTimeStamp > api.normalizeTimestamp(order.timeOfExpired);
         });
-        const expired = _.map(results, (result) => {
+        const expired = map(results, (result) => {
             return {
                 ...result,
                 messageOfPayment: `已超過付費期限 ${Util.getCurrentTimeFormatYMDHM(api.normalizeTimestamp(result.timeOfExpired))}`,
@@ -239,7 +239,7 @@ import firebase from "./base/FirebaseHelper";
         const lines = string.split("\n");
 
         // 過濾掉包含表情符號或特定關鍵詞的行
-        const filteredLines = _.filter(lines, (line) => {
+        const filteredLines = filter(lines, (line) => {
             return !line.trim().match(/💓Sachia 美學|🔎賣場IG:|請搭配/);
         });
 
@@ -253,9 +253,9 @@ import firebase from "./base/FirebaseHelper";
         for (const id of ids) await api.deleteVariants(true, id);
         await api.deleteBoozes(true);
 
-        const items = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail_1747675731188.json"), (each) => _.size(each.options) > 1);
+        const items = filter(Util.getFileContextInJSON("./sasha_of_products_detail_1747675731188.json"), (each) => size(each.options) > 1);
         const products = Util.getShuffledArrayWithLimitCount(
-            items.filter((item) => _.size(item.options) < 15),
+            items.filter((item) => size(item.options) < 15),
             10
         );
         // const products = products;
@@ -288,9 +288,9 @@ import firebase from "./base/FirebaseHelper";
                 })
                 .value()
         );
-        console.log(`＊＊＊已完成products collection 上傳，合計 ${_.size(products)} 筆`);
+        console.log(`＊＊＊已完成products collection 上傳，合計 ${size(products)} 筆`);
         for (const product of products) await api.submitVariants(getVariants(product.options), product.serial);
-        console.log(`＊＊＊已完成products ->variants collection 上傳，合計 ${_.size(products)} 筆`);
+        console.log(`＊＊＊已完成products ->variants collection 上傳，合計 ${size(products)} 筆`);
     }
 
     function getVariants(options) {
@@ -331,9 +331,9 @@ import firebase from "./base/FirebaseHelper";
         console.log(ids);
         /** 發生錯誤時注意有沒有sasha_of_products_detail_1747675731188.json **/
         await api.deleteBatchParentItems(["dionysus", "variants"], ids);
-        const items = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail_1747675731188.json"), (each) => _.size(each.options) > 1);
+        const items = filter(Util.getFileContextInJSON("./sasha_of_products_detail_1747675731188.json"), (each) => size(each.options) > 1);
         const products = Util.getShuffledArrayWithLimitCount(
-            items.filter((item) => _.size(item.options) < 15),
+            items.filter((item) => size(item.options) < 15),
             10
         );
         // const products = products;
@@ -370,7 +370,7 @@ import firebase from "./base/FirebaseHelper";
 
         await api.submitBatchBoozeVariantItems(deploys);
 
-        console.log(`＊＊＊已完成products ->variants collection 上傳，合計 ${_.size(products)} 筆`);
+        console.log(`＊＊＊已完成products ->variants collection 上傳，合計 ${size(products)} 筆`);
     }
 
     function getFakeSpecificAttributes(subs) {
@@ -400,7 +400,7 @@ import firebase from "./base/FirebaseHelper";
     function getFakeVariants(options, idOfBooze) {
         const variants = Util.generateCombinations(...getFakeSpecificAttributes(options));
         for (const variant of variants) {
-            const option = _.find(options, (each) => each.value === variant.trait.default);
+            const option = find(options, (each) => each.value === variant.trait.default);
             variant.quantity = option.count;
             variant.photo = option.photo;
             variant.quantity = option.count;

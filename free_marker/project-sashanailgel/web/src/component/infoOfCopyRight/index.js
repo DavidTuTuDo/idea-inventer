@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { inject } from "mobx-react";
 import ModularizedInfoOfCopyRightComponent from "./ModularizedInfoOfCopyRightComponent";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 
 @inject("infoOfCopyRight")
 @observer

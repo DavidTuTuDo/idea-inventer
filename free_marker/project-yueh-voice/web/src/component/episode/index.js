@@ -2,7 +2,7 @@ const edit = true;
 
 import BaseEpisodeComponent from "./BaseEpisodeComponent";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { orderBy } from 'lodash-es';
 import UserInfoRef from "../../base/BaseUserInfo";
 import Router from "../../router";
 import { isMobile } from "react-device-detect";
@@ -138,7 +138,7 @@ class EpisodeComponent extends BaseEpisodeComponent {
         /**  return _.orderBy(list,(each) => each.getName(),'desc');
          * 為了podcast，所以將改成升序
          * */
-        return _.orderBy(list, (each) => each.getName(), "asc");
+        return orderBy(list, (each) => each.getName(), "asc");
     }
 }
 

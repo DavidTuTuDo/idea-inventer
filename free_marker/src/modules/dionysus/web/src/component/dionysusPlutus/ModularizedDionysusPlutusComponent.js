@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { size } from 'lodash-es';
 import UserInfo from "../../base/BaseUserInfo";
 import Router from "../../router";
 import BaseDionysusPlutusComponent from "./BaseDionysusPlutusComponent";
@@ -102,7 +102,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
         if (Util.or(isAddressShouldFormed(), Util.isEmpty(this.getStore().getEmail()), Util.isEmpty(this.getStore().getPhone()), Util.isEmpty(this.getStore().getName())))
             return { succeed: false, behavior: async () => this.showWarningSnackMessage(`資料尚未完整填寫，請再度確認欄位內容`) };
-        if (Util.isOrEquals(selectedOfTransport, Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711) && _.size(this.getStore().getCvs()) < 3)
+        if (Util.isOrEquals(selectedOfTransport, Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711) && size(this.getStore().getCvs()) < 3)
             return { succeed: false, behavior: async () => this.showWarningSnackMessage(`需填入收店代碼，點擊「放大鏡」`) };
 
         const enableOfBoughtWithoutLoginIn = UserInfo.getGlobalPerspectiveAttr("enableOfBoughtWithoutLoginIn");

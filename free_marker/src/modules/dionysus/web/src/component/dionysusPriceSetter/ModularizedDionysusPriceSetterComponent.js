@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { filter, range, sample } from 'lodash-es';
 import BaseDionysusPriceSetterComponent from "./BaseDionysusPriceSetterComponent";
 
 const useRandomPriceB4Discount = true;
@@ -81,12 +81,12 @@ class ModularizedDionysusPriceSetterComponent extends BaseDionysusPriceSetterCom
         const max = Math.floor(price * 1.3);
 
         // 建立所有符合條件的數值清單
-        const candidates = _.filter(_.range(min, max + 1), (n) => {
+        const candidates = filter(range(min, max + 1), (n) => {
             const lastDigit = n % 10;
             return (lastDigit === 0 || lastDigit === 5) && n > price;
         });
 
-        return _.sample(candidates) ?? price + 5; // 若沒找到，保底回傳 price + 5
+        return sample(candidates) ?? price + 5; // 若沒找到，保底回傳 price + 5
     };
 
     /** -------------------- async api -------------------- **/

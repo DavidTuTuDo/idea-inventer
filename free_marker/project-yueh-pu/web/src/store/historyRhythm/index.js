@@ -1,7 +1,7 @@
 const edit = true;
 import BaseHistoryRhythmStore from "./BaseHistoryRhythmStore";
 import { utiller as Util } from "utiller";
-import _ from "lodash";
+import { size } from 'lodash-es';
 import HistoryPu from "../historyRhythmPuOfRecord";
 
 class HistoryRhythmStore extends BaseHistoryRhythmStore {
@@ -50,7 +50,7 @@ class HistoryRhythmStore extends BaseHistoryRhythmStore {
         this.getPersonalRhythm().setFavoritePus(...items);
         this.setPuOfRecords(...origins);
         /** 為了讓fetchPuOfRecordNextPageItems可以抓到lastItem */
-        if (_.size(origins) === 0) this.setHasNextPageBehavior(false);
+        if (size(origins) === 0) this.setHasNextPageBehavior(false);
     };
 
     /** -------------------- async api -------------------- **/

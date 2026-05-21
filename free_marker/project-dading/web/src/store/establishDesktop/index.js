@@ -1,7 +1,7 @@
 const edit = true;
 import BaseEstablishDesktopStore from "./BaseEstablishDesktopStore";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
-import _ from "lodash";
+import { each, filter, indexOf, size, subtract, sum } from 'lodash-es';
 import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS} from "mobx";
 
 class EstablishDesktopStore extends BaseEstablishDesktopStore {
@@ -25,7 +25,7 @@ class EstablishDesktopStore extends BaseEstablishDesktopStore {
     }
 
     refreshVisitorIndexOfSequence() {
-        _.each(this.getVisitors(), (visitor, index, all) => {
+        each(this.getVisitors(), (visitor, index, all) => {
             visitor.setIndexOfSequence(index + 1);
         })
     }
@@ -35,7 +35,7 @@ class EstablishDesktopStore extends BaseEstablishDesktopStore {
      * */
     @computed
     get getComputedTotalOfPricePartyB() {
-        const result = _.sum(this.getVisitors().map(visitor => visitor.getPriceOfPartyB()))
+        const result = sum(this.getVisitors().map(visitor => visitor.getPriceOfPartyB()))
         this.setTotalOfPricePartyB(result);
         return result;
     }
@@ -45,7 +45,7 @@ class EstablishDesktopStore extends BaseEstablishDesktopStore {
      * */
     @computed
     get getComputedTotalOfCustomizePrice() {
-        const result = _.sum(_.filter(this.getFinances(), finance =>
+        const result = sum(filter(this.getFinances(), finance =>
             Util.isOrEquals(finance.getNumberOfSelectedRequest(), 3, 4, 5, 6, 7, 8)).map(each => each.getFeeOfPartyB()))
         this.setTotalOfCustomizePrice(result);
         return result;
@@ -56,7 +56,7 @@ class EstablishDesktopStore extends BaseEstablishDesktopStore {
      * */
     @computed
     get getComputedTotalOfReceived() {
-        const result = _.sum(_.filter(this.getFinances(), finance =>
+        const result = sum(filter(this.getFinances(), finance =>
             Util.isOrEquals(finance.getNumberOfSelectedRequest(), 1, 2, 9, 10)).map(each => each.getFeeOfPartyB()))
         this.setTotalOfReceived(result);
         return result
@@ -64,74 +64,74 @@ class EstablishDesktopStore extends BaseEstablishDesktopStore {
 
     /** 現金+支票+刷卡(扣手續費)*/
     getPreciseTotalReceived() {
-        return _.sum([this.getTotalOfCashReceived(),this.getTotalOfCreditPreciseReceived()]);
+        return sum([this.getTotalOfCashReceived(),this.getTotalOfCreditPreciseReceived()]);
     }
 
     /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉 */
     @computed
     get getComputedTotalOfNotReceived() {
-        const result = _.subtract(this.getFeeOfShouldReceived(), this.getTotalOfReceived())
+        const result = subtract(this.getFeeOfShouldReceived(), this.getTotalOfReceived())
         this.setTotalOfNotReceived(result);
         return result;
     }
 
     /** 成員累計的實際售價+其他特殊需求加減費用 */
     getFeeOfShouldReceived() {
-        return _.sum([this.getTotalOfCustomizePrice(), ...this.getVisitors().map(visitor => visitor.getPrice())])
+        return sum([this.getTotalOfCustomizePrice(), ...this.getVisitors().map(visitor => visitor.getPrice())])
     }
 
     /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉
      * 所有雜項的售價(給乙方的) */
     getTotalCustomPriceOfFinancePartyB() {
-        return _.sum(_.filter(this.getFinances(), finance =>
+        return sum(filter(this.getFinances(), finance =>
             Util.isOrEquals(finance.getNumberOfSelectedRequest(), 3, 4, 5, 6, 7, 8)).map(each => each.getFeeOfPartyB()));
     }
 
     /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉
      * 所有雜項的成本(甲方付出的成本) */
     getTotalCustomPriceOfFinancePartyA() {
-        return _.sum(_.filter(this.getFinances(), finance =>
+        return sum(filter(this.getFinances(), finance =>
             Util.isOrEquals(finance.getNumberOfSelectedRequest(), 3, 4, 5, 6, 7, 8)).map(each => each.getFeeOfPartyA()));
     }
 
     /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉
      * 所有現金匯款收入 */
     getTotalOfCashReceived() {
-        return _.sum(_.filter(this.getFinances(), finance =>
+        return sum(filter(this.getFinances(), finance =>
             Util.isOrEquals(finance.getNumberOfSelectedRequest(), 1, 9, 10)).map(each => each.getFeeOfPartyB()))
     }
 
     /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉
      * 所有信用卡收入(扣掉手續費)*/
     getTotalOfCreditPreciseReceived() {
-        return _.sum(_.filter(this.getFinances(), finance =>
+        return sum(filter(this.getFinances(), finance =>
             Util.isOrEquals(finance.getNumberOfSelectedRequest(), 2)).map(each => each.getFeeOfPartyA()))
     }
 
     getTotalOfCreditReceived() {
-        return _.sum(_.filter(this.getFinances(), finance =>
+        return sum(filter(this.getFinances(), finance =>
             Util.isOrEquals(finance.getNumberOfSelectedRequest(), 2)).map(each => each.getFeeOfPartyB()))
     }
 
     /** 所有旅客的成本總額(不含雜項) */
     getTotalPriceOfVisitorPartyA() {
-        return _.sum(this.getVisitors().map(visitor => visitor.getPriceOfPartyA()))
+        return sum(this.getVisitors().map(visitor => visitor.getPriceOfPartyA()))
     }
 
     /** 所有旅客的實際售價(售價-折扣)總額 */
     getTotalPriceOfVisitor() {
-        return _.sum(this.getVisitors().map(visitor => visitor.getPrice()))
+        return sum(this.getVisitors().map(visitor => visitor.getPrice()))
     }
 
     /** 當visitor的名字填入時，自動增加下一個欄位*/
     incrementVisitorColumn(visitor) {
-        if (_.size(this.getVisitors()) <= _.indexOf(this.getVisitors(), visitor) + 1)
+        if (size(this.getVisitors()) <= indexOf(this.getVisitors(), visitor) + 1)
             this.pushVisitors({});
     }
 
     /** 當visitor的名字填入時，自動增加下一個欄位*/
     incrementFinanceColumn(finance) {
-        if (_.size(this.getFinances()) <= _.indexOf(this.getFinances(), finance) + 1)
+        if (size(this.getFinances()) <= indexOf(this.getFinances(), finance) + 1)
             this.pushFinance({});
     }
 

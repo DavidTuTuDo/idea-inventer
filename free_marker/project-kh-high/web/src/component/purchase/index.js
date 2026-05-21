@@ -9,7 +9,7 @@ import BasePurchaseComponent from "./BasePurchaseComponent";
 import Router from "../../router";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import UserInfo from "../../base/BaseUserInfo";
-import _ from "lodash";
+
 import Functions from "../../functions";
 
 class PurchaseComponent extends BasePurchaseComponent {

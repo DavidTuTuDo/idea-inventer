@@ -2,7 +2,7 @@ const edit = true;
 
 import BasePortfolioStore from "./BasePortfolioStore";
 import { utiller as Util } from "utiller";
-import _ from "lodash";
+import { remove, size } from 'lodash-es';
 import Rhythm from "../portfolioRhythm";
 import Fuse from "fuse.js";
 
@@ -31,10 +31,10 @@ class PortfolioStore extends BasePortfolioStore {
                 const fuse = new Fuse(keywords, { includeScore: true, keys: ["label", "value"] });
                 let suggests = fuse.search(view.paramOfId).map((each) => each.item); //_.orderBy(fuse.search(view.paramOfId), 'score', 'asc')
                 // console.log('suggests ==> ', 'search keyword ==> ', view.paramOfId, '\n\n', suggests);
-                const rhythms = _.remove(suggests, (each) => Util.isEqual(each.type, 11));
+                const rhythms = remove(suggests, (each) => Util.isEqual(each.type, 11));
                 /** 先抓出type = 11, 歌曲的關鍵字*/
                 this.pushNextRhythmIDs(...rhythms.map((each) => each.uid));
-                if (_.size(suggests) > 0) {
+                if (size(suggests) > 0) {
                     /** 表示只剩下歌手的關鍵字 */
                     const idsOfSinger = Util.getArrayOfSize(suggests, 10).map((each) => each.uid);
                     /** 因為firestore只接受10個條件*/

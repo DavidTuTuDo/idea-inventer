@@ -7,7 +7,7 @@ const edit = true;
  */
 import BaseExamComponent from "./BaseExamComponent";
 import { utiller as Util } from "utiller";
-import _ from "lodash";
+
 import Router from "../../router";
 
 class ExamComponent extends BaseExamComponent {

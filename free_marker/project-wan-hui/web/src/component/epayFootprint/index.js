@@ -2,7 +2,7 @@ const edit = true;
 
 import ModularizedEpayFootprintComponent from "./ModularizedEpayFootprintComponent";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import libpath from "path";
 import i18n from "../../i18n";
 import React from "react";

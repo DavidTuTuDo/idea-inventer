@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { size } from 'lodash-es';
 import libpath from "path";
 import BaseSelectorOfCVS from "./BaseSelectorOfCVS";
 import Api from "../../api";
@@ -16,7 +16,7 @@ class ModularizedSelectorOfCVS extends BaseSelectorOfCVS {
         try {
             const storeData = request.body;
 
-            if (storeData?.TempVar && _.size(storeData?.TempVar) > 5) {
+            if (storeData?.TempVar && size(storeData?.TempVar) > 5) {
                 /** 7-11的格式 */
                 this.appendLog(`來了一個7-11的選擇需求`, storeData);
 

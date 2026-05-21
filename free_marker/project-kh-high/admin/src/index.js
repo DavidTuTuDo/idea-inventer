@@ -3,7 +3,7 @@ const edit = true;
 import Api from "./api";
 import { databazer as Databaser, builder as Builder } from "databazer";
 import { utiller as Util, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { range, startsWith, zip } from 'lodash-es';
 import Listener from "./listener";
 import firebase from "./base/FirebaseHelper";
 import { linepayer as LinePay } from "linepayer";
@@ -11,7 +11,7 @@ import libpath from "path";
 import config from "./config";
 import dayjs from "dayjs";
 
-const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
+const OFFICIAL_YEARS_OF_YEARS = range(90, 120, 1);
 
 (async () => {
     console.log(`注意注意, 五秒後要部署到admin server了,動到prod的資料就爆炸了.`);
@@ -47,7 +47,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
                     return { statement: stmt };
                 })));
 
-            q.subject = _.startsWith(q.subject, "數學") ? "數學" : q.subject;
+            q.subject = startsWith(q.subject, "數學") ? "數學" : q.subject;
             q.timesOfYear = Util.isEqual(q.extra, "正式") ? 1 : 2;
             q.typeOfMath = getTypeOfMathBySubjectName(q.subject);
             delete q.uid;
@@ -213,7 +213,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     async function transactionSample() {
         /** transaction initialBehaviorOfMathOptionalQuestion */
         await firebase.firestore().collection("tests").doc("first").set({ index: 1 });
-        const asyncTasks = _.range(20).map(() => {
+        const asyncTasks = range(20).map(() => {
             return async () => {
                 await firebase.firestore().runTransaction(async (transaction) => {
                     const ref = firebase.firestore().collection("tests").doc("first");
@@ -308,7 +308,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             "GIAJHDBFE"
         ];
 
-        const combines = _.zip(ids, answsers);
+        const combines = zip(ids, answsers);
         // console.log(combines)
 
         for (const each of combines) {

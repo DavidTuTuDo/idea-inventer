@@ -1,7 +1,7 @@
 const edit = true;
 import {inject} from "mobx-react";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
-import _ from "lodash";
+import { size } from 'lodash-es';
 import {observer} from "mobx-react";
 import BaseEstablishComponent from "./BaseEstablishComponent";
 import functions from "../../functions";
@@ -276,7 +276,7 @@ class EstablishComponent extends BaseEstablishComponent {
         const self = this;
         const finance = param.object;
         return (param) => {
-            if (_.size(self.getStore().getDesktop().getFinances()) > 1) finance.remove()
+            if (size(self.getStore().getDesktop().getFinances()) > 1) finance.remove()
             else self.showInfoSnackMessage(`無法刪除僅剩的支單紀錄`)
         }
     }
@@ -306,7 +306,7 @@ class EstablishComponent extends BaseEstablishComponent {
         const self = this;
         const visitor = param.object;
         return (param) => {
-            if (_.size(self.getStore().getDesktop().getVisitors()) > 1) visitor.remove()
+            if (size(self.getStore().getDesktop().getVisitors()) > 1) visitor.remove()
             else self.showInfoSnackMessage(`無法刪除僅剩的一名團員`)
         }
     }

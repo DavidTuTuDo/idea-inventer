@@ -1,6 +1,6 @@
 const edit = true;
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { orderBy, range, size, startsWith, trim } from 'lodash-es';
 import libpath from "path";
 import BaseExamQuestionStore from "./BaseExamQuestionStore";
 import UserInfo from "../../base/BaseUserInfo";
@@ -20,7 +20,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     }
 
     isMathOptionalQuestion() {
-        return _.startsWith(this.getSubject(), "數學") && this.getTypeOfQuestion() === 3;
+        return startsWith(this.getSubject(), "數學") && this.getTypeOfQuestion() === 3;
     }
 
     is108Evolution() {
@@ -31,13 +31,13 @@ class ExamQuestionStore extends BaseExamQuestionStore {
         if (!this.isMathOptionalQuestion()) return;
 
         const startIndex = this.is108Evolution() ? this.getQid() : this.getIndexOfAnswer();
-        const length = _.size(this.getAnswer().split(""));
-        const subs = _.range(startIndex, startIndex + length, 1).map((each, index) => {
+        const length = size(this.getAnswer().split(""));
+        const subs = range(startIndex, startIndex + length, 1).map((each, index) => {
             return {
                 indexOfAnswer: this.getOptionQuestionTitle(each, this.getQid()),
                 answer: this.getAnswer().split("")[index],
                 choices: OPTIONS_OF_MATH_QUESTION.map((each) => {
-                    return { statement: _.trim(each) };
+                    return { statement: trim(each) };
                 })
             };
         });
@@ -54,11 +54,11 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     }
 
     needAssistantArea() {
-        return !Util.isEmpty(this.getTopicOfAssistant().getName()) || _.size(this.getTopicOfAssistant().getImages()) > 0;
+        return !Util.isEmpty(this.getTopicOfAssistant().getName()) || size(this.getTopicOfAssistant().getImages()) > 0;
     }
 
     isMultiSelected() {
-        return _.size(Array.from(this.getAnswer())) > 1;
+        return size(Array.from(this.getAnswer())) > 1;
     }
 
     setReply(param) {
@@ -79,7 +79,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
                 return { answer: each };
             });
 
-        const orders = _.orderBy([...currently, ...AtoZs], ["answer"], "asc");
+        const orders = orderBy([...currently, ...AtoZs], ["answer"], "asc");
         const stringOfAnswer = orders.map((each) => each.answer).join("");
         super.setReply(`${stringOfAnswer}`);
 
@@ -99,8 +99,8 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     isChoiceDependOnAttachImage() {
         const AtoZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const oneToTen = "123456789";
-        const statements = this.getChoices().map((each) => _.trim(each.getStatement()));
-        const length = _.size(statements);
+        const statements = this.getChoices().map((each) => trim(each.getStatement()));
+        const length = size(statements);
         return Util.isOrEquals(statements.join(""), AtoZ.substr(0, length), oneToTen.substr(0, length));
     }
 
@@ -126,7 +126,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     }
 
     hasPhotos() {
-        return _.size(this.getChoices()) > 0;
+        return size(this.getChoices()) > 0;
     }
 
     setCompleted(param) {

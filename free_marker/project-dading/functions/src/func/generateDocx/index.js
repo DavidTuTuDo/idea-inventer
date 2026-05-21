@@ -1,7 +1,7 @@
 const edit = true;
 import BaseGenerateDocx from "./BaseGenerateDocx";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
-import _ from "lodash";
+
 import libpath from "path";
 import Api from '../../api';
 import gcp from "../../base/GCPHelper";

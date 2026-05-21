@@ -2,7 +2,7 @@ const edit = true;
 
 import Api from "./api";
 import { utiller as Util, pooller as InfinitePool, exceptioner as ERROR } from "utiller";
-import _ from "lodash";
+import { filter, flatMap, isNaN, size } from 'lodash-es';
 
 (async () => {
     const api = new Api();
@@ -10,14 +10,14 @@ import _ from "lodash";
     function getAllPhotos(product) {
         // 使用 ES11 ?. 確保 data 或 introduces 不存在時不會報錯
         // 使用 _.flatMap 提取所有 photos 並攤平
-        return _.flatMap(product?.introduces, (item) => item.photos ?? []) ?? [];
+        return flatMap(product?.introduces, (item) => item.photos ?? []) ?? [];
     }
 
     function getExpression(product) {
         const stmts = [];
         if (product && Array.isArray(product.introduces)) {
             product.introduces.forEach((each) => {
-                if (_.size(each.description) > 5) stmts.push(`${each.title}\n\n${each.description}\n`);
+                if (size(each.description) > 5) stmts.push(`${each.title}\n\n${each.description}\n`);
             });
         }
         return stmts.join("\n");
@@ -50,7 +50,7 @@ import _ from "lodash";
         // 使用 ?? (ES11) 確保如果解析失敗回傳 0
         const result = Util.toNumber(cleanValue);
 
-        return _.isNaN(result) ? 0 : result;
+        return isNaN(result) ? 0 : result;
     }
 
     async function uploadBoozeVariants() {
@@ -63,7 +63,7 @@ import _ from "lodash";
         return;
 
         let products = Util.getFileContextInJSON("./temp/variants.json");
-        console.log(`丸卉食品合計商品共有： `, _.size(products), ` 個`);
+        console.log(`丸卉食品合計商品共有： `, size(products), ` 個`);
         await api.submitBatchBoozeVariantItems(
             products.map((product) => {
                 const variants = product.variants || []; // 確保是陣列
@@ -129,7 +129,7 @@ import _ from "lodash";
     async function uploadCatalogs() {
         const categories = Util.getFileContextInJSON("./temp/categories.json");
         await api.submitSelectBounds(
-            _.filter(categories, (category) => category.href?.includes("product")).map((item) => ({
+            filter(categories, (category) => category.href?.includes("product")).map((item) => ({
                 label: item.name,
                 id: `wanHui${item.category}`,
                 value: item.category

@@ -3,7 +3,6 @@ import CN from "./zh_CN";
 import EN from "./en_US";
 import { utiller as Util } from "utiller";
 import { makeObservable, action, observable, autorun } from "mobx";
-import _ from "lodash";
 
 class I18n {
     @observable

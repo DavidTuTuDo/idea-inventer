@@ -1,5 +1,5 @@
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { find, last } from 'lodash-es';
 import libpath from "path";
 import BaseMyFatefulQuestionsStore from "./BaseMyFatefulQuestionsStore";
 import WhoknowzAnswerStore from "../whoknowzAnswer";
@@ -65,7 +65,7 @@ class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
         const questions = await new ExamQuestionStore().fetchQuestions(this.getComponent(), ...this.getInArrayConditions(questionIds));
 
         function getQuestion(qid) {
-            return _.find(questions, (question) => Util.isEqual(question.id, qid));
+            return find(questions, (question) => Util.isEqual(question.id, qid));
         }
 
         const nextItems = items.map((each) => {
@@ -89,7 +89,7 @@ class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
 
     onBottomTouched = async () => {
         const items = [];
-        const lastItem = _.last(this.preparedItems);
+        const lastItem = last(this.preparedItems);
         switch (this.getFatefulQuestionType()) {
             case "favorite":
                 items.push(...(await new WhoknowzFavoriteStore().fetchNextFavorites(this.getComponent(), undefined, lastItem, ...this.getCompoundQueryStmts())));

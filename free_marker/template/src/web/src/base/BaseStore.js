@@ -2,7 +2,7 @@ const edit = true;
 
 import { computed, action, observable, isObservableObject, toJS, runInAction } from "mobx"; // [新增] 引入 runInAction
 import { utiller as Util, exceptioner as ERROR } from "utiller";
-import _ from "lodash";
+
 import ClientRemoteApi from "./ClientRemoteApi";
 import dayjs from "dayjs";
 
@@ -92,7 +92,7 @@ class BaseStore extends ClientRemoteApi {
     };
 
     isWrapByAlertDialog = () => {
-        return !_.isUndefinedNullEmpty(this.props.dialog);
+        return !Util.isUndefinedNullEmpty(this.props.dialog);
     };
 
     @action

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util } from "utiller";
-import _ from "lodash";
+import { toInteger } from 'lodash-es';
 import UserInfoRef from "../../base/BaseUserInfo";
 import Router from "../../router";
 import BaseDionysusMaenadsComponent from "./BaseDionysusMaenadsComponent";
@@ -67,7 +67,7 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
         const maenads = param.object;
         const booze = toJS(maenads.getBooze());
         const variant = toJS(maenads.getSelectedVariant());
-        const quantity = _.toInteger(store.getCountOfSubmit());
+        const quantity = toInteger(store.getCountOfSubmit());
 
         const cartItem = {
             idOfBooze: booze.id,

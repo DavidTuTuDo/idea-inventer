@@ -102,7 +102,7 @@ class ChordiventorComponent extends BaseChordiventorComponent {
     }
 
     isValidOfParamOfIdOfGuitarPu(idOfGuitarPu) {
-        return _.size(idOfGuitarPu) >= 4;
+        return size(idOfGuitarPu) >= 4;
     }
 
     onChordiventorRotateChipClicked(param) {

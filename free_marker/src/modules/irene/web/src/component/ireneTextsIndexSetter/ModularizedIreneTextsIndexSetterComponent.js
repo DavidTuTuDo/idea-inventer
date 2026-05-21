@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { indexOf } from 'lodash-es';
 import BaseIreneTextsIndexSetterComponent from "./BaseIreneTextsIndexSetterComponent";
 
 class ModularizedIreneTextsIndexSetterComponent extends BaseIreneTextsIndexSetterComponent {
@@ -29,7 +29,7 @@ class ModularizedIreneTextsIndexSetterComponent extends BaseIreneTextsIndexSette
     }
 
     getInjectStyleOfIreneTextsIndexSetterRowGoTopChip(row) {
-        return Util.getVisibleOrHidden(this.getStore().getEnableOfGoTop() && _.indexOf(this.getStore().getRows(), row) > 0);
+        return Util.getVisibleOrHidden(this.getStore().getEnableOfGoTop() && indexOf(this.getStore().getRows(), row) > 0);
     }
 
     /** -------------------- async api -------------------- **/

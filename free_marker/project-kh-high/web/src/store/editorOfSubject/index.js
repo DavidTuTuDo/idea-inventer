@@ -1,7 +1,7 @@
 const edit = true;
 import BaseEditorOfSubjectStore from "./BaseEditorOfSubjectStore";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { filter, includes, size, split, toInteger } from 'lodash-es';
 import Question from "../examQuestion";
 
 class EditorOfSubjectStore extends BaseEditorOfSubjectStore {
@@ -21,8 +21,8 @@ class EditorOfSubjectStore extends BaseEditorOfSubjectStore {
         if (Util.isEqual("unknown", yearOfString)) {
             conditions.push({ where: (stmt) => stmt.where("typeOfMath", "==", -1) });
         } else {
-            const yearOfInteger = _.toInteger(_.split(yearOfString, "-").shift());
-            const timesOfInteger = _.toInteger(_.split(yearOfString, "-").pop());
+            const yearOfInteger = toInteger(split(yearOfString, "-").shift());
+            const timesOfInteger = toInteger(split(yearOfString, "-").pop());
             conditions.push({ where: (stmt) => stmt.where("year", "==", yearOfInteger) });
             conditions.push({ where: (stmt) => stmt.where("timesOfYear", "==", timesOfInteger) });
         }
@@ -87,9 +87,9 @@ class EditorOfSubjectStore extends BaseEditorOfSubjectStore {
 
     async updateStatementOfMathTypeStuff() {
         const questions = await this.apiOfQuestion.fetchPureQuestions(this.getComponent(), { where: (stmt) => stmt.where("subject", "==", "數學") });
-        const questionsOfClassify = _.filter(questions, (question) => _.includes([0, 1, 2, 3], question.typeOfMath));
-        this.getAreaOfStatement().setTotalOfSubjectQ(_.size(questions));
-        this.getAreaOfStatement().setTotalOfClassifyQ(_.size(questionsOfClassify));
+        const questionsOfClassify = filter(questions, (question) => includes([0, 1, 2, 3], question.typeOfMath));
+        this.getAreaOfStatement().setTotalOfSubjectQ(size(questions));
+        this.getAreaOfStatement().setTotalOfClassifyQ(size(questionsOfClassify));
     }
 
     /** -------------------- async api -------------------- **/

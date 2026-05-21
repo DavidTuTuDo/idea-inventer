@@ -1,6 +1,6 @@
 const edit = true;
 
-import _ from "lodash";
+import { find, size, throttle } from 'lodash-es';
 import React from "react";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import Typography from "@mui/material/Typography";
@@ -282,7 +282,7 @@ class BaseComponent extends MuiComponent {
     };
 
     // [修改] 使用 lodash.throttle 包裝，限制每 300ms 最多觸發一次，避免滑動時頻繁計算造成效能瓶頸
-    onScrollToBottomListener = _.throttle((event) => {
+    onScrollToBottomListener = throttle((event) => {
         const self = this;
 
         /** modifier 距離底部的threshold */
@@ -503,11 +503,11 @@ class BaseComponent extends MuiComponent {
     };
 
     getSelectedSuggest(value, suggests) {
-        if (Array.isArray(suggests) && value) return _.find(suggests, (suggest) => Util.isEqual(Util.toString(suggest.value), Util.toString(value)));
+        if (Array.isArray(suggests) && value) return find(suggests, (suggest) => Util.isEqual(Util.toString(suggest.value), Util.toString(value)));
     }
 
     shouldDisplayLoadingArea(items = []) {
-        return !this.getStore().isInitialFetchCompleted() && _.size(items) < 1;
+        return !this.getStore().isInitialFetchCompleted() && size(items) < 1;
     }
 
     App = () => require("../").Application;

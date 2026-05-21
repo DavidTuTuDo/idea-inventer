@@ -6,7 +6,7 @@ import copy from "copy-to-clipboard";
 import functions from "../functions";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import { isMobile } from "react-device-detect";
-import _ from "lodash";
+import { upperFirst } from 'lodash-es';
 import Router from "../router";
 
 class ImpComponent extends BaseComponent {
@@ -153,7 +153,7 @@ class ImpComponent extends BaseComponent {
                 break;
             case "route":
                 const page = words.shift();
-                const functionName = `goto${_.upperFirst(page)}Page`;
+                const functionName = `goto${upperFirst(page)}Page`;
                 const functionOfGotoPage = Router[functionName];
                 if (Util.isFunction(functionOfGotoPage)) {
                     functionOfGotoPage(this.getComponentInstance(), ...words);

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+import { sum } from 'lodash-es';
 import BaseMetisClazzStore from "./BaseMetisClazzStore";
 
 class ModularizedMetisClazzStore extends BaseMetisClazzStore {
@@ -16,7 +16,7 @@ class ModularizedMetisClazzStore extends BaseMetisClazzStore {
             Util.getStringOfCalculateClassTime(
                 this.getStartOfSpecificClass(),
                 this.getEndOfSpecificClass(),
-                _.sum(this.getClassTimes().map((time) => Util.getNumberOfPeriodMinute(time.getStartOfTime(), time.getEndOfTime())))
+                sum(this.getClassTimes().map((time) => Util.getNumberOfPeriodMinute(time.getStartOfTime(), time.getEndOfTime())))
             )
         );
         this.setDateOfWeekAttend(

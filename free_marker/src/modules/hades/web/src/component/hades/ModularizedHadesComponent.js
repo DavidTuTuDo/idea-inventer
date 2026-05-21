@@ -2,7 +2,7 @@ const edit = true;
 
 import React from "react";
 import dayjs from "dayjs"; // 引入 Day.js 代替 Moment
-import _ from "lodash";
+
 import UserInfoRef from "../../base/BaseUserInfo";
 import BaseHadesComponent from "./BaseHadesComponent";
 import JobCalendar from "../../base/JobCalendar";

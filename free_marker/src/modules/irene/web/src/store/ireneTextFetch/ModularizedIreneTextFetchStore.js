@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
+
 import BaseIreneTextFetchStore from "./BaseIreneTextFetchStore";
 
 class ModularizedIreneTextFetchStore extends BaseIreneTextFetchStore {

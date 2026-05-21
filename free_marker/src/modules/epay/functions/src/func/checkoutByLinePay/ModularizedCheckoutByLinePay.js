@@ -1,6 +1,6 @@
 const edit = true;
 
-import _ from "lodash";
+import { size } from 'lodash-es';
 import BaseCheckoutByLinePay from "./BaseCheckoutByLinePay";
 import Api from "../../api";
 import Config from "../../config";
@@ -46,11 +46,11 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
     getPayloadOfLinePayRequest(itemOfPreciseOrder, nameOfBrand) {
         function getNameOfProduct() {
             const items = itemOfPreciseOrder.items;
-            if (_.size(items) === 1) return items[0].name;
+            if (size(items) === 1) return items[0].name;
 
-            if (_.size(items) === 2) return items.map((item) => item.name).join(` 以及 `);
+            if (size(items) === 2) return items.map((item) => item.name).join(` 以及 `);
 
-            if (_.size(items) > 2) return `${items[0].name} 以及 ${_.size(items) - 1} 項商品`;
+            if (size(items) > 2) return `${items[0].name} 以及 ${size(items) - 1} 項商品`;
         }
 
         function getListOfProduct() {

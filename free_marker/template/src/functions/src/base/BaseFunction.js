@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR } from "utiller";
-import _ from "lodash";
+import { nth, size, split, toLower } from 'lodash-es';
 // 1. 修改導入方式，使用 v2 專用的 logger
 import * as logger from "firebase-functions/logger";
 import Api from "../api";
@@ -44,7 +44,7 @@ class BaseFunction extends ClientRemoteApi {
         //todo：取得eros裡面如果有[linepay machine id]的處理，沒有提供又開啟，就走sandbox讓user體驗
         if (Util.isUndefinedNullEmpty(idOfAuthor)) this.appendErrorLog(9999, `98211512-${this.getName()} 沒有賣家資訊，無法完成交易`);
         const secret = await Api.fetchCupidSecret(idOfAuthor);
-        const credential = LINEPAY_CREDENTIAL({ channelId: _.nth(secret.linepaySet, 0), channelSecret: _.nth(secret.linepaySet, 1) });
+        const credential = LINEPAY_CREDENTIAL({ channelId: nth(secret.linepaySet, 0), channelSecret: nth(secret.linepaySet, 1) });
         this.appendLog("line credential: ", credential);
         return new LinePay(credential);
     };
@@ -53,7 +53,7 @@ class BaseFunction extends ClientRemoteApi {
         //todo：取得eros裡面如果有[linepay machine id]的處理，沒有提供又開啟，就走sandbox讓user體驗
         if (Util.isUndefinedNullEmpty(idOfAuthor)) this.appendErrorLog(9999, `98211519-${this.getName()} 沒有賣家資訊，無法完成交易`);
         const secret = await Api.fetchCupidSecret(idOfAuthor);
-        const credential = ECPAY_CREDENTIAL({ MerchantID: _.nth(secret?.ECPaySet, 0), HashKey: _.nth(secret?.ECPaySet, 1), HashIV: _.nth(secret?.ECPaySet, 2) });
+        const credential = ECPAY_CREDENTIAL({ MerchantID: nth(secret?.ECPaySet, 0), HashKey: nth(secret?.ECPaySet, 1), HashIV: nth(secret?.ECPaySet, 2) });
         this.appendLog("ecpay credential: ", credential);
         const instance = new ECPay(credential);
         instance.HashKeyXGetter = () => credential.MercProfile.HashKey;
@@ -111,7 +111,7 @@ class BaseFunction extends ClientRemoteApi {
     }
 
     getOffSetByLocation(locale) {
-        switch (_.toLower(locale)) {
+        switch (toLower(locale)) {
             case "zh_tw":
                 return -8;
             default:
@@ -168,12 +168,12 @@ class BaseFunction extends ClientRemoteApi {
     isPayByCVSorATM() {}
 
     getStringOfNormalizeProcedureOfPayment(string) {
-        const strings = _.split(string, Util.getSeparatorOfUnique());
-        if (_.size(string) === 0) return "當前沒有選定的付款方式";
+        const strings = split(string, Util.getSeparatorOfUnique());
+        if (size(string) === 0) return "當前沒有選定的付款方式";
 
         let result = "";
         result += `第三方支付:${strings.shift()}`;
-        if (_.size(strings) > 0) result += `支付方式:${strings.shift()}`;
+        if (size(strings) > 0) result += `支付方式:${strings.shift()}`;
         return result;
     }
 
