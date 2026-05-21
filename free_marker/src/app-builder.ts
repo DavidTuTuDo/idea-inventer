@@ -312,10 +312,6 @@ class AppBuilder extends ComponentBuilder {
             return clone;
         })
 
-        for (const node of extra) console.log(`${node.name} is node ==>`, CodegenNode.isCodegenNode(node))
-        console.log('size ==>', _.size(extra));
-        console.log('names ==>', extra.map(each => each.name));
-
         if (_.size(cookies) > 0 || _.size(extra) > 0) {
             const baseCookieGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `cookie`, `BaseCookie.js`), this.nodeOfAncestor);
             baseCookieGenerator.appendClass('BaseCookie', {name: 'Cookie', from: `../base/BaseCookie`});
@@ -493,7 +489,6 @@ class AppBuilder extends ComponentBuilder {
                 `const route = \`${route}\``,
                 ...getStmtsOfRenewStore(nodeOfComponent, attrs),
                 `this.routeTo(component, route);`,
-                `this.setCurrentRoute(route)`,
                 `return new URL(route, Config.host).href;`,
             )
 
@@ -995,7 +990,6 @@ class AppBuilder extends ComponentBuilder {
 
         // 解析並合併所有「已經存在的 LESS 屬性設定」（例如開發者手動在 LESS 寫好的 CSS rules），回傳成一個物件對照表
         const existedLessAttributeObj = Util.merO(...filesOfLess.map((each) => this.getObjectOfExistedLessAttribute(each)));
-        console.log(existedLessAttributeObj);
         /**
          * 4. 依照每個元件傳入的 classNames，將對應的 styles 寫入 styles.less 中。
          * classNameInfos: [ {component:componentNode, classNames:[ {node, type} ,...] }...]

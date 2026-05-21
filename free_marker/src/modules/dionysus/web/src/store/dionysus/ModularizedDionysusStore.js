@@ -34,6 +34,7 @@ class ModularizedDionysusStore extends BaseDionysusStore {
             this.pushSelectBoundsByIndex(-1, { label: `搜尋「${this.keyword4CompoundSearch}」`, value: INDEX_VALUE_OF_SEARCH, type: "search" });
 
         if (collection && _.size(collection.selectBounds) === 0) this.pushSelectBoundsByIndex(0, { label: "一覽表", value: 0, type: "all" });
+        if (UserInfo.isAdmin()) UserInfo.modifyEditPen(true);
     }
 
     fetchBoozeBySelectedTab = async () => {

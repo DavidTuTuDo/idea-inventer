@@ -14,6 +14,11 @@ import liff from "./LiffHelper";
 
 class UserInfo {
 
+    /** 用來設定是否顯示「筆」 */
+    @observable
+    enable4EditPan = false
+
+    /** 如果「編輯中」就會是true */
     @observable
     isEditMode = false;
 
@@ -189,6 +194,11 @@ class UserInfo {
 
     isSuperAdmin = () => {
         return this.adminUser;
+    };
+
+    @action
+    modifyEditPen = (enable = true) => {
+        this.enable4EditPan = enable
     };
 
     @action

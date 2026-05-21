@@ -7071,7 +7071,6 @@ class AppBuilder extends ComponentBuilder {
                 `const route = \`${route}\``,
                 ...getStmtsOfRenewStore(nodeOfComponent, attrs),
                 `this.routeTo(component, route);`,
-                `this.setCurrentRoute(route)`,
                 `return new URL(route, Config.host).href;`,
             )
 

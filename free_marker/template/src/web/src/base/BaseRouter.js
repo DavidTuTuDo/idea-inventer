@@ -1,36 +1,41 @@
+const edit = true;
+
 import { utiller as Util } from "utiller";
 import libpath from "path";
 import Config from "../config";
-import _ from "lodash";
+import UserInfo from './BaseUserInfo';
 
 class BaseRouter {
     currentParam = [];
 
     currentComponent = undefined;
 
-    currentRoute = "";
+    currentRoute = "/";
+
     setCurrentComponent = (component) => {
         this.currentComponent = component;
+        this.currentRoute = this.getCurrentRoute();
     };
 
     setCurrentRoute(route) {
         this.currentRoute = route;
     }
 
-    getCurrentRoute(route) {
-        return this.currentRoute;
-    }
-
     App = () => {
         return require("../").Application;
     };
 
-    isGotoSameRoute(route) {
+    isGotoSameRoute = (route) => {
         return Util.isEqual(this.currentRoute, route);
     }
 
     routeTo(component, path) {
         const navigate = component?.props?.navigate;
+        if (!this.isGotoSameRoute(path)) {
+            console.log(`比較圖：`, this.currentRoute, '<-對照->', path)
+            UserInfo.modifyEditPen(false);
+        }
+        UserInfo.modifyEditMode(false);
 
         if (navigate) {
             return navigate(path);
@@ -40,16 +45,15 @@ class BaseRouter {
         return Util.appendError(`45665512 導航失敗：可能是 component 缺失或未提供 navigate props [${path}]`);
     }
 
-    getCurrentPath = () => {
-        if (this.currentComponent) {
-            const history = this.currentComponent.props.history;
-            return history.location.pathname;
-        }
-        return "";
+    getCurrentRoute = () => {
+        /** 使用 window.location.pathname 是最直接且不需要依賴 component props 的方式，
+         *  在 react-router-dom 環境下依然準確。
+         **/
+        return window.location.pathname;
     };
 
     getPathOfEditorRoute = () => {
-        const segment = this.getCurrentPath().split("/");
+        const segment = this.getCurrentRoute().split("/");
         const newbie = segment.map((each, index) => {
             return index === 1 ? `${each}editor` : each;
         });
@@ -62,7 +66,7 @@ class BaseRouter {
     }
 
     getPathOfDeEditorRoute = () => {
-        const segment = this.getCurrentPath().split("/");
+        const segment = this.getCurrentRoute().split("/");
         const newbie = segment.map((each, index) => {
             return index === 1 ? this.getStringOfDeEditor(each) : each;
         });
@@ -75,7 +79,7 @@ class BaseRouter {
     }
 
     isEditPath = () => {
-        const segment = this.getCurrentPath().split("/");
+        const segment = this.getCurrentRoute().split("/");
         segment.shift();
         /** 第一個是空值 */
 

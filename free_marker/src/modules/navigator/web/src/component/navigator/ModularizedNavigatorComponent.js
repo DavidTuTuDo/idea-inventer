@@ -20,7 +20,6 @@ import NavigateNext from "@mui/icons-material/NavigateNext";
 import Collapse from "@mui/material/Collapse";
 import _ from "lodash";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
-import BaseUserInfo from "../../base/BaseUserInfo";
 
 class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     constructor(props) {
@@ -37,11 +36,10 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
 
     onNavigatorTitleTypographyClicked(param) {
         Router.gotoHomePage(this);
-        UserInfo.modifyEditMode(false);
     }
 
     onNavigatorLoginIconButtonClicked(param) {
-        this.exeAsyncT(BaseUserInfo.performLoginBehavior(this.getComponentInstance()));
+        this.exeAsyncT(UserInfo.performLoginBehavior(this.getComponentInstance()));
     }
 
     onDrawerClosed() {
@@ -198,7 +196,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     getInjectStyleOfNavigatorEditIconButton(navigator) {
-        return Util.getVisibleOrNone(UserInfo.isAdmin() && !UserInfo.isEditMode, true);
+        return Util.getVisibleOrNone(UserInfo.enable4EditPan && !UserInfo.isEditMode, true);
     }
 
     onNavigatorEditIconButtonClicked(param) {
