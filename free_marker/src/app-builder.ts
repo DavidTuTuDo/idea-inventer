@@ -677,8 +677,8 @@ class AppBuilder extends ComponentBuilder {
             appGenerator.appendConstructor(`this.copyRightRef = React.createRef()`);
         if (!this.isProduction())
             appGenerator.appendConstructor(`if (process.env.NODE_ENV === 'development') {
-            window.store = this.store;
-            window._userInfo = require('./base/BaseUserInfo.js').default;
+            window.storeX = this.store;
+            window.userInfoX = require('./base/BaseUserInfo.js').default;
             }`);
 
         appGenerator.appendFunction({ name: `getRenderView`, arrow:true }, [],
