@@ -6,6 +6,11 @@ import Config from "../../config";
 import Router from "../../router";
 import BaseEpayFootprintComponent from "./BaseEpayFootprintComponent";
 import Functions from "../../functions";
+import React from "react";
+import CircularProgress from "@mui/material/CircularProgress";
+import { observer } from "mobx-react";
+import ListEmptyTrigger from "../../base/ListEmptyTrigger";
+import Style from "../../style";
 
 class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     order = {};

@@ -4956,7 +4956,7 @@ class StoreBuilder extends BaseBuilder {
                 .map((child) => {
                         if(!child.l10n) return ''
                         else if(child.isCheapArray() || child.isPathArray())
-                            return `_.each(this.${child.getFunctionNameOfGetters()}() , (item) => item.refreshLocally())`
+                            return `Util.each(this.${child.getFunctionNameOfGetters()}() , (item) => item.refreshLocally())`
                          else if (child.isArray())
                             return `this.${child.getFunctionNameOfSetter()}(...Util.getArrayOfMappingRef(this.${child.getFieldName()},${child.getDefaultValueByType()}))`;
                          else if (child.isObject())
@@ -7735,7 +7735,7 @@ class ProjectFileHandler extends PathBase {
         function getObjectOfKeyMapBySlice(array) {
             const result = {}
             if (_.size(array) > 0) {
-                const latest = _.each(array, (raw, index, array) => {
+                const latest = Util.each(array, (raw, index, array) => {
                     if (!_.endsWith(_.trim(raw), ';')) {
                         array[index] = `${raw} ${array[index + 1]}`;
                         array[index + 1] = '?;';

@@ -176,6 +176,7 @@ class ComponentBuilder extends BaseBuilder {
             `const store = this.getStore();
                      let result;
                     await store.onInitialFetchBeginning();
+                    await UserInfoRef.waitLoginCompleted();
                     try {
                         if (store.isFetchAbleToGo() && this.isEnableInitFetch()) 
                             result = await store.fetch(this);
@@ -185,7 +186,6 @@ class ComponentBuilder extends BaseBuilder {
                         this.onInitialErrorHappened(error);
                     } finally {
                         Util.appendInfo("${componentNode.getName()} page initial fetch completed");
-                        await UserInfoRef.waitLoginCompleted();
                         await store.onInitialFetchCompleted(result);
                         store.setInitialFetchCompleted(true);
                         if(this.isDialogComponent()) this.getStore().initial(this.getComponentInstance()?.${componentNode.getFunctionNameOfDialogPesetObj(baseComponentName)}?.())

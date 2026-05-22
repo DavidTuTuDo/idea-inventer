@@ -2,7 +2,7 @@ const edit = true;
 
 import BaseConfig from "./BaseConfig";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import { filter } from 'lodash-es';
+import { filter } from "lodash-es";
 import libpath from "path";
 
 class Config extends BaseConfig {

@@ -113,14 +113,29 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
     fetchAndPushOrders = async (view, conditions) => {
         const ordersOfRemote = [];
-        if (size(this.getOrders()) > 0) {
-            ordersOfRemote.push(...(await this.api.fetchNextPreciseOrders(view, this.getOrderOfLast().raw, ...conditions)));
-        } else {
-            ordersOfRemote.push(...(await this.api.fetchPreciseOrders(this.getComponent(), ...conditions)));
+        const isInitialFetch = size(this.getOrders()) === 0;
+
+        if (isInitialFetch) {
+            // 先讓 Tab 的點擊漣漪與切換動畫流暢地播放完畢
+            await Util.syncDelay(250);
         }
-        this.pushOrders(...ordersOfRemote);
-        if (size(ordersOfRemote) === 0) {
-            this.setHasNextPageBehavior(false);
+
+        this.setState("loading");
+        try {
+            if (!isInitialFetch) {
+                ordersOfRemote.push(...(await this.api.fetchNextPreciseOrders(undefined, this.getOrderOfLast().raw, ...conditions)));
+            } else {
+                ordersOfRemote.push(...(await this.api.fetchPreciseOrders(undefined, ...conditions)));
+            }
+            this.pushOrders(...ordersOfRemote);
+            if (size(ordersOfRemote) === 0) {
+                this.setHasNextPageBehavior(false);
+            }
+        } catch (error) {
+            this.getComponent()?.showErrorSnackMessage(error.message);
+            throw error;
+        } finally {
+            this.setState("stable");
         }
     };
 
@@ -165,8 +180,8 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         }
 
         function getKeywordOfProcedure() {
-            const split = split(order.procedureOfPayment, Util.getSeparatorOfUnique());
-            const target = toLower(split.pop());
+            const procedureParts = split(order.procedureOfPayment, Util.getSeparatorOfUnique());
+            const target = toLower(procedureParts.pop());
             return target;
         }
 

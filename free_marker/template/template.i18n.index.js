@@ -18,7 +18,7 @@ class I18n {
             // 保持判斷的安全性，防止 Application 是 undefined
             const { Application } = require('../');
             if (Application && typeof Application.getStoreObject === 'function') {
-                _.each(Application.getStoreObject(), (store) => store.refreshLocally());
+                Util.each(Application.getStoreObject(), (store) => store.refreshLocally());
             }
         });
     }

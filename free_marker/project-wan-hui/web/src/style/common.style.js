@@ -1,9 +1,10 @@
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-
 import libpath from "path";
 
 class CommonStyle {
     /** -------------------- fields -------------------- **/
+
+    /** following for homeless */
 
     /** => following for infoOfCopyRightContent editor component  */
 
@@ -605,13 +606,13 @@ class CommonStyle {
 
     EpayFootprintOrderAreaOfSerialDiv = {};
 
-    EpayFootprintOrderAreaOfCvsPickUpCvsLabelOfPickUpCvsTypography = {};
+    EpayFootprintOrderAreaOfCVSPickUpCVSLabelOfPickUpCVSTypography = {};
 
-    EpayFootprintOrderAreaOfCvsPickUpCvsDivWrap = {};
+    EpayFootprintOrderAreaOfCVSPickUpCVSDivWrap = {};
 
-    EpayFootprintOrderAreaOfCvsPickUpCvsTypography = {};
+    EpayFootprintOrderAreaOfCVSPickUpCVSTypography = {};
 
-    EpayFootprintOrderAreaOfCvsDiv = {};
+    EpayFootprintOrderAreaOfCVSDiv = {};
 
     EpayFootprintOrderAreaOfTransportTransportByLabelOfTransportByTypography = {};
 
@@ -772,6 +773,22 @@ class CommonStyle {
     /** => following for epay  component  */
 
     EpayDiv = {};
+
+    /** => following for paymentBrief  component  */
+
+    DionysusPaymentBriefNoteTitleDivWrap = {};
+
+    DionysusPaymentBriefNoteTitleTypography = {};
+
+    DionysusPaymentBriefNoteImgDivWrap = {};
+
+    DionysusPaymentBriefNoteImgImg = {};
+
+    DionysusPaymentBriefNoteDivList = {};
+
+    DionysusPaymentBriefNoteDiv = {};
+
+    DionysusPaymentBriefDiv = {};
 
     /** => following for variantPhotoSetter  component  */
 
@@ -2273,6 +2290,10 @@ class CommonStyle {
 
     /** => following for bacchus  component  */
 
+    DionysusBacchusPretendReactFragmentWrap = {};
+
+    DionysusBacchusPretendDiv = {};
+
     DionysusBacchusFuncEditChip = {};
 
     DionysusBacchusFuncBoughtReactFragmentWrap = {};
@@ -2306,16 +2327,6 @@ class CommonStyle {
     DionysusBacchusDetailContentBanDiv = {};
 
     DionysusBacchusDetailContentDiv = {};
-
-    DionysusBacchusDetailAreaOfBenefitArrowOfBenefitIconNavigateNext = {};
-
-    DionysusBacchusDetailAreaOfBenefitArrowOfBenefitIconButton = {};
-
-    DionysusBacchusDetailAreaOfBenefitOptionOfBenefitContentTypography = {};
-
-    DionysusBacchusDetailAreaOfBenefitOptionOfBenefitTitleTypography = {};
-
-    DionysusBacchusDetailAreaOfBenefitDiv = {};
 
     DionysusBacchusDetailAreaOfShippingArrowOfShippingIconNavigateNext = {};
 
