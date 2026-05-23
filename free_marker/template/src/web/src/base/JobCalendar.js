@@ -9,13 +9,9 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Chip from "@mui/material/Chip";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
-import ViewWeekIcon from "@mui/icons-material/ViewWeek";
 import ViewDayIcon from "@mui/icons-material/ViewDay";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-
-/** 產生 1~23 小時陣列 */
-const hours = Array.from({ length: 23 }, (_, i) => i + 1);
 
 /** 格式化日期為 Key (YYYY-MM-DD) */
 const formatDateKey = (djsObj) => djsObj.format("YYYY-MM-DD");
@@ -35,25 +31,19 @@ const parsePeriod = (periodStr) => {
     };
 };
 
-/**
- * 產生月份日曆所需的 42 格日期陣列
- * @param {number} year - 西元年
- * @param {number} month - 月份 (0-11)
- * @returns {dayjs.Dayjs[]}
- */
 const generateMonthDates = (year, month) => {
-    // dayjs([year, month]) 需確保 plugins 支援
-    const start = dayjs(new Date(year, month)).startOf("week");
-    // dayjs 是不可變的，add(i, "day") 會回傳新實例
+    const firstDayOfMonth = dayjs(new Date(year, month, 1));
+    const offset = firstDayOfMonth.day(); // 0 是週日, 1 是週一, ...
+    const start = firstDayOfMonth.subtract(offset, "days");
     return Array.from({ length: 42 }, (_, i) => start.add(i, "days"));
 };
 
 /**
- * 工作日曆組件 - 支援月、週、日視圖
+ * 工作日曆組件 - 支援月、日視圖
  */
 @observer
 class JobCalendar extends React.Component {
-    /** @type {"month"|"week"|"day"} */
+    /** @type {"month"|"day"} */
     mode = "month";
     /** @type {dayjs.Dayjs} */
     baseDate = dayjs();
@@ -76,7 +66,7 @@ class JobCalendar extends React.Component {
         courses: []
     };
 
-    /** 切換日曆模式 (月/週/日) */
+    /** 切換日曆模式 (月/日) */
     handleModeChange(_, newMode) {
         if (newMode) this.mode = newMode;
         this.triggerPeriodChanged();
@@ -85,7 +75,6 @@ class JobCalendar extends React.Component {
     /** 往前翻頁 */
     handlePrev() {
         if (this.mode === "month") this.baseDate = this.baseDate.subtract(1, "month");
-        else if (this.mode === "week") this.baseDate = this.baseDate.subtract(1, "week");
         else this.baseDate = this.baseDate.subtract(1, "day");
         this.triggerPeriodChanged();
     }
@@ -93,7 +82,6 @@ class JobCalendar extends React.Component {
     /** 往後翻頁 */
     handleNext() {
         if (this.mode === "month") this.baseDate = this.baseDate.add(1, "month");
-        else if (this.mode === "week") this.baseDate = this.baseDate.add(1, "week");
         else this.baseDate = this.baseDate.add(1, "day");
         this.triggerPeriodChanged();
     }
@@ -112,40 +100,72 @@ class JobCalendar extends React.Component {
     /** 渲染月視圖 */
     renderMonthView(eventsByDay) {
         const days = generateMonthDates(this.baseDate.year(), this.baseDate.month());
+        const today = dayjs();
 
         return (
             <Box className="JobCalendarScrollableMonthWrapper" sx={{ width: "100%", overflowX: "auto" }}>
-                <Box className="JobCalendarMonthGridInner" sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", minWidth: 700, gap: 0.5, pr: 1 }}>
+                <Box className="JobCalendarMonthGridInner" sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 0.5, pr: 1 }}>
+                    {/* 星期標頭行 (日、一、二、三、四、五、六) */}
+                    {["日", "一", "二", "三", "四", "五", "六"].map((w, idx) => (
+                        <Box
+                            key={`weekday-header-${idx}`}
+                            className={`JobCalendarWeekdayHeaderCell day-${idx}`}
+                            sx={{
+                                textAlign: "center",
+                                py: { xs: 0.5, sm: 1 },
+                                fontWeight: "bold",
+                                fontSize: { xs: "0.75rem", sm: "0.85rem" }
+                            }}
+                        >
+                            {w}
+                        </Box>
+                    ))}
+
                     {days.map((d, i) => {
                         const key = formatDateKey(d);
                         const events = eventsByDay[key] || [];
+                        const isToday = today.isSame(d, "day");
+                        const isOtherMonth = d.month() !== this.baseDate.month();
                         return (
                             <Box
                                 key={i}
-                                className="JobCalendarMonthCell"
+                                className={`JobCalendarMonthCell ${isToday ? "is-today" : ""} ${isOtherMonth ? "is-other-month" : ""}`}
                                 sx={{
-                                    p: 1,
-                                    minHeight: 100,
+                                    p: { xs: 0.5, sm: 1 },
+                                    minHeight: { xs: 50, sm: 70, md: 100 },
                                     bgcolor: d.month() === this.baseDate.month() ? "white" : "#f0f0f0",
                                     border: "1px solid #eee"
                                 }}
                                 onClick={() => this.handleDateClick(d)}>
-                                <Typography variant="caption" color="textSecondary">
-                                    {`${d.date()}(${["日", "一", "二", "三", "四", "五", "六"][d.day()]})`}
+                                <Typography className="JobCalendarMonthDateLabel" variant="caption" color="textSecondary">
+                                    <span className={`JobCalendarMonthNum day-${d.day()} ${d.date() === 1 || i === 0 ? "force-show" : ""}`}>{d.month() + 1}</span>
+                                    <span className={`JobCalendarSlash ${d.date() === 1 || i === 0 ? "force-show" : ""}`}>/</span>
+                                    <span className={`JobCalendarDateNum day-${d.day()}`}>{d.date()}</span>
+                                    <span className={`JobCalendarWeekday day-${d.day()}`}>({["日", "一", "二", "三", "四", "五", "六"][d.day()]})</span>
                                 </Typography>
-                                <Box display="flex" flexDirection="column" gap={0.5} mt={0.5}>
+
+                                <Box className="JobCalendarMonthEventContainer" display="flex" flexDirection="column" gap={0.5} mt={0.5}>
                                     {events.map((e) => (
-                                        <Chip
-                                            key={e.id}
-                                            label={e.name}
-                                            size="small"
-                                            variant="outlined"
-                                            color={e.color || "default"}
-                                            onClick={(ev) => {
-                                                ev.stopPropagation();
-                                                console.log(e.id);
-                                            }}
-                                        />
+                                        <React.Fragment key={e.id}>
+                                            <Chip
+                                                className="JobCalendarDesktopChip"
+                                                label={e.name}
+                                                size="small"
+                                                variant="outlined"
+                                                color={e.color || "default"}
+                                                onClick={(ev) => {
+                                                    ev.stopPropagation();
+                                                    console.log(e.id);
+                                                }}
+                                            />
+                                            <Box
+                                                className={`JobCalendarMobileDot color-${e.color || "default"}`}
+                                                onClick={(ev) => {
+                                                    ev.stopPropagation();
+                                                    console.log(e.id);
+                                                }}
+                                            />
+                                        </React.Fragment>
                                     ))}
                                 </Box>
                             </Box>
@@ -159,75 +179,83 @@ class JobCalendar extends React.Component {
     /** 點擊月日曆格子跳轉至該日 */
     handleDateClick = (djsObj) => {
         this.mode = "day";
-        this.baseDate = djsObj; // dayjs 是不可變的，直接賦值即可
+        this.baseDate = djsObj;
     };
 
-    /** 渲染週/日視圖 (時間軸網格) */
-    renderDayGrid(eventsByDay, numDays) {
-        const days = Array.from({ length: numDays }, (_, i) => this.baseDate.add(i, "days"));
+    /** 渲染日視圖 (精緻任務行程列表) */
+    renderDayView(eventsByDay) {
+        const key = formatDateKey(this.baseDate);
+        const events = (eventsByDay[key] || []).map((e) => ({
+            ...e,
+            ...parsePeriod(e.period)
+        }));
+
+        // 依開始時間排序
+        events.sort((a, b) => a.start.valueOf() - b.start.valueOf());
+
+        if (events.length === 0) {
+            return (
+                <Box className="JobCalendarEmptyState" onTouchStart={this.onTouchStart} onTouchEnd={this.onTouchEnd}>
+                    <Box className="JobCalendarEmptyIcon">📅</Box>
+                    <Typography className="JobCalendarEmptyTitle" variant="subtitle1">
+                        今日無排定任務
+                    </Typography>
+                    <Typography className="JobCalendarEmptySub" variant="body2">
+                        享受輕鬆的一天，或者點擊下方按鈕切換日期
+                    </Typography>
+                </Box>
+            );
+        }
 
         return (
-            <Box display="flex" overflow="auto" onTouchStart={this.onTouchStart} onTouchEnd={this.onTouchEnd}>
-                <Box width={50} sx={{ position: "sticky", left: 0, bgcolor: "white", zIndex: 1 }}>
-                    {hours.map((h) => (
-                        <Box key={h} height={50} fontSize={12}>
-                            {h}:00
-                        </Box>
-                    ))}
+            <Box className="JobCalendarDayViewContainer" onTouchStart={this.onTouchStart} onTouchEnd={this.onTouchEnd}>
+                <Box className="JobCalendarDayHeader">
+                    <Typography className="JobCalendarDayTitle" variant="h6">
+                        任務行程
+                    </Typography>
+                    <Typography className="JobCalendarDaySub" variant="body2">
+                        本日共有 {events.length} 個項目
+                    </Typography>
                 </Box>
-                {days.map((day, i) => {
-                    const key = formatDateKey(day);
-                    const events = (eventsByDay[key] || []).map((e) => ({
-                        ...e,
-                        ...parsePeriod(e.period)
-                    }));
+                <Box className="JobCalendarTaskList">
+                    {events.map((e) => {
+                        const startStr = e.start.format("HH:mm");
+                        const endStr = e.end.format("HH:mm");
+                        const diffMin = e.end.diff(e.start, "minute");
+                        const hr = Math.floor(diffMin / 60);
+                        const min = diffMin % 60;
+                        const durationStr = hr > 0
+                            ? `${hr} 小時${min > 0 ? ` ${min} 分鐘` : ""}`
+                            : `${min} 分鐘`;
 
-                    return (
-                        <Box key={i} flex={1} borderLeft="1px solid #ccc" position="relative" minWidth={150}>
+                        const colorClass = e.color ? `color-${e.color}` : "color-default";
+
+                        return (
                             <Box
-                                textAlign="center"
-                                fontWeight="bold"
-                                fontSize={12}
-                                className="JobCalendarStickyDateLabel"
-                                sx={{ position: "sticky", top: 0, zIndex: 2, backgroundColor: "white", borderBottom: "1px solid #ccc", py: 0.5 }}>
-                                {`${day.format("M/D")}(${["日", "一", "二", "三", "四", "五", "六"][day.day()]})`}
+                                key={e.id}
+                                className={`JobCalendarTaskCard ${colorClass}`}
+                                onClick={() => console.log(e.id)}>
+                                <Box className="JobCalendarTaskTimeSection">
+                                    <Typography className="JobCalendarTaskStartTime" variant="h6">
+                                        {startStr}
+                                    </Typography>
+                                    <Typography className="JobCalendarTaskEndTime" variant="caption">
+                                        {endStr}
+                                    </Typography>
+                                </Box>
+                                <Box className="JobCalendarTaskDivider" />
+                                <Box className="JobCalendarTaskContentSection">
+                                    <Typography className="JobCalendarTaskName" variant="subtitle1">
+                                        {e.name}
+                                    </Typography>
+                                    <Typography className="JobCalendarTaskDuration" variant="caption">
+                                        ⏱️ {durationStr}
+                                    </Typography>
+                                </Box>
                             </Box>
-                            <Box position="relative" height={1200}>
-                                {this.getPositionedEvents(events).map((e, idx) => {
-                                    // 計算高度與位置
-                                    const startH = e.start.hour();
-                                    const startM = e.start.minute();
-                                    const top = startH * 50 + (startM / 60) * 50;
-                                    const height = (e.end.diff(e.start, "minutes") / 60) * 50;
-                                    const widthPercent = 100 / e.totalColumns;
-                                    const leftPercent = e.column * widthPercent;
-
-                                    return (
-                                        <Box
-                                            key={idx}
-                                            className="JobCalendarEventBlock"
-                                            position="absolute"
-                                            top={top}
-                                            height={height}
-                                            width={`${widthPercent}%`}
-                                            left={`${leftPercent}%`}
-                                            bgcolor="#e3f2fd"
-                                            borderLeft="4px solid"
-                                            borderColor={`${e.color || "primary"}.main`}
-                                            borderRadius={1}
-                                            fontSize={11}
-                                            px={1}
-                                            py={0.5}
-                                            overflow="hidden"
-                                            onClick={() => console.log(e.id)}>
-                                            {e.name}
-                                        </Box>
-                                    );
-                                })}
-                            </Box>
-                        </Box>
-                    );
-                })}
+                        );
+                    })}
+                </Box>
             </Box>
         );
     }
@@ -238,28 +266,7 @@ class JobCalendar extends React.Component {
         if (mode === "month") {
             return [baseDate.startOf("month"), baseDate.endOf("month")];
         }
-        if (mode === "week") {
-            return [baseDate.startOf("week"), baseDate.endOf("week")];
-        }
         return [baseDate.startOf("day"), baseDate.endOf("day")];
-    };
-
-    /** 計算事件在時間軸網格中的位置 (避免重疊) */
-    getPositionedEvents = (events) => {
-        // dayjs 比較需用 valueOf() 或 diff
-        const sorted = [...events].sort((a, b) => a.start.valueOf() - b.start.valueOf());
-        const result = [];
-        let active = [];
-
-        for (const event of sorted) {
-            // 過濾已結束的事件
-            active = active.filter((e) => e.end.isAfter(event.start));
-            active.push(event);
-            event.column = active.length - 1;
-            event.totalColumns = active.length;
-            result.push(event);
-        }
-        return result;
     };
 
     /** 渲染頁尾控制區 */
@@ -269,9 +276,6 @@ class JobCalendar extends React.Component {
                 <Box className="JobCalendarModeToggleButtonGroup" sx={{ display: "flex" }}>
                     <IconButton onClick={() => this.handleModeChange(null, "month")} color={this.mode === "month" ? "primary" : "default"}>
                         <ViewModuleIcon />
-                    </IconButton>
-                    <IconButton onClick={() => this.handleModeChange(null, "week")} color={this.mode === "week" ? "primary" : "default"}>
-                        <ViewWeekIcon />
                     </IconButton>
                     <IconButton onClick={() => this.handleModeChange(null, "day")} color={this.mode === "day" ? "primary" : "default"}>
                         <ViewDayIcon />
@@ -305,8 +309,7 @@ class JobCalendar extends React.Component {
         return (
             <Box className="JobCalendarWrapper" position="relative" p={1}>
                 {this.mode === "month" && this.renderMonthView(eventsByDay)}
-                {this.mode === "week" && this.renderDayGrid(eventsByDay, 7)}
-                {this.mode === "day" && this.renderDayGrid(eventsByDay, 1)}
+                {this.mode === "day" && this.renderDayView(eventsByDay)}
                 {this.renderFooterControls()}
             </Box>
         );

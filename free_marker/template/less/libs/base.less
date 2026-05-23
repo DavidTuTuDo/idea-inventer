@@ -646,213 +646,573 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 // --- 行事曆外殼 ---
+// --- 行事曆外殼 (Premium Card Style) ---
 .JobCalendarWrapper {
-    padding: 16px;
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Segoe UI", Roboto, sans-serif;
+    background: #f8fafc;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    padding: 24px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
 
     @media @mobile {
-        padding: 8px;
+        padding: 12px;
+        border-radius: 16px;
     }
     @media @tablet {
-        padding: 12px;
-    }
-    @media @desktop {
-        padding: 24px;
+        padding: 16px;
     }
 }
 
 // --- 上方日期顯示文字區 ---
 .JobCalendarHeaderText {
-    font-size: 18px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: 0.5px;
+
     @media @mobile {
-        font-size: 14px;
+        font-size: 0.95rem;
     }
     @media @tablet {
-        font-size: 16px;
-    }
-    @media @desktop {
-        font-size: 20px;
+        font-size: 1.05rem;
     }
 }
 
-// --- 月曆的 Cell ---
-.JobCalendarCalendarCell {
-    border: 1px solid #e0e0e0;
+// --- 月曆的 Cell (Premium Calendar Grid Cell) ---
+.JobCalendarMonthCell {
+    min-width: 90px;
     min-height: 100px;
+    border-radius: 12px !important;
+    border: 1px solid #f1f5f9 !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border-color: #cbd5e1 !important;
+        z-index: 2;
+    }
+
+    &.is-today {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+        border: 1.5px solid #60a5fa !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+
+        &:hover {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.15);
+        }
+
+        .JobCalendarMonthDateLabel {
+            .JobCalendarMonthNum {
+                color: #2563eb !important;
+                font-weight: 600;
+            }
+            .JobCalendarSlash {
+                color: #93c5fd !important;
+            }
+            .JobCalendarDateNum {
+                color: #1e3a8a !important;
+                font-weight: 800;
+            }
+            .JobCalendarWeekday {
+                color: #2563eb !important;
+                font-weight: 700;
+
+                &.day-0 { color: #e11d48 !important; }
+                &.day-6 { color: #1d4ed8 !important; }
+            }
+        }
+    }
+
+    &.is-other-month {
+        background: #f8fafc !important;
+        opacity: 0.45;
+    }
 
     @media @mobile {
-        min-height: 80px;
-    }
-    @media @tablet {
-        min-height: 90px;
-    }
-    @media @desktop {
-        min-height: 120px;
+        min-width: 0 !important;
+        min-height: 48px !important;
+        padding: 4px 2px !important;
+        border-radius: 8px !important;
     }
 }
 
-// --- 課程 Chip ---
-.JobCalendarChipOfCourse {
-    font-size: 12px;
+// --- 星期標頭單格樣式 ---
+.JobCalendarWeekdayHeaderCell {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #64748b;
+    padding: 8px 0;
+    background: #f8fafc;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+
+    &.day-0 {
+        color: #f43f5e; // Sunday rose
+    }
+    &.day-6 {
+        color: #2563eb; // Saturday royal blue
+    }
 
     @media @mobile {
-        font-size: 10px;
+        font-size: 0.7rem;
+        padding: 4px 0;
+        margin-bottom: 2px;
     }
-    @media @tablet {
-        font-size: 11px;
+}
+
+// --- 月曆日期文字適配 ---
+.JobCalendarMonthDateLabel {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: "Roboto Mono", "PingFang TC", "Microsoft JhengHei", monospace;
+    font-weight: 500;
+    line-height: 1;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+
+    .JobCalendarMonthNum {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #94a3b8;
+        transition: color 0.2s ease;
+
+        &.day-0 {
+            color: #fb7185; // Light Sunday rose
+        }
+        &.day-6 {
+            color: #60a5fa; // Light Saturday blue
+        }
     }
-    @media @desktop {
-        font-size: 13px;
+
+    .JobCalendarSlash {
+        font-size: 0.8rem;
+        color: #cbd5e1;
+        margin: 0 1px;
+    }
+
+    .JobCalendarDateNum {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1e293b;
+        transition: all 0.2s ease;
+
+        &.day-0 {
+            color: #f43f5e; // Sunday rose
+        }
+        &.day-6 {
+            color: #2563eb; // Saturday royal blue
+        }
+    }
+
+    .JobCalendarWeekday {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #64748b;
+        margin-left: 2px;
+        transition: color 0.2s ease;
+
+        &.day-0 {
+            color: #f43f5e; // Premium Rose Red for Sunday
+        }
+        &.day-6 {
+            color: #2563eb; // Premium Royal Blue for Saturday
+        }
+    }
+
+    @media @mobile {
+        justify-content: center;
+        margin-bottom: 2px;
+        flex-wrap: wrap;
+        gap: 0.5px;
+
+        .JobCalendarMonthNum {
+            font-size: 0.65rem;
+            display: none !important;
+
+            &.force-show {
+                display: inline-block !important;
+            }
+        }
+        .JobCalendarSlash {
+            font-size: 0.65rem;
+            margin: 0;
+            display: none !important;
+
+            &.force-show {
+                display: inline-block !important;
+            }
+        }
+        .JobCalendarDateNum {
+            font-size: 0.8rem;
+            display: inline-block !important;
+        }
+        .JobCalendarWeekday {
+            display: none !important;
+        }
+    }
+}
+
+// --- 月曆事件容器 (桌機 Chip / 手機 Dot) ---
+.JobCalendarMonthEventContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+
+    @media @mobile {
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 3px !important;
+        margin-top: 3px !important;
+    }
+}
+
+.JobCalendarDesktopChip {
+    display: inline-flex !important;
+    @media @mobile {
+        display: none !important;
+    }
+}
+
+.JobCalendarMobileDot {
+    display: none;
+
+    @media @mobile {
+        display: block;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        cursor: pointer;
+
+        &.color-primary { background-color: #3b82f6; }
+        &.color-secondary { background-color: #8b5cf6; }
+        &.color-success { background-color: #10b981; }
+        &.color-warning { background-color: #f59e0b; }
+        &.color-error { background-color: #ef4444; }
+        &.color-info { background-color: #06b6d4; }
+        &.color-default { background-color: #64748b; }
     }
 }
 
 // --- 左右滑動箭頭 ---
 .JobCalendarArrowOfEcpaySetIconNavigateNext,
 .JobCalendarArrowOfEcpaySetIconNavigateBefore {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+    &:hover {
+        background-color: #f1f5f9;
+        transform: scale(1.05);
+    }
 
     @media @mobile {
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
     }
 }
 
-// --- 月/週/日 模式切換按鈕區 ---
+// --- 月/日 模式切換按鈕區 ---
 .JobCalendarModeToggleButtonGroup {
     display: flex;
-    justify-content: center;
+    background: #e2e8f0;
+    padding: 4px;
+    border-radius: 12px;
+    gap: 2px;
 
-    @media @mobile {
-    }
+    .MuiIconButton-root {
+        border-radius: 8px;
+        padding: 6px 12px;
+        transition: all 0.2s ease;
 
-    @media @tablet {
-    }
-
-    @media @desktop {
-        gap: 10px;
+        &.Mui-disabled {
+            opacity: 0.5;
+        }
     }
 }
 
 // --- 月曆網格容器 ---
-.JobCalendarMonthGrid {
-    grid-gap: 4px;
+.JobCalendarMonthGridInner {
+    min-width: 700px;
 
     @media @mobile {
-        grid-gap: 2px;
-    }
-    @media @tablet {
-        grid-gap: 3px;
-    }
-    @media @desktop {
-        grid-gap: 6px;
-    }
-}
-
-// --- 日/週模式下的可滑動容器 ---
-.JobCalendarDayGridScrollArea {
-    overflow-x: auto;
-    scroll-behavior: smooth;
-}
-
-// --- 課程項目顯示方塊 ---
-.JobCalendarCourseEventBox {
-    cursor: pointer;
-    font-size: 12px;
-
-    @media @mobile {
-        font-size: 10px;
-    }
-    @media @tablet {
-        font-size: 11px;
-    }
-    @media @desktop {
-        font-size: 13px;
-    }
-}
-
-// --- 每天的欄位（週/日） ---
-.JobCalendarDayColumn {
-    min-width: 140px;
-
-    @media @mobile {
-        min-width: 100px;
-    }
-    @media @tablet {
-        min-width: 120px;
-    }
-    @media @desktop {
-        min-width: 150px;
-    }
-}
-
-.JobCalendarHeaderControlArea {
-    margin-top: 16px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-
-    @media @mobile {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-}
-
-.JobCalendarFooterControlArea {
-    align-items: center;
-    @media @mobile {
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    @media @tablet {
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    @media @desktop {
-        flex-direction: row;
-        justify-content: space-between;
+        min-width: 0 !important;
+        width: 100% !important;
     }
 }
 
 .JobCalendarScrollableMonthWrapper {
     overflow-x: auto;
+    padding-bottom: 8px;
 
     @media @mobile {
-        padding-bottom: 8px;
+        overflow-x: hidden !important; // 手機平板下完全禁滑動，一目了然
+        padding-bottom: 0;
+    }
+
+    &::-webkit-scrollbar {
+        height: 6px;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
     }
 }
 
-.JobCalendarMonthGridInner {
-    min-width: 700px;
+// --- 日視圖樣式組件 (New Daily Task Schedule) ---
+.JobCalendarDayViewContainer {
+    animation: fadeInMove 0.4s ease-out;
 }
 
-.JobCalendarMonthCell {
-    min-width: 90px;
-    max-width: 120px;
+.JobCalendarDayHeader {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding-bottom: 16px;
 
-    @media @mobile {
-        min-width: 80px;
+    .JobCalendarDayTitle {
+        font-weight: 800;
+        color: #0f172a;
+        font-size: 1.25rem;
+        letter-spacing: 0.5px;
+    }
+
+    .JobCalendarDaySub {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-top: 4px;
     }
 }
 
-.JobCalendarStickyDateLabel {
+.JobCalendarTaskList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+// --- 每日任務卡片 (Task Cards) ---
+.JobCalendarTaskCard {
+    display: flex;
+    align-items: center;
+    padding: 18px 24px;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    border: 1px solid #f1f5f9;
+    border-left: 6px solid #64748b; // Default left border color
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+    }
+
+    // Dynamic border color and linear gradient background based on e.color
+    &.color-primary {
+        border-left-color: #3b82f6;
+        background: linear-gradient(90deg, rgba(59, 131, 246, 0.03) 0%, #ffffff 100%);
+        &:hover { border-left-color: darken(#3b82f6, 10%); }
+    }
+    &.color-secondary {
+        border-left-color: #8b5cf6;
+        background: linear-gradient(90deg, rgba(139, 92, 246, 0.03) 0%, #ffffff 100%);
+        &:hover { border-left-color: darken(#8b5cf6, 10%); }
+    }
+    &.color-success {
+        border-left-color: #10b981;
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.03) 0%, #ffffff 100%);
+        &:hover { border-left-color: darken(#10b981, 10%); }
+    }
+    &.color-warning {
+        border-left-color: #f59e0b;
+        background: linear-gradient(90deg, rgba(245, 158, 11, 0.03) 0%, #ffffff 100%);
+        &:hover { border-left-color: darken(#f59e0b, 10%); }
+    }
+    &.color-error {
+        border-left-color: #ef4444;
+        background: linear-gradient(90deg, rgba(239, 68, 68, 0.03) 0%, #ffffff 100%);
+        &:hover { border-left-color: darken(#ef4444, 10%); }
+    }
+    &.color-info {
+        border-left-color: #06b6d4;
+        background: linear-gradient(90deg, rgba(6, 182, 212, 0.03) 0%, #ffffff 100%);
+        &:hover { border-left-color: darken(#06b6d4, 10%); }
+    }
+    &.color-default {
+        border-left-color: #64748b;
+        background: linear-gradient(90deg, rgba(100, 116, 139, 0.03) 0%, #ffffff 100%);
+        &:hover { border-left-color: darken(#64748b, 10%); }
+    }
+
     @media @mobile {
-        font-size: 14px;
+        padding: 14px 18px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
     }
-    @media @tablet {
-        font-size: 15px;
+}
+
+// --- 卡片內部時間段 ---
+.JobCalendarTaskTimeSection {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 85px;
+
+    .JobCalendarTaskStartTime {
+        font-weight: 800;
+        color: #1e293b;
+        font-size: 1.2rem;
+        line-height: 1.1;
     }
-    @media @desktop {
-        font-size: 16px;
+
+    .JobCalendarTaskEndTime {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-top: 4px;
+        font-weight: 500;
     }
+
+    @media @mobile {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+
+        .JobCalendarTaskEndTime {
+            margin-top: 0;
+            &::before {
+                content: "- ";
+            }
+        }
+    }
+}
+
+// --- 時間與內容分割線 ---
+.JobCalendarTaskDivider {
+    width: 1px;
+    height: 38px;
+    background-color: #e2e8f0;
+    margin: 0 24px;
+
+    @media @mobile {
+        display: none;
+    }
+}
+
+// --- 卡片內容段 ---
+.JobCalendarTaskContentSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .JobCalendarTaskName {
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 1.05rem;
+        line-height: 1.3;
+    }
+
+    .JobCalendarTaskDuration {
+        display: inline-flex;
+        align-items: center;
+        color: #64748b;
+        font-size: 0.775rem;
+        background-color: #f1f5f9;
+        padding: 3px 10px;
+        border-radius: 9999px;
+        width: fit-content;
+        font-weight: 600;
+    }
+}
+
+// --- 空狀態說明 (Premium Empty State) ---
+.JobCalendarEmptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+    animation: fadeInMove 0.4s ease-out;
+
+    .JobCalendarEmptyIcon {
+        font-size: 3.5rem;
+        margin-bottom: 16px;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.05));
+    }
+
+    .JobCalendarEmptyTitle {
+        font-weight: 700;
+        color: #334155;
+        font-size: 1.1rem;
+    }
+
+    .JobCalendarEmptySub {
+        color: #94a3b8;
+        font-size: 0.875rem;
+        margin-top: 6px;
+        max-width: 280px;
+        line-height: 1.5;
+    }
+}
+
+// --- 下方控制列 ---
+.JobCalendarFooterControlArea {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    @media @mobile {
+        flex-direction: column-reverse;
+        align-items: center;
+        gap: 16px;
+    }
+}
+
+.JobCalendarHeaderControlGroup {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .LoadInkingContainer {
