@@ -5,7 +5,6 @@ import { utiller as Util } from "utiller";
 import Diary from "./diary";
 import dayjs from "dayjs";
 
-
 class admin {
     constructor() {}
 

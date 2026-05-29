@@ -106,19 +106,19 @@ class CommonRemoteApi {
     }
 
     async submitItems(path, ...items) {
-        const size = items.length;
+        const length = size(items);
         const uid = Util.getRandomHashV2(10);
-        Util.appendInfo(`${uid} batch submit => path:${path}, size:(${size(items)})`);
-        Util.appendInfo("${uid} batch submit items => ", items);
+        Util.appendInfo(`${uid} batch submit => path:${path}, size:(${length})`);
+        Util.appendInfo(`${uid} batch submit items => `, items);
         const result = await firebase.submitDocuments(path, items);
-        Util.appendInfo(`${uid} batch submit path:${path}, size:${size} succeed`);
+        Util.appendInfo(`${uid} batch submit path:${path}, size:${length} succeed`);
         return result;
     }
 
     async updateItems(path, items) {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} batch update path:${path} size:(${size(items)})`);
-        Util.appendInfo("${uid} batch update items => ", items);
+        Util.appendInfo(`${uid} batch update items => `, items);
         const result = await firebase.updateDocuments(path, items);
         Util.appendInfo(`${uid} batch update path:${path}, size:${size(result)} succeed`);
         return result;
