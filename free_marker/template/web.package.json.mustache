@@ -15,7 +15,10 @@
     "webpack": "webpack --mode development",
     "emulate": "npm run lint ; npm run start"
   },
-  "sideEffects": true,
+  "sideEffects": [
+    "*.css",
+    "./src/less/index.js"
+  ],
   "keywords": [],
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",

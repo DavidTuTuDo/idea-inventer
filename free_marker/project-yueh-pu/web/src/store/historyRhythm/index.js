@@ -1,7 +1,7 @@
 const edit = true;
 import BaseHistoryRhythmStore from "./BaseHistoryRhythmStore";
 import { utiller as Util } from "utiller";
-import { size } from 'lodash-es';
+import { size } from "lodash-es";
 import HistoryPu from "../historyRhythmPuOfRecord";
 
 class HistoryRhythmStore extends BaseHistoryRhythmStore {

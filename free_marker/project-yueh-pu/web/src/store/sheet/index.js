@@ -1,7 +1,7 @@
 const edit = true;
 import BaseSheetStore from "./BaseSheetStore";
 import { utiller as Util } from "utiller";
-import { dropRightWhile, dropWhile, filter, flatten, head, indexOf, last, orderBy, size, sum, trim, zip } from 'lodash-es';
+import { dropRightWhile, dropWhile, filter, flatten, head, indexOf, last, orderBy, size, sum, trim, zip } from "lodash-es";
 import UserInfoRef from "../../base/BaseUserInfo";
 import FavoritePu from "../personalRhythmFavoritePu";
 import HistoryPu from "../historyRhythmPuOfRecord";

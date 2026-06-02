@@ -2,7 +2,7 @@ const edit = true;
 
 import BasePortfolioStore from "./BasePortfolioStore";
 import { utiller as Util } from "utiller";
-import { remove, size } from 'lodash-es';
+import { remove, size } from "lodash-es";
 import Rhythm from "../portfolioRhythm";
 import Fuse from "fuse.js";
 

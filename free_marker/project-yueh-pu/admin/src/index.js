@@ -3,7 +3,7 @@ const edit = true;
 import Api from "./api";
 import { databazer as Databaser, builder as Builder } from "databazer";
 import { utiller as Util, pooller as InfinitePool, exceptioner as ERROR } from "utiller";
-import { chunk, each, filter, find, head, orderBy, remove, size, startsWith, sum, trim } from 'lodash-es';
+import { chunk, each, filter, find, head, orderBy, remove, size, startsWith, sum, trim } from "lodash-es";
 import Listener from "./listener";
 import firebase from "./base/FirebaseHelper";
 import libpath from "path";

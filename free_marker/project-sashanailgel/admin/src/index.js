@@ -1,10 +1,9 @@
 const edit = true;
-import Api from "./api";
+import api from "./api";
 import { utiller as Util, pooller as InfinitePool, exceptioner as ERROR } from "utiller";
-import { filter, has, multiply, range, size, sum } from 'lodash-es';
+import { filter, has, multiply, range, size, sum, groupBy, map } from "lodash-es";
 
 (async () => {
-    const api = new Api();
 
     async function testOfAdminFetchItems() {
         const items = await api.fetchOrders({ where: (stmt) => stmt.where("countOfPeople", ">", 5) });
@@ -148,26 +147,27 @@ import { filter, has, multiply, range, size, sum } from 'lodash-es';
     }
 
     async function uploadCatalogs() {
-        function groupByValueOfType(data) {
-            return _(data)
-                .groupBy("valueOfType")
-                .map((items, valueOfType) => {
-                    const mainItem = items.find((i) => !has(i, "labelOfSubType"));
-                    const subItems = items
-                        .filter((i) => has(i, "labelOfSubType"))
-                        .map((i) => ({
-                            label: i.labelOfSubType,
-                            value: i.valueOfSubType,
-                            href: i.href
-                        }));
 
-                    return {
-                        valueOfType: Number(valueOfType),
-                        labelOfType: mainItem?.labelOfType ?? items[0].labelOfType,
-                        subTypes: subItems
-                    };
-                })
-                .value();
+        function groupByValueOfType(data) {
+            // 1. 先分組
+            const groupedData = groupBy(data, "valueOfType");
+            // 2. 使用 lodash 的 map 來遍歷物件 (會傳入 value, key)
+            return map(groupedData, (items, valueOfType) => {
+                const mainItem = items.find((i) => !has(i, "labelOfSubType"));
+                const subItems = items
+                    .filter((i) => has(i, "labelOfSubType"))
+                    .map((i) => ({
+                        label: i.labelOfSubType,
+                        value: i.valueOfSubType,
+                        href: i.href
+                    }));
+
+                return {
+                    valueOfType: Number(valueOfType),
+                    labelOfType: mainItem?.labelOfType ?? items[0].labelOfType,
+                    subTypes: subItems
+                };
+            });
         }
 
         const array = Util.getFileContextInJSON("./sasha_of_product_catalog.json");
@@ -202,8 +202,13 @@ import { filter, has, multiply, range, size, sum } from 'lodash-es';
 
     // await Util.persistJsonFilePrettier("./names.js", await getAllNames());
     // await uploadPaymentOptions();
-    // await uploadBoozeVariants();
-    // await uploadCatalogs();
+    /**
+     * 把莎夏spider臉面 sasha_of_products_detail.json 和 sasha_of_product_catalog.json 複製到 admin/. 底下
+     *  （記得把檔名更改）
+     * */
+
+    await uploadBoozeVariants();
+    await uploadCatalogs();
     // console.log(`全桌壞光光！`)
     // console.log(await testOfAdminFetchItems());
     // console.log(await testOfAdminSubmitItems());

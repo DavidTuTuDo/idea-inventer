@@ -1,7 +1,7 @@
 const edit = true;
 import BasePersonalRhythmStore from "./BasePersonalRhythmStore";
 import { utiller as Util } from "utiller";
-import { indexOf, isFunction, orderBy } from 'lodash-es';
+import { indexOf, isFunction, orderBy } from "lodash-es";
 import { action } from "mobx";
 
 class PersonalRhythmStore extends BasePersonalRhythmStore {

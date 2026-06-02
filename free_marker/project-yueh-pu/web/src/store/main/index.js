@@ -1,7 +1,7 @@
 const edit = true;
 
 import BaseMainStore from "./BaseMainStore";
-import { size, sortBy } from 'lodash-es';
+import { size, sortBy } from "lodash-es";
 
 class MainStore extends BaseMainStore {
     /** -------------------- fields -------------------- **/

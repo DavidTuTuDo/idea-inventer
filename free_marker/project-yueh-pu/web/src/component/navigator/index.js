@@ -1,7 +1,7 @@
 const edit = true;
 import { observer, inject } from "mobx-react";
 import Router from "../../router";
-import { find } from 'lodash-es';
+import { find } from "lodash-es";
 import ModularizedNavigatorComponent from "./ModularizedNavigatorComponent";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import UserInfoRef from "../../base/BaseUserInfo";
