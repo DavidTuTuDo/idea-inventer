@@ -8,6 +8,7 @@ logs
 *.css
 *.db
 *.txt
+custom-projects/
 prelude/
 yarn.lock
 package-lock.json
