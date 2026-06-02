@@ -1,38 +1,38 @@
 [
     {
         "name": "悅卉",
-        "path": "./custom-projects/project-yuehlolhui"
+        "path": "../custom-projects/project-yuehlolhui"
     },
     {
         "name": "明悅",
-        "path": "./custom-projects/project-davidtu-dev"
+        "path": "../custom-projects/project-davidtu-dev"
     },
     {
         "name": "悅耳",
-        "path": "./custom-projects/project-yueh-voice"
+        "path": "../custom-projects/project-yueh-voice"
     },
     {
         "name": "悅考",
-        "path": "./custom-projects/project-kh-high"
+        "path": "../custom-projects/project-kh-high"
     },
     {
         "name": "悅譜",
-        "path": "./custom-projects/project-yueh-pu"
+        "path": "../custom-projects/project-yueh-pu"
     },
     {
         "name": "悅遊",
-        "path": "./custom-projects/project-dading"
+        "path": "../custom-projects/project-dading"
     },
     {
         "name": "康新生技",
-        "path": "./custom-projects/project-kx-bio"
+        "path": "../custom-projects/project-kx-bio"
     },
     {
         "name": "芄食品",
-        "path": "./custom-projects/project-wan-hui"
+        "path": "../custom-projects/project-wan-hui"
     },
     {
         "name": "莎夏",
-        "path": "./custom-projects/project-sashanailgel"
+        "path": "../custom-projects/project-sashanailgel"
     }
 ]
