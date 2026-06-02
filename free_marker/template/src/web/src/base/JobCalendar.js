@@ -115,8 +115,7 @@ class JobCalendar extends React.Component {
                                 py: { xs: 0.5, sm: 1 },
                                 fontWeight: "bold",
                                 fontSize: { xs: "0.75rem", sm: "0.85rem" }
-                            }}
-                        >
+                            }}>
                             {w}
                         </Box>
                     ))}
@@ -224,17 +223,12 @@ class JobCalendar extends React.Component {
                         const diffMin = e.end.diff(e.start, "minute");
                         const hr = Math.floor(diffMin / 60);
                         const min = diffMin % 60;
-                        const durationStr = hr > 0
-                            ? `${hr} 小時${min > 0 ? ` ${min} 分鐘` : ""}`
-                            : `${min} 分鐘`;
+                        const durationStr = hr > 0 ? `${hr} 小時${min > 0 ? ` ${min} 分鐘` : ""}` : `${min} 分鐘`;
 
                         const colorClass = e.color ? `color-${e.color}` : "color-default";
 
                         return (
-                            <Box
-                                key={e.id}
-                                className={`JobCalendarTaskCard ${colorClass}`}
-                                onClick={() => console.log(e.id)}>
+                            <Box key={e.id} className={`JobCalendarTaskCard ${colorClass}`} onClick={() => console.log(e.id)}>
                                 <Box className="JobCalendarTaskTimeSection">
                                     <Typography className="JobCalendarTaskStartTime" variant="h6">
                                         {startStr}
