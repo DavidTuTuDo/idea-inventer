@@ -68,13 +68,11 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
         const excludePeriods = this.getRestPeriods().map((each) => each.getLabel());
 
         const obj = { dateRange, timeRange, classDuration, breakBetween, weeklyHolidays, excludePeriods };
-        Util.appendInfo("generateSchedule() 參數們：", obj);
 
         const component = this.getComponent(true);
         const func = component.funcOfDialogCallback();
         try {
             const result = await this.generateSchedule(obj);
-            Util.appendInfo("generateSchedule() 產出們：", result);
             await func(result);
             component.dismiss();
         } catch (error) {
@@ -86,6 +84,9 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
      * 核心演算法：生成排期表
      */
     async generateSchedule({ dateRange, timeRange, classDuration, breakBetween, weeklyHolidays, excludePeriods, lang = "zh" }) {
+        const param = { dateRange, timeRange, classDuration, breakBetween, weeklyHolidays, excludePeriods, lang };
+        console.log(param)
+
         const weekdayMap = {
             en: ["(Su)", "(Mo)", "(Tu)", "(We)", "(Th)", "(Fr)", "(Sa)"],
             zh: ["(日)", "(一)", "(二)", "(三)", "(四)", "(五)", "(六)"]
@@ -140,20 +141,31 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
         const classList = [];
         let timeCursor = workStart;
 
-        while (!timeCursor.add(classDuration, "minutes").isAfter(workEnd)) {
-            const classEnd = timeCursor.add(classDuration, "minutes");
-            const hasConflict = breaks.some(([restStart, restEnd]) => {
-                // 區間衝突判斷公式
+        const durationNum = Number(classDuration);
+        const breakNum = Number(breakBetween);
+
+        while (!timeCursor.add(durationNum, "minutes").isAfter(workEnd)) {
+            const classEnd = timeCursor.add(durationNum, "minutes");
+
+            // 💡 修正 1：改用 find 找到具體是跟哪個休息區間衝突
+            const conflictBreak = breaks.find(([restStart, restEnd]) => {
                 return classEnd.isAfter(restStart) && timeCursor.isBefore(restEnd);
             });
 
-            if (!hasConflict) {
+            if (conflictBreak) {
+                // 💡 修正 2：如果發生衝突，時間游標不應該盲目加上「上課+休息」的時間
+                // 而是直接將游標移動到「該次休息時間結束」的時刻，準備重新排課
+                timeCursor = conflictBreak[1];
+            } else {
+                // 沒衝突，正常排入
                 classList.push(`${timeCursor.format("HH:mm")}-${classEnd.format("HH:mm")}`);
+                // 排課成功後，才加上「課程時間 + 課間休息」
+                timeCursor = timeCursor.add(durationNum + breakNum, "minutes");
             }
-            timeCursor = timeCursor.add(classDuration + breakBetween, "minutes");
         }
-
-        return { dates: dateList, classes: classList };
+        const result = { dates: dateList, classes: classList };
+        console.log(`產出的物件們：`,result);
+        return result;
     }
 
     testOfSchedule = async () => {
@@ -167,7 +179,6 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
                 excludePeriods: ["13:00-15:00"],
                 lang: "zh"
             });
-            console.log("✅ 測試 產出結果:", result);
         } catch (err) {
             console.error("❌ 測試 失敗:", err.message);
         }
