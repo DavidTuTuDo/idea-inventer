@@ -344,6 +344,14 @@ class BaseComponent extends MuiComponent {
 
     /** 要是沒有產生出捲軸效果(), 但是有next page設計的話, canVerticalScrollable() 一定要實作hasNextPage的邏輯 */
     invalidateNextPageBehavior = async () => {
+        // [新增] 必須等待初始抓取完成後才執行補花邏輯
+        if (!this.getStore().isInitialFetchCompleted()) {
+            return;
+        }
+
+        // [新增] 監聽 isInitialFetchCompleted = true 之後 再syncDelay(10)才能執行
+        await Util.syncDelay(10);
+
         // [修改] 延長等待時間至 150ms，確保 React 渲染和瀏覽器 Paint 確實完成，避免 canVerticalScrollable 誤判
         await Util.syncDelay(150);
         if (!this.getStore().isErrorState() && this.getStore().hasNextPage() && this.hasScrollToBottomTask() && !this.canVerticalScrollable()) {

@@ -109,7 +109,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     isFetchAbleToGo() {
-        const isLoadingOrError = Util.isOrEquals(this.getState(), "error", "loading");
+        const isLoadingOrError = Util.isOrEquals(this.getState(), "error");
         return !this.isInitialFetchCompleted() && !isLoadingOrError;
     }
 

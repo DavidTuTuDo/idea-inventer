@@ -63,6 +63,14 @@ class ModularizedDionysusComponent extends BaseDionysusComponent {
     onDionysusBatchDownChipClicked(param) {
         this.exeAsyncT(this.getStore().mvChecked2Down());
     }
+
+    onDionysusBatchCrtBoozeChipClicked(param) {
+        Router.gotoGaiaPage(this, "generate");
+    }
+
+    onDionysusBatchAdjustCatChipClicked(param) {
+        Router.gotoErosPage(this);
+    }
 }
 
 export default ModularizedDionysusComponent;

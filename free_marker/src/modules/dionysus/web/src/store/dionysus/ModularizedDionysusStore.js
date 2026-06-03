@@ -33,7 +33,7 @@ class ModularizedDionysusStore extends BaseDionysusStore {
 
     async onInitialFetchCompleted(collection) {
         // [修改] 避免重複執行初始化邏輯（例如重複插入 Tab）
-        if (this.isInitialFetchCompleted()) return;
+        // if (this.isInitialFetchCompleted()) return;
 
         await super.onInitialFetchCompleted(collection);
         await Util.syncDelay(1);

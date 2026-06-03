@@ -220,7 +220,7 @@ class RemoteFunctionHandler extends BaseBuilder {
             const updateStmt = `updateTime : this._firebase().getServerTimeSymbol()`;
             if (!node.isCheapArray()) contents.push(`${updateStmt},`);
 
-            const content = self.isWebPlatform() ? `...Util.merO({${updateStmt}},this.columnData(obj))` : `${contents.map(each => each).join('\n')}`;
+            const content = self.isWebPlatform() ? `...Util.merO({${node.isCheapArray() ? '' : updateStmt}},this.columnData(obj))` : `${contents.map(each => each).join('\n')}`;
             const stmts = `const commitment = \{ ${content}`;
 
             if (node.hasPath()) {

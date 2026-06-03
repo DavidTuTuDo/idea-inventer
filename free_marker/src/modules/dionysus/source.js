@@ -681,6 +681,26 @@ const component = {
                         size: "small"
                     },
                     {
+                        name: "crtBooze",
+                        defaultValue: "新增商品",
+                        view: "Chip",
+                        type: "string",
+                        color: "primary",
+                        size: "small"
+                    },
+                    {
+                        name: "adjustCat",
+                        defaultValue: "調整分類",
+                        view: "Chip",
+                        type: "string",
+                        size: "small",
+                        alertDialog: {
+                            customView: "textsIndexSetter",
+                            needActionButtons: false,
+                            useCustomCancel: true
+                        }
+                    },
+                    {
                         name: "down",
                         defaultValue: "下架",
                         view: "Chip",
