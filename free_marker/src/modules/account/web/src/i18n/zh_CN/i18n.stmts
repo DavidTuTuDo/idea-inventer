@@ -50,3 +50,5 @@ accountOptionOfLogoutTitle = "登出會員";
 dialogContentOfAccountArrowOfLogout = "是否確定登出?";
 dialogTitleOfAccountArrowOfLogout = "再次確認";
 accountTitleOfUser = "個人功能";
+accountVersion = "1.0.1";
+accountLabelOfVersion = "當前版本：";

@@ -1483,3 +1483,64 @@
         /** empty style */
     }
 }
+.AccountVersionTypography {
+    font-size: 11px;
+    color: #8c8c8c;
+    font-weight: 600;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    letter-spacing: 0.03em;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountVersionDivWrap:extend(.CenterInParentRow) {
+    width: 100%;
+    justify-content: end;
+    margin-top: 10px;
+    margin-right: 12px;
+    opacity: 0.65;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: default;
+    &:hover {
+        opacity: 1;
+        .AccountVersionLabelOfVersionTypography,
+        .AccountVersionTypography {
+            color: #5580aa;
+            letter-spacing: 0.08em;
+            text-shadow: 0 0 8px rgba(85, 128, 170, 0.2);
+        }
+    }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountVersionLabelOfVersionTypography {
+    font-size: 11px;
+    color: #8c8c8c;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-right: 4px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}

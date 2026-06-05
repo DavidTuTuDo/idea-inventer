@@ -386,6 +386,16 @@ const component = {
                 ]
             },
             {
+                name: `version`,
+                view: `Typography`,
+                defaultValue: "1.0.1",
+                type: `string`,
+                labelView: {
+                    enable: true,
+                    defaultValue: `版本：`
+                }
+            },
+            {
                 name: `user`,
                 plural: "s",
                 disableInitFetch: true,

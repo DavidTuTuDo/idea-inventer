@@ -85,7 +85,7 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
      */
     async generateSchedule({ dateRange, timeRange, classDuration, breakBetween, weeklyHolidays, excludePeriods, lang = "zh" }) {
         const param = { dateRange, timeRange, classDuration, breakBetween, weeklyHolidays, excludePeriods, lang };
-        console.log(param)
+        console.log(param);
 
         const weekdayMap = {
             en: ["(Su)", "(Mo)", "(Tu)", "(We)", "(Th)", "(Fr)", "(Sa)"],
@@ -164,7 +164,7 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
             }
         }
         const result = { dates: dateList, classes: classList };
-        console.log(`產出的物件們：`,result);
+        console.log(`產出的物件們：`, result);
         return result;
     }
 

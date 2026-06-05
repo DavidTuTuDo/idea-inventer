@@ -18,7 +18,7 @@ class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
         return this.getTitles()
             .map((title) => trim(title.getContent()))
             .filter((str) => Util.isString(str) && str !== "");
-    }
+    };
 
     async onTextsFetchAppendNotify() {
         await this.hookOfParamObject.onTextsFetchAppendClicked(this.getStringsOfContent());

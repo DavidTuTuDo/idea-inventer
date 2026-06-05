@@ -6,6 +6,7 @@ import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import BaseAccountStore from "./BaseAccountStore";
 import i18n from "../../i18n";
+import Config from "../../config";
 
 class ModularizedAccountStore extends BaseAccountStore {
     /** -------------------- fields -------------------- **/
@@ -24,6 +25,7 @@ class ModularizedAccountStore extends BaseAccountStore {
             this.setValueOfName(UserInfoRef.getDisplayNameOfUser());
             this.setValueOfId(UserInfoRef.getUid());
         }
+        this.setVersion(Config.VERSION_OF_PACKAGE_JSON);
         this.setSelectedLang(i18n.getLanguage());
     }
 
