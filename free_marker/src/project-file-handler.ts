@@ -39,6 +39,7 @@ import RemoteFunctionHandler from "./remote-function-handler";
 import AppBuilder from "./app-builder";
 import ClassGenerator from "./class-generator";
 import CodegenNode from "./codegen-node";
+import LessOptimizer from './less-optimizer';
 import Lean from "./lean";
 import beauty from "./beauty";
 
@@ -2667,10 +2668,12 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
         await this.runInstallIfNeed();
         await this.functionsGenerateRelease();
-        await this.buildLessToCss();
         await this.removeEmptyFolder();
         await new beauty(this.genSourcePath).formatAll();
+        if(this.isProduction()) await new LessOptimizer(libpath.join(this.genSourcePath, 'less','styles.less')).process();
+        await this.buildLessToCss();
         Util.exeAsyncT(this.generateShellScript());
+
     }
 
     async functionsGenerateRelease() {
