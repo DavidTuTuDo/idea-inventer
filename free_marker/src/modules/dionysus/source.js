@@ -2,6 +2,7 @@ const component = {
     path: "/dionysus/:keyword?",
     name: "dionysus",
     destination: "module",
+    useLazy: false,
     disposablePage: true,
     title: "精選商品列表",
     cloudFunctions: [

@@ -1,6 +1,7 @@
 const component = {
     path: "/navigator",
     name: "navigator",
+    useLazy: false,
     disposablePage: false,
     isNavigatorView: true,
     cookies: [

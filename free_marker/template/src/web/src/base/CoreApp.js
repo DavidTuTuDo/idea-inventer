@@ -3,6 +3,7 @@ const edit = true;
 import "../less";
 import { createRoot } from "react-dom/client";
 import I18n from "../i18n";
+import { inject, observer } from "mobx-react";
 import LiffHelper from "./LiffHelper";
 import FirebaseHelper from "./FirebaseHelper";
 import Store from "../store";
@@ -40,6 +41,17 @@ class CoreApp {
         // 註冊自訂事件監聽：當有任務加入時，觸發 task_added 事件來處理佇列
         this.taskEventTarget.addEventListener("task_added", this.processTaskQueue);
     }
+
+    createLazyWrapper = (importFn, storeName, renderFn) => {
+        return React.lazy(() =>
+            importFn().then((mod) => {
+                const Comp = mod.default;
+                const Observed = observer(Comp);
+                const Wrapper = inject(storeName)((props) => renderFn(Observed, props));
+                return { default: Wrapper };
+            })
+        );
+    };
 
     getExtraPages() {
         /** --- push <Route /> in to pages */

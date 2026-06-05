@@ -34,6 +34,12 @@ import {
 
 class CodegenNode {
 
+    useLazy = true;
+    /**
+     * 如果是一開始就載入的component要記得useLazy=false
+     * 用來降低bundle的main.js的檔案大小 => React.Lazy
+     */
+
     /**
      * 很多TextField都需要存在cache，或是遠端保存。
      * 1.TextField在onChange時，把直設定進去專屬的cookie位置。

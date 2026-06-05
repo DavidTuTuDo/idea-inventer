@@ -1,6 +1,7 @@
 const component = {
     name: "infoOfCopyRight",
     path: "/infoOfCopyRight",
+    useLazy: false,
     isCopyRightView: true,
     struct: {
         name: "infoOfCopyRight",

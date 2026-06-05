@@ -333,7 +333,9 @@ class PathBase {
     }
 
     getGenComponent() {
-        const components = this.getComponents().map((each) => Util.camel(each.getNodeOfStruct().getName()));
+        const components = this.getComponents()
+            .filter(each => !each.useLazy)
+            .map((each) => Util.camel(each.getNodeOfStruct().getName()));
         return _.without(components, SIGN_OF_EMPTY_STORE);
     }
 

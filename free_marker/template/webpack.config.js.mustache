@@ -130,6 +130,8 @@ splitChunks: {
   },
   resolve: {
     alias: {
+      [path.resolve(__dirname, 'node_modules/utiller/lib/utiller/nodeutiller')]:
+      path.resolve(__dirname, 'node_modules/utiller/lib/utiller/index'),
       'inquirer': false,
       'winston': false,
       '@inquirer/core': false,

@@ -540,16 +540,20 @@ class AppBuilder extends ComponentBuilder {
      */
     async buildAppIndexFiles() {
         /** 產生出key, 這樣每次path的param有改變,都會reload page*/
-        function getPropOfKey(component) {
-            const params = component.getParamsInPath();
-            if (component.detailPage) params.push(component.getFieldNameOfDetailUid());
 
-            const paramsOfProp = params.map((each) => `\$\{${each}\}`);
-            if (!component.disableKeyOfRoute && _.size(paramsOfProp) > 0) {
-                return {key: `###\`${paramsOfProp.join('')}\``}
-            } else {
-                return {}
+        function getRouteParams(component) {
+            const params = component.getParamsInPath();
+            if (component.detailPage) {
+                params.push(component.getFieldNameOfDetailUid());
             }
+            return params;
+        }
+
+        /** * 提取共通邏輯：取得 Key 的字串內容 (例如：${id}${name})
+         */
+        function getKeyTemplateString(component, params) {
+            if (component.disableKeyOfRoute || _.size(params) === 0) return null;
+            return params.map((each) => `\$\{${each}\}`).join('');
         }
 
         const appGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `BaseApp.js`), this.nodeOfAncestor);
@@ -561,36 +565,77 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport(`{inject,observer}`, `mobx-react`);
         appGenerator.appendImport(`React`, `react`);
         appGenerator.appendImport(`{Route, Routes, BrowserRouter, useNavigate, useLocation, useParams, Navigate}`, `react-router-dom`);
-        appGenerator.appendClass(`BaseApp`,{name: 'CoreApp', from: './base/CoreApp'});
+        appGenerator.appendClass(`BaseApp`, { name: 'CoreApp', from: './base/CoreApp' });
         for (const component of this.getGenComponent()) {
             appGenerator.appendInClassHead(`import ${Util.upperFirst(component)} from './component/${component}'`);
         }
 
         const stmtsOfRenderView = [];
         const childrenStmt = [];
+
         for (const component of this.nodeOfAncestor.components) {
             if (!component.hasPath()) continue;
 
-            /** 網址會用到的參數 */
-            const params = component.getParamsInPath();
-            if (component.detailPage) params.push(component.getFieldNameOfDetailUid());
-
             const nameOfComponent = _.upperFirst(component.getStruct().getName());
             const wrapper = `${nameOfComponent}Wrapper`;
-            const observed = `Observed${nameOfComponent}`;
-            const props = { ...component.extra, ...getPropOfKey(component), navigate: `###useNavigate()`, location: `###useLocation()` };
-            for(const param of params) props[param] = `###${param}`;
-            if (component.isNavigatorView) props["ref"] = "###self.navigatorRef";
-            if (component.isCopyRightView) props["ref"] = "###self.copyRightRef";
-            const renderStmts = this.getJSXStrings({
-                generator: appGenerator,
-                tag: observed,
-                props,
-                simpleProps: ["...props"]
-            });
-            this.removeJSXSign(renderStmts);
 
-            const path = Util.joinRespectingDot(component.path, component.detailPage ? `:${component.getFieldNameOfDetailUid()}?` : '');
+            // 1. 統一提取路由參數與 useParams 宣告
+            const params = getRouteParams(component);
+            const stmtsOfParams = _.size(params) > 0 ? `const { ${params.join(', ')} } = useParams();` : '';
+
+            // 2. 統一提取 Key 的模板字串
+            const keyTemplateStr = getKeyTemplateString(component, params);
+
+            // 3. 根據 Lazy 或 Normal 元件生成對應的 Wrapper
+            if (component.useLazy) {
+                const keyStmt = keyTemplateStr ? `key={\`${keyTemplateStr}\`}` : '';
+                const specificProps = params.map(param => `${param}={${param}}`).join(' ');
+
+                const stmt = `(C, props) => { 
+            ${stmtsOfParams} 
+            return <C ${keyStmt} navigate={useNavigate()} location={useLocation()} ${specificProps} {...props} />
+        }`;
+
+                stmtsOfRenderView.push(`
+            const ${wrapper} = this.createLazyWrapper(
+                () => import("./component/${nameOfComponent}"),
+                "${_.lowerFirst(nameOfComponent)}",
+                ${stmt}
+            );
+        `);
+            } else {
+                const observed = `Observed${nameOfComponent}`;
+                const props = {
+                    ...component.extra,
+                    ...(keyTemplateStr ? { key: `###\`${keyTemplateStr}\`` } : {}),
+                    navigate: `###useNavigate()`,
+                    location: `###useLocation()`
+                };
+
+                for (const param of params) props[param] = `###${param}`;
+                if (component.isNavigatorView) props["ref"] = "###self.navigatorRef";
+                if (component.isCopyRightView) props["ref"] = "###self.copyRightRef";
+
+                const renderStmts = this.getJSXStrings({
+                    generator: appGenerator,
+                    tag: observed,
+                    props,
+                    simpleProps: ["...props"]
+                });
+                this.removeJSXSign(renderStmts);
+
+                stmtsOfRenderView.push(`
+            const ${observed} = observer(${nameOfComponent});
+            const ${wrapper} = inject('${Util.lowerFirst(nameOfComponent)}')((props) => {
+                ${stmtsOfParams} 
+                return ${renderStmts.join('')} 
+            });
+        `);
+            }
+
+            // 4. 生成 Router 設定
+            const detailSegment = component.detailPage ? `:${component.getFieldNameOfDetailUid()}?` : '';
+            const path = Util.joinRespectingDot(component.path, detailSegment);
 
             if (!component.isNavigatorView && !component.isCopyRightView) {
                 childrenStmt.push(...this.getJSXStrings({
@@ -599,16 +644,10 @@ class AppBuilder extends ComponentBuilder {
                     props: {
                         path: component.routeHash ? `${path}/*` : path,
                         element: `###<${wrapper} />`
-                        /** component: `###${_.upperFirst(component.name)}`, */
+                        /** component: `###${nameOfComponent}`, */
                     }
                 }));
             }
-
-            const stmtsOfParams = _.size(params) > 0 ? `const {${params.join(',')}} = useParams();` : '';
-            stmtsOfRenderView.push(`
-            const ${observed} = observer(${nameOfComponent});
-            const ${wrapper} = inject('${Util.lowerFirst(nameOfComponent)}')((props) => {
-            ${stmtsOfParams} return ${renderStmts.join('')} })`)
         }
 
         childrenStmt.push(...this.getJSXStrings({
@@ -624,11 +663,18 @@ class AppBuilder extends ComponentBuilder {
             contents: [...childrenStmt, `{this.getExtraPages()}`]
         })
 
+        const SuspenseStmt = this.getJSXStrings({
+            tag: 'React.Suspense',
+            generator: appGenerator,
+            fallback:null,
+            contents: [...routerStmt]
+        })
+
         const providerStmt = this.getJSXStrings({
             tag: 'Provider',
             generator: appGenerator,
             simpleProps: ['...this.getStoreObject()'],
-            contents: [this.nodeOfAncestor.hasNavigationView() ? '<NavigatorWrapper />' : '', ...routerStmt,
+            contents: [this.nodeOfAncestor.hasNavigationView() ? '<NavigatorWrapper />' : '', ...SuspenseStmt,
                 this.nodeOfAncestor.hasCopyRightView() ? '<InfoOfCopyRightWrapper />' : '']
         })
 
