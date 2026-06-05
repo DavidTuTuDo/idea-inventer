@@ -9,8 +9,9 @@ import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
 const ListEmptyTrigger = observer(({ hasPath, component, size }) => {
     const store = component?.getStore?.();
     const loading = store?.isAppLoading();
+    const initialFetchCompleted = store && typeof store.isInitialFetchCompleted === "function" ? store.isInitialFetchCompleted() : true;
 
-    if (loading || size > 0) return null;
+    if (loading || size > 0 || !initialFetchCompleted) return null;
 
     const handleRetry = async () => {
         if (store && typeof store.fetch === "function") {
