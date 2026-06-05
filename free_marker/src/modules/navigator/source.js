@@ -382,6 +382,22 @@ const component = {
                 ]
             },
             {
+                name: `key4Flatten`,
+                path: "key4Flatten",
+                type: "object",
+                permission: {
+                    write: "isAdmin()",
+                    read: "alwaysTrue()"
+                },
+                children: [
+                    {
+                        name: "contents",
+                        type: "string",
+                        column: true
+                    }
+                ]
+            },
+            {
                 name: `keyword`,
                 type: `array`,
                 plural: `s`,

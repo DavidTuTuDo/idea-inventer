@@ -1,7 +1,7 @@
 const edit = true;
 
 import { exceptioner as ERROR, utiller as Util } from "utiller";
-import { chain, chunk, head, isFunction, isNil, isPlainObject, last, size } from 'lodash-es';
+import { chain, chunk, head, isNil, isPlainObject, last, size } from "lodash-es";
 import BaseFirebase from "./BaseFirebase";
 import { Timestamp, FieldValue, FieldPath } from "firebase-admin/firestore";
 import libpath from "path";
@@ -349,7 +349,7 @@ class FirebaseHelper extends BaseFirebase {
                     [key]: (stmt) => stmt[key](...condition.params) // 使用 stmt[key] 動態調用方法
                 };
                 normalizedConditions.push(rule);
-            } else if (Util.isFunction(condition) || (isPlainObject(condition) && Object.keys(condition).length === 1 && isFunction(Object.values(condition)[0]))) {
+            } else if (Util.isFunction(condition) || (isPlainObject(condition) && Object.keys(condition).length === 1 && Util.isFunction(Object.values(condition)[0]))) {
                 // 若已是函式或合法物件 (e.g., { where: () => ... })，直接保留
                 normalizedConditions.push(condition);
             } else {

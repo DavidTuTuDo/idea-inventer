@@ -1,7 +1,7 @@
 const edit = true;
 
 import { exceptioner as ERROR, utiller as Util } from "utiller";
-import { chain, chunk, head, isNil, isPlainObject, last, size } from 'lodash-es';
+import { chain, chunk, head, isNil, isPlainObject, last, size } from "lodash-es";
 import BaseFirebase from "./BaseFirebase";
 import { Timestamp, FieldValue, FieldPath } from "firebase-admin/firestore";
 import libpath from "path";
