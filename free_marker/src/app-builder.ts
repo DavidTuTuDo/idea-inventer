@@ -831,13 +831,56 @@ class AppBuilder extends ComponentBuilder {
             if (firstMediaIndex !== -1) {
                 object['default'] = Util.toOneLineString(cleanRaw.slice(0, firstMediaIndex));
             } else {
-                /** 如果結果如果有'}'會Ｇ掉，必須是simple string */
-                object["default"] = Util.getNormalizedStringNotEndWith(Util.toOneLineString(cleanRaw), "}");
+                /**
+                 情境一：正常的 CSS 區塊（如您的範例）
+                 字串內含完整的 { 與 }。
+                 輸入字串： color: red; &::before { content: "A"; }
+                 原本的問題： 結尾的 } 被無腦刪除，變成 color: red; &::before { content: "A";  （語法破壞 ❌）
+                 現在的結果： 偵測到 1 個 { 和 1 個 }，數量一致。直接保留字串，變成 color: red; &::before { content: "A"; } （完美保留 ✅）
+
+                 情境二：殘缺的 CSS 區塊（爬蟲或截斷導致缺少 }）
+                 字串內有 {，但結尾的 } 不見了。
+                 輸入字串： &::before { content: "瀏覽歌手" !important;  (假設字串在這邊被截斷)
+                 原本的問題： 結尾沒有 }，原本的函式不做事，字串依然是殘缺的。 （語法依然損壞 ❌）
+                 現在的結果： 偵測到 1 個 { 但 0 個 }，觸發自動補齊邏輯，在尾部加上缺少的 }，變成 &::before { content: "瀏覽歌手" !important; } （自動修復 ✅）
+
+                 情境三：沒有 { 但尾部有多餘 }（原本函式想解決的狀況）
+                 字串單純只是 CSS 屬性，但尾巴髒掉多了一個 }。
+                 輸入字串： margin-top: 24px !important;}
+                 原本的結果： 刪除結尾 }，變成 margin-top: 24px !important; （正常運作 ✅）
+                 現在的結果： 偵測到 0 個 {，進入 else 條件，交給原本的函式庫處理，變成 margin-top: 24px !important; （維持原本的除錯能力 ✅）
+               */
+                let processedString = Util.toOneLineString(cleanRaw);
+                // 2. 計算 '{' 的數量
+                const openBraceCount = (processedString.match(/{/g) || []).length;
+
+                if (openBraceCount > 0) {
+                    // 情況 A：裡面有 '{'，不要把結尾的 '}' 盲目刪掉，並計算數量確保一致
+                    const closeBraceCount = (processedString.match(/}/g) || []).length;
+
+                    if (openBraceCount > closeBraceCount) {
+                        // 如果 '}' 不夠，就在尾部補齊對應數量的 '}'
+                        processedString += '}'.repeat(openBraceCount - closeBraceCount);
+                    } else if (closeBraceCount > openBraceCount) {
+                        // 如果 '}' 太多（異常情況），把尾部多餘的 '}' 刪除直到數量平衡
+                        let excessCount = closeBraceCount - openBraceCount;
+                        while (excessCount > 0 && processedString.endsWith('}')) {
+                            processedString = processedString.slice(0, -1);
+                            excessCount--;
+                        }
+                    }
+                    // 直接賦值，避開原本會強制刪除結尾 '}' 的函式
+                    object["default"] = processedString;
+                } else {
+                    // 情況 B：裡面沒有 '{'，維持原本的邏輯，將尾部的 '}' 刪除
+                    object["default"] = Util.getNormalizedStringNotEndWith(processedString, "}");
+                }
                 return object;
             }
 
             // 處理 @media 之後的每一段 (裝置特定樣式)
             let currentIndex = firstMediaIndex;
+
 
             while (currentIndex < cleanRaw.length) {
                 const mediaIndex = cleanRaw.indexOf('@media', currentIndex);
@@ -854,6 +897,7 @@ class AppBuilder extends ComponentBuilder {
                 // 抓取 {} 裡面的樣式內容 (改用括號計數法，解決巢狀結構 Regex 會錯亂的問題)
                 let openBraces = 0;
                 let braceEndIndex = -1;
+
 
                 for (let i = braceStartIndex; i < cleanRaw.length; i++) {
                     if (cleanRaw[i] === '{') openBraces++;
@@ -872,6 +916,7 @@ class AppBuilder extends ComponentBuilder {
                     if (platform) {
                         const parsedStatement = Util.toOneLineString(statement);
                         // 加上 trim() 檢查是否為空字串，非空才放進物件中
+                        // 加上 trim() 檢查是否為空字串，非空才放進物件中
                         if (parsedStatement.trim() !== '') {
                             object[platform] = parsedStatement;
                         }
@@ -879,6 +924,7 @@ class AppBuilder extends ComponentBuilder {
                     currentIndex = braceEndIndex + 1;
                 } else break;
             }
+
 
             return object;
         }
@@ -977,6 +1023,7 @@ class AppBuilder extends ComponentBuilder {
                 }
             }
         }
+        /** 2026.06.06 印出來才可以debug搜尋 getObjectOfExistedLessAttribute.json */
         return lessAttributeObj;
     }
 

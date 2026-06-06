@@ -392,7 +392,7 @@ class ProjectFileHandler extends PathBase {
             const instance = new AppBuilder(this.getAppBuildParam());
             const attrs = instance.getObjectOfExistedLessAttribute(this.genSourcePath);
             if (attrs) {
-                Util.persistJsonFilePrettier('./temp/getObjectOfExistedLessAttribute.json', attrs).then();
+                // Util.persistJsonFilePrettier('./temp/getObjectOfExistedLessAttribute.json', attrs).then();
                 // 篩選出 classname 開頭與該 module 名稱相符的樣式
                 const lessees = _.filter(attrs, (value, key, collection) => _.startsWith(key, _.upperFirst(module)))
                 // 刪除模組中舊的 less 目錄

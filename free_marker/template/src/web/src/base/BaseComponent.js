@@ -51,7 +51,7 @@ class BaseComponent extends MuiComponent {
         console.log(`🌱 ${this?.getComponentName()} 執行 exeAsyncT()`);
 
         if (!Util.isP(task)) throw new Error(`[exeAsyncT]: Task is not a Promise. Received: ${typeof task}`);
-
+        this.getComponentInstance().enableAppLoading(true);
         // 2. 封裝處理邏輯，使其支援鏈接 (Chaining)
         // 這裡回傳 Promise 確保外部也可以 await 它
         return task

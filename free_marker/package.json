@@ -4,6 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+        "start": "ts-node src/index.ts",
         "test": "jest --coverage",
         "updateUtiller": "npm update utiller --save",
         "updateConfigerer": "npm update configerer --save"
@@ -37,6 +38,7 @@
         "baseline-browser-mapping": "^2.8.30",
         "configerer": "^1.0.25",
         "glob": "^11.0.1",
+        "ts-node": "^10.9.2",
         "typescript": "^6.0.3"
     }
 }

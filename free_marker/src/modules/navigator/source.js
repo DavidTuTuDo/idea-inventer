@@ -385,6 +385,7 @@ const component = {
                 name: `key4Flatten`,
                 path: "key4Flatten",
                 type: "object",
+                disableInitFetch: true,
                 permission: {
                     write: "isAdmin()",
                     read: "alwaysTrue()"
