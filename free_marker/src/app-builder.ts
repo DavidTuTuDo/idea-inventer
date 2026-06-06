@@ -598,7 +598,7 @@ class AppBuilder extends ComponentBuilder {
 
                 stmtsOfRenderView.push(`
             const ${wrapper} = this.createLazyWrapper(
-                () => import("./component/${nameOfComponent}"),
+                () => import("./component/${_.lowerFirst(nameOfComponent)}"),
                 "${_.lowerFirst(nameOfComponent)}",
                 ${stmt}
             );

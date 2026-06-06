@@ -314,8 +314,6 @@ if (isProd) {
     },
   };
 
-  config.plugins.push(new webpack.HotModuleReplacementPlugin());
-
   if (enableOfBundleSize) {
     config.plugins.push(
       new BundleAnalyzerPlugin({
