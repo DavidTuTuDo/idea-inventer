@@ -44,13 +44,16 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
      * BookedSlots: 一個 Map 或 Array，儲存使用者所有已預訂的時間區間。
      * */
     checkConflictAgainst2MainTrunk = async (variant, transaction, globalPerspective) => {
+
+
         const timesOfOccupied = await this._firebase().transactionGet({
             transaction,
             path: `/users/${variant.idOfAuthor}/hera`,
             conditions: [
-                { where: (stmt) => stmt.where("useMainTrunk", "==", true) },
-                { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", ">=", Util.getTSOfSpecificDate(variant.content)) },
-                { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", "<=", Util.getTSOfSpecificDate(variant.content, { end: true })) }
+                { type: 'where', params: ["useMainTrunk", "==", true] },
+                { type: 'where', params: ["startYYYYMMDDHHmmss", ">=", Util.getTSOfSpecificDate(variant.content)] },
+                { type: 'where', params: ["startYYYYMMDDHHmmss", "<=", Util.getTSOfSpecificDate(variant.content, { end: true })] },
+                { type: 'orderBy', params: ['startYYYYMMDDHHmmss'] }
                 /** todo:賭了！這裡不做paginate,讓它拿爆 { orderBy: (stmt) => stmt.orderBy("startYYYYMMDDHHmmss") } */
             ]
         });

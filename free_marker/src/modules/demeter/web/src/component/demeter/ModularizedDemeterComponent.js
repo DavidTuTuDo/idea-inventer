@@ -73,14 +73,15 @@ class ModularizedDemeterComponent extends BaseDemeterComponent {
 
         const merged = [];
         for (const range of sorted) {
-            const last = last(merged);
+            // 將變數名稱從 last 改為 lastMerged，避免與 lodash 的 last 函式衝突
+            const lastMerged = last(merged);
 
-            if (!last || range.from > last.to) {
+            if (!lastMerged || range.from > lastMerged.to) {
                 // 沒重疊：直接加入
                 merged.push({ ...range });
             } else {
                 // 有重疊：合併成一段
-                last.to = Math.max(last.to, range.to);
+                lastMerged.to = Math.max(lastMerged.to, range.to);
             }
         }
         return merged;

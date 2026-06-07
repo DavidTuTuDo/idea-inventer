@@ -19,6 +19,12 @@ class FirebaseHelper extends BaseFirebase {
         super();
     }
 
+    getInequalityField(conditions = []) {
+        const inequalityOperators = [">", ">=", "<", "<=", "!=", "not-in"];
+        const inequalityCondition = conditions.find((c) => c && c.type === "where" && Array.isArray(c.params) && inequalityOperators.includes(c.params[1]));
+        return inequalityCondition ? inequalityCondition.params[0] : null;
+    }
+
     /**
      * 將毫秒數轉換為 Firestore Timestamp 物件。
      * @param {number} ts - 毫秒數 (自 Epoch 以來)。如果小於等於 0，則回傳當前時間戳。
@@ -285,10 +291,18 @@ class FirebaseHelper extends BaseFirebase {
         // 檢查條件中是否有使用者指定的 limit
         const hasLimit = conditions.some((c) => (isPlainObject(c) && Object.keys(c).includes("limit")) || (isPlainObject(c) && c.type === "limit"));
 
+        const hasOrderBy = conditions.some((c) => (isPlainObject(c) && Object.keys(c).includes("orderBy")) || (isPlainObject(c) && c.type === "orderBy"));
+        const inequalityField = hasOrderBy ? null : this.getInequalityField(conditions);
+
         while (true) {
             // 這裡為了讓 startAfter 穩定工作，通常需要一個明確的 orderBy
             // 由於 firestore-admin 的特性，如果沒有 orderBy，startAfter(lastDoc) 預設會使用內部順序
-            let query = ref.orderBy(FieldPath.documentId());
+            let query = ref;
+            if (inequalityField) {
+                query = query.orderBy(inequalityField).orderBy(FieldPath.documentId());
+            } else {
+                query = query.orderBy(FieldPath.documentId());
+            }
 
             if (!hasLimit) {
                 query = query.limit(pageSize); // 如果沒有自訂 limit，才加上 pageSize 的 limit
@@ -640,11 +654,13 @@ class FirebaseHelper extends BaseFirebase {
     transactionGet = async ({ transaction, path = "", conditions = [] }) => {
         const query = Util.accumulate(this.reference(path), this.conditionsOfRuled(conditions));
         const snapsShot = await transaction.get(query);
-        return snapsShot.forEach((doc) => {
+        const results = [];
+        snapsShot.forEach((doc) => {
             const data = doc.data();
             data.id = doc.id || data.id;
-            return data;
+            results.push(data);
         });
+        return results;
     };
 
     /**
@@ -668,8 +684,12 @@ class FirebaseHelper extends BaseFirebase {
 
         let finalConditions = conditions;
         if (!hasOrderBy) {
-            // 若無排序，則強制以 documentId 進行排序
-            const orderByCondition = { orderBy: (stmt) => stmt.orderBy(FieldPath.documentId()) };
+            // 若無排序，檢查是否有範圍/不等式查詢 (inequality filter)
+            // 因為 Firestore 規定：若有不等式查詢，第一個 orderBy 必須是該欄位
+            const inequalityField = this.getInequalityField(conditions);
+            const orderByCondition = inequalityField
+                ? { orderBy: (stmt) => stmt.orderBy(inequalityField).orderBy(FieldPath.documentId()) }
+                : { orderBy: (stmt) => stmt.orderBy(FieldPath.documentId()) };
             finalConditions = [...conditions, orderByCondition]; // 排序應優先於其他條件，但這裡放在後面，conditionsOfRuled 會處理排序。
         }
         // ---【分頁穩定性檢查】---

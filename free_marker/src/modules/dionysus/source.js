@@ -1552,7 +1552,7 @@ const component = {
                             {
                                 name: "available",
                                 type: "boolean",
-                                defaultValue: true,
+                                defaultValue: false,
                                 column: true,
                                 description: `提供此付款方案`
                             },
@@ -1691,7 +1691,7 @@ const component = {
                             {
                                 name: "available",
                                 type: "boolean",
-                                defaultValue: true,
+                                defaultValue: false,
                                 column: true,
                                 description: `提供此項運送服務`
                             },

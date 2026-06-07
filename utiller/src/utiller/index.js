@@ -4619,7 +4619,7 @@ class Utiller {
         return arr
             // 1️⃣ 刪掉 idOfBooze 等於目標值的項目
             .filter(item => item.idOfBooze !== idOfCurrentBooze)
-            // 2️⃣ 根據 idOfBooze + idOfVariant 進行去重
+            // 2️⃣ 根據 idOfBooze + idOfVariant 進行去重（只留第一筆）
             .filter(item => {
                 const pk = `${item.idOfBooze}_${item.idOfVariant}`;
                 if (seenKeys.has(pk)) {
@@ -4628,13 +4628,8 @@ class Utiller {
                 seenKeys.add(pk); // 第一次見到，記錄下來並保留
                 return true;
             })
-            // 3️⃣ 只保留 period 欄位，同時過濾掉沒有 period 的項目 (避免 undefined 或空值)
-            .reduce((acc, item) => {
-                if (item && item.period) {
-                    acc.push(item.period);
-                }
-                return acc;
-            }, []);
+            // 3️⃣ 過濾掉沒有 period 的項目（避免 undefined 或空值），並保留完整物件 💡
+            .filter(item => item && item.period);
     }
 
     /**

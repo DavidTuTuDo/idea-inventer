@@ -66,7 +66,13 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         this.objectOfVariant = Util.toObjectWithAttributeKey(this.listOfVariant, "id");
         Util.appendInfo("商品variant的detail infos => ", this.objectOfVariant);
 
-        if (booze.isTaskJob && booze.useMainTrunk) await handleConflictIssue();
+        if (booze.isTaskJob && booze.useMainTrunk) {
+            await handleConflictIssue();
+            // 1. 安全地取得目標選項，如果中間任何一個環節不存在，就會回傳 undefined 而不是報錯
+            const targetOption = this.getVariants()?.[1]?.getOptions()?.[0];
+            // 2. 確定有拿到東西，才執行設定
+            if (targetOption !== undefined) await this.setSelectedOption(targetOption);
+        }
 
         this.getComponent().invalidatePageTitle(booze?.name ?? "特選商品");
         if (this.isSingleItemOfBooze()) await self.setSelectedOption(this.getVariants()[0].getOptions()[0]);
