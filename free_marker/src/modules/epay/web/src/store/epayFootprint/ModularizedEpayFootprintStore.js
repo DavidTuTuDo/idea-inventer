@@ -19,7 +19,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         this.setInitialFetchCompleted(false);
         this.clean();
         this.setPayNow(payNow);
-
+        this.disableLoading = this.getComponent().enableAppLastingLoading(true);
         switch (this.getRoleOfPerspective()) {
             case "user":
                 this.setTabs(...filter(this.getTabs(), (each) => each.getValue() < 10));
@@ -54,11 +54,11 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         console.log("onInitialFetchCompleted !!!!! ", this.getPayNow());
-
         if (this.getPayNow()?.price > 0) {
             console.log("必須進來");
             this.getComponent().getPayNowDivAlertDialogRef().open();
         }
+        this.disableLoading?.();
     }
 
     conditionsOfBuyerDefault(state) {
