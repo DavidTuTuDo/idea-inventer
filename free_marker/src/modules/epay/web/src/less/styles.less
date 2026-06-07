@@ -282,6 +282,18 @@
 }
 .EpayFootprintOrderCard {
     width: 100%;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    padding: 16px !important;
+    box-sizing: border-box;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease !important;
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08) !important;
+    }
     @media @mobile {
         /** empty style */
     }
@@ -289,14 +301,16 @@
         /** empty style */
     }
     @media @desktop {
-        padding: 5px;
+        padding: 24px !important;
     }
 }
 .EpayFootprintOrderDivList:extend(.CenterInParentColumn) {
-    gap: 10px;
+    gap: 16px;
     width: 100%;
     min-height: 50vh;
     justify-content: flex-start;
+    padding: 8px;
+    box-sizing: border-box;
     @media @mobile {
         /** empty style */
     }
@@ -309,6 +323,11 @@
 }
 .EpayFootprintOrderAreaOfTopDiv:extend(.CenterInParentRow) {
     justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
     @media @mobile {
         /** empty style */
     }
@@ -320,6 +339,8 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfHeadDiv:extend(.CenterInParentRow) {
+    align-items: center;
+    gap: 4px;
     @media @mobile {
         /** empty style */
     }
@@ -331,6 +352,10 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityTypography {
+    color: #333333 !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    font-family: Menlo, Monaco, Consolas, monospace !important;
     @media @mobile {
         /** empty style */
     }
@@ -353,6 +378,9 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityLabelOfStringOfOrderIdentityTypography {
+    color: #888888 !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
     @media @mobile {
         /** empty style */
     }
@@ -364,6 +392,12 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfHeadCopyIdIconButton {
+    padding: 4px !important;
+    color: #888888 !important;
+    &:hover {
+        color: darkred !important;
+        background-color: rgba(139, 0, 0, 0.05) !important;
+    }
     @media @mobile {
         /** empty style */
     }
@@ -375,6 +409,7 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfHeadCopyIdIconCopyAll {
+    font-size: 1.1rem !important;
     @media @mobile {
         /** empty style */
     }
@@ -386,6 +421,8 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfTailDiv:extend(.CenterInParentRow) {
+    align-items: center;
+    gap: 8px;
     @media @mobile {
         /** empty style */
     }
@@ -397,6 +434,12 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfTailStateOfOrderTypography {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: darkred !important;
+    background-color: rgba(139, 0, 0, 0.08) !important;
+    padding: 4px 10px !important;
+    border-radius: 12px !important;
     @media @mobile {
         /** empty style */
     }
@@ -408,6 +451,8 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfTailOptionOfPendingIconButton {
+    padding: 4px !important;
+    color: #666666 !important;
     @media @mobile {
         /** empty style */
     }
@@ -441,6 +486,8 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidIconButton {
+    padding: 4px !important;
+    color: #666666 !important;
     @media @mobile {
         /** empty style */
     }
@@ -474,6 +521,8 @@
     }
 }
 .EpayFootprintOrderAreaOfTopSectionOfTailOptionOfTransportIconButton {
+    padding: 4px !important;
+    color: #666666 !important;
     @media @mobile {
         /** empty style */
     }
@@ -508,12 +557,16 @@
 }
 .EpayFootprintOrderBriefDiv:extend(.CenterInParentRow) {
     justify-content: flex-start;
-    gap: 2px;
+    align-items: flex-start;
+    gap: 12px;
     width: 100%;
-    padding-right: 1px;
-    border-bottom: 1px solid #bbb;
-    max-width: 100%;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
     box-sizing: border-box;
+    &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
     @media @mobile {
         /** empty style */
     }
@@ -527,23 +580,27 @@
 .EpayFootprintOrderBriefDivList {
     width: 100%;
     max-width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
     box-sizing: border-box;
-    display: block;
     @media @mobile {
-        max-height: 40vh;
+        /** empty style */
     }
     @media @tablet {
-        max-height: 40vh;
+        /** empty style */
     }
     @media @desktop {
-        max-height: 500px;
+        /** empty style */
     }
 }
 .EpayFootprintOrderBriefImageOfProductPhotoImg:extend(.SquareRatioImg) {
-    width: 100px;
-    border-radius: 0;
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    object-fit: cover !important;
     @media @mobile {
         /** empty style */
     }
@@ -551,12 +608,17 @@
         /** empty style */
     }
     @media @desktop {
-        width: 120px;
+        width: 90px !important;
+        height: 90px !important;
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionDiv:extend(.CenterInParentColumn) {
-    align-items: flex-end;
-    width: 100%;
+    position: relative;
+    align-items: flex-start;
+    flex-grow: 1;
+    gap: 4px;
+    padding-right: 80px !important;
+    box-sizing: border-box !important;
     @media @mobile {
         /** empty style */
     }
@@ -568,10 +630,16 @@
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionNameOfProductTypography:extend(.BeautyTitle) {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 280px;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: #222222 !important;
+    line-height: 1.4 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
     @media @mobile {
         /** empty style */
     }
@@ -579,11 +647,10 @@
         /** empty style */
     }
     @media @desktop {
-        width: 600px;
+        font-size: 1rem !important;
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionNameOfProductDivWrap {
-    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -595,7 +662,12 @@
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionSpecificOfProductTypography:extend(.BeautyContent) {
-    margin-top: 8px;
+    font-size: 0.8rem !important;
+    color: #777777 !important;
+    background-color: rgba(0, 0, 0, 0.03) !important;
+    padding: 2px 8px !important;
+    border-radius: 4px !important;
+    margin-top: 2px !important;
     @media @mobile {
         /** empty style */
     }
@@ -607,6 +679,9 @@
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionQuantityTypography:extend(.BeautyContent) {
+    font-size: 0.8rem !important;
+    color: #888888 !important;
+    margin-top: 2px !important;
     @media @mobile {
         /** empty style */
     }
@@ -618,6 +693,14 @@
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionPriceTypography:extend(.BeautyContent) {
+    position: absolute !important;
+    right: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: darkred !important;
+    margin: 0 !important;
     @media @mobile {
         /** empty style */
     }
@@ -630,8 +713,12 @@
 }
 .EpayFootprintOrderAreaOfTotalPriceDiv:extend(.CenterInParentRow) {
     justify-content: flex-end;
-    min-height: 50px;
-    border-bottom: 1px solid #bbb;
+    align-items: center;
+    width: 100%;
+    padding: 12px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 12px;
     @media @mobile {
         /** empty style */
     }
@@ -643,6 +730,9 @@
     }
 }
 .EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceTypography {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: darkred !important;
     @media @mobile {
         /** empty style */
     }
@@ -654,6 +744,9 @@
     }
 }
 .EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceDivWrap:extend(.EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     @media @mobile {
         /** empty style */
     }
@@ -665,6 +758,9 @@
     }
 }
 .EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceLabelOfValueOfTotalPriceTypography {
+    font-size: 0.85rem !important;
+    color: #666666 !important;
+    font-weight: 500 !important;
     @media @mobile {
         /** empty style */
     }
@@ -676,8 +772,11 @@
     }
 }
 .EpayFootprintOrderAreaOfChoosePaymentTypeDiv:extend(.CenterInParentRow) {
-    min-height: 50px;
-    border-bottom: 1px solid #bbb;
+    width: 100%;
+    padding: 10px 0;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
     @media @mobile {
         /** empty style */
     }
@@ -689,6 +788,9 @@
     }
 }
 .EpayFootprintOrderAreaOfChoosePaymentTypeLabelOfPaymentTypeTypography {
+    font-size: 0.85rem !important;
+    color: #555555 !important;
+    font-weight: 500 !important;
     @media @mobile {
         /** empty style */
     }
@@ -701,7 +803,8 @@
 }
 .EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeDiv:extend(.CenterInParentRow) {
     justify-content: flex-end;
-    flex-grow: 1;
+    align-items: center;
+    gap: 4px;
     @media @mobile {
         /** empty style */
     }
@@ -713,6 +816,9 @@
     }
 }
 .EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeValueOfPaymentTypeTypography {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: #333333 !important;
     @media @mobile {
         /** empty style */
     }
@@ -724,9 +830,8 @@
     }
 }
 .EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconButton:extend(.CenterInParentRow) {
-    width: 120px;
-    height: 100%;
-    justify-content: flex-end;
+    padding: 4px !important;
+    color: #888888 !important;
     @media @mobile {
         /** empty style */
     }
@@ -734,7 +839,7 @@
         /** empty style */
     }
     @media @desktop {
-        width: 150px;
+        /** empty style */
     }
 }
 .EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowReactFragmentWrap {
@@ -760,7 +865,10 @@
     }
 }
 .EpayFootprintOrderRemarkTextField {
-    margin-top: 5px;
+    width: 100% !important;
+    .MuiInputBase-root {
+        background-color: #ffffff !important;
+    }
     @media @mobile {
         /** empty style */
     }
@@ -773,9 +881,12 @@
 }
 .EpayFootprintOrderRemarkDivWrap:extend(.CenterInParentColumn) {
     align-items: flex-start;
-    gap: 3px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.015) !important;
+    border-radius: 8px;
+    padding: 10px 14px !important;
+    margin: 8px 0 !important;
+    box-sizing: border-box;
     @media @mobile {
         /** empty style */
     }
@@ -787,6 +898,10 @@
     }
 }
 .EpayFootprintOrderRemarkLabelOfRemarkTypography {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: #555555 !important;
+    margin-bottom: 4px !important;
     @media @mobile {
         /** empty style */
     }
@@ -909,13 +1024,14 @@
 }
 .EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap:extend(.CenterInParentRow) {
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
     width: 100%;
-    padding-right: 1px;
-    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Helvetica Neue", Arial, sans-serif;
-    line-height: 1.8;
-    color: #333;
-    letter-spacing: 0.2px;
+    padding: 8px 0 !important;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
+    &:last-child {
+        border-bottom: none;
+    }
     @media @mobile {
         /** empty style */
     }
@@ -1159,7 +1275,12 @@
 }
 .EpayFootprintOrderAreaOfPaymentDetailDiv:extend(.CenterInParentColumn) {
     width: 100%;
-    padding: 3px;
+    background-color: rgba(0, 0, 0, 0.01) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    border-radius: 8px;
+    padding: 8px 12px !important;
+    box-sizing: border-box;
+    margin-top: 8px;
     @media @mobile {
         /** empty style */
     }
@@ -1215,8 +1336,11 @@
     }
 }
 .EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeDiv:extend(.EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap) {
-    gap: 5px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    width: 100%;
+    padding: 6px 0 !important;
     @media @mobile {
         /** empty style */
     }
@@ -1261,6 +1385,11 @@
     }
 }
 .EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCopyIconButton {
+    padding: 4px !important;
+    color: darkred !important;
+    &:hover {
+        background-color: rgba(139, 0, 0, 0.05) !important;
+    }
     @media @mobile {
         /** empty style */
     }
@@ -1283,8 +1412,12 @@
     }
 }
 .EpayFootprintOrderAreaOfFuncDiv {
-    padding: 8px;
-    border-top: 1px solid #bbb;
+    width: 100%;
+    padding: 16px 0 0 0 !important;
+    margin-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: flex-end;
     @media @mobile {
         /** empty style */
     }
@@ -1296,6 +1429,23 @@
     }
 }
 .EpayFootprintOrderAreaOfFuncCheckoutButton {
+    background-color: darkred !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    padding: 8px 24px !important;
+    border-radius: 20px !important;
+    text-transform: none !important;
+    box-shadow: 0 4px 12px rgba(139, 0, 0, 0.2) !important;
+    transition: all 0.2s ease !important;
+    &:hover {
+        background-color: #8b0000 !important;
+        box-shadow: 0 6px 16px rgba(139, 0, 0, 0.3) !important;
+        transform: translateY(-1px);
+    }
+    &:active {
+        transform: translateY(1px);
+    }
     @media @mobile {
         /** empty style */
     }
@@ -1307,6 +1457,21 @@
     }
 }
 .EpayFootprintOrderAreaOfPaymentFailureDiv {
+    width: 100%;
+    margin-top: 8px;
+    background-color: rgba(211, 47, 47, 0.04) !important;
+    border: 1px solid rgba(211, 47, 47, 0.1) !important;
+    border-radius: 8px;
+    padding: 10px 14px !important;
+    box-sizing: border-box;
+    .EpayFootprintOrderAreaOfPaymentFailureReasonTypography {
+        color: #d32f2f !important;
+        font-weight: 600 !important;
+    }
+    .EpayFootprintOrderAreaOfPaymentFailureReasonLabelOfReasonTypography {
+        color: #b71c1c !important;
+        font-weight: 600 !important;
+    }
     @media @mobile {
         /** empty style */
     }
@@ -1351,7 +1516,10 @@
     }
 }
 .EpayFootprintOrderRemarkOfAuthorTextField {
-    margin-top: 5px;
+    width: 100% !important;
+    .MuiInputBase-root {
+        background-color: #ffffff !important;
+    }
     @media @mobile {
         /** empty style */
     }
@@ -1363,12 +1531,14 @@
     }
 }
 .EpayFootprintOrderRemarkOfAuthorDivWrap:extend(.CenterInParentColumn) {
-    margin-top: 5px;
     align-items: flex-start;
-    gap: 3px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    border-top: 1px solid #bbb;
+    width: 100%;
+    background-color: rgba(139, 0, 0, 0.02) !important;
+    border: 1px solid rgba(139, 0, 0, 0.05) !important;
+    border-radius: 8px;
+    padding: 12px 14px !important;
+    margin-top: 12px !important;
+    box-sizing: border-box;
     @media @mobile {
         /** empty style */
     }
@@ -1380,6 +1550,10 @@
     }
 }
 .EpayFootprintOrderRemarkOfAuthorLabelOfRemarkOfAuthorTypography {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: darkred !important;
+    margin-bottom: 4px !important;
     @media @mobile {
         /** empty style */
     }
