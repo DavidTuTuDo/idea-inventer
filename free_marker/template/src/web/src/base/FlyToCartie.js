@@ -1,9 +1,20 @@
 const edit = true;
 
 import React from "react";
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion"; // 移除靜態 import，改為動態載入
 
 export default class FlyToCartie extends React.Component {
+    state = { MotionImg: null };
+
+    componentDidUpdate(prevProps) {
+        // 當 fly 從 false 變 true 時，動態載入 framer-motion
+        if (this.props.fly && !prevProps.fly && !this.state.MotionImg) {
+            import("framer-motion").then((mod) => {
+                this.setState({ MotionImg: mod.motion.img });
+            });
+        }
+    }
+
     handleComplete = () => {
         if (this.props.onComplete) {
             this.props.onComplete();
@@ -12,9 +23,10 @@ export default class FlyToCartie extends React.Component {
 
     render() {
         const { imageSrc, size = 80, direction = "rightTop", duration = 1.2, fly = false } = this.props;
+        const { MotionImg } = this.state;
 
-        // ✅ 若 fly 為 false，完全不渲染
-        if (!fly) return null;
+        // ✅ 若 fly 為 false 或 motion 尚未載入，不渲染
+        if (!fly || !MotionImg) return null;
 
         const centerX = window.innerWidth / 2 - size / 2;
         const centerY = window.innerHeight / 2 - size / 2;
@@ -34,7 +46,7 @@ export default class FlyToCartie extends React.Component {
         }
 
         return (
-            <motion.img
+            <MotionImg
                 src={imageSrc}
                 initial={{
                     position: "fixed",

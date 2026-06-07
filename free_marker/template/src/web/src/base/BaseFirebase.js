@@ -4,7 +4,7 @@ import { getFunctions } from "firebase/functions";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { getFirestore, initializeFirestore } from "firebase/firestore";
-import { getDatabase } from "firebase/database";
+// import { getDatabase } from "firebase/database"; // 移除：整個 src 沒有使用 Realtime Database
 import config from "../config";
 
 class BaseFirebase {
@@ -26,7 +26,7 @@ class BaseFirebase {
         this._firestore = getFirestore(this._app);
         this._auth = getAuth(this._app);
         this._functions = getFunctions(this._app, config.locateOfFunctions);
-        this._database = getDatabase(this._app);
+        // this._database = getDatabase(this._app); // 移除：未使用
     }
 
     app() {
@@ -41,9 +41,7 @@ class BaseFirebase {
         return this._functions;
     }
 
-    database() {
-        return this._database;
-    }
+    // database() — 已移除：整個 src 沒有呼叫 .database()
 
     auth() {
         return this._auth;

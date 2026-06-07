@@ -142,7 +142,7 @@ splitChunks: {
     fallback: {
       fs: false,
       child_process: false,
-      path: require.resolve("path-browserify"),
+      path: false, // 移除 path-browserify：整個 src 只有一處使用，已改為字串拼接
       buffer: require.resolve("buffer/"),
       url: false,
       http: false,
@@ -179,7 +179,7 @@ splitChunks: {
               self_debug: !isProd,
           },
        }
-    }),
+     }),
     new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
        resource.request = resource.request.replace(/^node:/, "");
     }),
@@ -189,6 +189,12 @@ splitChunks: {
 if (isProd) {
   config.mode = "production";
   config.devtool = false; // 再次確認關閉 SourceMap
+  // 調整 performance 閾值，反映實際應用大小
+  config.performance = {
+      hints: 'warning',
+      maxAssetSize: 512 * 1024,       // 512 KiB
+      maxEntrypointSize: 1024 * 1024,  // 1 MiB
+  };
   Object.assign(config.optimization, {
       minimize: true,
       minimizer: [
@@ -234,10 +240,26 @@ if (isProd) {
             // 確保 React 和 MobX 等核心框架在一個獨立的小 bundle
             framework: {
                 chunks: 'all',
-                name: 'framework', // 輸出檔案名為 framework.xxxxx.js
+                name: 'framework',
                 test: /[\\/]node_modules[\\/](react|react-dom|mobx|mobx-react)[\\/]/,
-                priority: 40, // 優先級最高
-                enforce: true, // 即使不符合其他條件也強制創建
+                priority: 40,
+                enforce: true,
+            },
+            // 2. Firebase SDK: 變動頻率低，獨立快取
+            firebase: {
+                chunks: 'all',
+                name: 'firebase',
+                test: /[\\/]node_modules[\\/](firebase|@firebase)[\\/]/,
+                priority: 38,
+                enforce: true,
+            },
+            // 3. MUI Date Pickers: 只在 2 個 lazy component 使用，不需進 entrypoint
+            muiDatePickers: {
+                chunks: 'all',
+                name: 'mui-date-pickers',
+                test: /[\\/]node_modules[\\/](@mui[\\/]x-date-pickers)[\\/]/,
+                priority: 35,
+                enforce: true,
             },
             // 2. Material UI (MUI): 大型 UI 函式庫
             // 將所有 @mui/ 相關函式庫集中打包

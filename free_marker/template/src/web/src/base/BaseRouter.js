@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util } from "utiller";
-import libpath from "path";
+// import libpath from "path"; // 移除：整個 src 只有這裡用到，改用字串拼接
 import Config from "../config";
 import UserInfo from "./BaseUserInfo";
 
@@ -61,7 +61,7 @@ class BaseRouter {
 
     routeToHomePage(component) {
         this.routeTo(component, "/");
-        return libpath.join(Config.host, "/");
+        return `${Config.host}/`;
     }
 
     getPathOfDeEditorRoute = () => {

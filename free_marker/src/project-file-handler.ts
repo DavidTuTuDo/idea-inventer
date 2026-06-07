@@ -2528,7 +2528,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     /** 增加「全端工程師」快捷好用的alias */
     generateShellScript = async () => {
         // 1. 基礎參數整理
-        const projectSlug = this.nodeOfAncestor.idOfProject; // e.g., 'yueh-pu'
+        const projectSlug = this.nodeOfAncestor.name; // e.g., 'yueh-pu'
 
         // 2. 格式化變數名稱：將 'yueh-pu' 轉為 'YuehPu'，確保 Alias 名稱合法
         const variable = _.upperFirst(_.camelCase(projectSlug));

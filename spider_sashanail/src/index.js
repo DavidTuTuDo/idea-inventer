@@ -7,7 +7,7 @@ const THREAD_OF_INFO_FETCHER = 3; //取得sasha_product_list.json sasha_of_produ
 const THREAD_OF_DETAIL_PRODUCT = 7; // 抓取detail的，因為網頁會擋multi-page，所以每個商品會要新開一個browser
 const PRINT_REPORT_OF_PRODUCTS_DETAIL = true; //列印出 XXX.json
 /** 列印出product_detail.json */
-const USE_PERSISTENT_FILE = false;//'sasha_product_list.json'
+const USE_PERSISTENT_FILE = true;//'sasha_product_list.json'
 const RANDOM_LIST_ENABLE = false;//不要全拿，隨機拿幾個做測試
 const SIZE_OF_RANDOM = 20;//如果 RANDOM_LIST_ENABLE = true, 要拿幾個product detail
 const FETCH_LIST_ONLY = false;//只會取得取得sasha_product_list.json | sasha_of_product_catalog.json
@@ -107,7 +107,7 @@ class sashanailgel_scraper extends Spider {
 
     async fetchProductListPageInfos() {
         if (USE_PERSISTENT_FILE) {
-            const list = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`));
+            const list = JSON.parse(Util.getFileContextInRaw(`./temp/sasha_of_product_list.json`));
             await this.fetchWholeProductDetailBehavior(list);
             return;
         }
@@ -212,7 +212,7 @@ class sashanailgel_scraper extends Spider {
                 const input = `#gd-detail > table > tbody > .product-number > td > input`;
                 console.log(`[${product.name}-${nameOfOption}]輸入框[${input}]得到focus`);
                 /** 加入購物車 */
-                const countsOfRandom = Util.getRandomValue(10000, 20000);
+                const countsOfRandom = 1;
                 await Util.writeElementAttributes(page, input, { value: _.toString(countsOfRandom) });
                 console.log(`加了 ${nameOfOption} ：${countsOfRandom} 個 `);
                 const button = `#gd-detail > table > tbody > .add-cart-zone > td > #add-to-list`;
@@ -264,6 +264,15 @@ class sashanailgel_scraper extends Spider {
         }
 
         const task = async (page, product) => {
+
+            const getCountOfMax4Product = async (p)=>  {
+                const maxCountText = await Util.fetchElementAttributes(p, '.limit-quota-hint', '', 'textContent');
+                // 2. 使用正規表達式提取字串中的數字
+                const maxCountMatch = maxCountText.match(/\d+/);
+                // 3. 將字串轉換為整數 (Integer)，若無匹配則回傳整數 0
+                return maxCountMatch ? parseInt(maxCountMatch[0], 10) : 0
+            }
+
             try {
                 await this.managePages(product.href, page.browserContext());
                 const selectorOfSrc = `#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img`;
@@ -291,13 +300,16 @@ class sashanailgel_scraper extends Spider {
 
                 await this.clickSolution(page, selectorOfAppendToCart);
                 // console.log(`[${product.name}]點擊購物車之後，是否卡在這裡`)
-                await this.checkElementVisibleWithRetry(page, `#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr > .t1-6 > .limit-quota-hint`, 300000);
+                await Util.syncDelay(300);
+                // await this.checkElementVisibleWithRetry(page, `#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr > .t1-6 > .limit-quota-hint`, 300000);
                 // await page.waitForNavigation({waitUntil: 'networkidle2', timeout: 30000}) // 等待页面加载完成
                 const optionsInCart = [];
                 const listInCart = await page.$$(`#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr`);
                 for (const product of listInCart) {
                     const nameOfOption = await Util.fetchElementAttributes(product, `.t1-4`, 'empty', `innerText`);
-                    const countOfMax = await Util.fetchElementAttributes(product, `.t1-6 > input`, '0', `value`);
+                    // const countOfMax = await Util.fetchElementAttributes(product, `.t1-6 > input`, '0', `value`);
+                    const countOfMax = await getCountOfMax4Product(product);
+                    console.log(`${nameOfOption} 拿到countOfMax ==> ${countOfMax}`);
                     optionsInCart.push({ name: _.trim(nameOfOption), count: _.toNumber(countOfMax) });
                 }
 
