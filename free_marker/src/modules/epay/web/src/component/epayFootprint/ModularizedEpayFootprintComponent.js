@@ -6,11 +6,6 @@ import Config from "../../config";
 import Router from "../../router";
 import BaseEpayFootprintComponent from "./BaseEpayFootprintComponent";
 import Functions from "../../functions";
-import React from "react";
-import CircularProgress from "@mui/material/CircularProgress";
-import { observer } from "mobx-react";
-import ListEmptyTrigger from "../../base/ListEmptyTrigger";
-import Style from "../../style";
 
 class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     order = {};
@@ -18,6 +13,17 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     constructor(props) {
         super(props);
         this.registerScrollToBottomJob(this.getStore().fetch);
+    }
+
+    getInjectStyleOfEpayFootprintOrderCard(order) {
+        const orders = this.getStore().getOrders() || [];
+        const index = orders.indexOf(order);
+        if (index !== -1) {
+            return {
+                backgroundColor: index % 2 === 0 ? "#fffcfc" : "#fcfdff"
+            };
+        }
+        return {};
     }
 
     getInjectStyleOfEpayFootprintOrderAoaDiv(order) {

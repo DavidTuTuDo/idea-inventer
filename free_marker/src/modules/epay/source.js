@@ -795,6 +795,7 @@ const component = {
                         plural: "s",
                         type: "array",
                         view: "Card",
+                        injectStyle: true,
                         listEmptyTip: {
                             enable: true
                         },
