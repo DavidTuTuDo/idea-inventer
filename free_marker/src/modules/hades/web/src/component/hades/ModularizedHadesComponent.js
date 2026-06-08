@@ -8,6 +8,8 @@ import BaseHadesComponent from "./BaseHadesComponent";
 import JobCalendar from "../../base/JobCalendar";
 import Hades from "../../store/hadesHade";
 
+const COLORS_OF_JOB = ["error", "success", "default", "warning", "primary", "secondary"];
+
 /**
  * 模組化冥王星組件 - 負責處理哈迪斯交易數據與日曆組件的聯動
  */
@@ -17,6 +19,16 @@ class ModularizedHadesComponent extends BaseHadesComponent {
         /** 哈迪斯數據 API 實例 */
         this.apiOfHades = new Hades();
     }
+
+    getColorByString = (str) => {
+        if (!str) return "default";
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash += str.charCodeAt(i);
+        }
+        const index = hash % COLORS_OF_JOB.length;
+        return COLORS_OF_JOB[index];
+    };
 
     /**
      * 渲染注入日曆視圖的區塊
@@ -51,8 +63,9 @@ class ModularizedHadesComponent extends BaseHadesComponent {
         // 組合出 period 格式: "起始-結束" (例如 20250101000000-20250101235959)
         const period = `${format(each.timeOfCreate)}-${format(each.timeOfPayment)}`;
         const name = `＄${each.priceOfTotal}`;
+        const color = this.getColorByString(each.id);
 
-        return { ...each, period, name };
+        return { ...each, period, name, color };
     };
 
     /**
@@ -61,6 +74,14 @@ class ModularizedHadesComponent extends BaseHadesComponent {
      * @param {string} end - 結束日期 (YYYYMMDD)
      */
     fetchHadesOfCompound = async (start, end) => {
+        // 等待登入完成，確保獲取正確的 UID
+        await UserInfoRef.waitLoginCompleted();
+        const uid = UserInfoRef.getUid();
+        if (!uid) {
+            console.log("[SKIPPED] UID 未準備就緒，跳過查詢");
+            return;
+        }
+
         /** 輔助函式：將 YYYYMMDDHHmmss 字串轉為 Firebase Timestamp 對象 */
         const ts = (stringOfTS) => this.getStore().toFireBaseTimestampObject(dayjs(stringOfTS, "YYYYMMDDHHmmss"));
 
@@ -71,7 +92,7 @@ class ModularizedHadesComponent extends BaseHadesComponent {
         // 執行 Firebase Query (使用 > 與 < 進行時間過濾)
         const items = await this.apiOfHades.fetchPureHades(
             this,
-            UserInfoRef.getUid(),
+            uid,
             { type: "where", params: ["timeOfPayment", ">=", ts(startOfPrecisely)] },
             { type: "where", params: ["timeOfPayment", "<=", ts(endOfPrecisely)] },
             { type: "orderBy", params: ["timeOfPayment", "desc"] }

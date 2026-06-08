@@ -674,7 +674,7 @@ const component = {
                         name: "idOfOrder",
                         type: "string",
                         column: true,
-                        description: '訂單編號'
+                        description: "訂單編號"
                     }
                 ]
             },

@@ -109,7 +109,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                 });
 
                 // 處理庫存扣除和排程
-                await this.processInventoryAndSchedules(itemsOfClientOrdering, transaction, globalPerspective,preciseOrderRef);
+                await this.processInventoryAndSchedules(itemsOfClientOrdering, transaction, globalPerspective, preciseOrderRef);
 
                 // 創建訂單與報表
                 await this.createOrderAndHades({

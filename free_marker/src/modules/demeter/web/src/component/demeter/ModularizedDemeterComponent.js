@@ -27,6 +27,14 @@ class ModularizedDemeterComponent extends BaseDemeterComponent {
     };
 
     fetchHeraOfCompound = async (start = "20250101", end = "20250131") => {
+        // 等待登入完成，確保獲取正確的 UID
+        await BaseUserInfo.waitLoginCompleted();
+        const uid = BaseUserInfo.getUid();
+        if (!uid) {
+            console.log("[SKIPPED] UID 未準備就緒，跳過查詢");
+            return;
+        }
+
         const self = this;
         const startOfPrecisely = Util.toNumber(`${start}000000`);
         const endOfPrecisely = Util.toNumber(`${end}235959`);
@@ -45,19 +53,25 @@ class ModularizedDemeterComponent extends BaseDemeterComponent {
         // 查詢資料
         const items = await self.apiOfHera.fetchPureHeras(
             this,
-            BaseUserInfo.getUid(),
+            uid,
             { type: "where", params: ["startYYYYMMDDHHmmss", ">=", startOfPrecisely] },
             { type: "where", params: ["startYYYYMMDDHHmmss", "<=", endOfPrecisely] },
             { type: "orderBy", params: ["startYYYYMMDDHHmmss", "desc"] }
         );
 
-        // 存入 Store 並標記顏色
-        this.getStore().pushCourses(
-            ...items.map((each) => ({
-                ...each,
-                color: self.getColorByString(each.idOfBooze)
-            }))
-        );
+        // 存入 Store 並標記顏色 (先過濾已存在的 course id 避免重複)
+        const existingCourses = this.getStore().getCourses();
+        const existingIds = new Set(existingCourses.map((c) => c.id));
+        const filteredItems = items.filter((each) => !existingIds.has(each.id));
+
+        if (filteredItems.length > 0) {
+            this.getStore().pushCourses(
+                ...filteredItems.map((each) => ({
+                    ...each,
+                    color: self.getColorByString(each.idOfBooze)
+                }))
+            );
+        }
 
         // 加入並合併區間
         self.fetchedRanges.push({ from: startOfPrecisely, to: endOfPrecisely });
