@@ -1,6 +1,7 @@
 const component = {
     name: "hades",
     path: "/hades",
+    disposablePage: true,
     struct: {
         name: "hades",
         type: "object",

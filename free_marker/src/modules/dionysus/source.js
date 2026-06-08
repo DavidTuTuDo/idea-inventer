@@ -669,6 +669,12 @@ const component = {
                         defaultValue: false,
                         column: true,
                         description: "hera會用在行事曆上，用來區分課程區要受制於mainTrunk，有些不用"
+                    },
+                    {
+                        name: "idOfOrder",
+                        type: "string",
+                        column: true,
+                        description: '訂單編號'
                     }
                 ]
             },

@@ -68,8 +68,10 @@ class CommonRemoteApi {
 
     toFireBaseTimestampObject(obj) {
         if (isNull(obj) || isUndefined(obj)) return null;
-
-        if (obj instanceof firebase.getLibOfFirebaseTimestamp()) {
+        if (obj._seconds && obj._nanoseconds) {
+            const TimeS = this._firebase().getLibOfFirebaseTimestamp();
+            return new TimeS(obj._seconds, obj._nanoseconds);
+        } else if (obj instanceof firebase.getLibOfFirebaseTimestamp()) {
             return obj;
         } else {
             try {

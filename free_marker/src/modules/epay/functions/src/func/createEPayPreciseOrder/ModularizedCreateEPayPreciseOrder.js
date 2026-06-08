@@ -43,7 +43,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
      * docId: UserID
      * BookedSlots: 一個 Map 或 Array，儲存使用者所有已預訂的時間區間。
      * */
-    checkConflictAgainst2MainTrunk = async (variant, transaction, globalPerspective) => {
+    checkConflictAgainst2MainTrunk = async (variant, transaction, globalPerspective, preciseOrderRef) => {
         const timesOfOccupied = await this._firebase().transactionGet({
             transaction,
             path: `/users/${variant.idOfAuthor}/hera`,
@@ -62,9 +62,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     };
 
     /** (done) todo:當useMainTrunk為true時，要增加一筆hera通知行事曆 */
-    submitHeraSchedule = async (variant, transaction) => {
+    submitHeraSchedule = async (variant, transaction, preciseOrderRef) => {
         const ref = Api.getHeraItemDocRef("", variant.idOfAuthor);
-
         const period = Util.getStringOfConvertTimeRange(variant.content);
         const splitPeriod = period.split("-");
 
@@ -73,6 +72,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             endYYYYMMDDHHmmss: Util.toNumber(`${splitPeriod.pop()}00`),
             idOfVariant: variant.id,
             idOfBooze: variant.idOfBooze,
+            idOfOrder: preciseOrderRef.id,
             useMainTrunk: variant.useMainTrunk ?? false,
             name: `${variant.nameOfBooze}${Util.getSeparatorOfUnique()}${variant.content}`,
             period
@@ -109,7 +109,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                 });
 
                 // 處理庫存扣除和排程
-                await this.processInventoryAndSchedules(itemsOfClientOrdering, transaction, globalPerspective);
+                await this.processInventoryAndSchedules(itemsOfClientOrdering, transaction, globalPerspective,preciseOrderRef);
 
                 // 創建訂單與報表
                 await this.createOrderAndHades({
@@ -287,7 +287,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         return { eros, idOfAuthor, containsTransportedVariant, priceOfTotal: priceOfTotalOfShould, feeOfTransport, discountOfTotal: feeOfDiscount };
     };
 
-    processInventoryAndSchedules = async (itemsOfClientOrdering, transaction, globalPerspective) => {
+    processInventoryAndSchedules = async (itemsOfClientOrdering, transaction, globalPerspective, preciseOrderRef) => {
         Util.appendInfo(`processInventoryAndSchedules() coming!`);
 
         // Phase 1: Reads (Conflict Checks) - MUST happen before any writes in the transaction
@@ -313,7 +313,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             transaction.update(variantRef, { quantity: quantityOfBalance });
 
             if (variant.isTaskJob) {
-                itemOfClientOrdering.infoOfHera = JSON.stringify({ id: await this.submitHeraSchedule(variant, transaction), idOfAuthor: variant.idOfAuthor });
+                itemOfClientOrdering.infoOfHera = JSON.stringify({ id: await this.submitHeraSchedule(variant, transaction, preciseOrderRef), idOfAuthor: variant.idOfAuthor });
             } else itemOfClientOrdering.infoOfHera = "";
         }
     };

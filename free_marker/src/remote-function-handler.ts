@@ -217,7 +217,12 @@ class RemoteFunctionHandler extends BaseBuilder {
                 }
                 contents.push(`${child.getFieldName()} : ${this.getPreciseValue(child)}`);
             }
-            const updateStmt = `updateTime : this._firebase().getServerTimeSymbol()`;
+            const updateStmt = this.isProduction() ? `updateTime : this._firebase().getServerTimeSymbol()` :
+                `updateTime: !Util.isUndefined(obj.updateTime)
+                ? this.toFireBaseTimestampObject(obj.updateTime)
+                : this._firebase().getServerTimeSymbol()`;
+
+
             if (!node.isCheapArray()) contents.push(`${updateStmt},`);
 
             const content = self.isWebPlatform() ? `...Util.merO({${node.isCheapArray() ? '' : updateStmt}},this.columnData(obj))` : `${contents.map(each => each).join('\n')}`;

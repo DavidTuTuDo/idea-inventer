@@ -4619,7 +4619,7 @@ class Utiller {
         return arr
             // 1️⃣ 刪掉 idOfBooze 等於目標值的項目
             .filter(item => item.idOfBooze !== idOfCurrentBooze)
-            // 2️⃣ 根據 idOfBooze + idOfVariant 進行去重（只留第一筆）
+            // 2️⃣ 根據 idO2fBooze + idOfVariant 進行去重（只留第一筆）
             .filter(item => {
                 const pk = `${item.idOfBooze}_${item.idOfVariant}`;
                 if (seenKeys.has(pk)) {
