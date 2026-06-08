@@ -19,6 +19,12 @@ const component = {
                 },
                 children: [
                     {
+                        name: "inject",
+                        type: "boolean",
+                        defaultValue: false,
+                        column: true
+                    },
+                    {
                         name: "id",
                         type: "string",
                         column: true,

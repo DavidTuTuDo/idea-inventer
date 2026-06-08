@@ -244,6 +244,12 @@ const component = {
                 },
                 children: [
                     {
+                        name: "inject",
+                        type: "boolean",
+                        defaultValue: false,
+                        column: true
+                    },
+                    {
                         name: "timeOfPayment",
                         type: "timestamp",
                         column: true,
