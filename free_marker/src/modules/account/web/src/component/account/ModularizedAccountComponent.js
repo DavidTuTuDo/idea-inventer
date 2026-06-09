@@ -16,6 +16,11 @@ class ModularizedAccountComponent extends BaseAccountComponent {
         this.api = new AccountUser();
     }
 
+    /** 多國語系還沒做好，先藏起來 */
+    getInjectStyleOfAccountBasicDiv(account) {
+        return Util.getVisibleOrNone(false);
+    }
+
     onAccountArrowOfLogoutIconButtonClicked(param) {
         const self = this;
         UserInfoRef.logout(this.getComponentInstance())
