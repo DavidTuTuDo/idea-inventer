@@ -220,10 +220,10 @@ const component = {
             },
             {
                 name: `designer`,
-                wrapView:'div',
+                wrapView: "div",
                 type: `string`,
                 view: `Typography`,
-                defaultValue:`Designed by 明悅科技`,
+                defaultValue: `Designed by 明悅科技`
             },
             {
                 name: `ig`,
@@ -255,8 +255,7 @@ const component = {
                 boolValue: false,
                 description: "如果globalPerspective準備好了再改為true"
             }
-        ],
-
+        ]
     },
     componentsOfExtra: [
         {

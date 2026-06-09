@@ -20,6 +20,7 @@ infoOfCopyRightImgOfLineO = "images/line.png";
 infoOfCopyRightLabelOfAddressO = "地址：";
 infoOfCopyRightLabelOfPhoneO = "電話：";
 infoOfCopyRightLabelOfUnifiedB = "統編：";
+infoOfCopyRightDesigner = "Designed by 明悅科技";
 
 /** infoOfCopyRightPrivacy 需要的字串 */
 pageTitleOfInfoOfCopyRightPrivacy = "";
