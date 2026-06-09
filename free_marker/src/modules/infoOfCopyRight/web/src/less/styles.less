@@ -1457,3 +1457,45 @@
         /** empty style */
     }
 }
+.InfoOfCopyRightDesignerTypography {
+    font-size: 10px !important;
+    color: #c0c0c0 !important;
+    font-weight: 300 !important;
+    font-family: "Outfit", "Inter", "Segoe UI", sans-serif !important;
+    letter-spacing: 0.2em !important;
+    text-transform: uppercase !important;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    background: transparent;
+
+    &:hover {
+        color: #555555 !important;
+        letter-spacing: 0.3em !important;
+        background-color: #f5f5f5 !important;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03) !important;
+    }
+}
+
+.InfoOfCopyRightDesignerDivWrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #f0f0f0;
+
+    @media @mobile {
+        margin-top: 20px;
+        padding-top: 16px;
+    }
+    @media @tablet {
+        margin-top: 20px;
+        padding-top: 16px;
+    }
+    @media @desktop {
+        margin-top: 30px;
+        padding-top: 20px;
+    }
+}

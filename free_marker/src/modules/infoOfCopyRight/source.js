@@ -219,6 +219,13 @@ const component = {
                 ]
             },
             {
+                name: `designer`,
+                wrapView:'div',
+                type: `string`,
+                view: `Typography`,
+                defaultValue:`Designed by 明悅科技`,
+            },
+            {
                 name: `ig`,
                 type: `string`,
                 column: true,
@@ -248,7 +255,8 @@ const component = {
                 boolValue: false,
                 description: "如果globalPerspective準備好了再改為true"
             }
-        ]
+        ],
+
     },
     componentsOfExtra: [
         {
