@@ -11,6 +11,48 @@ class CommonRemoteApi {
         return firebase;
     }
 
+    /**
+     * 時間欄位如果要讓firestore可以辨認必須用Firebase.TimeStamp 去包裝過
+     * @param targetTimeStr '2026-06-01:00:01'
+     * @return {FirebaseFirestore.Timestamp} 回傳firestore可以用判斷timeStamp的格式
+     */
+    getTSOfFirestoreForm(targetTimeStr) {
+        const formattedString = targetTimeStr.replace(" ", "T") + ":00+08:00";
+        // 2. 轉為 Admin 專用 Timestamp
+        const jsDate = new Date(formattedString);
+        return this._firebase().getLibOfFirebaseTimestamp().fromDate(jsDate);
+    }
+
+    /**
+     * 隨機產生指定範圍內的日期與時間 (08:00 ~ 23:00)
+     * @param {string} startDate - 起始日期 (預設 '2026-06-10')
+     * @param {string} endDate - 結束日期 (預設 '2026-06-16')
+     * @returns {Date} 回傳 JavaScript Date 物件，可直接轉為 Firestore Timestamp
+     */
+    genRandomDateTimeForFirestore(startDate = "2026-06-10", endDate = "2026-06-16") {
+        const start = new Date(startDate + "T00:00:00");
+        const end = new Date(endDate + "T00:00:00");
+
+        // 計算相差天數並隨機加上天數
+        const daysDiff = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+        const randomDayOffset = Math.floor(Math.random() * (daysDiff + 1));
+
+        const targetDate = new Date(start);
+        targetDate.setDate(targetDate.getDate() + randomDayOffset);
+
+        // 計算 08:00 到 23:00 的隨機時間
+        const baseMinutes = 480; // 08:00
+        const randomMinutesOffset = Math.floor(Math.random() * 901); // 加上 0~900 分鐘
+        const totalMinutes = baseMinutes + randomMinutesOffset;
+
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        // 直接將時間設定進 Date 物件中 (秒數與毫秒設為 0)
+        targetDate.setHours(hours, minutes, 0, 0);
+        return targetDate;
+    }
+
     batchDeleteStorageByPrefixes = async (prefixes = [""], batchCount = 50) => {
         return firebase.batchDeleteStorageByPrefixes(prefixes, batchCount);
     };
