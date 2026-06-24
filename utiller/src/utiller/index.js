@@ -220,18 +220,31 @@ class Utiller {
     /**
      * 移除陣列中 predicate 回傳 truthy 的元素，並回傳被移除元素的陣列 (會改變原陣列)
      */
+    /**
+     * 移除陣列中 predicate 回傳 truthy 的元素，並回傳被移除元素的陣列 (會改變原陣列)
+     */
     remove(array, predicate) {
         const result = [];
         if (!Array.isArray(array)) return result;
         const func = this.iteratee(predicate);
+
         let i = 0;
+        let originalIndex = 0; // 新增這個變數，專門用來紀錄「原本的 index」
+
         while (i < array.length) {
-            if (func(array[i], i, array)) {
+            // 將 originalIndex 傳給 predicate，這樣判斷邏輯才不會被 splice 打亂
+            if (func(array[i], originalIndex, array)) {
+                // 拔出元素放進 result
                 result.push(array.splice(i, 1)[0]);
+                // 注意：這裡 i 不遞增 (i++)，因為拔掉元素後，後面的元素已經自動補上來變成第 i 個了
             } else {
+                // 沒有拔除元素時，i 才往下走
                 i++;
             }
+            // 無論有沒有拔除元素，原始長度的 index 都要繼續往前走
+            originalIndex++;
         }
+
         return result;
     }
 

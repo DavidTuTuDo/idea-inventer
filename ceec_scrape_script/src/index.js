@@ -172,7 +172,7 @@ class ceec_scrape_script {
         }
 
         function safeGetQuestionOrderNumber(string) {
-            return Util.toNumber(Util.getNormalizedStringNotEndWith(Util.toSpaceLessString(string), '.'));
+            return Util.toNumber(Util.getNormalizedStringNotEndWith(Util.ttoSpaceLessString(string), '.'));
         }
 
         const answers = [];
@@ -304,12 +304,16 @@ export {ceec_scrape_script as ceec_scrape_script}
 if (configerer.DEBUG_MODE) {
     (async () => {
             const handler = new ceec_scrape_script();
+            /** (1)先用這個方式拿到歷史考券們 */
             // await handler.fetchCeeCPDFFilesOfPaper();
+
             // await handler.samplePdfFile();
 
             /** 拿到 100-110 */
             // await handler.goThroughGSAT('./gsat-91-sin-formal.db', '自然', 91, {enable: false, min: 90, max: 95});
-            await handler.goThroughGSAT('./gsat-113.db', undefined, 113, {enable: false, min: 90, max: 95});
+
+            /** (2)再先用這個方式拿到題目解析 */
+            await handler.goThroughGSAT('./gsat-115.db', undefined, 115, {enable: false, min: 90, max: 95});
         }
     )();
 }

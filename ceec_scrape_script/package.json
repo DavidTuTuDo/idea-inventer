@@ -17,7 +17,7 @@
     "downloadjs": "^1.4.7",
     "lodash": "^4.17.20",
     "puppeteer": "^24.30.0",
-    "utiller": "^1.0.162",
+    "utiller": "^1.0.511",
     "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
