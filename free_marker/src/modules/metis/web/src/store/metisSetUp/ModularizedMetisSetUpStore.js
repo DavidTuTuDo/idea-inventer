@@ -20,7 +20,7 @@ class ModularizedMetisSetUpStore extends BaseMetisSetUpStore {
                 result.clazzes = await this.api.fetchClazzes(this.getComponent()); /** prepare with default value */
             },
             async () => {
-                result.append = this.append /** prepare with default value */;
+                result.append = this.append; /** prepare with default value */
             }
         ]);
         this.fromJson(result);
