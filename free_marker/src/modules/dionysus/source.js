@@ -23,6 +23,11 @@ const component = {
             type: "httpOnCall",
             description: "對送出的客戶發送Email",
             payload: { idOfSavior: "" } /** 發信的依據 */
+        },
+        {
+            name: "generateDynamicPreview",
+            type: "httpOnRequest",
+            description: "讓ＳＰＡ的頁面讀「取特定網址」時，可以顯示出客制的預覽效果「芄食品」牛肉乾50公克 50元起"
         }
     ],
     enums: {

@@ -1,7 +1,7 @@
 const edit = true;
 
 import { utiller as Util, exceptioner as ERROR } from "utiller";
-import { nth, size, split, toLower } from 'lodash-es';
+import { nth, size, split, toLower } from "lodash-es";
 // 1. 修改導入方式，使用 v2 專用的 logger
 import * as logger from "firebase-functions/logger";
 import Api from "../api";
