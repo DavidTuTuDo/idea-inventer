@@ -1,5 +1,8 @@
 const edit = true;
 
+/** 全域暫存：依據 idOfAuthor 快取 timesOfOccupied，避免同一 author 反覆 fetch */
+const cacheOfTimesOccupied = new Map();
+
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import { every, filter, find, get, head, last, map, maxBy, min, size } from "lodash-es";
 import BaseDionysusMaenadsStore from "./BaseDionysusMaenadsStore";
@@ -41,16 +44,42 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             const [firstOpt, lastOpt] = [head(booze.specificAttributes[0].options), last(booze.specificAttributes[0].options)];
             const start = Util.getTSOfSpecificDate(firstOpt.label);
             const end = Util.getTSOfSpecificDate(lastOpt.label, { end: true });
-            const timesOfOccupied = await self.apiOfHera.fetchPureHeras(
-                self.getComponent(),
-                booze.idOfAuthor,
-                { type: "where", params: ["startYYYYMMDDHHmmss", ">=", start] },
-                { type: "where", params: ["startYYYYMMDDHHmmss", "<=", end] },
-                { type: "where", params: ["useMainTrunk", "==", true] },
-                { type: "orderBy", params: ["startYYYYMMDDHHmmss"] }
-            );
-            Util.appendInfo("main trunk裡的項目 itemsOfHera => ", timesOfOccupied);
-            const itemsOfHera = Util.getFilteredHeraPeriods(timesOfOccupied, booze.id);
+            const cacheKey = booze.idOfAuthor;
+            let timesOfOccupied;
+            if (cacheOfTimesOccupied.has(cacheKey)) {
+                timesOfOccupied = cacheOfTimesOccupied.get(cacheKey);
+                Util.appendInfo(`使用快取的 timesOfOccupied (idOfAuthor: ${cacheKey})`);
+            } else {
+                timesOfOccupied = await self.apiOfHera.fetchPureHeras(
+                    self.getComponent(),
+                    booze.idOfAuthor,
+                    { type: "where", params: ["startYYYYMMDDHHmmss", ">=", start] },
+                    { type: "where", params: ["startYYYYMMDDHHmmss", "<=", end] },
+                    { type: "where", params: ["useMainTrunk", "==", true] },
+                    { type: "orderBy", params: ["startYYYYMMDDHHmmss"] }
+                );
+                cacheOfTimesOccupied.set(cacheKey, timesOfOccupied);
+            }
+
+            /** Hack: 將今天(含)以前的日期全部注入為已佔用時段，讓 checkPeriodConflict 判定衝突 */
+            const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, ""); // "YYYYMMDD"
+            const firstDateStr = firstOpt.label.split("(")[0].trim().replace(/\//g, ""); // "YYYYMMDD"
+            const syntheticOccupied = [];
+            let cursor = new Date(firstDateStr.slice(0, 4) + "-" + firstDateStr.slice(4, 6) + "-" + firstDateStr.slice(6, 8));
+            const todayDate = new Date(todayStr.slice(0, 4) + "-" + todayStr.slice(4, 6) + "-" + todayStr.slice(6, 8));
+            while (cursor <= todayDate) {
+                const ymd = cursor.toISOString().slice(0, 10).replace(/-/g, "");
+                syntheticOccupied.push({
+                    period: `${ymd}0000-${ymd}2359`,
+                    idOfBooze: "__PAST_DATE_OCCUPIED__",
+                    idOfVariant: `__PAST_${ymd}__`
+                });
+                cursor.setDate(cursor.getDate() + 1);
+            }
+
+            const mergedOccupied = [...timesOfOccupied, ...syntheticOccupied];
+            Util.appendInfo("main trunk裡的項目 (含過去日期hack) itemsOfHera => ", mergedOccupied);
+            const itemsOfHera = Util.getFilteredHeraPeriods(mergedOccupied, booze.id);
             Util.appendInfo("篩選過後的 itemsOfHera => ", itemsOfHera);
             /** 如果有課程衝突，就將其數量設定為0，前端用戶看到Chip會是disabled */
             self.listOfVariant.forEach((v) => {

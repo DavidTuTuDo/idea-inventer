@@ -1,5 +1,5 @@
 @desktop: ~"only screen and (min-width: 601px)";
-@tablet: ~"only screen and (min-width: 320px) and (max-width: 600px)";
+@tablet: ~"only screen and (min-width: 601px) and (max-width: 1024px)";
 @mobile: ~"only screen and (min-width: 320px) and (max-width: 600px)";
 .InfoOfCopyRightDiv:extend(.CenterInParentColumn) {
     width: 100vw;
@@ -481,7 +481,12 @@
     border-top: 1px solid #f0f0f0;
     margin-top: 25px;
     margin-bottom: 25px;
-
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
     @media @desktop {
         margin-top: 30px;
         padding-top: 20px;
