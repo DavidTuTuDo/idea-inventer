@@ -69,7 +69,6 @@ class ModularizedGenerateDynamicPreview extends BaseGenerateDynamicPreview {
             response.status(200).send(`<html><script>window.location.href="/";</script></html>`);
         }
     }
-    ㄅ;
 }
 
 export default ModularizedGenerateDynamicPreview;
