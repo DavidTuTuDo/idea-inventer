@@ -1,6 +1,5 @@
 const edit = true;
 
-import "../less";
 import { createRoot } from "react-dom/client";
 import I18n from "../i18n";
 import { inject, observer } from "mobx-react";

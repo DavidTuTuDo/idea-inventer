@@ -561,6 +561,7 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
         appGenerator.appendImport(`Store`, `./store`);
         appGenerator.appendImport(`Config`, `./config`);
+        appGenerator.appendImport('', `./less`);
         appGenerator.appendImport(`ImpComponent`, `./base/ImpComponent`);
         appGenerator.appendImport(`{inject,observer}`, `mobx-react`);
         appGenerator.appendImport(`React`, `react`);
