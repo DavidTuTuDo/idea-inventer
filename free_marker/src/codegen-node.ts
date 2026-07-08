@@ -1463,7 +1463,7 @@ class CodegenNode {
     /** 像是新增一個item, 這種屬許array等級的作業, 一個Array只會有一個新增 */
     getFunctionNameOfCollectionEditor() { return Util.camel('on', this.getName(), 'Editor', 'Clicked', 'AsyncTask'); }
 
-    isContainer() { return Util.isOrEquals(_.toLower(this.getView()), 'accordionsummary','accordiondetails','accordion','grid', 'div', 'card', 'paper', 'swiper', 'swiperslide', 'badge',
+    isContainer() { return Util.isOrEquals(_.toLower(this.getView()), 'accordionsummary','accordiondetails','accordion','grid', 'stack', 'div', 'card', 'paper', 'swiper', 'swiperslide', 'badge',
       'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment', 'LocalizationProvider'); }
 
     getFunctionNameOfSwiper() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Swipe'); }

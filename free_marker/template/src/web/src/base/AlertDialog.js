@@ -377,7 +377,8 @@ const AlertDialog = observer(
                 fullScreen={hasCustomView()}
                 maxWidth={true}
                 onClick={(e) => e.stopPropagation()}
-                sx={
+                // ▼ 將 hasCustomView() 判斷加入到 sx 陣列中 ▼
+                sx={[
                     mightCauseResizeUnmount()
                         ? {
                               "& .MuiDialog-container": {
@@ -387,8 +388,18 @@ const AlertDialog = observer(
                                   overflowY: "auto"
                               }
                           }
+                        : {},
+                    hasCustomView()
+                        ? {
+                              "& .MuiDialog-paper": {
+                                  backgroundColor: "transparent",
+                                  boxShadow: "none",
+                                  backgroundImage: "none"
+                              }
+                          }
                         : {}
-                }
+                ]}
+                // ▲ 結束修改 ▲
                 disablePortal={mightCauseResizeUnmount()}
                 disableScrollLock={mightCauseResizeUnmount()}
                 disableEnforceFocus={mightCauseResizeUnmount()}

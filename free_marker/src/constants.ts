@@ -144,7 +144,7 @@ export const VIEW_IMPORTS: ViewImportConfig[] = [
     },
     {
         from: `@mui/material`,
-        views: ["Accordion", "AccordionSummary", "AccordionDetails","Badge", "Checkbox", "Chip", "Skeleton", "Autocomplete", "InputBase", "Switch", "SwipeableDrawer", "MenuItem", "Grid", "Paper", "Card", "Avatar", "AppBar", "Toolbar", "TextField",
+        views: ["Accordion", "AccordionSummary", "AccordionDetails","Badge", "Checkbox", "Chip", "Skeleton", "Autocomplete", "InputBase", "Switch", "SwipeableDrawer", "MenuItem", "Grid", "Stack", "Paper", "Card", "Avatar", "AppBar", "Toolbar", "TextField",
             "Radio", "RadioGroup", "ButtonGroup", "FormControlLabel", "Slider", "Typography", "Button", "IconButton",
             "Drawer", "ListItem", "List", "Tabs", "Tab", "CircularProgress"]
     },

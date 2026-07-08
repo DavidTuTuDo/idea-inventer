@@ -1068,8 +1068,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 )
                 node.setClick(true);
                 node.appendWrapProps(
-                    {item: true},
-                    {size: `###${node.getName()}.getXs()`} // mui7之後改成xs -> size
+                    {size: `###{xs: ${node.getName()}.getXs()}`} // mui9: item prop已移除, size改為object形式
                 )
                 node.setWrapView('Grid');
                 node.appendChildrenWithJsons(

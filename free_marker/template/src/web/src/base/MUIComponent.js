@@ -10,6 +10,8 @@ import { utiller as Util } from "utiller";
 import { toJS, isObservable } from "mobx";
 import Countdown from "react-countdown";
 import Card from "@mui/material/Card";
+import Router from "../router";
+import Config from "../config";
 
 class MuiComponent extends React.Component {
     constructor(props) {
@@ -36,6 +38,17 @@ class MuiComponent extends React.Component {
     });
 
     gotoPreviewPage() {
+        const domain = Config.host;
+
+        // 只有當 referrer 明確存在，且「不包含」你的網域時，才判定為外部網站
+        const isExternal = document.referrer && !document.referrer.startsWith(domain);
+
+        // 沒有歷史紀錄，或者是從外部網站來的，才送回首頁
+        if (window.history.length <= 1 || isExternal) {
+            console.log("無法返回，導回首頁");
+            return Router.gotoHomePage(this);
+        }
+
         window.history.back();
     }
 

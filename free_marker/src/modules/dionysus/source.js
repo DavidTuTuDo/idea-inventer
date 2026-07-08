@@ -933,6 +933,14 @@ const component = {
                                 color: "success",
                                 incest: { view: false, attribute: true },
                                 defaultValue: "編輯"
+                            },
+                            {
+                                name: "share",
+                                view: "IconButton",
+                                needParam: true,
+                                incest: { view: false, attribute: true },
+                                type: "string",
+                                icon: "Share"
                             }
                         ]
                     },

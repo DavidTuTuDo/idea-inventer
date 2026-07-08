@@ -82,7 +82,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/material`,
-            views: ["Accordion", "AccordionSummary", "AccordionDetails","Badge", "Checkbox", "Chip", "Skeleton", "Autocomplete", "InputBase", "Switch", "SwipeableDrawer", "MenuItem", "Grid", "Paper", "Card", "Avatar", "AppBar", "Toolbar", "TextField",
+            views: ["Accordion", "AccordionSummary", "AccordionDetails","Badge", "Checkbox", "Chip", "Skeleton", "Autocomplete", "InputBase", "Switch", "SwipeableDrawer", "MenuItem", "Grid", "Stack", "Paper", "Card", "Avatar", "AppBar", "Toolbar", "TextField",
                 "Radio", "RadioGroup", "ButtonGroup", "FormControlLabel", "Slider", "Typography", "Button", "IconButton",
                 "Drawer", "ListItem", "List", "Tabs", "Tab", "CircularProgress"]
         },
@@ -1534,7 +1534,7 @@ class CodegenNode {
     /** 像是新增一個item, 這種屬許array等級的作業, 一個Array只會有一個新增 */
     getFunctionNameOfCollectionEditor() { return Util.camel('on', this.getName(), 'Editor', 'Clicked', 'AsyncTask'); }
 
-    isContainer() { return Util.isOrEquals(_.toLower(this.getView()), 'accordionsummary','accordiondetails','accordion','grid', 'div', 'card', 'paper', 'swiper', 'swiperslide', 'badge',
+    isContainer() { return Util.isOrEquals(_.toLower(this.getView()), 'accordionsummary','accordiondetails','accordion','grid', 'stack', 'div', 'card', 'paper', 'swiper', 'swiperslide', 'badge',
       'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment', 'LocalizationProvider'); }
 
     getFunctionNameOfSwiper() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Swipe'); }
@@ -8679,8 +8679,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 )
                 node.setClick(true);
                 node.appendWrapProps(
-                    {item: true},
-                    {size: `###${node.getName()}.getXs()`} // mui7之後改成xs -> size
+                    {size: `###{xs: ${node.getName()}.getXs()}`} // mui9: item prop已移除, size改為object形式
                 )
                 node.setWrapView('Grid');
                 node.appendChildrenWithJsons(

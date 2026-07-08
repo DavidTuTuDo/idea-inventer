@@ -28,6 +28,10 @@ class ModularizedDionysusBacchusComponent extends BaseDionysusBacchusComponent {
         UserInfoRef.setGotoCartieDirect(true);
     }
 
+    onDionysusBacchusShareIconButtonClicked(param) {
+        this.copyCurrentLinkToClipboard(`已將「商品連結」新增至剪貼簿`);
+    }
+
     onDionysusBacchusJoinToCartChipClicked(param) {
         Util.appendInfo(`cookie紀錄->加入購物車`);
         UserInfoRef.setGotoCartieDirect(false);
