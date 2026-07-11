@@ -1,8 +1,7 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import { utiller as Util } from "utiller";
 
-import libpath from "path";
 import sendEmail from "../sendEmailOfReceipt";
 import Config from "../../config";
 import BaseForcePaidByAuthor from "./BaseForcePaidByAuthor";
@@ -25,28 +24,29 @@ class ModularizedForcePaidByAuthor extends BaseForcePaidByAuthor {
         await this.validateOrderIsUnPaidWaiting(detailOfPreciseOrder);
 
         /** update order的訂單的timeOfPayment, procedureOfPayment='authorForcePaid', update stateOfPayment=5(completed) */
-        await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
-            await this.validateOrderIsUnPaidWaiting(order);
-            return {
-                typeOfTransaction: Config.TransactionMethod.AuthorForcePaid,
-                procedureOfPayment: Config.LangOfEPayType.AuthorForcePaid,
-                stateOfPayment: Config.StateOfPayment.Completed,
-                timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
-            };
-        }, detailOfPreciseOrder.id);
-
-        await Api.updateHadeItemAtomically(
-            (item, transaction) => {
+        await Promise.all([
+            Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
+                await this.validateOrderIsUnPaidWaiting(order);
                 return {
                     typeOfTransaction: Config.TransactionMethod.AuthorForcePaid,
-                    procedureOfPayment: `${Config.LabelOfTransactionMethod(Config.TransactionMethod.AuthorForcePaid)}`,
-                    paid: true,
+                    procedureOfPayment: Config.LangOfEPayType.AuthorForcePaid,
+                    stateOfPayment: Config.StateOfPayment.Completed,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
                 };
-            },
-            detailOfPreciseOrder.id,
-            detailOfPreciseOrder.idOfAuthor
-        );
+            }, detailOfPreciseOrder.id),
+            Api.updateHadeItemAtomically(
+                (item, transaction) => {
+                    return {
+                        typeOfTransaction: Config.TransactionMethod.AuthorForcePaid,
+                        procedureOfPayment: `${Config.LabelOfTransactionMethod(Config.TransactionMethod.AuthorForcePaid)}`,
+                        paid: true,
+                        timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
+                    };
+                },
+                detailOfPreciseOrder.id,
+                detailOfPreciseOrder.idOfAuthor
+            )
+        ]);
 
         Util.exeAsyncT(sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session));
         return { message: `confirmed by ${Config.EPayType.LinePay} succeed` };

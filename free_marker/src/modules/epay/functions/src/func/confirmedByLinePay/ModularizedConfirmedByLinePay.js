@@ -1,8 +1,6 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-
-import libpath from "path";
+import { utiller as Util, exceptioner as ERROR } from "utiller";
 import Config from "../../config";
 import Api from "../../api";
 import { linepayer as LinePay } from "linepayer";
@@ -71,29 +69,30 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
         const resultOfLinePayConfirm = await linepay.confirm(payloadOfConfirmLinePay, data.idOfTransaction);
         const codeOfReturn = resultOfLinePayConfirm.returnCode;
         if (Util.isEqual(codeOfReturn, "0000")) {
-            await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
-                await this.validateOrderIsUnPaidWaiting(item);
-                return {
-                    stateOfPayment: Config.StateOfPayment.Completed,
-                    procedureOfPayment: `${Config.LangOfEPayType.LinePay}`,
-                    timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
-                    idOfThirdPartyTradeNo: data.idOfTransaction,
-                    messageOfPayment: `${resultOfLinePayConfirm.returnMessage}`
-                };
-            }, itemOfPreciseOrder.id);
-
-            await Api.updateHadeItemAtomically(
-                (item, transaction) => {
+            await Promise.all([
+                Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
+                    await this.validateOrderIsUnPaidWaiting(item);
                     return {
-                        typeOfTransaction: Config.TransactionMethod.LinePay,
-                        paid: true,
+                        stateOfPayment: Config.StateOfPayment.Completed,
                         procedureOfPayment: `${Config.LangOfEPayType.LinePay}`,
-                        timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
+                        timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
+                        idOfThirdPartyTradeNo: data.idOfTransaction,
+                        messageOfPayment: `${resultOfLinePayConfirm.returnMessage}`
                     };
-                },
-                itemOfPreciseOrder.id,
-                itemOfPreciseOrder.idOfAuthor
-            );
+                }, itemOfPreciseOrder.id),
+                Api.updateHadeItemAtomically(
+                    (item, transaction) => {
+                        return {
+                            typeOfTransaction: Config.TransactionMethod.LinePay,
+                            paid: true,
+                            procedureOfPayment: `${Config.LangOfEPayType.LinePay}`,
+                            timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
+                        };
+                    },
+                    itemOfPreciseOrder.id,
+                    itemOfPreciseOrder.idOfAuthor
+                )
+            ]);
             this.customizeBehaviorOfSucceedTrade();
             Util.appendInfo(`LINE-PAY完成付款項目,更新了訂單(${data.idOfPreciseOrder})狀態`);
             Util.exeAsyncT(sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session));

@@ -1,8 +1,15 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import { utiller as Util } from "utiller";
 import Api from "../../api";
+import Config from "../../config";
+import libPath from "path";
 import BaseGenerateDynamicPreview from "./BaseGenerateDynamicPreview";
+
+/** 模組級 HTML 快取（熱函式會重用同一個進程） */
+let _cachedHtml = null;
+let _cachedHtmlAt = 0;
+const HTML_CACHE_TTL = 5 * 60 * 1000; // 5 分鐘
 
 class ModularizedGenerateDynamicPreview extends BaseGenerateDynamicPreview {
     constructor(props) {
@@ -21,14 +28,13 @@ class ModularizedGenerateDynamicPreview extends BaseGenerateDynamicPreview {
         if (!id) return response.status(400).send("Bad Request");
 
         try {
-            // 1. 去資料庫撈這筆商品的資料
-            const booze = await Api.fetchBoozeItem(id);
-            const pref = await Api.fetchGlobalPerspective();
+            // 1. 並行撈資料庫商品 + 全域設定
+            const [booze, pref] = await Promise.all([Api.fetchBoozeItem(id), Api.fetchGlobalPerspective()]);
 
             // 2. 準備你要給 LINE / FB 看的客製化文字與圖片
             let ogTitle = "找不到頁面";
-            let ogImage = "https://davidtu-dev.web.app/default-preview.jpg";
-            let ogDesc = "抱歉，該項目已不存在";
+            let ogImage = libPath.join(Config.host, `images/logo.png`);
+            let ogDesc = "";
 
             if (booze && booze.exists) {
                 const brandName = pref && pref.nameOfBrand ? pref.nameOfBrand : "";
@@ -44,8 +50,17 @@ class ModularizedGenerateDynamicPreview extends BaseGenerateDynamicPreview {
             // ==========================================
             // 最簡單的魔法在這裡：直接抓線上的首頁來用！
             // ==========================================
-            const fetchRes = await fetch("https://davidtu-dev.web.app/index.html");
-            let html = await fetchRes.text();
+            // 使用快取避免重複 fetch 首頁 HTML
+            const now = Date.now();
+            let html;
+            if (_cachedHtml && now - _cachedHtmlAt < HTML_CACHE_TTL) {
+                html = _cachedHtml;
+            } else {
+                const fetchRes = await fetch(Config.host);
+                html = await fetchRes.text();
+                _cachedHtml = html;
+                _cachedHtmlAt = now;
+            }
 
             // 把你要的特色預覽標籤，做成一串字
             const metaTags = `

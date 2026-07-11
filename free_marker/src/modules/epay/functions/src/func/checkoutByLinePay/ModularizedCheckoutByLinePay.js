@@ -4,6 +4,7 @@ import { size } from "lodash-es";
 import BaseCheckoutByLinePay from "./BaseCheckoutByLinePay";
 import Api from "../../api";
 import Config from "../../config";
+import { utiller as Util } from "utiller";
 
 const MAP_OF_CODE_MESSAGE_FROM_REQUEST_RESULT = {
     "0000": "成功",
@@ -104,11 +105,10 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
         const idOfPreciseOrder = data.idOfPreciseOrder;
         await this.validateIdOfDocumentQualify(idOfPreciseOrder);
         let itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        const linepay = await this.linepayO(itemOfPreciseOrder.idOfAuthor);
         await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder);
         /** await this.validateIsUserOfOrder(itemOfPreciseOrder, session); 這句會擋住anonymous user購買 */
         await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder);
-        const info = await Api.fetchGlobalPerspective();
+        const [linepay, info] = await Promise.all([this.linepayO(itemOfPreciseOrder.idOfAuthor), Api.fetchGlobalPerspective()]);
         const payloadOfLinePay = this.getPayloadOfLinePayRequest(itemOfPreciseOrder, info.nameOfBrand);
         const resultOfLinePayRequest = await linepay.request(payloadOfLinePay);
         if (Util.isEqual(resultOfLinePayRequest.returnCode, "0000")) {

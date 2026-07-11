@@ -84,7 +84,7 @@ class BaseFunction extends ClientRemoteApi {
     }
 
     async incrementProductCountsAtomically(itemOfPreciseOrder) {
-        for (const item of itemOfPreciseOrder.items) {
+        await Promise.all(itemOfPreciseOrder.items.map(async (item) => {
             const param = item.idOfPreciseProduct.split(Util.getSeparatorOfUnique());
             const idOfVariant = param.pop();
             const idOfBooze = param.shift();
@@ -106,7 +106,7 @@ class BaseFunction extends ClientRemoteApi {
                     /** ignore errors */
                 }
             }
-        }
+        }));
         await Api.updatePreciseOrderItem({ isRestoreItems: true }, itemOfPreciseOrder.id);
     }
 

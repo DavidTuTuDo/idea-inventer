@@ -298,6 +298,7 @@ class ProjectFileHandler extends PathBase {
                 baseConfigGenerator.appendField(`LINEPAY_SANDBOX`, JSON.stringify(this.isProduction() ? sourceObj.linepay.prod : sourceObj.linepay.dev));
                 baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));
                 baseConfigGenerator.appendField(`server`, JSON.stringify(sourceObj.server));
+                baseConfigGenerator.appendField(`userMailStore`, JSON.stringify(sourceObj.useMailStore));
                 break;
             case 'web':
                 baseConfigGenerator.appendField(`useXTunnelDev`, sourceObj.useXTunnelDev);

@@ -48,31 +48,32 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
         await this.validateIdOfDocumentQualify(contentOfSucceed.MerchantTradeNo);
 
         if (Util.isEqual(toInteger(contentOfSucceed.RtnCode), 1)) {
-            await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
-                await this.validateOrderIsUnPaidWaiting(item);
-                return {
-                    stateOfPayment: Config.StateOfPayment.Completed,
-                    procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
-                    timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
-                    idOfThirdPartyTradeNo: `${contentOfSucceed.TradeNo}`,
-                    messageOfPayment: `${contentOfSucceed.RtnMsg}`,
-                    contentOfRender: Api._firebase().getDeleteDocAttributeSymbol() /** 成功交易後刪掉，不然太佔document的容量 */
-                };
-            }, itemOfPreciseOrder.id);
-
-            await Api.updateHadeItemAtomically(
-                async (item, transaction) => {
+            await Promise.all([
+                Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
+                    await this.validateOrderIsUnPaidWaiting(item);
                     return {
-                        typeOfTransaction: Config.TransactionMethod.ECPay,
                         stateOfPayment: Config.StateOfPayment.Completed,
-                        paid: true,
                         procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
-                        timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
+                        timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
+                        idOfThirdPartyTradeNo: `${contentOfSucceed.TradeNo}`,
+                        messageOfPayment: `${contentOfSucceed.RtnMsg}`,
+                        contentOfRender: Api._firebase().getDeleteDocAttributeSymbol() /** 成功交易後刪掉，不然太佔document的容量 */
                     };
-                },
-                itemOfPreciseOrder.id,
-                itemOfPreciseOrder.idOfAuthor
-            );
+                }, itemOfPreciseOrder.id),
+                Api.updateHadeItemAtomically(
+                    async (item, transaction) => {
+                        return {
+                            typeOfTransaction: Config.TransactionMethod.ECPay,
+                            stateOfPayment: Config.StateOfPayment.Completed,
+                            paid: true,
+                            procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
+                            timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
+                        };
+                    },
+                    itemOfPreciseOrder.id,
+                    itemOfPreciseOrder.idOfAuthor
+                )
+            ]);
 
             this.customizeBehaviorOfSucceedTrade();
             Util.appendInfo(`ECPAY完成付款項目,更新了訂單(${contentOfSucceed.MerchantTradeNo})狀態`);

@@ -1,6 +1,6 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import { utiller as Util } from "utiller";
 import { remove, size } from "lodash-es";
 import BaseSendEmailOfReceipt from "./BaseSendEmailOfReceipt";
 import Api from "../../api";
@@ -33,24 +33,24 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
      * @returns {string} email 可用的 HTML
      */
     generateOrderEmailHTML({
-        items = [],
-        name,
-        priceOfTotal,
-        feeOfTransport,
-        discountOfTotal,
-        methodOfTransaction,
-        methodOfTransport,
-        serialOfTransport,
-        remark,
-        phoneNumber,
-        address,
-        needAddress,
-        id,
-        anonymous,
-        displayImage,
-        isBuyer,
-        global
-    }) {
+                               items = [],
+                               name,
+                               priceOfTotal,
+                               feeOfTransport,
+                               discountOfTotal,
+                               methodOfTransaction,
+                               methodOfTransport,
+                               serialOfTransport,
+                               remark,
+                               phoneNumber,
+                               address,
+                               needAddress,
+                               id,
+                               anonymous,
+                               displayImage,
+                               isBuyer,
+                               global
+                           }) {
         const valid = (string) => Util.isString(string) && size(string) > 0;
         const toCurrency = (n) => Number(n).toLocaleString("zh-TW");
         // <a href="${timeTree}" style="${chipStyle}"><img src="https://img.icons8.com/ios-filled/50/000000/calendar--v1.png" style="${iconStyle}">新增至TimeTree</a>
@@ -90,11 +90,11 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         const customerInfo = `
     ${valid(name) ? `<div>客戶姓名：${name}</div>` : ""}
     ${
-        valid(address) && needAddress
-            ? `<div >客戶地址：${address} 
+            valid(address) && needAddress
+                ? `<div >客戶地址：${address} 
     <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" style="font-size:12px;color:#0066cc;text-decoration:none;">[開啟地圖]</a></div>`
-            : ""
-    }
+                : ""
+        }
     ${valid(remark) ? `<div>客戶備註：${remark}</div>` : ""}
     ${valid(phoneNumber) ? `<div style="margin-bottom:4px;">聯絡方式：${phoneNumber}</div>` : ""}`;
 
@@ -151,14 +151,13 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
 
     async handleHttpOnCall(data, session) {
         const { idOfPreciseOrder, isTransportCompleted } = data;
-        const order = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
+        const [order, global] = await Promise.all([Api.fetchPreciseOrderItem(idOfPreciseOrder), Api.fetchGlobalPerspective()]);
         const { id, email } = order;
 
         if (Util.isUndefinedNullEmpty(email)) {
             this.appendErrorLog(9999, `4564655-SendEmailOfReceipt 客戶未提供Email，無法送出Email，訂單編號：${id}`);
             return;
         }
-        const global = await Api.fetchGlobalPerspective();
         this.appendLog(`${idOfPreciseOrder} 準備發送Email給賣家｜買家`);
 
         if (isTransportCompleted) {
@@ -176,8 +175,8 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         const subject = isTransportCompleted
             ? `[${global.nameOfBrand}]您的商品已寄出，請留意簡訊`
             : isBuyer
-              ? `[${global.nameOfBrand}]您的款項已確認`
-              : `[${global.nameOfBrand}]您有新的成交訂單`;
+                ? `[${global.nameOfBrand}]您的款項已確認`
+                : `[${global.nameOfBrand}]您有新的成交訂單`;
 
         const xxx = {
             methodOfTransaction: Config.LabelOfTransactionMethod(order.typeOfTransaction),
@@ -190,8 +189,10 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         };
 
         const latest = Util.merO(order, xxx);
+        const handler = Config.userMailStore ? FirebaseHelper.mailStore() : FirebaseHelper.firestore();
+
         Util.exeAsyncT(
-            FirebaseHelper.firestore()
+            handler
                 .collection("mail")
                 .add({
                     to: [recipient, ...this.listOfCC()],

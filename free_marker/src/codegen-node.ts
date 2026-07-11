@@ -34,11 +34,18 @@ import {
 
 class CodegenNode {
 
-    useLazy = true;
+    /**
+    * davidtu-dev的firestore位置在nam5，這已經沒辦法改變了。只能用mailStore
+    * 如果有其他專案也遇到這個問題就要在firestore新增一個firebase-id = 'deliver'
+    * */
+    useMailStore = false;
+
     /**
      * 如果是一開始就載入的component要記得useLazy=false
      * 用來降低bundle的main.js的檔案大小 => React.Lazy
      */
+    useLazy = true;
+
 
     /**
      * 很多TextField都需要存在cache，或是遠端保存。

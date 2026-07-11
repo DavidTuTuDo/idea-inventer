@@ -1,6 +1,6 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import { utiller as Util } from "utiller";
 
 import Config from "../../config";
 import BaseVerifyByLiffIdToken from "./BaseVerifyByLiffIdToken";

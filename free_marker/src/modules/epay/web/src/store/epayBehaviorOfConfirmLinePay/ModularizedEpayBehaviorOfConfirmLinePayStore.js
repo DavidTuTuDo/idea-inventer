@@ -5,6 +5,7 @@ import BaseEpayBehaviorOfConfirmLinePayStore from "./BaseEpayBehaviorOfConfirmLi
 import Functions from "../../functions";
 import queryString from "query-string";
 import UserInfo from "../../base/BaseUserInfo";
+import { cloneDeep } from "lodash-es";
 
 class ModularizedEpayBehaviorOfConfirmLinePayStore extends BaseEpayBehaviorOfConfirmLinePayStore {
     /** -------------------- fields -------------------- **/
@@ -16,7 +17,7 @@ class ModularizedEpayBehaviorOfConfirmLinePayStore extends BaseEpayBehaviorOfCon
 
     async onInitialFetchCompleted(collection) {
         const objectOfLinePayInfo = queryString.parse(this.getComponent().props.location.search); //console.log(params) { transactionId:2021062500677569710, orderId:Order2019101500001 };
-        const idOfPreciseOrder = Util.cloneDeep(objectOfLinePayInfo.orderId);
+        const idOfPreciseOrder = cloneDeep(objectOfLinePayInfo.orderId);
         this.getComponent().invalidateProcessingGuard(true, { variant: "success", textOfTip: "交易中，請勿關閉" });
         try {
             await Functions.httpOnCallConfirmedByLinePay(this.getComponent(), {

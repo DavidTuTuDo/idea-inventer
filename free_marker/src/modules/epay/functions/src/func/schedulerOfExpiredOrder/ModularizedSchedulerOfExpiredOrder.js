@@ -1,8 +1,7 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import { utiller as Util } from "utiller";
 import { filter, map } from "lodash-es";
-import libpath from "path";
 import Api from "../../api";
 import Config from "../../config";
 import BaseSchedulerOfExpiredOrder from "./BaseSchedulerOfExpiredOrder";
@@ -35,10 +34,12 @@ class ModularizedSchedulerOfExpiredOrder extends BaseSchedulerOfExpiredOrder {
 
         await Api.updatePreciseOrders(expired);
 
-        for (const order of results) {
-            await Api.deleteHadeItem(order.id, order.idOfAuthor);
-            await this.incrementProductCountsAtomically(order);
-        }
+        await Promise.all(
+            results.map(async (order) => {
+                await Api.deleteHadeItem(order.id, order.idOfAuthor);
+                await this.incrementProductCountsAtomically(order);
+            })
+        );
     }
 
     /** -------------------- async api -------------------- **/

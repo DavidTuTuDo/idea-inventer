@@ -1,52 +1,10 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import { utiller as Util, exceptioner as ERROR } from "utiller";
 import { startsWith } from "lodash-es";
 import BasePaymentInfoByECPay from "./BasePaymentInfoByECPay";
 import Config from "../../config";
 import Api from "../../api";
-
-const SAMPLE_OF_CVS_RETURN = {
-    Barcode1: "",
-    Barcode2: "",
-    Barcode3: "",
-    ExpireDate: "2022/07/03 15:04:19",
-    MerchantID: "2000132",
-    MerchantTradeNo: "7RR9gcRnKYISATmXUkiA",
-    PaymentNo: "LLL22183786345",
-    PaymentType: "CVS_CVS",
-    RtnCode: "10100073",
-    RtnMsg: "Get CVS Code Succeeded.",
-    TradeAmt: "290",
-    TradeDate: "2022/07/02 15:04:19",
-    TradeNo: "2207021504129557",
-    StoreID: "",
-    CustomField1: "",
-    CustomField2: "",
-    CustomField3: "",
-    CustomField4: "",
-    CheckMacValue: "09600BB27FB73755230940E678EA0D728195A386C0009C48F5590D82BC40DEE8"
-};
-
-const SAMPLE_OF_ATM_RETURN = {
-    BankCode: "004",
-    ExpireDate: "2022/07/03",
-    MerchantID: "2000132",
-    MerchantTradeNo: "oZeHsq61Nkfgzc0OTY7n",
-    PaymentType: "ATM_BOT",
-    RtnCode: "2",
-    RtnMsg: "Get VirtualAccount Succeeded",
-    TradeAmt: "400",
-    TradeDate: "2022/07/02 15:08:19",
-    TradeNo: "2207021508019558",
-    vAccount: "3833532184983047",
-    StoreID: "",
-    CustomField1: "",
-    CustomField2: "",
-    CustomField3: "",
-    CustomField4: "",
-    CheckMacValue: "910E17CE1281DB981DCF4F54108EFFDEF59F57FEFBF5B1E5CB2C2DABD2C4B591"
-};
 
 class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
     /** -------------------- fields -------------------- **/

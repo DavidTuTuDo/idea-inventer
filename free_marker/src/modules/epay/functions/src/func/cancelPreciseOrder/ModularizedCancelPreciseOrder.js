@@ -1,8 +1,7 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import { utiller as Util } from "utiller";
 
-import libpath from "path";
 import BaseCancelPreciseOrder from "./BaseCancelPreciseOrder";
 import Api from "../../api";
 import Config from "../../config";
@@ -38,8 +37,7 @@ class ModularizedCancelPreciseOrder extends BaseCancelPreciseOrder {
                 true
             );
         }, itemOfPreciseOrder.id);
-        await Api.deleteHadeItem(itemOfPreciseOrder.id, itemOfPreciseOrder.idOfAuthor);
-        await this.incrementProductCountsAtomically(itemOfPreciseOrder);
+        await Promise.all([Api.deleteHadeItem(itemOfPreciseOrder.id, itemOfPreciseOrder.idOfAuthor), this.incrementProductCountsAtomically(itemOfPreciseOrder)]);
     }
 
     customizeBehaviorOfFailureTrade() {
