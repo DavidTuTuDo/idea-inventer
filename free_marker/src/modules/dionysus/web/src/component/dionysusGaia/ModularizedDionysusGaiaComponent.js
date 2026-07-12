@@ -13,6 +13,16 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         super(props);
     }
 
+    /** 快速送出商品數量 */
+    onDionysusGaiaSureChipClicked(param) {
+        this.exeAsyncT(this.getStore().fastenQuantitySetter());
+    }
+
+    /** 快速送出商品價格 */
+    onDionysusGaiaSendChipClicked(param) {
+        this.exeAsyncT(this.getStore().fastenPriceSetter());
+    }
+
     getInjectStyleOfDionysusGaiaAddImageIconButton(dionysusGaia) {
         return Util.getVisibleOrNone(dionysusGaia.getLengthOfBriefPhoto() === 0);
     }
@@ -205,6 +215,10 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     getWrapInjectStyleOfDionysusGaiaAreaOfQuantitySetDiv(dionysusGaia) {
+        return this.getStyleOfVariantSetting(dionysusGaia);
+    }
+
+    getInjectStyleOfDionysusGaiaFastenADiv(dionysusGaia) {
         return this.getStyleOfVariantSetting(dionysusGaia);
     }
 

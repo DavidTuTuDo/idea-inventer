@@ -187,8 +187,10 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     uploadBriefImages = async (files = [], type = Config.ImageUploadMethod.Minion) => {
         if (sum([this.getLengthOfBriefPhoto(), size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
-        /** todo:loadingProgress還沒設計好，單張上傳會有進度0～100%  */
-        const useUploadProgress = files.length === 1;
+        /** todo:loadingProgress還沒設計好，單張上傳會有進度0～100%
+         *  const useUploadProgress = files.length === 1; 設計得太爛了
+         **/
+        const useUploadProgress = false;
         const view = useUploadProgress ? this.getComponent() : undefined;
         if (!useUploadProgress) this.getComponent().invalidateProcessingGuard(true, { textOfTip: "圖片上傳中，請勿關閉", variant: "warn" });
         await this.handleIdOfBooze(true);
@@ -397,6 +399,28 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         await this.handleIdOfBooze();
         await Util.syncDelay(10);
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), this.modifySpecificAttribute(), this.getIdOfBooze());
+    };
+
+    fastenQuantitySetter = async () => {
+        const quantity = this.getNum();
+        const variants = await this.getVariantsOfCombination();
+        await this.apiOfVariant.submitVariants(
+            this.getComponent(),
+            variants.map((v) => ({ ...v, quantity })),
+            this.getIdOfBooze()
+        );
+        this.getComponent().showSuccessSnackMessage(`已批次更新數量為 ${quantity} 個`);
+    };
+
+    fastenPriceSetter = async () => {
+        const price = this.getContent();
+        const variants = await this.getVariantsOfCombination();
+        await this.apiOfVariant.submitVariants(
+            this.getComponent(),
+            variants.map((v) => ({ ...v, price })),
+            this.getIdOfBooze()
+        );
+        this.getComponent().showSuccessSnackMessage(`已批次更新價格為 $${price}`);
     };
 
     getVariantsOfCombination = async () => {

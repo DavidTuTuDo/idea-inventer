@@ -2726,6 +2726,74 @@ const component = {
                         }
                     },
                     {
+                        name: `fastenA`,
+                        view: `div`,
+                        injectStyle: true,
+                        needParam: true,
+                        children: [
+                            {
+                                name: `quantityA`,
+                                view: `div`,
+                                needParam: true,
+                                children: [
+                                    {
+                                        name: `num`,
+                                        type: `number`,
+                                        view: "TextField",
+                                        description: `variant要統一設定的數量`,
+                                        variant: "outlined",
+                                        size: "small",
+                                        defaultValue: 1,
+                                        incest: { view: false, attribute: true },
+                                        labelView: {
+                                            enable: true,
+                                            defaultValue: `數量：`
+                                        }
+                                    },
+                                    {
+                                        name: `sure`,
+                                        type: `string`,
+                                        defaultValue: `確認`,
+                                        view: `Chip`,
+                                        color: "success",
+                                        variant: "outlined",
+                                        incest: { view: false, attribute: true }
+                                    }
+                                ]
+                            },
+                            {
+                                name: `priceA`,
+                                view: `div`,
+                                needParam: true,
+                                children: [
+                                    {
+                                        name: `content`,
+                                        type: `number`,
+                                        view: "TextField",
+                                        variant: "outlined",
+                                        description: `variant要統一設定的價格`,
+                                        size: "small",
+                                        defaultValue: 100,
+                                        incest: { view: false, attribute: true },
+                                        labelView: {
+                                            enable: true,
+                                            defaultValue: `價格：`
+                                        }
+                                    },
+                                    {
+                                        name: `send`,
+                                        type: `string`,
+                                        defaultValue: `確認`,
+                                        view: `Chip`,
+                                        color: "success",
+                                        variant: "outlined",
+                                        incest: { view: false, attribute: true }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
                         name: "tabSet",
                         view: "ArrowOption",
                         // defaultContent: "所有商品",

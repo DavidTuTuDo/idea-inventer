@@ -33,24 +33,24 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
      * @returns {string} email 可用的 HTML
      */
     generateOrderEmailHTML({
-                               items = [],
-                               name,
-                               priceOfTotal,
-                               feeOfTransport,
-                               discountOfTotal,
-                               methodOfTransaction,
-                               methodOfTransport,
-                               serialOfTransport,
-                               remark,
-                               phoneNumber,
-                               address,
-                               needAddress,
-                               id,
-                               anonymous,
-                               displayImage,
-                               isBuyer,
-                               global
-                           }) {
+        items = [],
+        name,
+        priceOfTotal,
+        feeOfTransport,
+        discountOfTotal,
+        methodOfTransaction,
+        methodOfTransport,
+        serialOfTransport,
+        remark,
+        phoneNumber,
+        address,
+        needAddress,
+        id,
+        anonymous,
+        displayImage,
+        isBuyer,
+        global
+    }) {
         const valid = (string) => Util.isString(string) && size(string) > 0;
         const toCurrency = (n) => Number(n).toLocaleString("zh-TW");
         // <a href="${timeTree}" style="${chipStyle}"><img src="https://img.icons8.com/ios-filled/50/000000/calendar--v1.png" style="${iconStyle}">新增至TimeTree</a>
@@ -90,11 +90,11 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         const customerInfo = `
     ${valid(name) ? `<div>客戶姓名：${name}</div>` : ""}
     ${
-            valid(address) && needAddress
-                ? `<div >客戶地址：${address} 
+        valid(address) && needAddress
+            ? `<div >客戶地址：${address} 
     <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" style="font-size:12px;color:#0066cc;text-decoration:none;">[開啟地圖]</a></div>`
-                : ""
-        }
+            : ""
+    }
     ${valid(remark) ? `<div>客戶備註：${remark}</div>` : ""}
     ${valid(phoneNumber) ? `<div style="margin-bottom:4px;">聯絡方式：${phoneNumber}</div>` : ""}`;
 
@@ -175,8 +175,8 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         const subject = isTransportCompleted
             ? `[${global.nameOfBrand}]您的商品已寄出，請留意簡訊`
             : isBuyer
-                ? `[${global.nameOfBrand}]您的款項已確認`
-                : `[${global.nameOfBrand}]您有新的成交訂單`;
+              ? `[${global.nameOfBrand}]您的款項已確認`
+              : `[${global.nameOfBrand}]您有新的成交訂單`;
 
         const xxx = {
             methodOfTransaction: Config.LabelOfTransactionMethod(order.typeOfTransaction),
@@ -192,15 +192,13 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         const handler = Config.userMailStore ? FirebaseHelper.mailStore() : FirebaseHelper.firestore();
 
         Util.exeAsyncT(
-            handler
-                .collection("mail")
-                .add({
-                    to: [recipient, ...this.listOfCC()],
-                    message: {
-                        subject,
-                        html: this.generateOrderEmailHTML(latest)
-                    }
-                }),
+            handler.collection("mail").add({
+                to: [recipient, ...this.listOfCC()],
+                message: {
+                    subject,
+                    html: this.generateOrderEmailHTML(latest)
+                }
+            }),
             { thenDo: () => this.appendLog(`${Config.admin.project_id} queued email for delivery!`) }
         );
     }
