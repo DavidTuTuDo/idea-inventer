@@ -38,7 +38,7 @@ jobs:
         run: |
           npx babel utiller/src/utiller/nodeutiller.js --out-file gener_all/node_modules/utiller/lib/utiller/nodeutiller.js --config-file ./utiller/babel.config.js
 
-      - name: Debug and Push Logs
+      - name: Generate Debug Logs
         if: always()
         run: |
           echo "=== configerer folder content ===" > debug_log.txt
@@ -49,12 +49,20 @@ jobs:
           ls -la gener_all/node_modules | grep -E "configerer|utiller" >> debug_log.txt 2>&1 || true
           echo "=== npm list ===" >> debug_log.txt
           npm list --prefix gener_all >> debug_log.txt 2>&1 || true
+          echo "=== workspace package.json versions ===" >> debug_log.txt
+          for dir in configerer utiller databazer linepayer gener_all; do
+            if [ -f "$dir/package.json" ]; then
+              echo "$dir version:" >> debug_log.txt
+              grep '"version"' $dir/package.json >> debug_log.txt || true
+            fi
+          done
 
-          git config --global user.name "GitHub Action Debugger"
-          git config --global user.email "action@github.com"
-          git add debug_log.txt
-          git commit -m "debug: save runner logs [skip ci]" || true
-          git push origin HEAD:master || true
+      - name: Upload Debug Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-logs
+          path: debug_log.txt
 
       - name: Build and Publish
         run: |
