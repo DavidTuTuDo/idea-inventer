@@ -84,29 +84,31 @@ class BaseFunction extends ClientRemoteApi {
     }
 
     async incrementProductCountsAtomically(itemOfPreciseOrder) {
-        await Promise.all(itemOfPreciseOrder.items.map(async (item) => {
-            const param = item.idOfPreciseProduct.split(Util.getSeparatorOfUnique());
-            const idOfVariant = param.pop();
-            const idOfBooze = param.shift();
-            const infoOfHera = item.infoOfHera;
-            await Api.updateVariantItemAtomically(
-                async (variant, transaction) => {
-                    return { quantity: variant.quantity + item.quantity };
-                },
-                idOfVariant,
-                idOfBooze
-            );
+        await Promise.all(
+            itemOfPreciseOrder.items.map(async (item) => {
+                const param = item.idOfPreciseProduct.split(Util.getSeparatorOfUnique());
+                const idOfVariant = param.pop();
+                const idOfBooze = param.shift();
+                const infoOfHera = item.infoOfHera;
+                await Api.updateVariantItemAtomically(
+                    async (variant, transaction) => {
+                        return { quantity: variant.quantity + item.quantity };
+                    },
+                    idOfVariant,
+                    idOfBooze
+                );
 
-            /** 刪掉useMainTrunk運用的hera */
-            if (!Util.isUndefinedNullEmpty(infoOfHera)) {
-                try {
-                    const obj = JSON.parse(infoOfHera);
-                    await Api.deleteHeraItem(obj.id, obj.idOfAuthor);
-                } catch (error) {
-                    /** ignore errors */
+                /** 刪掉useMainTrunk運用的hera */
+                if (!Util.isUndefinedNullEmpty(infoOfHera)) {
+                    try {
+                        const obj = JSON.parse(infoOfHera);
+                        await Api.deleteHeraItem(obj.id, obj.idOfAuthor);
+                    } catch (error) {
+                        /** ignore errors */
+                    }
                 }
-            }
-        }));
+            })
+        );
         await Api.updatePreciseOrderItem({ isRestoreItems: true }, itemOfPreciseOrder.id);
     }
 

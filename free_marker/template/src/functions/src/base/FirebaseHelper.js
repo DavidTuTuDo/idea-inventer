@@ -955,6 +955,165 @@ class FirebaseHelper extends BaseFirebase {
 
         console.log(`========================================================\n`);
     }
+
+    // ==================== Storage Upload (Admin SDK) ====================
+
+    /**
+     * 解析大小字串 (e.g., "5MB", "500KB") 為 bytes。
+     * @param {string} sizeStr - 大小字串，如 "5MB", "500KB", "1GB"。
+     * @returns {number} - 對應的 bytes 數。
+     * @private
+     */
+    _parseSizeToBytes(sizeStr) {
+        const units = { B: 1, KB: 1024, MB: 1024 * 1024, GB: 1024 * 1024 * 1024 };
+        const match = String(sizeStr).match(/^(\d+(?:\.\d+)?)\s*(B|KB|MB|GB)$/i);
+        if (!match) return 5 * 1024 * 1024; // default 5MB
+        return parseFloat(match[1]) * (units[match[2].toUpperCase()] || 1);
+    }
+
+    /**
+     * 從檔案名稱推斷 MIME type。
+     * @param {string} fileName - 檔案名稱 (e.g., 'image.jpg')。
+     * @returns {string} - MIME type (e.g., 'image/jpeg')。
+     * @private
+     */
+    _getMimeType(fileName) {
+        const ext = (fileName || "").split(".").pop().toLowerCase();
+        const mimeMap = {
+            jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
+            gif: "image/gif", webp: "image/webp", svg: "image/svg+xml",
+            bmp: "image/bmp", ico: "image/x-icon", tiff: "image/tiff", avif: "image/avif",
+            pdf: "application/pdf", json: "application/json",
+            mp4: "video/mp4", mp3: "audio/mpeg", wav: "audio/wav",
+            txt: "text/plain", html: "text/html", css: "text/css",
+            js: "application/javascript", csv: "text/csv",
+            zip: "application/zip",
+            doc: "application/msword",
+            docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            xls: "application/vnd.ms-excel",
+            xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        };
+        return mimeMap[ext] || "application/octet-stream";
+    }
+
+    /**
+     * 這是針對用desktop/mobile 選擇的檔案上傳機制
+     * 前端以blob為主，而file selected選到的資料格式如下
+     * {
+     * "name": "截圖 2024-07-15 下午8.38.30.png",
+     * "index": "0",
+     * "blob": file,
+     * "url": "blob:http://localhost:8080/4f6c25b3-8d6f-4d06-a236-6f9a4b13211a"
+     * }
+     *
+     * 執行檔案上傳至 Firebase Storage，具備檔案大小檢查、MIME 類型推斷，以及可配置的逾時機制。
+     *
+     * @param {object} file - 包含待上傳檔案資訊的物件。
+     * @param {string} file.name - 原始檔案名稱 (e.g., 'image.jpg')。
+     * @param {Blob|Buffer} file.blob - 檔案的 Blob/Buffer 物件，包含實際的二進制資料。
+     * @param {string} [folder="public"] - 儲存檔案的 Storage 路徑資料夾名稱。
+     * @param {string} [maxSize="5MB"] - 單個檔案的儲存上限。
+     * @param {string} [fileNameExtension] - 上傳後在 Storage 中使用的檔案名稱（可包含或不包含副檔名）。若提供，將覆蓋 file.name。
+     * @param {number} [timeoutMs=30000] - 上傳操作的逾時時間（毫秒）。
+     * @returns {Promise<string>} - 成功上傳後返回檔案的下載 URL (Download URL)。
+     * @throws {Error} - 如果檔案格式無效、超過大小限制、上傳失敗或逾時，則拋出錯誤。
+     */
+    uploadStorageFile = async (file, folder = "public", maxSize = "5MB", { view, fileNameExtension = undefined, timeoutMs = 30000 } = {}) => {
+        // 1. 驗證 file 物件
+        if (!file || !file.blob) {
+            throw new Error("uploadStorageFile: file 物件無效，必須包含 blob 屬性");
+        }
+
+        // 2. 轉換為 Buffer
+        const buffer = Buffer.isBuffer(file.blob) ? file.blob : Buffer.from(file.blob);
+        const maxSizeInBytes = this._parseSizeToBytes(maxSize);
+
+        // 3. 檢查檔案大小
+        if (buffer.length > maxSizeInBytes) {
+            throw new Error(
+                `uploadStorageFile: 檔案大小 (${(buffer.length / 1024 / 1024).toFixed(2)}MB) 超過限制 (${maxSize})`
+            );
+        }
+
+        // 4. 決定儲存檔名
+        const originalName = file.name || `file_${Date.now()}`;
+        let storageName;
+        if (fileNameExtension) {
+            const hasExtension = fileNameExtension.includes(".");
+            if (hasExtension) {
+                storageName = fileNameExtension;
+            } else {
+                const ext = originalName.includes(".") ? originalName.split(".").pop() : "";
+                storageName = ext ? `${fileNameExtension}.${ext}` : fileNameExtension;
+            }
+        } else {
+            storageName = originalName;
+        }
+
+        const filePath = `${folder}/${storageName}`;
+        const mimeType = this._getMimeType(storageName);
+
+        console.log(`📤 uploadStorageFile: 開始上傳 => ${filePath} (${(buffer.length / 1024).toFixed(1)}KB, ${mimeType})`);
+
+        // 5. 上傳 (含逾時機制)
+        const uploadPromise = (async () => {
+            const bucket = this.storage().bucket();
+            const fileRef = bucket.file(filePath);
+
+            await fileRef.save(buffer, {
+                metadata: { contentType: mimeType },
+                resumable: false
+            });
+
+            // 設為公開讀取並產生下載 URL
+            await fileRef.makePublic();
+            const downloadUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+
+            console.log(`✅ uploadStorageFile: 上傳完成 => ${downloadUrl}`);
+            return downloadUrl;
+        })();
+
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error(`uploadStorageFile: 上傳逾時 (${timeoutMs}ms)`)), timeoutMs)
+        );
+
+        return await Promise.race([uploadPromise, timeoutPromise]);
+    };
+
+    /**
+     * 參考uploadStorageFile去做多圖上傳。
+     * 迭代呼叫 uploadStorageFile，依序上傳所有檔案。
+     *
+     * @param {Array<object>} files - 檔案物件陣列，每個物件需包含 { name, blob }。
+     * @param {string} [folder="public"] - 儲存檔案的 Storage 路徑資料夾名稱。
+     * @param {string} [maxSize="5MB"] - 單個檔案的儲存上限。
+     * @param {string} [fileNameExtension] - 上傳後的檔案名稱前綴，每個檔案會自動附加索引 (_0, _1, ...)。
+     * @param {number} [timeoutMs=30000] - 每個檔案的上傳逾時時間（毫秒）。
+     * @returns {Promise<string[]>} - 所有成功上傳檔案的下載 URL 陣列。
+     * @throws {Error} - 如果任何一個檔案上傳失敗，則拋出錯誤。
+     */
+    uploadStorageFiles = async (files = [], folder = "public", maxSize = "5MB", { fileNameExtension, timeoutMs = 30000 } = {}) => {
+        if (!Array.isArray(files) || files.length === 0) {
+            console.warn("uploadStorageFiles: 沒有提供任何檔案");
+            return [];
+        }
+
+        console.log(`📤 uploadStorageFiles: 開始批次上傳 ${files.length} 個檔案 => folder:/${folder}`);
+
+        const results = [];
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const nameExt = fileNameExtension ? `${fileNameExtension}_${i}` : undefined;
+            const url = await this.uploadStorageFile(file, folder, maxSize, {
+                fileNameExtension: nameExt,
+                timeoutMs
+            });
+            results.push(url);
+        }
+
+        console.log(`✅ uploadStorageFiles: 批次上傳完成，共 ${results.length} 個檔案`);
+        return results;
+    };
 }
 
 export default new FirebaseHelper();

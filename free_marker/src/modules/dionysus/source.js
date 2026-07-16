@@ -28,6 +28,11 @@ const component = {
             name: "generateDynamicPreview",
             type: "httpOnRequest",
             description: "讓ＳＰＡ的頁面讀「取特定網址」時，可以顯示出客制的預覽效果「芄食品」牛肉乾50公克 50元起"
+        },
+        {
+            name: "generateBoozeImgAI",
+            type: "httpOnCall",
+            description: "透過後台讓ＡＩ可以產出描述和品名的自動化功能（必須要上傳到storage）"
         }
     ],
     enums: {
@@ -2740,7 +2745,7 @@ const component = {
                                         name: `num`,
                                         type: `number`,
                                         view: "TextField",
-                                        description: `variant要統一設定的數量`,
+                                        _description: `variant要統一設定的數量`,
                                         variant: "outlined",
                                         size: "small",
                                         defaultValue: 1,
@@ -2771,7 +2776,7 @@ const component = {
                                         type: `number`,
                                         view: "TextField",
                                         variant: "outlined",
-                                        description: `variant要統一設定的價格`,
+                                        _description: `variant要統一設定的價格`,
                                         size: "small",
                                         defaultValue: 100,
                                         incest: { view: false, attribute: true },

@@ -1854,8 +1854,13 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             }
 
             if (node.isTypographyView()) {
-                node.appendViewProps({whiteSpace: 'pre-line'})
-                node.appendViewProps({variant: 'inherit'})
+                node.appendViewProps({
+                    sx: {
+                        whiteSpace: 'pre-line',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'anywhere'
+                    }
+                })
             }
 
             if (node.isSwitchView()) {

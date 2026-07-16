@@ -17,7 +17,7 @@ class BaseFirebase {
         });
         this._storage = getStorage(this._app);
         this._firestore = getFirestore(this._app);
-        this._mailStore = getFirestore(this._app, 'deliver');
+        this._mailStore = getFirestore(this._app, "deliver");
         this._auth = getAuth(this._app);
         this._functions = getFunctions(this._app, config.locateOfFunctions);
         this._database = getDatabase(this._app);
