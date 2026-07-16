@@ -42,20 +42,9 @@ jobs:
           mv configerer_backup configerer
           mv utiller_backup utiller
 
-      - name: Print CI Workspace Details
-        run: |
-          echo "=== Workspace details ==="
-          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-          echo "Current directory: $(pwd)"
-          echo "Root files:"
-          ls -la
-          echo "Is .git present?"
-          ls -la .git || true
-
       - name: Inject local modified utiller code into node_modules
         run: |
           npx babel utiller/src/utiller/nodeutiller.js --out-file gener_all/node_modules/utiller/lib/utiller/nodeutiller.js --config-file ./utiller/babel.config.js
-
       - name: Generate Debug Logs
         if: always()
         run: |

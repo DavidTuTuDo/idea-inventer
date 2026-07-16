@@ -678,7 +678,7 @@ class NodeUtiller extends Utiller {
 
                     /** 安裝一個沒有devDependency 的node_module */
                     if (forceInstallNodeModule || !this.isPathExist(libpath.join(release, 'node_module'))) {
-                        await this.executeCommandLine(`cd ${release} && yarn install --production`);
+                        await this.executeCommandLine(`cd ${release} && yarn install --production --ignore-engines`);
                     } else {
                         this.appendInfo(`ignore node-module install behavior`);
                     }
