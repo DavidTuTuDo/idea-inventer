@@ -642,9 +642,11 @@ class NodeUtiller extends Utiller {
                 const pathOfPackageJson = libpath.join(path, 'package.json');
                 try {
 
-                    const indexFileName = 'sample.npm.module.index.js'
+                    const indexFileName = 'sample.npm.module.index.js';
+                    const gitDir = this.findSpecificFolderByPath(process.cwd(), '.git');
+                    const repoRoot = gitDir ? libpath.dirname(gitDir) : '/Users/davidtu/cross-achieve/legacy/idea-inventer';
                     /** 複製公版的index.js */
-                    this.copySingleFile(`/Users/davidtu/cross-achieve/legacy/idea-inventer/utiller/template/${indexFileName}`,
+                    this.copySingleFile(libpath.join(repoRoot, 'utiller/template', indexFileName),
                         release, 'index.js', true);
 
                     /** 將公版的index.js也terser一波 */
