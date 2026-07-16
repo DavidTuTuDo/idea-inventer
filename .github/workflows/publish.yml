@@ -9,7 +9,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read  # 只需要讀取權限
+      contents: write  # 需要寫入權限來推播偵錯日誌
       id-token: write  # 取得 OIDC 憑證所必需的權限
     steps:
       - name: Checkout code
@@ -38,14 +38,23 @@ jobs:
         run: |
           npx babel utiller/src/utiller/nodeutiller.js --out-file gener_all/node_modules/utiller/lib/utiller/nodeutiller.js --config-file ./utiller/babel.config.js
 
-      - name: Debug configerer installation
+      - name: Debug and Push Logs
+        if: always()
         run: |
-          echo "=== configerer folder content ==="
-          ls -la gener_all/node_modules/configerer || true
-          echo "=== configerer package.json ==="
-          cat gener_all/node_modules/configerer/package.json || true
-          echo "=== node_modules link status ==="
-          ls -la gener_all/node_modules | grep -E "configerer|utiller" || true
+          echo "=== configerer folder content ===" > debug_log.txt
+          ls -la gener_all/node_modules/configerer >> debug_log.txt 2>&1 || true
+          echo "=== configerer package.json ===" >> debug_log.txt
+          cat gener_all/node_modules/configerer/package.json >> debug_log.txt 2>&1 || true
+          echo "=== node_modules link status ===" >> debug_log.txt
+          ls -la gener_all/node_modules | grep -E "configerer|utiller" >> debug_log.txt 2>&1 || true
+          echo "=== npm list ===" >> debug_log.txt
+          npm list --prefix gener_all >> debug_log.txt 2>&1 || true
+
+          git config --global user.name "GitHub Action Debugger"
+          git config --global user.email "action@github.com"
+          git add debug_log.txt
+          git commit -m "debug: save runner logs [skip ci]" || true
+          git push origin HEAD:master || true
 
       - name: Build and Publish
         run: |
