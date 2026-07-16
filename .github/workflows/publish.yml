@@ -27,12 +27,20 @@ jobs:
 
       - name: Install dependencies for packages
         run: |
-          for dir in configerer utiller databazer linepayer gener_all; do
+          for dir in configerer utiller databazer linepayer; do
             if [ -d "$dir" ]; then
               echo "Installing dependencies in $dir..."
               cd $dir && npm install && cd ..
             fi
           done
+
+          # Temporarily rename sibling packages to prevent npm from automatically linking them as symlinks
+          mv configerer configerer_backup
+          mv utiller utiller_backup
+          echo "Installing dependencies in gener_all..."
+          cd gener_all && npm install && cd ..
+          mv configerer_backup configerer
+          mv utiller_backup utiller
 
       - name: Inject local modified utiller code into node_modules
         run: |
