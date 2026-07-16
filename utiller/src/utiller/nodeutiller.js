@@ -16,13 +16,14 @@ class NodeUtiller extends Utiller {
     isPersistIntoLogFile = true;
 
     findSpecificFolderByPath(path, folderName) {
-        const absolute = libpath.resolve(path);
-        const parts = absolute.split(libpath.sep);
-        while (parts.length) {
-            const joined = libpath.join(...parts, folderName);
+        let currentDir = libpath.resolve(path);
+        while (currentDir !== libpath.dirname(currentDir)) {
+            const joined = libpath.join(currentDir, folderName);
             if (fs.existsSync(joined)) return joined;
-            parts.pop();
+            currentDir = libpath.dirname(currentDir);
         }
+        const joinedRoot = libpath.join(currentDir, folderName);
+        if (fs.existsSync(joinedRoot)) return joinedRoot;
         return null;
     }
 
