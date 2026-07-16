@@ -23,7 +23,7 @@ jobs:
       - name: Upgrade npm & Install global tools
         run: |
           npm install -g npm@latest
-          npm install -g @babel/cli @babel/core terser yarn
+          npm install -g @babel/cli@7 @babel/core@7 terser yarn
 
       - name: Install dependencies for packages
         run: |
