@@ -34,6 +34,10 @@ jobs:
             fi
           done
 
+      - name: Inject local modified utiller code into node_modules
+        run: |
+          npx babel utiller/src/utiller/nodeutiller.js --out-file gener_all/node_modules/utiller/lib/utiller/nodeutiller.js --config-file utiller/babel.config.js
+
       - name: Build and Publish
         run: |
           cd gener_all
