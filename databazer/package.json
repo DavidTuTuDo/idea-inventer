@@ -2,6 +2,11 @@
   "name": "databazer",
   "version": "1.0.26",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidTuTuDo/idea-inventer.git",
+    "directory": "databazer"
+  },
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",

@@ -1,0 +1,40 @@
+name: Publish Packages to npm
+
+on:
+  push:
+    branches:
+      - master  # 如果您的預設分支是 main，請改為 main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # 取得 OIDC 憑證所必需的權限
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20  # 使用與專案相容的 Node.js 版本
+
+      - name: Upgrade npm & Install global tools
+        run: |
+          npm install -g npm@latest
+          npm install -g @babel/cli @babel/core terser yarn
+
+      - name: Install dependencies for packages
+        run: |
+          for dir in configerer utiller databazer linepayer gener_all; do
+            if [ -d "$dir" ]; then
+              echo "Installing dependencies in $dir..."
+              cd $dir && npm install && cd ..
+            fi
+          done
+
+      - name: Build and Publish
+        run: |
+          cd gener_all
+          node -r @babel/register src/index.js

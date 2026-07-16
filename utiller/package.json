@@ -2,6 +2,11 @@
   "name": "utiller",
   "version": "1.0.512",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidTuTuDo/idea-inventer.git",
+    "directory": "utiller"
+  },
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",

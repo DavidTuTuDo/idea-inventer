@@ -651,7 +651,10 @@ class NodeUtiller extends Utiller {
                     /** 部署到 local server*/
                     if (deployToNPMServer) {
                         /** 升級package.json的版號 */
-                        await this.executeCommandLine(`cd ${release} &&  npm publish`);
+                        const publishCmd = process.env.GITHUB_ACTIONS === 'true' 
+                            ? 'npm publish --provenance' 
+                            : 'npm publish';
+                        await this.executeCommandLine(`cd ${release} && ${publishCmd}`);
                         /** await this.executeCommandLine(`cd ${release} &&  npm publish --registry http://localhost:4873`) */
                     }
                 } catch (error) {

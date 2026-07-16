@@ -2,6 +2,11 @@
   "name": "linepayer",
   "version": "1.0.28",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidTuTuDo/idea-inventer.git",
+    "directory": "linepayer"
+  },
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
