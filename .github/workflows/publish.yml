@@ -38,6 +38,15 @@ jobs:
         run: |
           npx babel utiller/src/utiller/nodeutiller.js --out-file gener_all/node_modules/utiller/lib/utiller/nodeutiller.js --config-file ./utiller/babel.config.js
 
+      - name: Debug configerer installation
+        run: |
+          echo "=== configerer folder content ==="
+          ls -la gener_all/node_modules/configerer || true
+          echo "=== configerer package.json ==="
+          cat gener_all/node_modules/configerer/package.json || true
+          echo "=== node_modules link status ==="
+          ls -la gener_all/node_modules | grep -E "configerer|utiller" || true
+
       - name: Build and Publish
         run: |
           cd gener_all
