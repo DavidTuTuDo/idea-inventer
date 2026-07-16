@@ -645,7 +645,7 @@ class NodeUtiller extends Utiller {
 
                     const indexFileName = 'sample.npm.module.index.js';
                     const gitDir = this.findSpecificFolderByPath(process.cwd(), '.git');
-                    const repoRoot = gitDir ? libpath.dirname(gitDir) : '/Users/davidtu/cross-achieve/legacy/idea-inventer';
+                    const repoRoot = process.env.GITHUB_WORKSPACE || (gitDir ? libpath.dirname(gitDir) : '/Users/davidtu/cross-achieve/legacy/idea-inventer');
                     /** 複製公版的index.js */
                     this.copySingleFile(libpath.join(repoRoot, 'utiller/template', indexFileName),
                         release, 'index.js', true);
