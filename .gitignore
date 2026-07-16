@@ -136,3 +136,6 @@ dist
 # Test files
 test*.js
 test*.source.js
+
+# Credentials
+googleapi.json
