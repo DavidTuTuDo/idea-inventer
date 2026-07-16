@@ -132,3 +132,7 @@ dist
 */release/*
 */lib/*
 */temp/*
+
+# Test files
+test*.js
+test*.source.js
