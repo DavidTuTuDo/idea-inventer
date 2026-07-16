@@ -685,7 +685,27 @@ class NodeUtiller extends Utiller {
                     /** 部署到 local server*/
                     if (deployToNPMServer) {
                         if (process.env.GITHUB_ACTIONS === 'true') {
-                            await this.executeCommandLine(`cd ${release} && npm publish --provenance`);
+                            const pkgJson = this.getJsonObjByFilePath(pathOfPackageJson);
+                            const pkgName = pkgJson.name;
+                            const localVersion = pkgJson.version;
+                            let isAlreadyPublished = false;
+
+                            try {
+                                const remoteVersion = await this.executeCommandLine(`npm view ${pkgName} version`);
+                                if (remoteVersion.trim() === localVersion.trim()) {
+                                    isAlreadyPublished = true;
+                                }
+                            } catch (err) {
+                                // 若套件尚未在 npm 發佈過，npm view 會噴錯，此處直接忽略並允許發佈
+                                this.appendInfo(`[OIDC Publish] Fetching remote version failed for ${pkgName} (possibly new package).`);
+                            }
+
+                            if (!isAlreadyPublished) {
+                                this.appendInfo(`[OIDC Publish] Publishing new version ${localVersion} for ${pkgName}...`);
+                                await this.executeCommandLine(`cd ${release} && npm publish --provenance`);
+                            } else {
+                                this.appendInfo(`[OIDC Publish] Version ${localVersion} of ${pkgName} is already published. Skipping.`);
+                            }
                         } else {
                             this.appendInfo(`[Local Build] Skip local publish. Commits will be pushed to GitHub to trigger CI/CD publishing.`);
                         }
