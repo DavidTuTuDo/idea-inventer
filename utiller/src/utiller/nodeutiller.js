@@ -582,6 +582,37 @@ class NodeUtiller extends Utiller {
         fs.writeFileSync(path, data);
     }
 
+    registerGitPushOnExit(moduleName, version) {
+        if (!this.packagesBumped) {
+            this.packagesBumped = [];
+        }
+        this.packagesBumped.push(`${moduleName}@${version}`);
+
+        if (this.gitPushListenerRegistered) return;
+        this.gitPushListenerRegistered = true;
+
+        process.once('beforeExit', async () => {
+            if (process.env.GITHUB_ACTIONS === 'true') return;
+            try {
+                this.appendInfo(`[Git Push on Exit] Detecting changes to commit for: ${this.packagesBumped.join(', ')}`);
+                await this.executeCommandLine('git add **/package.json **/template/*');
+                const commitMsg = `chore: bump version for ${this.packagesBumped.join(', ')}`;
+                const hasChanges = await this.executeCommandLine('git diff --cached --name-only').then(out => out.trim().length > 0).catch(() => false);
+                if (hasChanges) {
+                    this.appendInfo(`[Git Push on Exit] Committing: ${commitMsg}`);
+                    await this.executeCommandLine(`git commit -m "${commitMsg}"`);
+                    this.appendInfo(`[Git Push on Exit] Pushing to github master...`);
+                    await this.executeCommandLine('git push github master');
+                    this.appendInfo(`[Git Push on Exit] Push success!`);
+                } else {
+                    this.appendInfo(`[Git Push on Exit] No changes to commit.`);
+                }
+            } catch (err) {
+                this.appendError(`[Git Push on Exit] Failed: ${err.message}`);
+            }
+        });
+    }
+
     /** 用來pack lib_project, 不然其他import lib_project的專案會無法讀懂es6
      * release folder 會被自動ignore到
      * exclude 裡面可以放專案名稱, 例如 free_marker,question_update */
@@ -627,12 +658,15 @@ class NodeUtiller extends Utiller {
                             templatePath,
                             this.persistByPath(libpath.join(release, 'template')));
                     }
-                    if (deployToNPMServer) {
+                    if (deployToNPMServer && process.env.GITHUB_ACTIONS !== 'true') {
                         /** 升級package.json的版號 */
                         const {moduleName, version} = await this.upgradePackageJsonVersion(pathOfPackageJson);
 
                         /** 把所有樣板的版號都提升 */
                         await this.updateVersionOfTemplate(moduleName, version);
+
+                        /** 註冊結束時自動 Git push */
+                        this.registerGitPushOnExit(moduleName, version);
                     }
 
                     /** 把package.json release放進去 */
@@ -650,12 +684,11 @@ class NodeUtiller extends Utiller {
 
                     /** 部署到 local server*/
                     if (deployToNPMServer) {
-                        /** 升級package.json的版號 */
-                        const publishCmd = process.env.GITHUB_ACTIONS === 'true' 
-                            ? 'npm publish --provenance' 
-                            : 'npm publish';
-                        await this.executeCommandLine(`cd ${release} && ${publishCmd}`);
-                        /** await this.executeCommandLine(`cd ${release} &&  npm publish --registry http://localhost:4873`) */
+                        if (process.env.GITHUB_ACTIONS === 'true') {
+                            await this.executeCommandLine(`cd ${release} && npm publish --provenance`);
+                        } else {
+                            this.appendInfo(`[Local Build] Skip local publish. Commits will be pushed to GitHub to trigger CI/CD publishing.`);
+                        }
                     }
                 } catch (error) {
                     await this.deleteSelfByPath(release, true);

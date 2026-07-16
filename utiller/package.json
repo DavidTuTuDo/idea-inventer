@@ -15,7 +15,7 @@
     "updateConfigerer": "npm update configerer --save"
   },
   "engines": {
-    "node": "20"
+    "node": ">=20"
   },
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",

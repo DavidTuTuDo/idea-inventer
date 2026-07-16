@@ -9,7 +9,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: read  # 只需要讀取權限
       id-token: write  # 取得 OIDC 憑證所必需的權限
     steps:
       - name: Checkout code
@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20  # 使用與專案相容的 Node.js 版本
+          node-version: 22  # 使用 Node.js 22 版本
 
       - name: Upgrade npm & Install global tools
         run: |
