@@ -863,7 +863,11 @@ class NodeUtiller extends Utiller {
             '/Users/davidtu/cross-achieve/legacy/idea-inventer/free_marker/template/web.package.json.mustache',
             '/Users/davidtu/cross-achieve/legacy/idea-inventer/free_marker/template/functions.package.json.mustache',
             '/Users/davidtu/cross-achieve/legacy/idea-inventer/utiller/template/sample.package.json',
-            '/Users/davidtu/cross-achieve/legacy/idea-inventer/free_marker/package.json'
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/free_marker/package.json',
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/gener_all/package.json',
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/utiller/package.json',
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/databazer/package.json',
+            '/Users/davidtu/cross-achieve/legacy/idea-inventer/linepayer/package.json'
         ];
 
         for (const path of paths) {
