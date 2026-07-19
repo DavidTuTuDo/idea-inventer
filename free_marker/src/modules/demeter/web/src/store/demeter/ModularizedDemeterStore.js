@@ -2,7 +2,7 @@ const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import libpath from "path";
-import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
+import { makeAutoObservable, makeObservable, action, override, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
 import BaseDemeterStore from "./BaseDemeterStore";
 
 class ModularizedDemeterStore extends BaseDemeterStore {

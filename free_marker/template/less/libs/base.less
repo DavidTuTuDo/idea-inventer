@@ -908,6 +908,76 @@ input[type="number"]::-webkit-outer-spin-button {
     @media @mobile {
         display: none !important;
     }
+
+    width: 100%;
+    justify-content: flex-start;
+    border-radius: 4px !important;
+    border: none !important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    height: 22px !important;
+    cursor: pointer;
+    font-weight: 500 !important;
+    font-size: 0.75rem !important;
+    position: relative;
+    padding-left: 8px !important;
+
+    &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        border-radius: 4px 0 0 4px;
+        background-color: currentColor;
+    }
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08) !important;
+        filter: brightness(0.95);
+    }
+
+    .MuiChip-label {
+        padding-left: 4px !important;
+        padding-right: 6px !important;
+        text-align: left !important;
+        width: 100%;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+    &.MuiChip-colorDefault {
+        background-color: rgba(0, 0, 0, 0.04) !important;
+        color: #4a4a4a !important;
+        &::before { background-color: #757575; }
+    }
+    &.MuiChip-colorPrimary {
+        background-color: rgba(25, 118, 210, 0.08) !important;
+        color: #1976d2 !important;
+        &::before { background-color: #1976d2; }
+    }
+    &.MuiChip-colorSecondary {
+        background-color: rgba(156, 39, 176, 0.08) !important;
+        color: #9c27b0 !important;
+        &::before { background-color: #9c27b0; }
+    }
+    &.MuiChip-colorSuccess {
+        background-color: rgba(46, 125, 50, 0.08) !important;
+        color: #2e7d32 !important;
+        &::before { background-color: #2e7d32; }
+    }
+    &.MuiChip-colorError {
+        background-color: rgba(211, 47, 47, 0.08) !important;
+        color: #d32f2f !important;
+        &::before { background-color: #d32f2f; }
+    }
+    &.MuiChip-colorWarning {
+        background-color: rgba(237, 108, 2, 0.08) !important;
+        color: #ed6c02 !important;
+        &::before { background-color: #ed6c02; }
+    }
 }
 
 .JobCalendarMobileDot {
@@ -1022,6 +1092,35 @@ input[type="number"]::-webkit-outer-spin-button {
 // --- 日視圖樣式組件 (New Daily Task Schedule) ---
 .JobCalendarDayViewContainer {
     animation: fadeInMove 0.4s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.JobCalendarDayWatermark {
+    position: absolute !important;
+    left: 50% !important;
+    top: 24px !important;
+    transform: translateX(-50%) !important;
+    font-size: 2.2rem !important;
+    font-weight: 900 !important;
+    color: rgba(30, 41, 59, 0.35) !important;
+    text-shadow: -1px -1px 0px #ffffff, 1px 1px 0px rgba(0, 0, 0, 0.25), 2px 2px 3px rgba(0, 0, 0, 0.15) !important;
+    user-select: none !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+    white-space: nowrap !important;
+    font-family: 'Outfit', 'Inter', sans-serif !important;
+    letter-spacing: -1px !important;
+
+    @media @mobile {
+        font-size: 1.2rem !important;
+        top: 16px !important;
+        letter-spacing: -0.5px !important;
+    }
+    @media @tablet {
+        font-size: 1.8rem !important;
+        top: 20px !important;
+    }
 }
 
 .JobCalendarDayHeader {
@@ -1030,6 +1129,8 @@ input[type="number"]::-webkit-outer-spin-button {
     margin-bottom: 24px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     padding-bottom: 16px;
+    position: relative;
+    z-index: 1;
 
     .JobCalendarDayTitle {
         font-weight: 800;
@@ -1049,6 +1150,8 @@ input[type="number"]::-webkit-outer-spin-button {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    position: relative;
+    z-index: 1;
 }
 
 // --- 每日任務卡片 (Task Cards) ---

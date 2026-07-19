@@ -101,6 +101,25 @@ class ModularizedDemeterComponent extends BaseDemeterComponent {
         return merged;
     }
 
+    formatChipLabel = (name) => {
+        if (!name) return "";
+        if (name.includes("།།")) {
+            const parts = name.split("།།");
+            const namePart = parts[0];
+            const timePartInfo = parts[1];
+            if (timePartInfo) {
+                const timeParts = timePartInfo.split(/[｜|]/);
+                const range = timeParts[1] || timeParts[0];
+                if (range) {
+                    const startTime = range.split("-")[0].trim();
+                    return `${startTime} ${namePart}`;
+                }
+            }
+            return namePart;
+        }
+        return name;
+    };
+
     getInjectViewOfDemeterDiv = () => {
         const self = this;
         return (
@@ -109,7 +128,19 @@ class ModularizedDemeterComponent extends BaseDemeterComponent {
                     self.exeAsyncT(self.fetchHeraOfCompound(start, end));
                 }}
                 // courses={self.sample()}
-                courses={self.getStore().getCourses()}
+                courses={self
+                    .getStore()
+                    .getCourses()
+                    .map((course) => {
+                        const name = course.name || (typeof course.getName === "function" ? course.getName() : "");
+                        const formattedName = self.formatChipLabel(name);
+                        return new Proxy(course, {
+                            get(target, prop) {
+                                if (prop === "chipLabel") return formattedName;
+                                return target[prop];
+                            }
+                        });
+                    })}
             />
         );
     };

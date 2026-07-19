@@ -38,6 +38,8 @@ const generateMonthDates = (year, month) => {
     return Array.from({ length: 42 }, (_, i) => start.add(i, "days"));
 };
 
+
+
 /**
  * 工作日曆組件 - 支援月、日視圖
  */
@@ -148,20 +150,20 @@ class JobCalendar extends React.Component {
                                         <React.Fragment key={e.id}>
                                             <Chip
                                                 className="JobCalendarDesktopChip"
-                                                label={e.name}
+                                                label={e.chipLabel || e.name}
                                                 size="small"
                                                 variant="outlined"
                                                 color={e.color || "default"}
                                                 onClick={(ev) => {
                                                     ev.stopPropagation();
-                                                    console.log(e.id);
+                                                    this.handleDateClick(d);
                                                 }}
                                             />
                                             <Box
                                                 className={`JobCalendarMobileDot color-${e.color || "default"}`}
                                                 onClick={(ev) => {
                                                     ev.stopPropagation();
-                                                    console.log(e.id);
+                                                    this.handleDateClick(d);
                                                 }}
                                             />
                                         </React.Fragment>
@@ -206,8 +208,14 @@ class JobCalendar extends React.Component {
             );
         }
 
+        const weekdayName = ["日", "一", "二", "三", "四", "五", "六"][this.baseDate.day()];
+        const watermarkText = `${this.baseDate.format("YYYY/MM/DD")} (${weekdayName})`;
+
         return (
             <Box className="JobCalendarDayViewContainer" onTouchStart={this.onTouchStart} onTouchEnd={this.onTouchEnd}>
+                <Typography className="JobCalendarDayWatermark" variant="h1">
+                    {watermarkText}
+                </Typography>
                 <Box className="JobCalendarDayHeader">
                     <Typography className="JobCalendarDayTitle" variant="h6">
                         任務行程
@@ -229,21 +237,12 @@ class JobCalendar extends React.Component {
 
                         return (
                             <Box key={e.id} className={`JobCalendarTaskCard ${colorClass}`} onClick={() => console.log(e.id)}>
-                                <Box className="JobCalendarTaskTimeSection">
-                                    <Typography className="JobCalendarTaskStartTime" variant="h6">
-                                        {startStr}
-                                    </Typography>
-                                    <Typography className="JobCalendarTaskEndTime" variant="caption">
-                                        {endStr}
-                                    </Typography>
-                                </Box>
-                                <Box className="JobCalendarTaskDivider" />
                                 <Box className="JobCalendarTaskContentSection">
                                     <Typography className="JobCalendarTaskName" variant="subtitle1">
-                                        {e.name}
+                                        時間：{startStr}-{endStr}
                                     </Typography>
-                                    <Typography className="JobCalendarTaskDuration" variant="caption">
-                                        ⏱️ {durationStr}
+                                    <Typography className="JobCalendarTaskName" variant="subtitle1">
+                                        任務：{(e.name || "").split("།།")[0]}
                                     </Typography>
                                 </Box>
                             </Box>
