@@ -38,8 +38,6 @@ const generateMonthDates = (year, month) => {
     return Array.from({ length: 42 }, (_, i) => start.add(i, "days"));
 };
 
-
-
 /**
  * 工作日曆組件 - 支援月、日視圖
  */

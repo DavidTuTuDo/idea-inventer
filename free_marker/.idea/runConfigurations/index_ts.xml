@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="index.ts" type="NodeJSConfigurationType" path-to-js-file="src/index.ts" working-dir="$PROJECT_DIR$" node-parameters="--import tsx">
+    <method v="2" />
+  </configuration>
+</component>

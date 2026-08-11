@@ -3,12 +3,13 @@ const edit = true;
 import React from "react";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import Button from "@mui/material/Button";
-import BaseComponent from "./BaseComponent";
+import ImpComponent from "../base/ImpComponent";
 import watermark from "watermarkjs";
 import Config from "../config";
 import UserInfoRef from "../base/BaseUserInfo";
 
-class BaseEditorComponent extends BaseComponent {
+class BaseEditorComponent extends ImpComponent {
+
     static getItemRemoteJobs(name = "") {
         return [
             { name: "update", loadingText: "正在遠端更新中", buttonText: `更新遠端${name}` },

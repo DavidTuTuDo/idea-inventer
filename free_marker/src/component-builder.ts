@@ -94,6 +94,9 @@ class ComponentBuilder extends BaseBuilder {
         const baseGenerator = new ClassGenerator(Util.joinRespectingDot(this.genComponentRootPath, folderName, `${baseClassName}.js`), this.nodeOfAncestor);
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
         // baseGenerator.appendImport(`{styled, alpha}`, '@mui/material/styles');
+        if (componentNode.isPreciselyEditableComponent() || componentNode.needEditorBase) {
+            baseGenerator.appendImport('ImpComponent', '../../base/ImpComponent');
+        }
         baseGenerator.appendClass(baseClassName,
             (componentNode.isPreciselyEditableComponent() || componentNode.needEditorBase) ? {
                 name: 'BaseEditorComponent',

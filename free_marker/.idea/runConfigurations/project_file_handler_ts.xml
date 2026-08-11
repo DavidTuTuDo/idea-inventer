@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="project-file-handler.ts" type="NodeJSConfigurationType" path-to-js-file="src/project-file-handler.ts" working-dir="$PROJECT_DIR$" node-parameters="--import tsx">
+    <method v="2" />
+  </configuration>
+</component>

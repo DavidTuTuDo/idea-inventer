@@ -5667,6 +5667,9 @@ class ComponentBuilder extends BaseBuilder {
         const baseGenerator = new ClassGenerator(Util.joinRespectingDot(this.genComponentRootPath, folderName, `${baseClassName}.js`), this.nodeOfAncestor);
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
         // baseGenerator.appendImport(`{styled, alpha}`, '@mui/material/styles');
+        if (componentNode.isPreciselyEditableComponent() || componentNode.needEditorBase) {
+            baseGenerator.appendImport('ImpComponent', '../../base/ImpComponent');
+        }
         baseGenerator.appendClass(baseClassName,
             (componentNode.isPreciselyEditableComponent() || componentNode.needEditorBase) ? {
                 name: 'BaseEditorComponent',
@@ -7028,7 +7031,7 @@ class AppBuilder extends ComponentBuilder {
 
         function getStmtsOfRenewStore(nodeOfComponent, attrs) {
             const stmts = [];
-            const nameOfStore = nodeOfComponent.isEditableComponent ?
+            const nameOfStore = (nodeOfComponent.isEditableComponent || nodeOfComponent.isPreciselyEditableComponent()) ?
                 nodeOfComponent.getStruct().getOriginalName() : nodeOfComponent.getStruct().getName();
             if (nodeOfComponent.disposablePage) {
                 stmts.push(`if(!this.isGotoSameRoute(route))`)
@@ -7036,9 +7039,9 @@ class AppBuilder extends ComponentBuilder {
             }
 
             for (const attr of attrs)
-                stmts.push(`this.App().get${_.upperFirst(nodeOfComponent.getStruct().getName())}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
+                stmts.push(`this.App().get${_.upperFirst(nameOfStore)}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
 
-            stmts.push(`this.App().get${_.upperFirst(nodeOfComponent.getStruct().getName())}Store().initial(presetObj)`)
+            stmts.push(`this.App().get${_.upperFirst(nameOfStore)}Store().initial(presetObj)`)
             return stmts;
         }
 

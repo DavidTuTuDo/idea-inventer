@@ -124,7 +124,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     }
 
     onAccountArrowOfGoEditModeIconButtonClicked(param) {
-        super.onAccountArrowOfGoEditModeIconButtonClicked(param);
+        Router.gotoExamEditorPage(this.getComponentInstance(), "goEditMode");
     }
 
     getPresetObjOfIreneQrcode() {

@@ -447,7 +447,7 @@ class AppBuilder extends ComponentBuilder {
 
         function getStmtsOfRenewStore(nodeOfComponent, attrs) {
             const stmts = [];
-            const nameOfStore = nodeOfComponent.isEditableComponent ?
+            const nameOfStore = (nodeOfComponent.isEditableComponent || nodeOfComponent.isPreciselyEditableComponent()) ?
                 nodeOfComponent.getStruct().getOriginalName() : nodeOfComponent.getStruct().getName();
             if (nodeOfComponent.disposablePage) {
                 stmts.push(`if(!this.isGotoSameRoute(route))`)
@@ -455,9 +455,9 @@ class AppBuilder extends ComponentBuilder {
             }
 
             for (const attr of attrs)
-                stmts.push(`this.App().get${Util.upperFirst(nodeOfComponent.getStruct().getName())}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
+                stmts.push(`this.App().get${Util.upperFirst(nameOfStore)}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
 
-            stmts.push(`this.App().get${Util.upperFirst(nodeOfComponent.getStruct().getName())}Store().initial(presetObj)`)
+            stmts.push(`this.App().get${Util.upperFirst(nameOfStore)}Store().initial(presetObj)`)
             return stmts;
         }
 
@@ -587,6 +587,9 @@ class AppBuilder extends ComponentBuilder {
             // 2. 統一提取 Key 的模板字串
             const keyTemplateStr = getKeyTemplateString(component, params);
 
+            const storeName = (component.isPreciselyEditableComponent() || component.isEditableComponent) ?
+                _.lowerFirst(component.getStruct().getOriginalName()) : _.lowerFirst(nameOfComponent);
+
             // 3. 根據 Lazy 或 Normal 元件生成對應的 Wrapper
             if (component.useLazy) {
                 const keyStmt = keyTemplateStr ? `key={\`${keyTemplateStr}\`}` : '';
@@ -600,7 +603,7 @@ class AppBuilder extends ComponentBuilder {
                 stmtsOfRenderView.push(`
             const ${wrapper} = this.createLazyWrapper(
                 () => import("./component/${_.lowerFirst(nameOfComponent)}"),
-                "${_.lowerFirst(nameOfComponent)}",
+                "${storeName}",
                 ${stmt}
             );
         `);
@@ -627,7 +630,7 @@ class AppBuilder extends ComponentBuilder {
 
                 stmtsOfRenderView.push(`
             const ${observed} = observer(${nameOfComponent});
-            const ${wrapper} = inject('${Util.lowerFirst(nameOfComponent)}')((props) => {
+            const ${wrapper} = inject('${storeName}')((props) => {
                 ${stmtsOfParams} 
                 return ${renderStmts.join('')} 
             });
