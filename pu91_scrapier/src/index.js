@@ -1,3 +1,6 @@
+/** 由於91譜再2026的8月中改版，此份爬蟲已失效，感謝自己曾經在2021年手寫爬蟲，做出了悅譜專案的database，
+ * 是一個很實用應用，致敬我的coding和程式碼精神。接下來只要好好活著就是最大的禮物了 */
+
 import _ from "lodash"
 import path from 'path';
 import puppeteer from 'puppeteer';
