@@ -9,7 +9,6 @@ import Config from "../config";
 import UserInfoRef from "../base/BaseUserInfo";
 
 class BaseEditorComponent extends ImpComponent {
-
     static getItemRemoteJobs(name = "") {
         return [
             { name: "update", loadingText: "正在遠端更新中", buttonText: `更新遠端${name}` },
