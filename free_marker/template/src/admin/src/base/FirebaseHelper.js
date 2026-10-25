@@ -980,13 +980,26 @@ class FirebaseHelper extends BaseFirebase {
     _getMimeType(fileName) {
         const ext = (fileName || "").split(".").pop().toLowerCase();
         const mimeMap = {
-            jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
-            gif: "image/gif", webp: "image/webp", svg: "image/svg+xml",
-            bmp: "image/bmp", ico: "image/x-icon", tiff: "image/tiff", avif: "image/avif",
-            pdf: "application/pdf", json: "application/json",
-            mp4: "video/mp4", mp3: "audio/mpeg", wav: "audio/wav",
-            txt: "text/plain", html: "text/html", css: "text/css",
-            js: "application/javascript", csv: "text/csv",
+            jpg: "image/jpeg",
+            jpeg: "image/jpeg",
+            png: "image/png",
+            gif: "image/gif",
+            webp: "image/webp",
+            svg: "image/svg+xml",
+            bmp: "image/bmp",
+            ico: "image/x-icon",
+            tiff: "image/tiff",
+            avif: "image/avif",
+            pdf: "application/pdf",
+            json: "application/json",
+            mp4: "video/mp4",
+            mp3: "audio/mpeg",
+            wav: "audio/wav",
+            txt: "text/plain",
+            html: "text/html",
+            css: "text/css",
+            js: "application/javascript",
+            csv: "text/csv",
             zip: "application/zip",
             doc: "application/msword",
             docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -1030,9 +1043,7 @@ class FirebaseHelper extends BaseFirebase {
 
         // 3. 檢查檔案大小
         if (buffer.length > maxSizeInBytes) {
-            throw new Error(
-                `uploadStorageFile: 檔案大小 (${(buffer.length / 1024 / 1024).toFixed(2)}MB) 超過限制 (${maxSize})`
-            );
+            throw new Error(`uploadStorageFile: 檔案大小 (${(buffer.length / 1024 / 1024).toFixed(2)}MB) 超過限制 (${maxSize})`);
         }
 
         // 4. 決定儲存檔名
@@ -1073,9 +1084,7 @@ class FirebaseHelper extends BaseFirebase {
             return downloadUrl;
         })();
 
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error(`uploadStorageFile: 上傳逾時 (${timeoutMs}ms)`)), timeoutMs)
-        );
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error(`uploadStorageFile: 上傳逾時 (${timeoutMs}ms)`)), timeoutMs));
 
         return await Promise.race([uploadPromise, timeoutPromise]);
     };
